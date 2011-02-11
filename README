@@ -1,1 +1,12 @@
 sc-Choreograph
+A simple animation and timing library intended for use with the Cinder framework.
+
+Status
+Templated tweens support all types which implement + and * operations
+Easing functions are implemented, and can be used as a stand-alone module
+Memory management through shared_ptr
+
+To Do:
+callbacks on tween complete
+actions that can live on timelines
+support for chaining and sequencing tweens
