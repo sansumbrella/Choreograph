@@ -30,11 +30,15 @@ namespace cinder {
 			//! is the animation finished?
 			virtual bool isComplete(){return true;}
 			
-			//! change the way time is handled by the tween
-			virtual void reverse(){};
-			virtual void loop(){};
-			virtual void pingpong(){};
+			//! change how the tween moves through time
+			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
 			
+			//! change how the tween thinks about time
+			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
+			virtual void reverse(){ setTimeFunction(TimeBasis::reverse); }
+			virtual void loop(){ setTimeFunction(TimeBasis::repeat); }
+			virtual void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
+						
 			//! push back the tween's start time
 			virtual void delay( float amt ){};
 			
@@ -49,6 +53,11 @@ namespace cinder {
 		protected:
 			double	mDuration;
 			void	*mTargetVoid;
+			// how we interpret time
+			// might need to be a static object, so it can also handle completion
+			double (*mTimeFunction)(double start, double duration);
+			// how we move between points in time
+			double (*mEaseFunction)(double t);
 		};
 		
 		typedef std::shared_ptr<Tweenable> TweenRef;
@@ -116,32 +125,14 @@ namespace cinder {
 				}
 			}
 			
-			void loop()
-			{
-				setTimeFunction(TimeBasis::repeat);
-			}
-			
-			void pingpong()
-			{
-				setTimeFunction(TimeBasis::pingpong);
-			}
-			
 			void delay(float amt)
 			{
 				mStartTime += amt;
 			}
 			
-			void reverse()
-			{
-				setTimeFunction(TimeBasis::reverse);
-			}
-			
 			T* getTarget(){ return mTarget; }
 			double getStartTime(){ return mStartTime; }
 			bool isComplete(){ return mComplete; }
-			
-			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
-			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
 			
 		private:			
 			T* mTarget;
@@ -150,12 +141,6 @@ namespace cinder {
 			double mT;	// normalized time
 			double mStartTime;
 			bool mComplete;
-			
-			// how we move between points in time
-			double (*mEaseFunction)(double t);
-			// how we interpret time
-			// might need to be a static object, so it can also handle completion
-			double (*mTimeFunction)(double start, double duration);
 		};
 
 		/*
