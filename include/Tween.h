@@ -109,7 +109,7 @@ namespace cinder {
 			
 			virtual void jumpToTime( double time )
 			{
-				mCurrentTime = time;
+				mCurrentTime = mStartTime + time;
 				mT = lmap( mCurrentTime, mStartTime, mStartTime + mDuration, 0.0, 1.0 );
 				updateTarget();
 			}
