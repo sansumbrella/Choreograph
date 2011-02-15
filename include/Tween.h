@@ -16,7 +16,6 @@
 #include "Easing.h"
 #include "TimeBasis.h"
 #include "Sequenceable.hpp"
-#include "cinder/app/App.h"
 
 namespace cinder {
 	namespace tween {
@@ -118,7 +117,6 @@ namespace cinder {
 					{	// at the completion point, set to target value
 						*mTarget = mEndValue;
 						mComplete = true;
-						app::console() << "Completed animation of: " << mTarget << std::endl;
 					} else
 					{
 						
