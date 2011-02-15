@@ -54,7 +54,8 @@ void BasicTweenApp::setup()
 void BasicTweenApp::update()
 {
 	// step our animation forward
-	TweenManager::instance().step( 1.0 / 30.0 );
+	TweenManager::instance().step( 1.0 / 60.0 );
+//	TweenManager::instance().step();
 }
 
 void BasicTweenApp::draw()
@@ -86,7 +87,7 @@ void BasicTweenApp::playRandomTween()
 	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
 	
 	// Create our tween (will try to make this prettier in the future)
-	TweenRef tween = std::shared_ptr<Tweenable>( new Tween<Vec3f>( &mPos, randomPos, 2.0 ) );
+	TweenRef tween = TweenRef( new Tween<Vec3f>( &mPos, randomPos, 2.0 ) );
 	TweenManager::instance().addTween( tween );
 	
 	// Tween our floats

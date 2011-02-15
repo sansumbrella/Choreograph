@@ -19,13 +19,6 @@ TweenManager::TweenManager()
 	//privately instantiating...
 }
 
-void TweenManager::jumpToFrame( int frame )
-{
-	for ( t_iter t = mTweens.begin(); t != mTweens.end(); ++t) {
-		(**t).jumpToFrame(frame);
-	}
-}
-
 void TweenManager::cleanup()
 {
 	t_iter iter = mTweens.begin();
@@ -59,6 +52,11 @@ void TweenManager::addTween( TweenRef tween)
 	mTweens.push_back( tween );
 }
 
+void TweenManager::step()
+{	// would like to use getAverageFps, but it doesn't work statically (yet)
+	step( 1.0 / app::getFrameRate() );
+}
+
 void TweenManager::step( double timestep )
 {
 	t_iter iter = mTweens.begin();
@@ -76,6 +74,12 @@ void TweenManager::step( double timestep )
 	}
 }
 
-
+void TweenManager::jumpToTime( double time )
+{	
+	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
+	{
+		(**iter).jumpToTime( time );
+	}
+}
 
 

@@ -28,14 +28,19 @@ namespace cinder {
 			
 			//! add a tween to be managed
 			void addTween( TweenRef );
-			//! advance time
+			//! advance time based on target fps
+			void step();
+			//! advance time a specified amount
 			void step( double timestep );
+			//! go to a specific time
+			void jumpToTime( double time );
+			//! go to a specific part of the timeline (TODO)
+			void jumpToPercentCompletion( double percent ){};
 			
 			// I need a strategy for comparing tweens that works across types (perhaps an uid for each tween)
 			//void removeTween( Tweenable* tween );
 			void cancelAllTweens();
 			void cleanup();
-			void jumpToFrame(int frame);
 		private:
 			TweenManager();
 			std::vector< TweenRef > mTweens;

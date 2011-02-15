@@ -28,6 +28,7 @@ namespace cinder {
 			virtual void update(){};
 			//! advance time in the animation
 			virtual void step( double timestep ) = 0;
+			virtual void jumpToTime( double time ) = 0;
 			//! is the animation finished?
 			virtual bool isComplete(){return true;}
 			
@@ -36,8 +37,6 @@ namespace cinder {
 			virtual void loop(){};
 			virtual void pingpong(){};
 			
-			virtual void useFrames(){};
-			virtual void jumpToFrame( int frame ){};
 			virtual void delay( float amt ){};
 			
 			//! change the duration of the tween
@@ -108,6 +107,13 @@ namespace cinder {
 				updateTarget();
 			}
 			
+			virtual void jumpToTime( double time )
+			{
+				mCurrentTime = time;
+				mT = lmap( mCurrentTime, mStartTime, mStartTime + mDuration, 0.0, 1.0 );
+				updateTarget();
+			}
+			
 			virtual void updateTarget()
 			{
 				if( mT > 0.0 && mT < 1.0 )
@@ -131,14 +137,6 @@ namespace cinder {
 			void pingpong()
 			{
 				setTimeFunction(TimeBasis::pingpong);
-			}
-			
-			void useFrames()
-			{
-				// not quite as flexible as I'd like
-				// will need to reconsider the use of timebasis functions
-				setTimeFunction(TimeBasis::linearByFrame);
-				mStartTime = app::getElapsedFrames();
 			}
 			
 			void delay(float amt)
