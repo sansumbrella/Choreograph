@@ -21,7 +21,43 @@ TweenManager::TweenManager()
 	//privately instantiating...
 }
 
-void TweenManager::cleanup()
+TweenManager& TweenManager::instance()
+{
+	static TweenManager instance;
+	return instance;
+}
+
+void TweenManager::step()
+{	// would like to use getAverageFps, but it doesn't work statically (yet)
+	step( 1.0 / app::getFrameRate() );
+}
+
+void TweenManager::step( double timestep )
+{
+	mCurrentTime += timestep;
+	
+	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
+	{
+		(**iter).stepTo( mCurrentTime );
+	}
+}
+
+void TweenManager::stepTo( double time )
+{	
+	mCurrentTime = time;
+	
+	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
+	{
+		(**iter).stepTo( time );
+	}
+}
+
+void TweenManager::clearTimeline()
+{
+	mTweens.clear();	
+}
+
+void TweenManager::clearFinishedTweens()
 {
 	t_iter iter = mTweens.begin();
 	
@@ -35,56 +71,9 @@ void TweenManager::cleanup()
 	}
 }
 
-TweenManager& TweenManager::instance()
-{
-	static TweenManager instance;
-	return instance;
-}
-
-void TweenManager::cancelAllTweens()
-{
-	// apparently remove_if isn't defined...
-	// mTweens.remove_if( Tween::remove );
-	
-	mTweens.clear();	
-}
-
 void TweenManager::addTween( TweenRef tween)
 {
 	mTweens.push_back( tween );
-}
-
-void TweenManager::step()
-{	// would like to use getAverageFps, but it doesn't work statically (yet)
-	step( 1.0 / app::getFrameRate() );
-}
-
-void TweenManager::step( double timestep )
-{
-	mCurrentTime += timestep;
-
-	t_iter iter = mTweens.begin();
-
-	while (iter != mTweens.end()) {
-		(**iter).stepTo( mCurrentTime );
-
-		if( (**iter).isComplete() )
-		{	// remove completed tweens from list
-			iter = mTweens.erase(iter);
-		} else {
-			++iter;
-		}
-	}
-}
-
-void TweenManager::stepTo( double time )
-{	
-	mCurrentTime = time;
-	
-	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
-	{
-		(**iter).stepTo( time );
-	}
 }
 
 TweenRef TweenManager::findTween( void *target )

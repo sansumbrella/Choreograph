@@ -55,9 +55,8 @@ void BasicTweenApp::update()
 {
 	// step our animation forward
 	TweenManager::instance().step( 1.0 / 60.0 );
+	// step() also works, it uses 1.0/app::getFrameRate()
 //	TweenManager::instance().step();
-	//update all tweens in progress
-//	TweenManager::instance().update( 1 / 60.0f );
 }
 
 void BasicTweenApp::draw()
@@ -88,10 +87,8 @@ void BasicTweenApp::playRandomTween()
 	// Tween a Vec3f
 	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
 	
-	// Create our tween (will try to make this prettier in the future)
-	TweenRef tween = TweenRef( new Tween<Vec3f>( &mPos, randomPos, 0.0, 2.0 ) );
-	TweenManager::instance().addTween( tween );
-//	TweenManager::instance().add( &mPos, randomPos, 2.0 );
+	// Create our tween
+	TweenManager::instance().add( &mPos, randomPos, 2.0 );
 	
 	// Tween our floats
 	randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);

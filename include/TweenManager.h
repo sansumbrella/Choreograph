@@ -54,10 +54,10 @@ namespace cinder {
 			TweenRef	findTween( void *target );
 			void		removeTween( TweenRef tween );
 			
-			// I need a strategy for comparing tweens that works across types (perhaps an uid for each tween)
-			//void removeTween( Tweenable* tween );
-			void cancelAllTweens();
-			void cleanup();
+			//! remove all tweens from the timeline
+			void clearTimeline();
+			//! remove completed tweens from the timeline
+			void clearFinishedTweens();
 		private:
 			TweenManager();
 			double					mCurrentTime;
