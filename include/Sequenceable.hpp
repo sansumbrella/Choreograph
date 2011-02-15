@@ -22,6 +22,12 @@ namespace cinder
 			virtual void step( double timestep ){};
 			//! go to a specific time
 			virtual void stepTo( double time ) = 0;
+			
+			//! is the animation finished?
+			virtual bool isComplete(){ return false; }
+			
+			//! returns the duration of the sequenceable item
+			virtual double getDuration(){ return 0; }
 		};
 	}
 }

@@ -26,11 +26,6 @@ namespace cinder {
 			Tweenable( void *data ) : mTargetVoid( data ) {}
 			virtual ~Tweenable(){};
 			
-			//! advance time in the animation to the given point
-			virtual void stepTo( double newTime ) = 0;
-			//! is the animation finished?
-			virtual bool isComplete(){return true;}
-			
 			//! change how the tween moves through time
 			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
 			
