@@ -16,6 +16,7 @@
 #include "Easing.h"
 #include "TimeBasis.h"
 #include "Sequenceable.hpp"
+#include "cinder/app/App.h"
 
 namespace cinder {
 	namespace tween {
@@ -67,8 +68,8 @@ namespace cinder {
 			{
 				mTarget = target;
 				mStartValue = *target;
-				mTargetValue = targetValue;
-				mChange = mTargetValue - mStartValue;
+				mEndValue = targetValue;
+				mValueDelta = mEndValue - mStartValue;
 				
 				mStartTime = startTime;
 				mDuration = duration;
@@ -84,8 +85,8 @@ namespace cinder {
 			{
 				mTarget = target;
 				mStartValue = startValue;
-				mTargetValue = targetValue;
-				mChange = mTargetValue - mStartValue;
+				mEndValue = targetValue;
+				mValueDelta = mEndValue - mStartValue;
 				
 				mStartTime = startTime;
 				mDuration = duration;
@@ -107,16 +108,21 @@ namespace cinder {
 			
 			virtual void updateTarget()
 			{
-				if( mT > 0.0 && mT < 1.0 )
+				if( ! mComplete || mT < 1.0 )
 				{
-					*mTarget = mStartValue + mChange * mEaseFunction( mT );
-				} else if ( mT == 1.0 )
-				{	// at the completion point, set to target value
-					*mTarget = mTargetValue;
-					mComplete = true;
-				} else
-				{
-					
+					if( mT > 0.0 && mT < 1.0 )
+					{
+						*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
+						mComplete = false;
+					} else if ( mT == 1.0 )
+					{	// at the completion point, set to target value
+						*mTarget = mEndValue;
+						mComplete = true;
+						app::console() << "Completed animation of: " << mTarget << std::endl;
+					} else
+					{
+						
+					}
 				}
 			}
 			
@@ -126,7 +132,7 @@ namespace cinder {
 			
 		private:			
 			T* mTarget;
-			T mStartValue, mChange, mTargetValue;
+			T mStartValue, mValueDelta, mEndValue;
 			
 			double mT;	// normalized time
 			bool mComplete;
