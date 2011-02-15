@@ -25,18 +25,17 @@ namespace cinder {
 			Tweenable( void *data ) : mTargetVoid( data ) {}
 			virtual ~Tweenable(){};
 			
-			//! advance time in the animation
-			virtual void update( double newTime ) = 0;
-			virtual void step( double timestep ) = 0;
-			virtual void jumpToTime( double time ) = 0;
+			//! advance time in the animation to the given point
+			virtual void stepTo( double newTime ) = 0;
 			//! is the animation finished?
 			virtual bool isComplete(){return true;}
 			
-			// these will likely be moved to the timeline/manager for control
+			//! change the way time is handled by the tween
 			virtual void reverse(){};
 			virtual void loop(){};
 			virtual void pingpong(){};
 			
+			//! push back the tween's start time
 			virtual void delay( float amt ){};
 			
 			//! change the duration of the tween
@@ -68,7 +67,6 @@ namespace cinder {
 				mChange = mTargetValue - mStartValue;
 				
 				mStartTime = startTime;
-				mCurrentTime = mStartTime;
 				mDuration = duration;
 				mT = 0.0;
 				mComplete = false;
@@ -86,8 +84,6 @@ namespace cinder {
 				mChange = mTargetValue - mStartValue;
 				
 				mStartTime = startTime;
-				mCurrentTime = mStartTime;
-				
 				mDuration = duration;
 				mT = 0.0;
 				mComplete = false;
@@ -99,26 +95,10 @@ namespace cinder {
 			~Tween<T>(){}
 			
 			// this could be modified in the future to allow for a PathTween
-			virtual void update( double newTime )
+			virtual void stepTo( double newTime )
 			{
 				mT = mTimeFunction( newTime - mStartTime, mDuration );
 				updateTarget();	
-			}
-			
-			//! advance our tween the specified amount of time
-			//! this setup allows us to step backward, as well
-			virtual void step( double timestep )
-			{
-				mCurrentTime += timestep;
-				mT = lmap( mCurrentTime, mStartTime, mStartTime + mDuration, 0.0, 1.0 );
-				updateTarget();
-			}
-			
-			virtual void jumpToTime( double time )
-			{
-				mCurrentTime = mStartTime + time;
-				mT = lmap( mCurrentTime, mStartTime, mStartTime + mDuration, 0.0, 1.0 );
-				updateTarget();
 			}
 			
 			virtual void updateTarget()
@@ -126,13 +106,13 @@ namespace cinder {
 				if( mT > 0.0 && mT < 1.0 )
 				{
 					*mTarget = mStartValue + mChange * mEaseFunction( mT );
-				} else if ( mT >= 1.0 )
-				{	// this check needs to be made less fragile
+				} else if ( mT == 1.0 )
+				{	// at the completion point, set to target value
 					*mTarget = mTargetValue;
 					mComplete = true;
 				} else
 				{
-					//*mTarget = mStartValue;
+					
 				}
 			}
 			
@@ -149,7 +129,6 @@ namespace cinder {
 			void delay(float amt)
 			{
 				mStartTime += amt;
-				mCurrentTime = mStartTime;
 			}
 			
 			void jumpToFrame(int frame)
@@ -160,7 +139,6 @@ namespace cinder {
 			
 			void reverse()
 			{
-//				mStartTime += mDuration - ( app::getElapsedSeconds() - mStartTime );
 				setTimeFunction(TimeBasis::reverse);
 			}
 			
@@ -176,7 +154,6 @@ namespace cinder {
 			T mStartValue, mChange, mTargetValue;
 			
 			double mT;	// normalized time
-			double mCurrentTime; // time in seconds or frames
 			double mStartTime;
 			bool mComplete;
 			
@@ -188,11 +165,10 @@ namespace cinder {
 		};
 
 		/*
-		 * Debating whether to add some of these predefined tween types
+		 * Debating whether to add some predefined tween types
 		 *
-		
 		typedef Tween<float> Tweenf;
-		 
+		typedef Tween<Vec2f> Tween2f; 
 		//*/
 	} //tween
 } //cinder

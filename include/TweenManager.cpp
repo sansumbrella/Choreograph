@@ -66,14 +66,24 @@ void TweenManager::step( double timestep )
 	t_iter iter = mTweens.begin();
 
 	while (iter != mTweens.end()) {
-		(**iter).step( timestep );
+		(**iter).stepTo( mCurrentTime );
 
 		if( (**iter).isComplete() )
-		{
+		{	// remove completed tweens from list
 			iter = mTweens.erase(iter);
 		} else {
 			++iter;
 		}
+	}
+}
+
+void TweenManager::stepTo( double time )
+{	
+	mCurrentTime = time;
+	
+	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
+	{
+		(**iter).stepTo( time );
 	}
 }
 
@@ -94,32 +104,6 @@ void TweenManager::removeTween( TweenRef tween )
 	t_iter iter = std::find( mTweens.begin(), mTweens.end(), tween );
 	if( iter != mTweens.end() )
 		mTweens.erase( iter );
-}
-
-void TweenManager::update( double timeDelta )
-{
-	mCurrentTime += timeDelta;
-	
-	t_iter iter = mTweens.begin();
-	
-	while (iter != mTweens.end()) {
-		(**iter).update( mCurrentTime );
-		
-		if( (**iter).isComplete() )
-		{
-			iter = mTweens.erase(iter);
-		} else {
-			++iter;
-		}
-	}
-}
-
-void TweenManager::jumpToTime( double time )
-{	
-	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
-	{
-		(**iter).jumpToTime( time );
-	}
 }
 
 
