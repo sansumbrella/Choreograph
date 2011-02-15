@@ -131,12 +131,6 @@ namespace cinder {
 				mStartTime += amt;
 			}
 			
-			void jumpToFrame(int frame)
-			{
-				mT = (frame-mStartTime) / mDuration;
-				updateTarget();
-			}
-			
 			void reverse()
 			{
 				setTimeFunction(TimeBasis::reverse);
