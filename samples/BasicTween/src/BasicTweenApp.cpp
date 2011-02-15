@@ -30,6 +30,7 @@ public:
 	
 private:	
 	float mX, mY;
+	float mStep;
 	Vec3f mPos;
 	ColorA mColor;
 	Timeline mTimeline;
@@ -47,6 +48,8 @@ void BasicTweenApp::setup()
 	mY = getWindowHeight()/2;
 	mPos = Vec3f(0,0,0);
 	
+	mStep = 1.0 / 60.0;
+	
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
@@ -55,7 +58,7 @@ void BasicTweenApp::setup()
 void BasicTweenApp::update()
 {
 	// step our animation forward
-	mTimeline.step( 1.0 / 60.0 );
+	mTimeline.step( mStep );
 	// step() also works, it uses 1.0/app::getFrameRate()
 //	TweenManager::instance().step();
 }
@@ -121,6 +124,9 @@ void BasicTweenApp::keyDown( KeyEvent event )
 	switch( event.getChar() ){
 		case 'r':
 			mTimeline.reset();
+			break;
+		case 't':
+			mStep *= -1;
 			break;
 		default:
 			playRandomTween();
