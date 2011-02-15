@@ -85,6 +85,9 @@ void BasicTweenApp::mouseDown( MouseEvent event )
 
 void BasicTweenApp::playRandomTween()
 {
+	// Reset the timeline to zero
+	mTimeline.reset();
+	
 	// Tween a Vec3f
 	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
 	
@@ -99,8 +102,10 @@ void BasicTweenApp::playRandomTween()
 
 void BasicTweenApp::tweenToMouse()
 {
-	// Move our properties to the mouse position with with different easing
+	// Reset the timeline to zero
+	mTimeline.reset();
 	
+	// Move our properties to the mouse position with with different easing
 	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
 	// Tween a Vec3f all at once with custom easing
 	TweenRef newTween = mTimeline.replace( &mPos, mousePos, 1.25, Back::easeOut );
@@ -114,6 +119,9 @@ void BasicTweenApp::tweenToMouse()
 void BasicTweenApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ){
+		case 'r':
+			mTimeline.reset();
+			break;
 		default:
 			playRandomTween();
 		break;
