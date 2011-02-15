@@ -15,7 +15,7 @@
 #include "cinder/Cinder.h"
 #include "Easing.h"
 #include "TimeBasis.h"
-#include "Sequenceable.h"
+#include "Sequenceable.hpp"
 
 namespace cinder {
 	namespace tween {
