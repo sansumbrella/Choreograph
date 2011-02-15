@@ -181,6 +181,13 @@ namespace cinder {
 			// might need to be a static object, so it can also handle completion
 			double (*mTimeFunction)(double start, double duration);
 		};
+
+		/*
+		 * Debating whether to add some of these predefined tween types
+		 *
 		
+		typedef Tween<float> Tweenf;
+		 
+		//*/
 	} //tween
 } //cinder
