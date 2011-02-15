@@ -39,10 +39,7 @@ namespace cinder {
 			virtual void delay( float amt ){};
 			
 			//! change the duration of the tween
-			void setDuration(double duration){ mDuration=duration; }
-			
-			// todo
-			virtual void pause(){};
+			void setDuration( double duration ){ mDuration = duration; }
 			
 			const void	*getTargetVoid() const { return mTargetVoid; }
 			
