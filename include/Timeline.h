@@ -57,6 +57,8 @@ namespace cinder {
 			void clearTimeline();
 			//! remove completed tweens from the timeline
 			void clearFinishedTweens();
+			//! reset time to zero
+			void reset(){ stepTo( 0.0 ); }
 		private:
 			double					mCurrentTime;
 			std::vector< TweenRef > mTweens;

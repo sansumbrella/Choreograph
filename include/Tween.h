@@ -55,7 +55,6 @@ namespace cinder {
 			double	mDuration;
 			void	*mTargetVoid;
 			// how we interpret time
-			// might need to be a static object, so it can also handle completion
 			double (*mTimeFunction)(double start, double duration);
 			// how we move between points in time
 			double (*mEaseFunction)(double t);

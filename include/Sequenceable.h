@@ -11,17 +11,18 @@
 
 namespace cinder
 {
-namespace tween
-{
-	class Sequenceable
+	namespace tween
 	{
-	public:
-		virtual ~Sequenceable(){};
-		//! advance time a specified amount
-		virtual void step( double timestep ){};
-		//! go to a specific time
-		virtual void stepTo( double time ) = 0;
-	};
-}
+		//! Base interface for anything that can go on a timeline
+		class Sequenceable
+		{
+		public:
+			virtual ~Sequenceable(){};
+			//! advance time a specified amount
+			virtual void step( double timestep ){};
+			//! go to a specific time
+			virtual void stepTo( double time ) = 0;
+		};
+	}
 }
 

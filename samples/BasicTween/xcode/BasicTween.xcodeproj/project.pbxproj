@@ -127,14 +127,14 @@
 		1518EA1F11ADB025002C8C6A /* include */ = {
 			isa = PBXGroup;
 			children = (
-				15EA50CA11D08C6A00A5B89E /* TimeBasis.h */,
+				150736A111AF65340044CD4E /* Tweening.h */,
+				1507352611AF3F740044CD4E /* Timeline.h */,
 				1507352811AF3F810044CD4E /* Timeline.cpp */,
 				1518EA3411ADB089002C8C6A /* Tween.h */,
-				1507352611AF3F740044CD4E /* Timeline.h */,
-				1507354B11AF45650044CD4E /* Easing.h */,
-				150736A111AF65340044CD4E /* Tweening.h */,
 				150CD5DB130A262200903270 /* Sequenceable.h */,
 				150CD5E4130A270200903270 /* Sequenceable.cpp */,
+				1507354B11AF45650044CD4E /* Easing.h */,
+				15EA50CA11D08C6A00A5B89E /* TimeBasis.h */,
 			);
 			name = include;
 			path = ../../../include;
