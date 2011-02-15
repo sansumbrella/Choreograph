@@ -102,17 +102,18 @@ namespace cinder {
 			virtual void stepTo( double newTime )
 			{
 				mT = mTimeFunction( newTime - mStartTime, mDuration );
+				if( newTime < mStartTime + mDuration ){ mComplete = false; }
+				
 				updateTarget();	
 			}
 			
 			virtual void updateTarget()
 			{
-				if( ! mComplete || mT < 1.0 )
+				if( ! mComplete )
 				{
 					if( mT > 0.0 && mT < 1.0 )
 					{
 						*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
-						mComplete = false;
 					} else if ( mT == 1.0 )
 					{	// at the completion point, set to target value
 						*mTarget = mEndValue;
