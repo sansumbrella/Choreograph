@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include "cinder/app/App.h"
 #include "cinder/Cinder.h"
 #include "Easing.h"
 #include "TimeBasis.h"
@@ -23,10 +22,11 @@ namespace cinder {
 		//Non-templated base class to allow us to have a list containing all types of Tween
 		class Tweenable {
 		public:
+			Tweenable( void *data ) : mTargetVoid( data ) {}
 			virtual ~Tweenable(){};
-			// update should be considered deprecated
-			virtual void update(){};
+			
 			//! advance time in the animation
+			virtual void update( double newTime ) = 0;
 			virtual void step( double timestep ) = 0;
 			virtual void jumpToTime( double time ) = 0;
 			//! is the animation finished?
@@ -45,8 +45,11 @@ namespace cinder {
 			// todo
 			virtual void pause(){};
 			
+			const void	*getTargetVoid() const { return mTargetVoid; }
+			
 		protected:
-			double mDuration;
+			double	mDuration;
+			void	*mTargetVoid;
 		};
 		
 		typedef std::shared_ptr<Tweenable> TweenRef;
@@ -56,14 +59,15 @@ namespace cinder {
 		class Tween : public Tweenable{
 		public:
 			// build a tween with a target, target value, duration, and optional ease function
-			Tween<T>(T* target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+				: Tweenable( target )
 			{
 				mTarget = target;
 				mStartValue = *target;
 				mTargetValue = targetValue;
 				mChange = mTargetValue - mStartValue;
 				
-				mStartTime = app::getElapsedSeconds();
+				mStartTime = startTime;
 				mCurrentTime = mStartTime;
 				mDuration = duration;
 				mT = 0.0;
@@ -73,15 +77,17 @@ namespace cinder {
 				mTimeFunction = timeFunction;
 			}
 			
-			Tween<T>(T* target, T startValue, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+				: Tweenable( target )
 			{
 				mTarget = target;
 				mStartValue = startValue;
 				mTargetValue = targetValue;
 				mChange = mTargetValue - mStartValue;
 				
-				mStartTime = app::getElapsedSeconds();
+				mStartTime = startTime;
 				mCurrentTime = mStartTime;
+				
 				mDuration = duration;
 				mT = 0.0;
 				mComplete = false;
@@ -92,9 +98,10 @@ namespace cinder {
 			
 			~Tween<T>(){}
 			
-			virtual void update()
+			// this could be modified in the future to allow for a PathTween
+			virtual void update( double newTime )
 			{
-				mT = mTimeFunction( mStartTime, mDuration );
+				mT = mTimeFunction( newTime - mStartTime, mDuration );
 				updateTarget();	
 			}
 			
@@ -153,7 +160,7 @@ namespace cinder {
 			
 			void reverse()
 			{
-				mStartTime += mDuration - ( app::getElapsedSeconds() - mStartTime );
+//				mStartTime += mDuration - ( app::getElapsedSeconds() - mStartTime );
 				setTimeFunction(TimeBasis::reverse);
 			}
 			
@@ -163,8 +170,6 @@ namespace cinder {
 			
 			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
 			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
-			
-			static bool remove( Tween* tween ) { delete tween; return true; }
 			
 		private:			
 			T* mTarget;

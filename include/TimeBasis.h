@@ -14,25 +14,24 @@
 
 #pragma once
 
-#include "cinder/app/App.h"
 #include "cinder/CinderMath.h"
 
 namespace cinder {
 	namespace tween {
 		struct TimeBasis {
-			static double linear( double start, double duration )
+			static double linear( double delta, double duration )
 			{	
-				return math<double>::min( ( app::getElapsedSeconds() - start ) / duration, 1.0 );
+				return math<double>::min( delta / duration, 1 );
 			}
 			
-			static double linearByFrame( double start, double duration )
+			static double linearByFrame( double delta, double duration )
 			{
-				return math<double>::min( (double)( app::getElapsedFrames() - start ) / duration, 1.0 );
+				return math<double>::min( delta / duration, 1 );
 			}
 			
-			static double pingpong( double start, double duration )
+			static double pingpong( double delta, double duration )
 			{
-				double t2 = fmod( (app::getElapsedSeconds() - start), (duration*2) );
+				double t2 = fmod( delta, duration * 2 );
 				if( t2 > duration ){
 					return ((duration*2) - t2)/duration;
 				} else {
@@ -40,15 +39,15 @@ namespace cinder {
 				}
 			}
 			
-			static double repeat( double start, double duration )
+			static double repeat( double delta, double duration )
 			{
-				double t = fmod( (app::getElapsedSeconds() - start), duration );
+				double t = fmod( delta, duration );
 				return t / duration;
 			}
 			
-			static double reverse( double start, double duration )
+			static double reverse( double delta, double duration )
 			{
-				return math<double>::max( 1.0 - ( ( app::getElapsedSeconds() - start ) / duration ), 0.0 );
+				return math<double>::max( 1 - ( delta / duration ), 0 );
 			}
 		};
 	}

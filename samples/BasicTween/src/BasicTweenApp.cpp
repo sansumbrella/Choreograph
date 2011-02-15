@@ -56,6 +56,8 @@ void BasicTweenApp::update()
 	// step our animation forward
 	TweenManager::instance().step( 1.0 / 60.0 );
 //	TweenManager::instance().step();
+	//update all tweens in progress
+//	TweenManager::instance().update( 1 / 60.0f );
 }
 
 void BasicTweenApp::draw()
@@ -87,16 +89,14 @@ void BasicTweenApp::playRandomTween()
 	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
 	
 	// Create our tween (will try to make this prettier in the future)
-	TweenRef tween = TweenRef( new Tween<Vec3f>( &mPos, randomPos, 2.0 ) );
+	TweenRef tween = TweenRef( new Tween<Vec3f>( &mPos, randomPos, 0.0, 2.0 ) );
 	TweenManager::instance().addTween( tween );
+//	TweenManager::instance().add( &mPos, randomPos, 2.0 );
 	
 	// Tween our floats
 	randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
-	tween = TweenRef( new Tween<float>( &mX, randomPos.x, 2.0 ) );
-	TweenManager::instance().addTween( tween );
-	
-	tween = TweenRef( new Tween<float>( &mY, randomPos.y, 2.0 ) );
-	TweenManager::instance().addTween( tween );
+	TweenManager::instance().add( &mX, randomPos.x, 2.0 );
+	TweenManager::instance().add( &mY, randomPos.y, 2.0 );
 }
 
 void BasicTweenApp::tweenToMouse()
@@ -105,16 +105,11 @@ void BasicTweenApp::tweenToMouse()
 	
 	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
 	// Tween a Vec3f all at once with custom easing
-	TweenRef tween = std::shared_ptr<Tweenable>( new Tween<Vec3f>( &mPos, mousePos, 1.25, Back::easeOut ) );
-	TweenManager::instance().addTween( tween );
-	
+	TweenRef newTween = TweenManager::instance().replace( &mPos, mousePos, 1.25, Back::easeOut );
 	
 	// Tween our floats
-	tween = TweenRef( new Tween<float>( &mX, mousePos.x, 2.0, Back::easeInOut ) );
-	TweenManager::instance().addTween( tween );
-	
-	tween = TweenRef( new Tween<float>( &mY, mousePos.y, 1.5, Back::easeInOut ) );
-	TweenManager::instance().addTween( tween );
+	TweenManager::instance().replace( &mX, mousePos.x, 2.0, Back::easeInOut );
+	TweenManager::instance().replace( &mY, mousePos.y, 1.5, Back::easeInOut );
 }
 
 //KeyEvents

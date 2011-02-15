@@ -8,6 +8,7 @@
  */
 
 #include "TweenManager.h"
+#include "cinder/app/App.h"
 
 using namespace cinder;
 using namespace cinder::tween;
@@ -16,6 +17,7 @@ typedef std::vector< TweenRef >::iterator t_iter;
 
 TweenManager::TweenManager()
 {
+	mCurrentTime = 0;
 	//privately instantiating...
 }
 
@@ -59,11 +61,49 @@ void TweenManager::step()
 
 void TweenManager::step( double timestep )
 {
+	mCurrentTime += timestep;
+
+	t_iter iter = mTweens.begin();
+
+	while (iter != mTweens.end()) {
+		(**iter).step( timestep );
+
+		if( (**iter).isComplete() )
+		{
+			iter = mTweens.erase(iter);
+		} else {
+			++iter;
+		}
+	}
+}
+
+TweenRef TweenManager::findTween( void *target )
+{
+	t_iter iter = mTweens.begin();
+	while( iter != mTweens.end() ) {
+		if( (*iter)->getTargetVoid() == target )
+			return *iter;
+		++iter;
+	}
+	
+	return TweenRef(); // failed returns null tween
+}
+
+void TweenManager::removeTween( TweenRef tween )
+{
+	t_iter iter = std::find( mTweens.begin(), mTweens.end(), tween );
+	if( iter != mTweens.end() )
+		mTweens.erase( iter );
+}
+
+void TweenManager::update( double timeDelta )
+{
+	mCurrentTime += timeDelta;
+	
 	t_iter iter = mTweens.begin();
 	
 	while (iter != mTweens.end()) {
-		
-		(**iter).step( timestep );
+		(**iter).update( mCurrentTime );
 		
 		if( (**iter).isComplete() )
 		{
