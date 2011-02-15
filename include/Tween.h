@@ -31,12 +31,14 @@ namespace cinder {
 			
 			//! change how the tween thinks about time
 			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
-			virtual void reverse(){ setTimeFunction(TimeBasis::reverse); }
-			virtual void loop(){ setTimeFunction(TimeBasis::repeat); }
-			virtual void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
+			void reverse(){ setTimeFunction(TimeBasis::reverse); }
+			void loop(){ setTimeFunction(TimeBasis::repeat); }
+			void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
 						
 			//! push back the tween's start time
-			virtual void delay( float amt ){};
+			void delay( double amt ){ mStartTime += amt; }
+			//! set the tween's start time
+			void setStartTime( double time ){ mStartTime = time; }
 			
 			//! change the duration of the tween
 			void setDuration( double duration ){ mDuration = duration; }
@@ -45,6 +47,7 @@ namespace cinder {
 			
 		protected:
 			double	mDuration;
+			double mStartTime;
 			void	*mTargetVoid;
 			// how we interpret time
 			double (*mTimeFunction)(double start, double duration);
@@ -117,11 +120,6 @@ namespace cinder {
 				}
 			}
 			
-			void delay(float amt)
-			{
-				mStartTime += amt;
-			}
-			
 			T* getTarget(){ return mTarget; }
 			double getStartTime(){ return mStartTime; }
 			bool isComplete(){ return mComplete; }
@@ -131,7 +129,6 @@ namespace cinder {
 			T mStartValue, mChange, mTargetValue;
 			
 			double mT;	// normalized time
-			double mStartTime;
 			bool mComplete;
 		};
 
