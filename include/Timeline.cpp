@@ -1,5 +1,5 @@
 /*
- *  TweenManager.cpp
+ *  Timeline.cpp
  *  BasicTween
  *
  *  Created by David Wicks on 5/27/10.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "TweenManager.h"
+#include "Timeline.h"
 #include "cinder/app/App.h"
 
 using namespace cinder;
@@ -15,24 +15,17 @@ using namespace cinder::tween;
 typedef std::vector< TweenRef >::iterator t_iter;
 
 
-TweenManager::TweenManager()
+Timeline::Timeline()
 {
 	mCurrentTime = 0;
-	//privately instantiating...
 }
 
-TweenManager& TweenManager::instance()
-{
-	static TweenManager instance;
-	return instance;
-}
-
-void TweenManager::step()
+void Timeline::step()
 {	// would like to use getAverageFps, but it doesn't work statically (yet)
 	step( 1.0 / app::getFrameRate() );
 }
 
-void TweenManager::step( double timestep )
+void Timeline::step( double timestep )
 {
 	mCurrentTime += timestep;
 	
@@ -42,7 +35,7 @@ void TweenManager::step( double timestep )
 	}
 }
 
-void TweenManager::stepTo( double time )
+void Timeline::stepTo( double time )
 {	
 	mCurrentTime = time;
 	
@@ -52,12 +45,12 @@ void TweenManager::stepTo( double time )
 	}
 }
 
-void TweenManager::clearTimeline()
+void Timeline::clearTimeline()
 {
 	mTweens.clear();	
 }
 
-void TweenManager::clearFinishedTweens()
+void Timeline::clearFinishedTweens()
 {
 	t_iter iter = mTweens.begin();
 	
@@ -71,12 +64,12 @@ void TweenManager::clearFinishedTweens()
 	}
 }
 
-void TweenManager::addTween( TweenRef tween)
+void Timeline::addTween( TweenRef tween)
 {
 	mTweens.push_back( tween );
 }
 
-TweenRef TweenManager::findTween( void *target )
+TweenRef Timeline::findTween( void *target )
 {
 	t_iter iter = mTweens.begin();
 	while( iter != mTweens.end() ) {
@@ -88,7 +81,7 @@ TweenRef TweenManager::findTween( void *target )
 	return TweenRef(); // failed returns null tween
 }
 
-void TweenManager::removeTween( TweenRef tween )
+void Timeline::removeTween( TweenRef tween )
 {
 	t_iter iter = std::find( mTweens.begin(), mTweens.end(), tween );
 	if( iter != mTweens.end() )

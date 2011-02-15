@@ -1,5 +1,5 @@
 /*
- *  TweenManager.h
+ *  Timeline.h
  *  BasicTween
  *
  *  Created by David Wicks on 5/27/10.
@@ -20,11 +20,10 @@
 namespace cinder {
 	namespace tween {
 			
-		class TweenManager {
+		class Timeline {
 		
 		public:
-			static TweenManager& instance();
-			
+			Timeline();			
 			//! add a tween to be managed
 			void addTween( TweenRef );
 			//! advance time based on target fps
@@ -59,7 +58,6 @@ namespace cinder {
 			//! remove completed tweens from the timeline
 			void clearFinishedTweens();
 		private:
-			TweenManager();
 			double					mCurrentTime;
 			std::vector< TweenRef > mTweens;
 		

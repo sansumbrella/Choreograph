@@ -32,6 +32,7 @@ private:
 	float mX, mY;
 	Vec3f mPos;
 	ColorA mColor;
+	Timeline mTimeline;
 };
 
 void BasicTweenApp::prepareSettings(Settings *settings)
@@ -54,7 +55,7 @@ void BasicTweenApp::setup()
 void BasicTweenApp::update()
 {
 	// step our animation forward
-	TweenManager::instance().step( 1.0 / 60.0 );
+	mTimeline.step( 1.0 / 60.0 );
 	// step() also works, it uses 1.0/app::getFrameRate()
 //	TweenManager::instance().step();
 }
@@ -88,12 +89,12 @@ void BasicTweenApp::playRandomTween()
 	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
 	
 	// Create our tween
-	TweenManager::instance().add( &mPos, randomPos, 2.0 );
+	mTimeline.add( &mPos, randomPos, 2.0 );
 	
 	// Tween our floats
 	randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
-	TweenManager::instance().add( &mX, randomPos.x, 2.0 );
-	TweenManager::instance().add( &mY, randomPos.y, 2.0 );
+	mTimeline.add( &mX, randomPos.x, 2.0 );
+	mTimeline.add( &mY, randomPos.y, 2.0 );
 }
 
 void BasicTweenApp::tweenToMouse()
@@ -102,11 +103,11 @@ void BasicTweenApp::tweenToMouse()
 	
 	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
 	// Tween a Vec3f all at once with custom easing
-	TweenRef newTween = TweenManager::instance().replace( &mPos, mousePos, 1.25, Back::easeOut );
+	TweenRef newTween = mTimeline.replace( &mPos, mousePos, 1.25, Back::easeOut );
 	
 	// Tween our floats
-	TweenManager::instance().replace( &mX, mousePos.x, 2.0, Back::easeInOut );
-	TweenManager::instance().replace( &mY, mousePos.y, 1.5, Back::easeInOut );
+	mTimeline.replace( &mX, mousePos.x, 2.0, Back::easeInOut );
+	mTimeline.replace( &mY, mousePos.y, 1.5, Back::easeInOut );
 }
 
 //KeyEvents
