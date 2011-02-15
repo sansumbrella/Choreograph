@@ -53,8 +53,8 @@ void BasicTweenApp::setup()
 
 void BasicTweenApp::update()
 {
-	//update all tweens in progress
-	TweenManager::instance().update();
+	// step our animation forward
+	TweenManager::instance().step( 1.0 / 30.0 );
 }
 
 void BasicTweenApp::draw()

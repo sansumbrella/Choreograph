@@ -24,17 +24,23 @@ namespace cinder {
 		class Tweenable {
 		public:
 			virtual ~Tweenable(){};
+			// update should be considered deprecated
 			virtual void update(){};
+			//! advance time in the animation
+			virtual void step( double timestep ) = 0;
+			//! is the animation finished?
 			virtual bool isComplete(){return true;}
 			
+			// these will likely be moved to the timeline/manager for control
 			virtual void reverse(){};
 			virtual void loop(){};
 			virtual void pingpong(){};
+			
 			virtual void useFrames(){};
 			virtual void jumpToFrame( int frame ){};
 			virtual void delay( float amt ){};
 			
-			//
+			//! change the duration of the tween
 			void setDuration(double duration){ mDuration=duration; }
 			
 			// todo
@@ -59,6 +65,7 @@ namespace cinder {
 				mChange = mTargetValue - mStartValue;
 				
 				mStartTime = app::getElapsedSeconds();
+				mCurrentTime = mStartTime;
 				mDuration = duration;
 				mT = 0.0;
 				mComplete = false;
@@ -75,6 +82,7 @@ namespace cinder {
 				mChange = mTargetValue - mStartValue;
 				
 				mStartTime = app::getElapsedSeconds();
+				mCurrentTime = mStartTime;
 				mDuration = duration;
 				mT = 0.0;
 				mComplete = false;
@@ -85,16 +93,24 @@ namespace cinder {
 			
 			~Tween<T>(){}
 			
-			// this could be modified in the future to allow for a PathTween
 			virtual void update()
 			{
 				mT = mTimeFunction( mStartTime, mDuration );
 				updateTarget();	
 			}
 			
+			//! advance our tween the specified amount of time
+			//! this setup allows us to step backward, as well
+			virtual void step( double timestep )
+			{
+				mCurrentTime += timestep;
+				mT = lmap( mCurrentTime, mStartTime, mStartTime + mDuration, 0.0, 1.0 );
+				updateTarget();
+			}
+			
 			virtual void updateTarget()
 			{
-				if( mT < 1.0 && mT > 0.0 )
+				if( mT > 0.0 && mT < 1.0 )
 				{
 					*mTarget = mStartValue + mChange * mEaseFunction( mT );
 				} else if ( mT >= 1.0 )
@@ -128,6 +144,7 @@ namespace cinder {
 			void delay(float amt)
 			{
 				mStartTime += amt;
+				mCurrentTime = mStartTime;
 			}
 			
 			void jumpToFrame(int frame)
@@ -156,6 +173,7 @@ namespace cinder {
 			T mStartValue, mChange, mTargetValue;
 			
 			double mT;	// normalized time
+			double mCurrentTime; // time in seconds or frames
 			double mStartTime;
 			bool mComplete;
 			

@@ -26,12 +26,14 @@ namespace cinder {
 		public:
 			static TweenManager& instance();
 			
+			//! add a tween to be managed
 			void addTween( TweenRef );
+			//! advance time
+			void step( double timestep );
 			
 			// I need a strategy for comparing tweens that works across types (perhaps an uid for each tween)
 			//void removeTween( Tweenable* tween );
 			void cancelAllTweens();
-			void update();
 			void cleanup();
 			void jumpToFrame(int frame);
 		private:

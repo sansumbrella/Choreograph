@@ -59,13 +59,13 @@ void TweenManager::addTween( TweenRef tween)
 	mTweens.push_back( tween );
 }
 
-void TweenManager::update()
+void TweenManager::step( double timestep )
 {
 	t_iter iter = mTweens.begin();
 	
 	while (iter != mTweens.end()) {
 		
-		(**iter).update();
+		(**iter).step( timestep );
 		
 		if( (**iter).isComplete() )
 		{
