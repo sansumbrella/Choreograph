@@ -16,6 +16,7 @@ typedef std::vector< TweenRef >::iterator t_iter;
 
 TweenManager::TweenManager()
 {
+	mCurrentTime = 0;
 	//privately instantiating...
 }
 
@@ -59,13 +60,34 @@ void TweenManager::addTween( TweenRef tween)
 	mTweens.push_back( tween );
 }
 
-void TweenManager::update()
+TweenRef TweenManager::findTween( void *target )
 {
+	t_iter iter = mTweens.begin();
+	while( iter != mTweens.end() ) {
+		if( (*iter)->getTargetVoid() == target )
+			return *iter;
+		++iter;
+	}
+	
+	return TweenRef(); // failed returns null tween
+}
+
+void TweenManager::removeTween( TweenRef tween )
+{
+	t_iter iter = std::find( mTweens.begin(), mTweens.end(), tween );
+	if( iter != mTweens.end() )
+		mTweens.erase( iter );
+}
+
+void TweenManager::update( double timeDelta )
+{
+	mCurrentTime += timeDelta;
+	
 	t_iter iter = mTweens.begin();
 	
 	while (iter != mTweens.end()) {
 		
-		(**iter).update();
+		(**iter).update( mCurrentTime );
 		
 		if( (**iter).isComplete() )
 		{

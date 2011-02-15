@@ -14,7 +14,6 @@
 #include "Tween.h"
 #include "cinder/Cinder.h"
 #include <vector>
-#include "cinder/app/App.h"
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 
@@ -26,16 +25,34 @@ namespace cinder {
 		public:
 			static TweenManager& instance();
 			
-			void addTween( TweenRef );
+			template<typename T>
+			TweenRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
+				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+				return mTweens.back();
+			}
+
+			template<typename T>
+			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
+				TweenRef existingTween = findTween( target );
+				if( existingTween )
+					removeTween( existingTween );
+				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+				return mTweens.back();
+			}
+	
+			void		addTween( TweenRef );
+			TweenRef	findTween( void *target );
+			void		removeTween( TweenRef tween );
 			
 			// I need a strategy for comparing tweens that works across types (perhaps an uid for each tween)
 			//void removeTween( Tweenable* tween );
 			void cancelAllTweens();
-			void update();
+			void update( double timeDelta );
 			void cleanup();
 			void jumpToFrame(int frame);
 		private:
 			TweenManager();
+			double					mCurrentTime;
 			std::vector< TweenRef > mTweens;
 		
 		};
