@@ -20,7 +20,7 @@
 namespace cinder {
 	namespace tween {
 			
-		class Timeline {
+		class Timeline : public Sequenceable {
 		
 		public:
 			Timeline();			

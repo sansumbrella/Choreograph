@@ -15,12 +15,13 @@
 #include "cinder/Cinder.h"
 #include "Easing.h"
 #include "TimeBasis.h"
+#include "Sequenceable.h"
 
 namespace cinder {
 	namespace tween {
 		
 		//Non-templated base class to allow us to have a list containing all types of Tween
-		class Tweenable {
+		class Tweenable : public Sequenceable {
 		public:
 			Tweenable( void *data ) : mTargetVoid( data ) {}
 			virtual ~Tweenable(){};
