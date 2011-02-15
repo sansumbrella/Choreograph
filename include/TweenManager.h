@@ -34,7 +34,7 @@ namespace cinder {
 			void step( double timestep );
 			//! go to a specific time
 			void jumpToTime( double time );
-			//! go to a specific part of the timeline (TODO)
+			//! TODO: go to a specific part of the timeline
 			void jumpToPercentCompletion( double percent ){};
 			
 			// I need a strategy for comparing tweens that works across types (perhaps an uid for each tween)
