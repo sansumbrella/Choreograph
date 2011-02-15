@@ -5,8 +5,12 @@ Status
 Templated tweens support all types which implement + and * operations
 Easing functions are implemented, and can be used as a stand-alone module
 Memory management through shared_ptr
+Flexible step() method allows for user-controlled time
+User-controlled time makes slow-mo and reverse simple
 
 To Do:
 callbacks on tween complete
+Reversing, ping-ponging, and looping with new step() time
+proper sequencing of tweens in timeline by start time (current model is fragile)
 actions that can live on timelines
 support for chaining and sequencing tweens
