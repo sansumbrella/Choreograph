@@ -12,6 +12,7 @@
 
 #pragma once
 #include "Tween.h"
+#include "Cue.h"
 #include "cinder/Cinder.h"
 #include <vector>
 #include "cinder/Color.h"
@@ -32,6 +33,13 @@ namespace cinder {
 			void step( double timestep );
 			//! go to a specific time
 			void stepTo( double time );
+			
+			//! add a cue to the timeline
+			CueRef add( boost::function<void ()> action, double atTime )
+			{
+				mCues.push_back( CueRef( new Cue( action, atTime ) ) );
+				return mCues.back();
+			}
 			
 			//! create a new tween and add it to the list
 			template<typename T>
@@ -62,7 +70,7 @@ namespace cinder {
 		private:
 			double					mCurrentTime;
 			std::vector< TweenRef > mTweens;
-		
+			std::vector< CueRef > mCues;
 		};
 	}
 

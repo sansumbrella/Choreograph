@@ -3,6 +3,7 @@
 
 #include "Tweening.h"
 
+using namespace std;
 using namespace ci;
 using namespace ci::app;
 using namespace ci::tween;
@@ -27,6 +28,7 @@ public:
 	void resize( int width, int height );
 	
 	void fileDrop( FileDropEvent event );
+	void respond();
 	
 private:	
 	float mX, mY;
@@ -53,6 +55,8 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
+	mTimeline.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
+	
 }
 
 void BasicTweenApp::update()
@@ -73,6 +77,11 @@ void BasicTweenApp::draw()
 	gl::color(Color::white());
 	gl::drawSolidCircle( Vec2i(mPos.x, mPos.y), 15.0f );
 	
+}
+
+void BasicTweenApp::respond()
+{
+	console() << "Tween completed." << endl;
 }
 
 void BasicTweenApp::resize(int width, int height)
