@@ -13,8 +13,8 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/CinderMath.h"
 #include "Easing.h"
-#include "TimeBasis.h"
 #include "Sequenceable.hpp"
 
 namespace cinder {
@@ -54,7 +54,7 @@ namespace cinder {
 		class Tween : public Tweenable{
 		public:
 			// build a tween with a target, target value, duration, and optional ease function
-			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
 				: Tweenable( target )
 			{
 				mTarget = target;
@@ -68,10 +68,9 @@ namespace cinder {
 				mComplete = false;
 				
 				mEaseFunction = easeFunction;
-				mTimeFunction = timeFunction;
 			}
 			
-			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear )
+			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
 				: Tweenable( target )
 			{
 				mTarget = target;
@@ -85,20 +84,19 @@ namespace cinder {
 				mComplete = false;
 				
 				mEaseFunction = easeFunction;
-				mTimeFunction = timeFunction;
 			}
 			
 			~Tween<T>(){}
 			
-			// this could be modified in the future to allow for a PathTween
 			virtual void stepTo( double newTime )
 			{
-				mT = mTimeFunction( newTime - mStartTime, mDuration );
+				mT = math<double>::min( (newTime - mStartTime) / mDuration, 1 );
 				if( newTime < mStartTime + mDuration ){ mComplete = false; }
 				
 				updateTarget();	
 			}
 			
+			// this could be modified in the future to allow for a PathTween
 			virtual void updateTarget()
 			{
 				if( ! mComplete )
@@ -128,12 +126,5 @@ namespace cinder {
 			double mT;	// normalized time
 			bool mComplete;
 		};
-
-		/*
-		 * Debating whether to add some predefined tween types
-		 *
-		typedef Tween<float> Tweenf;
-		typedef Tween<Vec2f> Tween2f; 
-		//*/
 	} //tween
 } //cinder

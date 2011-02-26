@@ -43,18 +43,18 @@ namespace cinder {
 			
 			//! create a new tween and add it to the list
 			template<typename T>
-			SeqRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
-				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+			SeqRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
 				return ( mActions.back() );
 			}
 			
 			//! replace an existing tween
 			template<typename T>
-			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
+			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
 				TweenRef existingTween = findTween( target );
 				if( existingTween )
 					remove( existingTween );
-				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
 				return std::static_pointer_cast<TweenRef>( mActions.back() );
 			}
 			
