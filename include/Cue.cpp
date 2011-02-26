@@ -17,8 +17,7 @@ namespace cinder
 		Cue::Cue( boost::function<void ()> action, double atTime ):
 		mSignal(),
 		mTime( atTime ),
-		mLastTime( 0 ),
-		mReversed( false )
+		mLastTime( 0 )
 		{
 			mSignal.connect( action );
 		}

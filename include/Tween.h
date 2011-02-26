@@ -31,23 +31,15 @@ namespace cinder {
 			
 			//! change how the tween thinks about time
 			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
-			void reverse(){ setTimeFunction(TimeBasis::reverse); }
-			void loop(){ setTimeFunction(TimeBasis::repeat); }
-			void pingpong(){ setTimeFunction(TimeBasis::pingpong); }
-						
-			//! push back the tween's start time
-			void delay( double amt ){ mStartTime += amt; }
-			//! set the tween's start time
-			void setStartTime( double time ){ mStartTime = time; }
-			
-			//! change the duration of the tween
-			void setDuration( double duration ){ mDuration = duration; }
 			
 			const void	*getTargetVoid() const { return mTargetVoid; }
+			//! change the duration of the tween
+			void setDuration( double duration ){ mDuration = duration; }
+			//! returns the duration of the sequenceable item
+			virtual double getDuration(){ return 0; }
 			
 		protected:
 			double	mDuration;
-			double mStartTime;
 			void	*mTargetVoid;
 			// how we interpret time
 			double (*mTimeFunction)(double start, double duration);

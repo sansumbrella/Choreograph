@@ -1,5 +1,6 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Rand.h"
 
 #include "Choreograph.h"
 
@@ -19,6 +20,7 @@ class DevelopmentApp : public AppBasic {
 private:
 	Sequence mSequence;
 	Color	mBackgroundColor;
+	Vec2f	mPos;
 };
 
 void DevelopmentApp::setup()
@@ -26,16 +28,19 @@ void DevelopmentApp::setup()
 	
 	mBackgroundColor = Color( CM_HSV, 0, 0, 0 );
 	mSequence.add( boost::bind( &DevelopmentApp::respond, this ), 2.0 );
+	mSequence.add( &mPos, Vec2f( getWindowWidth(), getWindowHeight() ),
+				  2.0f, Quadratic::easeInOut );
 }
 
 void DevelopmentApp::respond()
 {
-	mBackgroundColor = Color( CM_HSV, 0.5f, 0.8f, 0.3f );
+	mBackgroundColor = Color( CM_HSV, Rand::randFloat(0.0f,0.4f), 0.8f, 0.7f );
 	console() << "Cue point was reached." << endl;
 }
 
 void DevelopmentApp::mouseDown( MouseEvent event )
 {
+	mSequence.reset();
 }
 
 void DevelopmentApp::update()
@@ -47,6 +52,8 @@ void DevelopmentApp::draw()
 {
 	// clear out the window with black
 	gl::clear( mBackgroundColor ); 
+	gl::color( Color::white() );
+	gl::drawSolidCircle( mPos, 24.0f );
 }
 
 

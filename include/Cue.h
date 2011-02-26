@@ -29,7 +29,6 @@ namespace cinder
 			boost::signals2::signal<void ()> mSignal;
 			double mTime;
 			double mLastTime;
-			bool mReversed;
 		};
 		
 		typedef boost::shared_ptr<Cue> CueRef;
