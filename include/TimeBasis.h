@@ -10,6 +10,7 @@
  *	They return a value in the range [0,1.0]
  *	
  *	They enable looping, ping-ponging, and reversing of tweens
+ *  N.B. These are no longer used by the Choreograph library
  */
 
 #pragma once
