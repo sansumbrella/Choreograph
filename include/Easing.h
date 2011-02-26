@@ -18,6 +18,7 @@
  */
 
 #pragma once
+#include "cinder/CinderMath.h"
 
 namespace cinder {
 
