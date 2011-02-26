@@ -23,18 +23,27 @@ namespace cinder {
 
 	namespace tween {
 		
-		struct Quadratic {
-			static double easeIn( double t ){
-				//c*(t/=d)*t + b;
+		
+		struct Linear
+		{
+			static double noEase( double t )
+			{
+				return t;
+			}
+		};
+		
+		struct Quadratic
+		{
+			static double easeIn( double t )
+			{
 				return t * t;
 			}
-			static double easeOut( double t ){ 
-				//-c *(t/=d)*(t-2) + b;
+			static double easeOut( double t )
+			{ 
 				return - t * (t-2);
 			}
-			static double easeInOut( double t ){
-				//if ((t/=d*0.5) < 1) return c*0.5*t*t + b;
-				//return -c*0.5 * ((--t)*(t-2) - 1) + b;
+			static double easeInOut( double t )
+			{
 				t *= 2;
 				if (t < 1) return 0.5 * t * t;
 				
@@ -43,24 +52,21 @@ namespace cinder {
 			}
 		};
 		
-		
-		struct Linear {
-			static double noEase( double t ) {
-				return t;
-			}
-		};
-		
-		struct Back {
+		struct Back
+		{
 			const static float ks = 1.70158;
 			
-			static double easeIn( double t ){
+			static double easeIn( double t )
+			{
 				return t * t * ((ks+1)*t - ks);
 			}
-			static double easeOut( double t ){ 
+			static double easeOut( double t )
+			{ 
 				t -= 1;
 				return (t*t*((ks+1)*t + ks) + 1);
 			}
-			static double easeInOut( double t ){
+			static double easeInOut( double t )
+			{
 				t *= 2;
 				float s = ks * 1.525;
 				
