@@ -1,6 +1,6 @@
 /*
  *  Sequenceable.h
- *  BasicTween
+ *  sc-Choreograph
  *
  *  Created by David Wicks on 2/14/11.
  *  Copyright 2011 David Wicks. All rights reserved.
@@ -8,6 +8,7 @@
  */
 
 #pragma once
+#include "cinder/Cinder.h"
 
 namespace cinder
 {
@@ -29,6 +30,8 @@ namespace cinder
 			//! returns the duration of the sequenceable item
 			virtual double getDuration(){ return 0; }
 		};
+		
+		typedef std::shared_ptr<Sequenceable> SeqRef;
 	}
 }
 

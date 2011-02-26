@@ -25,8 +25,8 @@ namespace cinder {
 		
 		public:
 			Sequence();			
-			//! add a tween to be managed
-			void addTween( TweenRef );
+			//! add an action to the sequence
+			void add( SeqRef );
 			//! advance time based on target fps
 			void step();
 			//! advance time a specified amount
@@ -35,17 +35,17 @@ namespace cinder {
 			void stepTo( double time );
 			
 			//! add a cue to the Sequence
-			CueRef add( boost::function<void ()> action, double atTime )
+			SeqRef add( boost::function<void ()> action, double atTime )
 			{
-				mCues.push_back( CueRef( new Cue( action, atTime ) ) );
-				return mCues.back();
+				mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
+				return mActions.back();
 			}
 			
 			//! create a new tween and add it to the list
 			template<typename T>
 			TweenRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
-				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
-				return mTweens.back();
+				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+				return std::static_pointer_cast<TweenRef>( mActions.back() );
 			}
 			
 			//! replace an existing tween
@@ -53,13 +53,13 @@ namespace cinder {
 			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut, double (*timeFunction)(double s, double d)=TimeBasis::linear ) {
 				TweenRef existingTween = findTween( target );
 				if( existingTween )
-					removeTween( existingTween );
-				mTweens.push_back( TweenRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
-				return mTweens.back();
+					remove( existingTween );
+				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction, timeFunction ) ) );
+				return std::static_pointer_cast<TweenRef>( mActions.back() );
 			}
 			
 			TweenRef	findTween( void *target );
-			void		removeTween( TweenRef tween );
+			void		remove( SeqRef tween );
 			
 			//! remove all tweens from the Sequence
 			void clearSequence();
@@ -69,8 +69,7 @@ namespace cinder {
 			void reset(){ stepTo( 0.0 ); }
 		private:
 			double					mCurrentTime;
-			std::vector< TweenRef > mTweens;
-			std::vector< CueRef > mCues;
+			std::vector< SeqRef >	mActions;
 		};
 	}
 

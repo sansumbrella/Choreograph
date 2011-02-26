@@ -12,9 +12,7 @@
 
 using namespace cinder;
 using namespace cinder::tween;
-typedef std::vector< TweenRef >::iterator t_iter;
-typedef std::vector< CueRef >::iterator c_iter;
-
+typedef std::vector< SeqRef >::iterator s_iter;
 
 Sequence::Sequence()
 {
@@ -30,12 +28,7 @@ void Sequence::step( double timestep )
 {
 	mCurrentTime += timestep;
 	
-	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
-	{
-		(**iter).stepTo( mCurrentTime );
-	}
-	
-	for( c_iter iter = mCues.begin(); iter != mCues.end(); ++iter )
+	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter )
 	{
 		(**iter).stepTo( mCurrentTime );
 	}
@@ -45,58 +38,53 @@ void Sequence::stepTo( double time )
 {	
 	mCurrentTime = time;
 	
-	for( t_iter iter = mTweens.begin(); iter != mTweens.end(); ++iter )
+	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter )
 	{
 		(**iter).stepTo( time );
-	}
-	
-	for( c_iter iter = mCues.begin(); iter != mCues.end(); ++iter )
-	{
-		(**iter).stepTo( mCurrentTime );
 	}
 }
 
 void Sequence::clearSequence()
 {
-	mTweens.clear();	
+	mActions.clear();	
 }
 
 void Sequence::clearFinishedTweens()
 {
-	t_iter iter = mTweens.begin();
+	s_iter iter = mActions.begin();
 	
-	while (iter != mTweens.end()) {		
+	while (iter != mActions.end()) {		
 		if( (**iter).isComplete() )
 		{
-			iter = mTweens.erase(iter);
+			iter = mActions.erase(iter);
 		} else {
 			++iter;
 		}
 	}
 }
 
-void Sequence::addTween( TweenRef tween)
+void Sequence::add( SeqRef action )
 {
-	mTweens.push_back( tween );
+	mActions.push_back( action );
 }
 
 TweenRef Sequence::findTween( void *target )
 {
-	t_iter iter = mTweens.begin();
-	while( iter != mTweens.end() ) {
-		if( (*iter)->getTargetVoid() == target )
-			return *iter;
+	s_iter iter = mActions.begin();
+	while( iter != mActions.end() ) {
+		//if( (*iter)->getTargetVoid() == target )
+		//	return *iter;
 		++iter;
 	}
 	
 	return TweenRef(); // failed returns null tween
 }
 
-void Sequence::removeTween( TweenRef tween )
+void Sequence::remove( SeqRef tween )
 {
-	t_iter iter = std::find( mTweens.begin(), mTweens.end(), tween );
-	if( iter != mTweens.end() )
-		mTweens.erase( iter );
+	s_iter iter = std::find( mActions.begin(), mActions.end(), tween );
+	if( iter != mActions.end() )
+		mActions.erase( iter );
 }
 
 
