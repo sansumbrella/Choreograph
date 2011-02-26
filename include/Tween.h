@@ -23,7 +23,7 @@ namespace cinder {
 		//Non-templated base class to allow us to have a list containing all types of Tween
 		class Tweenable : public Sequenceable {
 		public:
-			Tweenable( void *data ) : mTargetVoid( data ) {}
+			Tweenable( void *data ) : Sequenceable( data ) {}
 			virtual ~Tweenable(){};
 			
 			//! change how the tween moves through time
@@ -32,7 +32,6 @@ namespace cinder {
 			//! change how the tween thinks about time
 			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
 			
-			const void	*getTargetVoid() const { return mTargetVoid; }
 			//! change the duration of the tween
 			void setDuration( double duration ){ mDuration = duration; }
 			//! returns the duration of the sequenceable item
@@ -40,7 +39,6 @@ namespace cinder {
 			
 		protected:
 			double	mDuration;
-			void	*mTargetVoid;
 			// how we interpret time
 			double (*mTimeFunction)(double start, double duration);
 			// how we move between points in time

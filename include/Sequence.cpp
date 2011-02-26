@@ -68,21 +68,21 @@ void Sequence::add( SeqRef action )
 	mActions.push_back( action );
 }
 
-TweenRef Sequence::findTween( void *target )
+SeqRef Sequence::find( void *target )
 {
 	s_iter iter = mActions.begin();
 	while( iter != mActions.end() ) {
-		//if( (*iter)->getTargetVoid() == target )
-		//	return *iter;
+		if( (*iter)->getTargetVoid() == target )
+			return *iter;
 		++iter;
 	}
 	
-	return TweenRef(); // failed returns null tween
+	return SeqRef(); // failed returns null tween
 }
 
-void Sequence::remove( SeqRef tween )
+void Sequence::remove( SeqRef action )
 {
-	s_iter iter = std::find( mActions.begin(), mActions.end(), tween );
+	s_iter iter = std::find( mActions.begin(), mActions.end(), action );
 	if( iter != mActions.end() )
 		mActions.erase( iter );
 }

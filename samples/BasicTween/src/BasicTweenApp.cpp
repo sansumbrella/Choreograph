@@ -1,7 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Rand.h"
 
-#include "Tweening.h"
+#include "Choreograph.h"
 
 using namespace std;
 using namespace ci;
@@ -35,7 +35,7 @@ private:
 	float mStep;
 	Vec3f mPos;
 	ColorA mColor;
-	Timeline mTimeline;
+	Sequence mSequence;
 };
 
 void BasicTweenApp::prepareSettings(Settings *settings)
@@ -55,14 +55,14 @@ void BasicTweenApp::setup()
 	mColor = ColorA( 0.5, 0.55, 0.52, 1.0 );
 	playRandomTween();
 	
-	mTimeline.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
+	mSequence.add( boost::bind( &BasicTweenApp::respond, this ), 2.0 );
 	
 }
 
 void BasicTweenApp::update()
 {
 	// step our animation forward
-	mTimeline.step( mStep );
+	mSequence.step( mStep );
 	// step() also works, it uses 1.0/app::getFrameRate()
 //	TweenManager::instance().step();
 }
@@ -98,33 +98,33 @@ void BasicTweenApp::mouseDown( MouseEvent event )
 void BasicTweenApp::playRandomTween()
 {
 	// Reset the timeline to zero
-	mTimeline.reset();
+	mSequence.reset();
 	
 	// Tween a Vec3f
 	Vec3f randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
 	
 	// Create our tween
-	mTimeline.add( &mPos, randomPos, 2.0 );
+	mSequence.add( &mPos, randomPos, 2.0 );
 	
 	// Tween our floats
 	randomPos = Vec3f(Rand::randFloat(getWindowWidth()), Rand::randFloat(getWindowHeight()), 0.0f);
-	mTimeline.add( &mX, randomPos.x, 2.0 );
-	mTimeline.add( &mY, randomPos.y, 2.0 );
+	mSequence.add( &mX, randomPos.x, 2.0 );
+	mSequence.add( &mY, randomPos.y, 2.0 );
 }
 
 void BasicTweenApp::tweenToMouse()
 {
 	// Reset the timeline to zero
-	mTimeline.reset();
+	mSequence.reset();
 	
 	// Move our properties to the mouse position with with different easing
 	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
 	// Tween a Vec3f all at once with custom easing
-	TweenRef newTween = mTimeline.replace( &mPos, mousePos, 1.25, Back::easeOut );
+	mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
 	
 	// Tween our floats
-	mTimeline.replace( &mX, mousePos.x, 2.0, Back::easeInOut );
-	mTimeline.replace( &mY, mousePos.y, 1.5, Back::easeInOut );
+	mSequence.replace( &mX, mousePos.x, 2.0, Back::easeInOut );
+	mSequence.replace( &mY, mousePos.y, 1.5, Back::easeInOut );
 }
 
 //KeyEvents
@@ -132,7 +132,7 @@ void BasicTweenApp::keyDown( KeyEvent event )
 {
 	switch( event.getChar() ){
 		case 'r':
-			mTimeline.reset();
+			mSequence.reset();
 			break;
 		case 't':
 			mStep *= -1;

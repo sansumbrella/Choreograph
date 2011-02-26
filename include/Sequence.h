@@ -50,15 +50,15 @@ namespace cinder {
 			
 			//! replace an existing tween
 			template<typename T>
-			TweenRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
-				TweenRef existingTween = findTween( target );
-				if( existingTween )
-					remove( existingTween );
+			SeqRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				SeqRef existingAction = find( target );
+				if( existingAction )
+					remove( existingAction );
 				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
-				return std::static_pointer_cast<TweenRef>( mActions.back() );
+				return mActions.back();
 			}
 			
-			TweenRef	findTween( void *target );
+			SeqRef		find( void *target );
 			void		remove( SeqRef tween );
 			
 			//! remove all tweens from the Sequence

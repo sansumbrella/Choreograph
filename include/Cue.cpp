@@ -15,6 +15,7 @@ namespace cinder
 	namespace tween
 	{
 		Cue::Cue( boost::function<void ()> action, double atTime ):
+		Sequenceable( &action ),
 		mSignal(),
 		mTime( atTime ),
 		mLastTime( 0 )

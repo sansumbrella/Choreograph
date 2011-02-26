@@ -18,10 +18,14 @@ namespace cinder
 		class Sequenceable
 		{
 		public:
-			Sequenceable():
+			Sequenceable( void *data=0 ):
+			mTargetVoid( data ),
 			mReversed(false)
 			{}
 			virtual ~Sequenceable(){};
+			
+			const void	*getTargetVoid() const { return mTargetVoid; }
+			
 			//! advance time a specified amount
 			virtual void step( double timestep ){};
 			//! go to a specific time
@@ -44,7 +48,9 @@ namespace cinder
 		protected:
 			double mStartTime;
 			bool mReversed;
+			
 		private:
+			void	*mTargetVoid;
 		};
 		
 		typedef std::shared_ptr<Sequenceable> SeqRef;
