@@ -1,16 +1,18 @@
 sc-Choreograph
-A simple animation and timing library intended for use with the Cinder framework.
+A simple animation and timing library intended for use with the Cinder framework. Initial inspiration came from the TweenMax library for AS3.
 
 Status
+Tweens and Cues are part of a Sequence, which is the primary interface for users
 Templated tweens support all types which implement + and * operations
-Easing functions are implemented, and can be used as a stand-alone module
+Cues can call any boost::function<void ()> at a chosen point in the Sequence
+Easing functions integrated, and can be used as a stand-alone module
 Memory management through shared_ptr
 Flexible step() method allows for user-controlled time
-Looping, ping-ponging, and reversing of tweens
-Tweens live on a Timeline, which is the primary interface for users
+
+Untested
+Sequences can be nested in each other
 
 To Do:
 callbacks on tween complete
-callbacks on timeline complete (maybe timelines only, and they should be considered the atomic unit)
-actions that can live on timelines but aren't tweens (callbacks at a given time)
+Looping, ping-ponging, and reversing of tweens
 support for sequencing tweens of a single variable
