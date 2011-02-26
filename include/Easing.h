@@ -210,22 +210,23 @@ namespace cinder {
 		};
 		
 		struct Back
-		{
-			const static float ks = 1.70158;
-			
+		{			
 			static double easeIn( double t )
 			{
+				double ks = 1.70158;
 				return t * t * ((ks+1)*t - ks);
 			}
 			static double easeOut( double t )
 			{ 
+				double ks = 1.70158;
 				t -= 1;
 				return (t*t*((ks+1)*t + ks) + 1);
 			}
 			static double easeInOut( double t )
 			{
+				double ks = 1.70158;
 				t *= 2;
-				float s = ks * 1.525;
+				double s = ks * 1.525;
 				
 				if (t < 1) return 0.5*(t*t*(((s)+1)*t - s));
 				return 0.5*((t-=2)*t*(((s)+1)*t + s) + 2);
