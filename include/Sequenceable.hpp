@@ -13,7 +13,7 @@ namespace cinder
 {
 	namespace tween
 	{
-		//! Base interface for anything that can go on a timeline
+		//! Base interface for anything that can go on a Sequence
 		class Sequenceable
 		{
 		public:

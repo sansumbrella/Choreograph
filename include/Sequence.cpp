@@ -1,5 +1,5 @@
 /*
- *  Timeline.cpp
+ *  Sequence.cpp
  *  BasicTween
  *
  *  Created by David Wicks on 5/27/10.
@@ -7,7 +7,7 @@
  *
  */
 
-#include "Timeline.h"
+#include "Sequence.h"
 #include "cinder/app/App.h"
 
 using namespace cinder;
@@ -16,17 +16,17 @@ typedef std::vector< TweenRef >::iterator t_iter;
 typedef std::vector< CueRef >::iterator c_iter;
 
 
-Timeline::Timeline()
+Sequence::Sequence()
 {
 	mCurrentTime = 0;
 }
 
-void Timeline::step()
+void Sequence::step()
 {	// would like to use getAverageFps, but it doesn't work statically (yet)
 	step( 1.0 / app::getFrameRate() );
 }
 
-void Timeline::step( double timestep )
+void Sequence::step( double timestep )
 {
 	mCurrentTime += timestep;
 	
@@ -41,7 +41,7 @@ void Timeline::step( double timestep )
 	}
 }
 
-void Timeline::stepTo( double time )
+void Sequence::stepTo( double time )
 {	
 	mCurrentTime = time;
 	
@@ -56,12 +56,12 @@ void Timeline::stepTo( double time )
 	}
 }
 
-void Timeline::clearTimeline()
+void Sequence::clearSequence()
 {
 	mTweens.clear();	
 }
 
-void Timeline::clearFinishedTweens()
+void Sequence::clearFinishedTweens()
 {
 	t_iter iter = mTweens.begin();
 	
@@ -75,12 +75,12 @@ void Timeline::clearFinishedTweens()
 	}
 }
 
-void Timeline::addTween( TweenRef tween)
+void Sequence::addTween( TweenRef tween)
 {
 	mTweens.push_back( tween );
 }
 
-TweenRef Timeline::findTween( void *target )
+TweenRef Sequence::findTween( void *target )
 {
 	t_iter iter = mTweens.begin();
 	while( iter != mTweens.end() ) {
@@ -92,7 +92,7 @@ TweenRef Timeline::findTween( void *target )
 	return TweenRef(); // failed returns null tween
 }
 
-void Timeline::removeTween( TweenRef tween )
+void Sequence::removeTween( TweenRef tween )
 {
 	t_iter iter = std::find( mTweens.begin(), mTweens.end(), tween );
 	if( iter != mTweens.end() )

@@ -1,5 +1,5 @@
 /*
- *  Timeline.h
+ *  Sequence.h
  *  BasicTween
  *
  *  Created by David Wicks on 5/27/10.
@@ -21,10 +21,10 @@
 namespace cinder {
 	namespace tween {
 			
-		class Timeline : public Sequenceable {
+		class Sequence : public Sequenceable {
 		
 		public:
-			Timeline();			
+			Sequence();			
 			//! add a tween to be managed
 			void addTween( TweenRef );
 			//! advance time based on target fps
@@ -34,7 +34,7 @@ namespace cinder {
 			//! go to a specific time
 			void stepTo( double time );
 			
-			//! add a cue to the timeline
+			//! add a cue to the Sequence
 			CueRef add( boost::function<void ()> action, double atTime )
 			{
 				mCues.push_back( CueRef( new Cue( action, atTime ) ) );
@@ -61,9 +61,9 @@ namespace cinder {
 			TweenRef	findTween( void *target );
 			void		removeTween( TweenRef tween );
 			
-			//! remove all tweens from the timeline
-			void clearTimeline();
-			//! remove completed tweens from the timeline
+			//! remove all tweens from the Sequence
+			void clearSequence();
+			//! remove completed tweens from the Sequence
 			void clearFinishedTweens();
 			//! reset time to zero
 			void reset(){ stepTo( 0.0 ); }

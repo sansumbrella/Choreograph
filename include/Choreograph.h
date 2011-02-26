@@ -12,7 +12,7 @@
 
 #pragma once
 
+#include "Sequence.h"
 #include "Tween.h"
-#include "Timeline.h"
-#include "TimeBasis.h"
+#include "Cue.h"
 #include "Easing.h"

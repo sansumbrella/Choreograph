@@ -15,7 +15,7 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00BAE65A0E7ED9C10018A608 /* BasicTweenApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* BasicTweenApp.cpp */; };
 		00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00CCAF14116A9FEE008396D5 /* CinderApp.icns */; };
-		1507352911AF3F810044CD4E /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1507352811AF3F810044CD4E /* Timeline.cpp */; };
+		1507352911AF3F810044CD4E /* Sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1507352811AF3F810044CD4E /* Sequence.cpp */; };
 		1547BE7D131781C8002DCCEA /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1547BE7C131781C8002DCCEA /* Cue.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -34,10 +34,10 @@
 		00CCAF14116A9FEE008396D5 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = CinderApp.icns; sourceTree = SOURCE_ROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
-		1507352611AF3F740044CD4E /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
-		1507352811AF3F810044CD4E /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
+		1507352611AF3F740044CD4E /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
+		1507352811AF3F810044CD4E /* Sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sequence.cpp; sourceTree = "<group>"; };
 		1507354B11AF45650044CD4E /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
-		150736A111AF65340044CD4E /* Tweening.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tweening.h; sourceTree = "<group>"; };
+		150736A111AF65340044CD4E /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
 		150CD5DB130A262200903270 /* Sequenceable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sequenceable.hpp; sourceTree = "<group>"; };
 		1518EA3411ADB089002C8C6A /* Tween.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tween.h; sourceTree = "<group>"; };
 		1547BE7B131781C8002DCCEA /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
@@ -128,9 +128,9 @@
 		1518EA1F11ADB025002C8C6A /* include */ = {
 			isa = PBXGroup;
 			children = (
-				150736A111AF65340044CD4E /* Tweening.h */,
-				1507352611AF3F740044CD4E /* Timeline.h */,
-				1507352811AF3F810044CD4E /* Timeline.cpp */,
+				150736A111AF65340044CD4E /* Choreograph.h */,
+				1507352611AF3F740044CD4E /* Sequence.h */,
+				1507352811AF3F810044CD4E /* Sequence.cpp */,
 				1518EA3411ADB089002C8C6A /* Tween.h */,
 				150CD5DB130A262200903270 /* Sequenceable.hpp */,
 				1507354B11AF45650044CD4E /* Easing.h */,
@@ -251,7 +251,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				00BAE65A0E7ED9C10018A608 /* BasicTweenApp.cpp in Sources */,
-				1507352911AF3F810044CD4E /* Timeline.cpp in Sources */,
+				1507352911AF3F810044CD4E /* Sequence.cpp in Sources */,
 				1547BE7D131781C8002DCCEA /* Cue.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -15,6 +15,8 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00BAE65A0E7ED9C10018A608 /* DevelopmentApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* DevelopmentApp.cpp */; };
 		00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00CCAF14116A9FEE008396D5 /* CinderApp.icns */; };
+		15FB5B6C13197A1000C56741 /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15FB5B6313197A1000C56741 /* Cue.cpp */; };
+		15FB5B6D13197A1000C56741 /* Sequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15FB5B6813197A1000C56741 /* Sequence.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
@@ -32,6 +34,15 @@
 		00CCAF14116A9FEE008396D5 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = SOURCE_ROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
+		15FB5B6313197A1000C56741 /* Cue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cue.cpp; sourceTree = "<group>"; };
+		15FB5B6413197A1000C56741 /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
+		15FB5B6513197A1000C56741 /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
+		15FB5B6613197A1000C56741 /* Sequenceable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sequenceable.hpp; sourceTree = "<group>"; };
+		15FB5B6713197A1000C56741 /* TimeBasis.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeBasis.h; sourceTree = "<group>"; };
+		15FB5B6813197A1000C56741 /* Sequence.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sequence.cpp; sourceTree = "<group>"; };
+		15FB5B6913197A1000C56741 /* Sequence.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sequence.h; sourceTree = "<group>"; };
+		15FB5B6A13197A1000C56741 /* Tween.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tween.h; sourceTree = "<group>"; };
+		15FB5B6B13197A1000C56741 /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Development_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Development_Prefix.pch; sourceTree = "<group>"; };
@@ -98,6 +109,31 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		15FB5B6213197A1000C56741 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				15FB5B6B13197A1000C56741 /* Choreograph.h */,
+				15FB5B6613197A1000C56741 /* Sequenceable.hpp */,
+				15FB5B6A13197A1000C56741 /* Tween.h */,
+				15FB5B6913197A1000C56741 /* Sequence.h */,
+				15FB5B6813197A1000C56741 /* Sequence.cpp */,
+				15FB5B6413197A1000C56741 /* Cue.h */,
+				15FB5B6313197A1000C56741 /* Cue.cpp */,
+				15FB5B6513197A1000C56741 /* Easing.h */,
+				15FB5B6713197A1000C56741 /* TimeBasis.h */,
+			);
+			name = include;
+			path = ../../../include;
+			sourceTree = SOURCE_ROOT;
+		};
+		15FB5B6F13197A2200C56741 /* sc-Choreograph */ = {
+			isa = PBXGroup;
+			children = (
+				15FB5B6213197A1000C56741 /* include */,
+			);
+			name = "sc-Choreograph";
+			sourceTree = "<group>";
+		};
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -109,6 +145,7 @@
 		29B97314FDCFA39411CA2CEA /* Development */ = {
 			isa = PBXGroup;
 			children = (
+				15FB5B6F13197A2200C56741 /* sc-Choreograph */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -206,6 +243,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				00BAE65A0E7ED9C10018A608 /* DevelopmentApp.cpp in Sources */,
+				15FB5B6C13197A1000C56741 /* Cue.cpp in Sources */,
+				15FB5B6D13197A1000C56741 /* Sequence.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
