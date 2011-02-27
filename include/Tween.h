@@ -19,41 +19,13 @@
 
 namespace cinder {
 	namespace tween {
-		
-		//Non-templated base class to allow us to have a list containing all types of Tween
-		class Tweenable : public Sequenceable {
-		public:
-			Tweenable( void *data ) : Sequenceable( data ) {}
-			virtual ~Tweenable(){};
-			
-			//! change how the tween moves through time
-			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
-			
-			//! change how the tween thinks about time
-			void setTimeFunction( double (*timeFunction)(double start, double duration) ){ mTimeFunction = timeFunction; }
-			
-			//! change the duration of the tween
-			void setDuration( double duration ){ mDuration = duration; }
-			//! returns the duration of the sequenceable item
-			virtual double getDuration(){ return 0; }
-			
-		protected:
-			double	mDuration;
-			// how we interpret time
-			double (*mTimeFunction)(double start, double duration);
-			// how we move between points in time
-			double (*mEaseFunction)(double t);
-		};
-		
-		typedef std::shared_ptr<Tweenable> TweenRef;
-		
 		//Our templated tween design
 		template<typename T>
-		class Tween : public Tweenable{
+		class Tween : public Sequenceable {
 		public:
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
-				: Tweenable( target )
+				: Sequenceable( target )
 			{
 				mTarget = target;
 				mStartValue = *target;
@@ -69,7 +41,7 @@ namespace cinder {
 			}
 			
 			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
-				: Tweenable( target )
+				: Sequenceable( target )
 			{
 				mTarget = target;
 				mStartValue = startValue;
@@ -113,6 +85,13 @@ namespace cinder {
 				}
 			}
 			
+			//! change how the tween moves through time
+			void setEaseFunction( double (*easeFunction)(double t) ) { mEaseFunction = easeFunction; }
+			//! change the duration of the tween
+			void setDuration( double duration ){ mDuration = duration; }
+			//! returns the duration of the sequenceable item
+			double getDuration(){ return mDuration; }
+			
 			T* getTarget(){ return mTarget; }
 			double getStartTime(){ return mStartTime; }
 			bool isComplete(){ return mComplete; }
@@ -121,6 +100,8 @@ namespace cinder {
 			T* mTarget;
 			T mStartValue, mValueDelta, mEndValue;
 			
+			double (*mEaseFunction)(double t);
+			double	mDuration;
 			double mT;	// normalized time
 			bool mComplete;
 		};
