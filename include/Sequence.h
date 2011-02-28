@@ -43,19 +43,19 @@ namespace cinder {
 			
 			//! create a new tween and add it to the list
 			template<typename T>
-			SeqRef add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+			std::shared_ptr< Tween<T> > add( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
 				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
-				return ( mActions.back() );
+				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
 			//! replace an existing tween
 			template<typename T>
-			SeqRef replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+			std::shared_ptr< Tween<T> > replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
 				SeqRef existingAction = find( target );
 				if( existingAction )
 					remove( existingAction );
 				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime, duration, easeFunction ) ) );
-				return mActions.back();
+				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
 			SeqRef		find( void *target );

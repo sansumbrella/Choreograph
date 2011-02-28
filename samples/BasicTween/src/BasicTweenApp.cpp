@@ -120,7 +120,8 @@ void BasicTweenApp::tweenToMouse()
 	// Move our properties to the mouse position with with different easing
 	Vec3f mousePos = Vec3f( getMousePos().x, getMousePos().y, 0.0f );
 	// Tween a Vec3f all at once with custom easing
-	mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
+	std::shared_ptr<Tween <Vec3f> > t = mSequence.replace( &mPos, mousePos, 1.25, Back::easeOut );
+	t->delay( 0.5f );
 	
 	// Tween our floats
 	mSequence.replace( &mX, mousePos.x, 2.0, Back::easeInOut );
