@@ -270,11 +270,14 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = BasicTween_Prefix.pch;
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder_d.a",
 					"-lcurl",
+					"-read_only_relocs",
+					suppress,
 				);
 				PRODUCT_NAME = BasicTween;
 				WRAPPER_EXTENSION = app;
@@ -299,6 +302,8 @@
 				OTHER_LDFLAGS = (
 					"$(CINDER_PATH)/lib/libcinder.a",
 					"-lcurl",
+					"-read_only_relocs",
+					suppress,
 				);
 				PRODUCT_NAME = BasicTween;
 				STRIP_INSTALLED_PRODUCT = YES;
