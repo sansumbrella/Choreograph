@@ -48,6 +48,13 @@ namespace cinder {
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
+			//! create a new tween
+			template<typename T>
+			std::shared_ptr< Tween<T> > add( T *target, T startValue, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				mActions.push_back( SeqRef( new Tween<T>( target, startValue, targetValue, mCurrentTime, duration, easeFunction ) ) );
+				return std::static_pointer_cast< Tween<T> >( mActions.back() );
+			}
+			
 			//! replace an existing tween
 			template<typename T>
 			std::shared_ptr< Tween<T> > replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
