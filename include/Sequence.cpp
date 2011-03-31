@@ -44,7 +44,7 @@ void Sequence::stepTo( double time )
 	}
 }
 
-void Sequence::clearSequence()
+void Sequence::clear()
 {
 	mActions.clear();	
 }

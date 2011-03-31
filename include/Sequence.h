@@ -40,6 +40,15 @@ namespace cinder {
 				mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
 				return mActions.back();
 			}
+            
+            SeqRef replace( boost::function<void ()> action, double atTime )
+            {
+                SeqRef existingAction = find( &action );
+                if( existingAction )
+                    remove( existingAction );
+                mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
+				return mActions.back();
+            }
 			
 			//! create a new tween and add it to the list
 			template<typename T>
@@ -69,7 +78,7 @@ namespace cinder {
 			void		remove( SeqRef tween );
 			
 			//! remove all tweens from the Sequence
-			void clearSequence();
+			void clear();
 			//! remove completed tweens from the Sequence
 			void clearFinishedTweens();
 			//! reset time to zero
