@@ -35,7 +35,7 @@ namespace cinder {
 			
 			//! add a cue to the Sequence
 			SeqRef add( boost::function<void ()> action, double atTime ){
-				mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
+				mActions.push_back( SeqRef( new Cue( action, mCurrentTime+atTime ) ) );
 				return mActions.back();
 			}
 			
