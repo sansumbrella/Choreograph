@@ -1,5 +1,5 @@
 /*
- *  Tweening.h
+ *  Choreograph.h
  *  BasicTween
  *
  *  Created by David Wicks on 5/27/10.

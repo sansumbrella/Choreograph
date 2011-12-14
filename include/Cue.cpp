@@ -9,37 +9,28 @@
 
 #include "Cue.h"
 
-namespace cinder
-{
-
-	namespace tween
-	{
+namespace cinder{
+	namespace tween{
+        
 		Cue::Cue( boost::function<void ()> action, double atTime ):
 		Sequenceable( &action ),
 		mSignal(),
 		mTime( atTime ),
-		mLastTime( 0 )
-		{
+		mLastTime( 0 ){
 			mSignal.connect( action );
 		}
 		
-		Cue::~Cue()
-		{
-			
+		Cue::~Cue(){
 		}
 		
-		void Cue::addReceiver( boost::function<void ()> action )
-		{
+		void Cue::addReceiver( boost::function<void ()> action ){
 			mSignal.connect( action );
 		}
 		
-		void Cue::stepTo( double time )
-		{
-			if ( ( time > mTime && mLastTime < mTime ) || ( mReversed && mLastTime > mTime && time < mTime ) )
-			{
+		void Cue::stepTo( double time ){
+			if ( ( time > mTime && mLastTime < mTime ) || ( mReversed && mLastTime > mTime && time < mTime ) ){
 				mSignal();
 			}
-			
 			mLastTime = time;
 		}
 	}

@@ -20,7 +20,6 @@
 
 namespace cinder {
 	namespace tween {
-			
 		class Sequence : public Sequenceable {
 		
 		public:
@@ -35,8 +34,7 @@ namespace cinder {
 			void stepTo( double time );
 			
 			//! add a cue to the Sequence
-			SeqRef add( boost::function<void ()> action, double atTime )
-			{
+			SeqRef add( boost::function<void ()> action, double atTime ){
 				mActions.push_back( SeqRef( new Cue( action, atTime ) ) );
 				return mActions.back();
 			}
@@ -48,13 +46,20 @@ namespace cinder {
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
-			//! create a new tween
+			//! create a new tween and add it to the list
 			template<typename T>
 			std::shared_ptr< Tween<T> > add( T *target, T startValue, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
 				mActions.push_back( SeqRef( new Tween<T>( target, startValue, targetValue, mCurrentTime, duration, easeFunction ) ) );
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
-			
+            
+            //! create a new tween and add it to the list but start it delayed
+			template<typename T>
+			std::shared_ptr< Tween<T> > addDelayed(double delay, T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
+				mActions.push_back( SeqRef( new Tween<T>( target, targetValue, mCurrentTime+delay, duration, easeFunction ) ) );
+				return std::static_pointer_cast< Tween<T> >( mActions.back() );
+			}
+            
 			//! replace an existing tween
 			template<typename T>
 			std::shared_ptr< Tween<T> > replace( T *target, T targetValue, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut ) {
@@ -65,8 +70,8 @@ namespace cinder {
 				return std::static_pointer_cast< Tween<T> >( mActions.back() );
 			}
 			
-			SeqRef		find( void *target );
-			void		remove( SeqRef tween );
+			SeqRef find( void *target );
+			void remove( SeqRef tween );
 			
 			//! remove all tweens from the Sequence
 			void clearSequence();
@@ -74,6 +79,8 @@ namespace cinder {
 			void clearFinishedTweens();
 			//! reset time to zero
 			void reset(){ stepTo( 0.0 ); }
+            //! get current time 
+            double getCurrentTime(){ return mCurrentTime; }
 		private:
 			double					mCurrentTime;
 			std::vector< SeqRef >	mActions;

@@ -12,13 +12,9 @@
 #include "Sequenceable.hpp"
 #include <boost/signals2.hpp>
 
-namespace cinder
-{
-
-	namespace tween
-	{
-		class Cue : public Sequenceable
-		{
+namespace cinder{
+	namespace tween{
+		class Cue : public Sequenceable {
 		public:
 			Cue( boost::function<void ()> action, double atTime=0.0 );
 			~Cue();

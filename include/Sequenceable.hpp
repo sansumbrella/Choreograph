@@ -10,18 +10,16 @@
 #pragma once
 #include "cinder/Cinder.h"
 
-namespace cinder
-{
-	namespace tween
-	{
+namespace cinder{
+	namespace tween{
+        
 		//! Base interface for anything that can go on a Sequence
-		class Sequenceable
-		{
+		class Sequenceable{
 		public:
 			Sequenceable( void *data=0 ):
-			mTargetVoid( data ),
-			mReversed(false)
-			{}
+                mTargetVoid( data ),
+                mReversed(false)
+                {}
 			virtual ~Sequenceable(){};
 			
 			const void	*getTargetVoid() const { return mTargetVoid; }
