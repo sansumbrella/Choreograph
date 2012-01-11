@@ -14,24 +14,20 @@
  */
 
 #pragma once
-
 #include "cinder/CinderMath.h"
 
 namespace cinder {
 	namespace tween {
 		struct TimeBasis {
-			static double linear( double delta, double duration )
-			{	
+			static double linear( double delta, double duration ){	
 				return math<double>::min( delta / duration, 1 );
 			}
 			
-			static double linearByFrame( double delta, double duration )
-			{
+			static double linearByFrame( double delta, double duration ){
 				return math<double>::min( delta / duration, 1 );
 			}
 			
-			static double pingpong( double delta, double duration )
-			{
+			static double pingpong( double delta, double duration ){
 				double t2 = fmod( delta, duration * 2 );
 				if( t2 > duration ){
 					return ((duration*2) - t2)/duration;
@@ -40,14 +36,12 @@ namespace cinder {
 				}
 			}
 			
-			static double repeat( double delta, double duration )
-			{
+			static double repeat( double delta, double duration ){
 				double t = fmod( delta, duration );
 				return t / duration;
 			}
 			
-			static double reverse( double delta, double duration )
-			{
+			static double reverse( double delta, double duration ){
 				return math<double>::max( 1 - ( delta / duration ), 0 );
 			}
 		};

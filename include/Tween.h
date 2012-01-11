@@ -25,8 +25,7 @@ namespace cinder {
 		public:
 			// build a tween with a target, target value, duration, and optional ease function
 			Tween<T>( T *target, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
-				: Sequenceable( target )
-			{
+				: Sequenceable( target ){
 				mTarget = target;
 				mStartValue = *target;
 				mEndValue = targetValue;
@@ -37,12 +36,13 @@ namespace cinder {
 				mT = 0.0;
 				mComplete = false;
 				
+                mCreateStartValueOnTweenStart = true;
+                    
 				mEaseFunction = easeFunction;
 			}
 			
 			Tween<T>( T *target, T startValue, T targetValue, double startTime, double duration, double (*easeFunction)(double t)=Quadratic::easeInOut )
-				: Sequenceable( target )
-			{
+				: Sequenceable( target ){
 				mTarget = target;
 				mStartValue = startValue;
 				mEndValue = targetValue;
@@ -53,33 +53,33 @@ namespace cinder {
 				mT = 0.0;
 				mComplete = false;
 				
+                mCreateStartValueOnTweenStart = false;
+                    
 				mEaseFunction = easeFunction;
 			}
 			
 			~Tween<T>(){}
 			
-			virtual void stepTo( double newTime )
-			{
+			virtual void stepTo( double newTime ){
 				mT = math<double>::min( (newTime - mStartTime) / mDuration, 1 );
 				if( newTime < mStartTime + mDuration ){ mComplete = false; }
-				
+                if( mT <= 0.0 && mCreateStartValueOnTweenStart){
+                    mStartValue = *mTarget;
+                    mValueDelta = mEndValue - mStartValue;
+                }
 				updateTarget();	
 			}
 			
 			// this could be modified in the future to allow for a PathTween
-			virtual void updateTarget()
-			{
-				if( ! mComplete )
-				{
-					if( mT > 0.0 && mT < 1.0 )
-					{
-						*mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
-					} else if ( mT == 1.0 )
-					{	// at the completion point, set to target value
+			virtual void updateTarget(){
+				if( ! mComplete ){
+					if( mT > 0.0 && mT < 1.0 ){
+                        *mTarget = mStartValue + mValueDelta * mEaseFunction( mT );
+					} else if ( mT == 1.0 ){	
+                        // at the completion point, set to target value
 						*mTarget = mEndValue;
 						mComplete = true;
-					} else
-					{
+					} else{
 						
 					}
 				}
@@ -104,6 +104,7 @@ namespace cinder {
 			double	mDuration;
 			double mT;	// normalized time
 			bool mComplete;
+            bool mCreateStartValueOnTweenStart;
 		};
 	} //tween
 } //cinder

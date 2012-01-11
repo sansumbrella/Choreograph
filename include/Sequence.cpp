@@ -14,48 +14,39 @@ using namespace cinder;
 using namespace cinder::tween;
 typedef std::vector< SeqRef >::iterator s_iter;
 
-Sequence::Sequence()
-{
+Sequence::Sequence(){
 	mCurrentTime = 0;
 }
 
-void Sequence::step()
-{	// would like to use getAverageFps, but it doesn't work statically (yet)
+void Sequence::step(){	
+    // would like to use getAverageFps, but it doesn't work statically (yet)
 	step( 1.0 / app::getFrameRate() );
 }
 
-void Sequence::step( double timestep )
-{
+void Sequence::step( double timestep ){
 	mCurrentTime += timestep;
 	
-	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter )
-	{
+	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter ){
 		(**iter).stepTo( mCurrentTime );
 	}
 }
 
-void Sequence::stepTo( double time )
-{	
+void Sequence::stepTo( double time ){
 	mCurrentTime = time;
-	
-	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter )
-	{
+	for( s_iter iter = mActions.begin(); iter != mActions.end(); ++iter ){
 		(**iter).stepTo( time );
 	}
 }
 
-void Sequence::clearSequence()
-{
+void Sequence::clearSequence(){
 	mActions.clear();	
 }
 
-void Sequence::clearFinishedTweens()
-{
+void Sequence::clearFinishedTweens(){
 	s_iter iter = mActions.begin();
 	
 	while (iter != mActions.end()) {		
-		if( (**iter).isComplete() )
-		{
+		if( (**iter).isComplete() ){
 			iter = mActions.erase(iter);
 		} else {
 			++iter;
@@ -63,13 +54,11 @@ void Sequence::clearFinishedTweens()
 	}
 }
 
-void Sequence::add( SeqRef action )
-{
+void Sequence::add( SeqRef action ){
 	mActions.push_back( action );
 }
 
-SeqRef Sequence::find( void *target )
-{
+SeqRef Sequence::find( void *target ){
 	s_iter iter = mActions.begin();
 	while( iter != mActions.end() ) {
 		if( (*iter)->getTargetVoid() == target )
@@ -80,8 +69,7 @@ SeqRef Sequence::find( void *target )
 	return SeqRef(); // failed returns null tween
 }
 
-void Sequence::remove( SeqRef action )
-{
+void Sequence::remove( SeqRef action ){
 	s_iter iter = std::find( mActions.begin(), mActions.end(), action );
 	if( iter != mActions.end() )
 		mActions.erase( iter );
