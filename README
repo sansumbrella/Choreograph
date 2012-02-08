@@ -12,7 +12,10 @@ Flexible step() method allows for user-controlled time
 Untested
 Sequences can be nested in each other
 
-To Do:
-callbacks on tween complete
-Looping, ping-ponging, and reversing of tweens
-support for sequencing tweens of a single variable
+UPDATE:
+Choreograph was the initial implementation of what is now ci::Timeline. For a more
+robust and complete tweening experience, use the latest version of Cinder. Andrew
+Bell expanded upon the ideas in this library and made a really solid, safe tweening
+library that's built into Cinder. I recommend it.
+
+Choreograph will stick around here as a memorial to tweens past.
