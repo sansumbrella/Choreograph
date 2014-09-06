@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name="Choreograph"
+	id="com.sansumbrella.choreograph"
+	author="David Wicks"
+	summary="Timeline animation and sequencing."
+	url="http://github.com/sansumbrella/sc-Choreograph"
+	>
+	<!-- All the headers. -->
+	<headerPattern>src/choreograph/*.hpp</headerPattern>
+	<sourceFile>src/specialization/GlmSpecialization.cpp</sourceFile>
+</block>
+</cinder>
