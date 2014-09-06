@@ -54,24 +54,33 @@ public:
 
 	//! Returns current animation time in seconds.
 	float time() const { return _time - _start_time; }
+
 	//! Returns previous step's animation time in seconds.
 	float previousTime() const { return _previous_time - _start_time; }
 
 	//! Returns true if animation plays forward with positive time steps.
-	bool forward() const { return _speed >= 0.0f; }
+	bool  forward() const { return _speed >= 0.0f; }
+
 	//! Returns true if animation plays backward with positive time steps.
-	bool backward() const { return _speed < 0.0f; }
+	bool  backward() const { return _speed < 0.0f; }
+
+  //! Returns true if this Motion's time is past the end of its duration. Accounts for reversed playback.
+  bool  isFinished() const;
+
+  //! Set playback speed of motion. Use negative numbers to play in reverse.
+	void  setPlaybackSpeed( float s ) { _speed = s; }
+
+  //! Returns the current playback speed of motion.
+	float getPlaybackSpeed() const { return _speed; }
+
+  //! Reset motion to beginning. Accounts for reversed playback.
+  void  resetTime();
 
 	//! Returns true if this Motion has an output.
-	bool isValid() const { return _target != nullptr; }
+	bool  isValid() const { return _target != nullptr; }
+
 	//! Returns true if this Motion has no output.
-	bool isInvalid() const { return _target == nullptr; }
-
-  //! Returns true if this Motion's time is past the end of its duration, accounting for reversal.
-  bool isFinished() const;
-
-	void        setPlaybackSpeed( float s ) { _speed = s; }
-	float       getPlaybackSpeed() const { return _speed; }
+	bool  isInvalid() const { return _target == nullptr; }
 
 protected:
 	// True if the underlying Sequence should play forever.
@@ -91,6 +100,7 @@ private:
 	//! Previous animation time in seconds.
 	float       _previous_time = 0.0f;
 	//! Animation start time in seconds. Time from which Sequence is evaluated.
+  //! Use to apply a delay.
 	float       _start_time = 0.0f;
 
 	//! Called on destruction of either MotionBase or _output_base.
@@ -163,9 +173,13 @@ public:
 
 		if( _finishFn ){
 			if( forward() && time() >= _sequence->getDuration() && previousTime() < _sequence->getDuration() )
+      {
 				_finishFn( *this );
+      }
 			else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
+      {
 				_finishFn( *this );
+      }
 		}
 	}
 

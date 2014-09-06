@@ -106,7 +106,7 @@ public:
   }
 
   //! Hold on current end value for \a duration seconds.
-  Sequence<T>& wait( float duration ) { hold( duration ); }
+  Sequence<T>& wait( float duration ) { return hold( duration ); }
 
   //! Hold on current end value for \a duration seconds.
   Sequence<T>& hold( float duration )

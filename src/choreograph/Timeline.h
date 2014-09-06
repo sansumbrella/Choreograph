@@ -60,16 +60,10 @@ public:
   //! Create a Sequence that is connected out to \a output.
   template<typename T>
   Motion<T>& move( T *output )
-  { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
-    remove( output );
-
-    auto c = std::make_shared<Motion<T>>();
-    c->_sequence = std::make_shared<Sequence<T>>();
-    c->_output = output;
-    c->_target = output;
-    c->_sequence->_initial_value = *output;
-    _motions.push_back( c );
-    return *c;
+  {
+    auto sequence = std::make_shared<Sequence<T>>();
+    sequence->_initial_value = *output;
+    return move( output, sequence );
   }
 
   //! Create a Motion that plays \a sequence into \a output.
@@ -79,12 +73,38 @@ public:
     remove( output );
 
     auto c = std::make_shared<Motion<T>>();
-    c->sequence = sequence;
-    c->output = output;
+    c->_sequence = sequence;
+    c->_output = output;
     c->_target = output;
-    c->sequence->_initial_value = *output;
     _motions.push_back( c );
     return *c;
+  }
+
+  //! Create a Motion that plays \a sequence into \a output. Copies the input sequence.
+  template<typename T>
+  Motion<T>& move( T *output, const Sequence<T> &sequence )
+  { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
+    remove( output );
+
+    auto c = std::make_shared<Motion<T>>();
+    c->_sequence = std::make_shared<Sequence<T>>( sequence );
+    c->_output = output;
+    c->_target = output;
+    _motions.push_back( c );
+    return *c;
+  }
+
+  //! Add phrases to the end of the Sequence currently connected to \a output.
+  template<typename T>
+  Sequence<T>& queue( T *output )
+  {
+    for( auto &motion : _motions ) {
+      if( motion->_target == output ) {
+      //
+        return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
+      }
+    }
+    return move( output ).getSequence();
   }
 
   //! Advance all current motions.

@@ -69,6 +69,18 @@ bool MotionBase::isFinished() const
   return false;
 }
 
+void MotionBase::resetTime()
+{
+  if( forward() )
+  {
+    _time = _previous_time = 0.0f;
+  }
+  else
+  {
+    _time = _previous_time = getDuration();
+  }
+}
+
 //
 //  Cue
 //
