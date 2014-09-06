@@ -31,16 +31,19 @@ using namespace choreograph;
 
 void Timeline::step( float dt )
 {
-  for( auto &c : _motions )
-  {
+  // Remove any motions that have stale pointers
+  erase_if( &_motions, [] ( const std::shared_ptr<MotionBase> &c ) { return c->isInvalid(); } );
+
+
+  // Update all animation outputs.
+  for( auto &c : _motions ) {
     c->step( dt );
   }
 
-  if( _auto_clear )
-  {
-    erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return ! c->_continuous && c->time() >= c->getDuration(); } );
+  // Remove any completed motions
+  if( _auto_clear ) {
+    erase_if( &_motions, [] ( const std::shared_ptr<MotionBase> &c ) { return c->isFinished(); } );
   }
-  //    erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return c->isInvalid(); } );
 }
 
 void Timeline::remove( const std::shared_ptr<MotionBase> &motion )

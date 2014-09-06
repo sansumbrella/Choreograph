@@ -60,7 +60,7 @@ public:
 	float previousTime() const { return _previous_time - _start_time; }
 
 	//! Returns true if animation plays forward with positive time steps.
-	bool forward() const { return _speed > 0.0f; }
+	bool forward() const { return _speed >= 0.0f; }
 	//! Returns true if animation plays backward with positive time steps.
 	bool backward() const { return _speed < 0.0f; }
 
@@ -68,6 +68,9 @@ public:
 	bool isValid() const { return _target != nullptr; }
 	//! Returns true if this Motion has no output.
 	bool isInvalid() const { return _target == nullptr; }
+
+  //! Returns true if this Motion's time is past the end of its duration, accounting for reversal.
+  bool isFinished() const;
 
 	void        setPlaybackSpeed( float s ) { _speed = s; }
 	float       getPlaybackSpeed() const { return _speed; }
@@ -157,16 +160,16 @@ public:
 	typedef std::function<void (const T&)>        DataCallback;
 	typedef std::function<void (Motion<T> &)> Callback;
 	//! Set a function to be called when we reach the end of the sequence.
-	Motion<T>& finishFn( const Callback &c ) { _finishFn = c; return *this; }
+	Motion<T>&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
 	//! Set a function to be called when we start the sequence.
-	Motion<T>& startFn( const Callback &c ) { _startFn = c; return *this; }
+	Motion<T>&  startFn( const Callback &c ) { _startFn = c; return *this; }
 	//! Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
-	Motion<T>& updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
+	Motion<T>&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
 
-	Motion<T>&    playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
+	Motion<T>&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
 
 	//! Set the connection to play continuously.
-	Motion<T>& continuous( bool c ) { _continuous = c; return *this; }
+	Motion<T>&  continuous( bool c ) { _continuous = c; return *this; }
 
 private:
 	// shared_ptr to sequence since many connections could share the same sequence

@@ -43,3 +43,17 @@ void MotionBase::disconnect()
     _output_base->_input = nullptr;
   }
 }
+
+bool MotionBase::isFinished() const
+{
+  if( ! _continuous )
+  {
+    if( backward() ) {
+      return time() <= 0.0f;
+    }
+    else {
+      return time() >= getDuration();
+    }
+  }
+  return false;
+}
