@@ -26,7 +26,7 @@ private:
 
 void ChoreographDevApp::setup()
 {
-  auto &sequence = _anim.move( &_ball_y )
+  _anim.move( &_ball_y )
   .startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } )
   .getSequence().set( 5.0f ).hold( 0.5f ).rampTo( 500.0f, 1.0f, EaseInOutQuad() ).hold( 500.0f, 0.33f ).rampTo( 700.0f, 1.0f ).hold( 20.0f, 1.0f ).set( 400.0f );
 
