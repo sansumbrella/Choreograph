@@ -40,7 +40,7 @@ using namespace cinder;
 MotionBase::MotionBase( void *target ):
   _target( target )
 {
-  app::console() << "Create Motion Base From Void Pointer" << endl;
+  app::console() << "MotionBase from void*" << endl;
 }
 
 MotionBase::MotionBase( OutputBase *target ):
@@ -48,7 +48,7 @@ MotionBase::MotionBase( OutputBase *target ):
   _output_base( target )
 {
   _output_base->_input = this;
-   app::console() << "Create Motion Base From OutputBase Pointer" << endl;
+   app::console() << "MotionBase from OutputBase*" << endl;
 }
 
 MotionBase::~MotionBase()
@@ -66,8 +66,8 @@ void MotionBase::step( float dt )
 void MotionBase::disconnect()
 {
   if( _output_base ) {
-    _output_base = nullptr;
     _output_base->_input = nullptr;
+    _output_base = nullptr;
   }
 }
 

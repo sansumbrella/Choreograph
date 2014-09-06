@@ -92,15 +92,19 @@ public:
 
   //! Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
-  Sequence<T>& queue( T *output )
+  Sequence<T>& queue( Output<T> *output )
   {
     for( auto &motion : _motions ) {
       if( motion->_target == output ) {
-      //
         return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
       }
     }
-    return move( output ).getSequence();
+    auto m = std::make_shared<Motion<T>>( output );
+    m->_sequence = std::make_shared<Sequence<T>>();
+    m->_sequence->_initial_value = *output;
+    _motions.push_back( m );
+    return m->getSequence();
+//    return move( output ).getSequence();
   }
 
   //! Advance all current motions.

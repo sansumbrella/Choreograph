@@ -44,7 +44,7 @@ class MotionBase
 public:
   explicit MotionBase( void *target );
 
-  explicit MotionBase( OutputBase *target );
+  MotionBase( OutputBase *base );
 
 	virtual ~MotionBase();
 
@@ -142,12 +142,16 @@ public:
   explicit Motion( T *target ):
     MotionBase( target ),
     _output( target )
-  {}
+  {
+    ci::app::console() << "Motion from T*" << std::endl;
+  }
 
   explicit Motion( Output<T> *target ):
     MotionBase( target ),
     _output( target->ptr() )
-  {}
+  {
+    ci::app::console() << "Motion from Output<T>*" << std::endl;
+  }
 
 
   //! Duration is based on the underlying sequence.

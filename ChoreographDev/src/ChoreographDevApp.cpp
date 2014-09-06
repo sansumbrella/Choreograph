@@ -23,7 +23,7 @@ private:
   float                 _ball_radius = 50.0f;
   co::Timeline          _anim;
 
-  vec2          _mouse_follower;
+  co::Output<vec2>      _mouse_follower;
 };
 
 void ChoreographDevApp::setup()
