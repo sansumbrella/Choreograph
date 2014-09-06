@@ -28,6 +28,7 @@
 #pragma once
 
 #include "Sequence.hpp"
+#include "Output.h"
 
 namespace choreograph
 {
@@ -41,6 +42,10 @@ Non-templated base type so we can store in a polymorphic container.
 class MotionBase
 {
 public:
+  explicit MotionBase( void *target );
+
+  explicit MotionBase( OutputBase *target );
+
 	virtual ~MotionBase();
 
 	//! Move motion forward in time.
@@ -132,6 +137,19 @@ template<typename T>
 class Motion : public MotionBase
 {
 public:
+  Motion() = delete;
+
+  explicit Motion( T *target ):
+    MotionBase( target ),
+    _output( target )
+  {}
+
+  explicit Motion( Output<T> *target ):
+    MotionBase( target ),
+    _output( target->ptr() )
+  {}
+
+
   //! Duration is based on the underlying sequence.
 	float getDuration() const override { return _sequence->getDuration(); }
 

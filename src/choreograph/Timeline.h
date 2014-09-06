@@ -72,10 +72,8 @@ public:
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
     remove( output );
 
-    auto c = std::make_shared<Motion<T>>();
+    auto c = std::make_shared<Motion<T>>( output );
     c->_sequence = sequence;
-    c->_output = output;
-    c->_target = output;
     _motions.push_back( c );
     return *c;
   }
@@ -86,10 +84,8 @@ public:
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
     remove( output );
 
-    auto c = std::make_shared<Motion<T>>();
+    auto c = std::make_shared<Motion<T>>( output );
     c->_sequence = std::make_shared<Sequence<T>>( sequence );
-    c->_output = output;
-    c->_target = output;
     _motions.push_back( c );
     return *c;
   }

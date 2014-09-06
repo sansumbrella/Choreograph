@@ -30,10 +30,26 @@
 #include "Output.h"
 
 using namespace choreograph;
+using namespace std;
+using namespace cinder;
 
 //
 //  MotionBase
 //
+
+MotionBase::MotionBase( void *target ):
+  _target( target )
+{
+  app::console() << "Create Motion Base From Void Pointer" << endl;
+}
+
+MotionBase::MotionBase( OutputBase *target ):
+  _target( target ),
+  _output_base( target )
+{
+  _output_base->_input = this;
+   app::console() << "Create Motion Base From OutputBase Pointer" << endl;
+}
 
 MotionBase::~MotionBase()
 {
