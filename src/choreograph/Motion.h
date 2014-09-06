@@ -31,6 +31,7 @@ namespace choreograph
 {
 
 class OutputBase;
+
 /**
 A connection between a continuous, independent Sequence and an output.
 Non-templated base type so we can store in a polymorphic container.
@@ -61,18 +62,23 @@ public:
 	//! Returns true if animation plays backward with positive time steps.
 	bool backward() const { return _speed < 0.0f; }
 
-	// True if the underlying Sequence should play forever.
-	bool        _continuous = false;
-
-	void        *_target = nullptr;
+	//! Returns true if this Motion has an output.
+	bool isValid() const { return _target != nullptr; }
+	//! Returns true if this Motion has no output.
+	bool isInvalid() const { return _target == nullptr; }
 
 	void        setPlaybackSpeed( float s ) { _speed = s; }
 	float       getPlaybackSpeed() const { return _speed; }
 
-protected:
-  void disconnect();
-
 private:
+	// True if the underlying Sequence should play forever.
+	bool        _continuous = false;
+
+	// Null pointer to target, used for comparison with other MotionBase's.
+	void        *_target = nullptr;
+  // Pointer to safe handle type. Exists if created with an Output<T> target.
+  OutputBase  *_output_base = nullptr;
+
 	//! Playback speed. Set to negative to go in reverse.
 	float       _speed = 1.0f;
 	//! Current animation time in seconds. Time at which Sequence is evaluated.
@@ -82,8 +88,11 @@ private:
 	//! Animation start time in seconds. Time from which Sequence is evaluated.
 	float       _start_time = 0.0f;
 
+	//! Called on destruction of either MotionBase or _output_base.
+  void disconnect();
+
   friend class OutputBase;
-  OutputBase  *_output_base;
+  friend class Timeline;
 };
 
 class Cue : public MotionBase
@@ -112,40 +121,34 @@ class Motion : public MotionBase
 public:
 	void update() override
 	{
-		if( isValid() )
-		{
-			if( _startFn ) {
-				if( forward() && time() > 0.0f && previousTime() <= 0.0f )
-					_startFn( *this );
-				else if( backward() && time() < sequence->getDuration() && previousTime() >= sequence->getDuration() )
-					_startFn( *this );
-			}
+		CI_ASSERT( isValid() );
 
-			*output = sequence->getValue( time() );
-			if( _updateFn ) {
-				_updateFn( *output );
-			}
+		if( _startFn ) {
+			if( forward() && time() > 0.0f && previousTime() <= 0.0f )
+				_startFn( *this );
+			else if( backward() && time() < _sequence->getDuration() && previousTime() >= _sequence->getDuration() )
+				_startFn( *this );
+		}
 
-			if( _finishFn ){
-				if( forward() && time() >= sequence->getDuration() && previousTime() < sequence->getDuration() )
-					_finishFn( *this );
-				else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
-					_finishFn( *this );
-			}
+		*_output = _sequence->getValue( time() );
+		if( _updateFn ) {
+			_updateFn( *output );
+		}
+
+		if( _finishFn ){
+			if( forward() && time() >= _sequence->getDuration() && previousTime() < _sequence->getDuration() )
+				_finishFn( *this );
+			else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
+				_finishFn( *this );
 		}
 	}
 
-	//! Returns true if this Motion has no output.
-	bool isInvalid() const { return output == nullptr; }
-	//! Returns true if this Motion has an output.
-	bool isValid() const { return output != nullptr; }
+	float getDuration() const override { return _sequence->getDuration(); }
 
-	float getDuration() const override { return sequence->getDuration(); }
-
-	float getProgress() const { return time() / sequence->getDuration(); }
+	float getProgress() const { return time() / _sequence->getDuration(); }
 
 	//! Returns the underlying sequence for extension.
-	Sequence<T>&  getSequence() { return *sequence; }
+	Sequence<T>&  getSequence() { return *_sequence; }
 
 	typedef std::function<void (const T&)>        DataCallback;
 	typedef std::function<void (Motion<T> &)> Callback;
@@ -161,10 +164,11 @@ public:
 	//! Set the connection to play continuously.
 	Motion<T>& continuous( bool c ) { _continuous = c; return *this; }
 
+private:
 	// shared_ptr to sequence since many connections could share the same sequence
 	// this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-	std::shared_ptr<Sequence<T>> sequence;
-	T             *output = nullptr;
+	std::shared_ptr<Sequence<T>> _sequence;
+	T             *_output = nullptr;
 	Callback      _finishFn = nullptr;
 	Callback      _startFn = nullptr;
 	DataCallback  _updateFn = nullptr;
