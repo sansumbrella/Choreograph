@@ -89,6 +89,9 @@ public:
 	//! Returns true if this Motion has no output.
 	bool  isInvalid() const { return _target == nullptr; }
 
+  //! Returns pointer to target variable. Used for comparison.
+  void* getTarget() const { return _target; }
+
 protected:
 	// True if the underlying Sequence should play forever.
 	bool        _continuous = false;
@@ -114,7 +117,6 @@ private:
   void disconnect();
 
   friend class OutputBase;
-  friend class Timeline;
 };
 
 class Cue : public MotionBase

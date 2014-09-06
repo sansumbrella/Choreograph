@@ -114,7 +114,7 @@ public:
   Sequence<T>& queue( T *output )
   {
     for( auto &motion : _motions ) {
-      if( motion->_target == output ) {
+      if( motion->getTarget() == output ) {
         return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
       }
     }
@@ -128,7 +128,7 @@ public:
   template<typename T>
   void remove( T *output )
   {
-    erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->_target == output; } );
+    erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->getTarget() == output; } );
   }
 
 private:
