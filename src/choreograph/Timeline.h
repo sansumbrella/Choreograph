@@ -57,42 +57,57 @@ class Timeline
 {
 public:
 
+  //
+  // Sequence creation. Safe methods.
+  //
+
   template<typename T>
   Motion<T>& move( Output<T> *output )
   {
+    return move( output, std::make_shared<Sequence<T>>( *output ) );
   }
 
+  template<typename T>
+  Motion<T>& move( Output<T> *output, const SequenceRef<T> &sequence )
+  { // We don't need to remove here, since previous parents will be invalidated through the Output/Motion relationship.
+    auto motion = std::make_shared<Motion<T>>( output, sequence );
+    _motions.push_back( motion );
+    return *motion;
+  }
+
+  //
+  // Sequence creation. Bare pointer methods.
+  //
 
   //! Create a Sequence that is connected out to \a output.
   template<typename T>
   Motion<T>& move( T *output )
   {
-    auto sequence = std::make_shared<Sequence<T>>( *output );
-    return move( output, sequence );
+    return move( output, std::make_shared<Sequence<T>>( *output ) );
   }
 
   //! Create a Motion that plays \a sequence into \a output.
   template<typename T>
   Motion<T>& move( T *output, const SequenceRef<T> &sequence )
-  { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
+  { // Remove any existing motions that affect the same variable.
+    // This is a raw pointer, so we don't know about any prior relationships.
     remove( output );
 
-    auto c = std::make_shared<Motion<T>>( output, sequence );
-    _motions.push_back( c );
-    return *c;
+    auto motion = std::make_shared<Motion<T>>( output, sequence );
+    _motions.push_back( motion );
+    return *motion;
   }
 
-  //! Create a Motion that plays \a sequence into \a output. Copies the input sequence.
-  template<typename T>
-  Motion<T>& move( T *output, const Sequence<T> &sequence )
-  { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
-    remove( output );
+  //
+  // Time manipulation.
+  //
 
-    auto c = std::make_shared<Motion<T>>( output );
-    c->_sequence = std::make_shared<Sequence<T>>( sequence );
-    _motions.push_back( c );
-    return *c;
-  }
+  //! Advance all current motions.
+  void step( float dt );
+
+  //
+  // Sequence manipulation.
+  //
 
   //! Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
@@ -106,8 +121,6 @@ public:
     return move( output ).getSequence();
   }
 
-  //! Advance all current motions.
-  void step( float dt );
   //! Remove specific motion.
   void remove( const std::shared_ptr<MotionBase> &motion );
 

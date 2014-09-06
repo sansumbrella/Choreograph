@@ -112,6 +112,9 @@ public:
     return *this;
   }
 
+  //! Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
+  std::shared_ptr<Sequence<T>> copy() const { return std::make_shared<Sequence<T>>( *this ); }
+
   //! Hold on current end value for \a duration seconds.
   Sequence<T>& wait( float duration ) { return hold( duration ); }
 

@@ -47,6 +47,9 @@ MotionBase::MotionBase( OutputBase *target ):
   _target( target ),
   _output_base( target )
 {
+  if( _output_base->_input ) {
+    _output_base->_input->disconnect();
+  }
   _output_base->_input = this;
    app::console() << "MotionBase from OutputBase*" << endl;
 }
@@ -68,6 +71,7 @@ void MotionBase::disconnect()
   if( _output_base ) {
     _output_base->_input = nullptr;
     _output_base = nullptr;
+    app::console() << "MotionBase disconnected" << endl;
   }
 }
 
