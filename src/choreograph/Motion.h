@@ -42,6 +42,8 @@ Non-templated base type so we can store in a polymorphic container.
 class MotionBase
 {
 public:
+  MotionBase() = default;
+
   explicit MotionBase( void *target );
 
   MotionBase( OutputBase *base );
@@ -139,19 +141,17 @@ class Motion : public MotionBase
 public:
   Motion() = delete;
 
-  explicit Motion( T *target ):
+  Motion( T *target, const SequenceRef<T> &sequence ):
     MotionBase( target ),
-    _output( target )
-  {
-    ci::app::console() << "Motion from T*" << std::endl;
-  }
+    _output( target ),
+    _sequence( sequence )
+  {}
 
-  explicit Motion( Output<T> *target ):
+  Motion( Output<T> *target, const SequenceRef<T> &sequence ):
     MotionBase( target ),
-    _output( target->ptr() )
-  {
-    ci::app::console() << "Motion from Output<T>*" << std::endl;
-  }
+    _output( target->ptr() ),
+    _sequence( sequence )
+  {}
 
 
   //! Duration is based on the underlying sequence.
@@ -208,13 +208,12 @@ public:
 private:
 	// shared_ptr to sequence since many connections could share the same sequence
 	// this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-	std::shared_ptr<Sequence<T>> _sequence;
-	T             *_output = nullptr;
-	Callback      _finishFn = nullptr;
-	Callback      _startFn = nullptr;
-	DataCallback  _updateFn = nullptr;
+  SequenceRef<T>  _sequence = nullptr;
+	T               *_output = nullptr;
 
-  friend class Timeline;
+	Callback        _finishFn = nullptr;
+	Callback        _startFn = nullptr;
+	DataCallback    _updateFn = nullptr;
 };
 
 } // namespace choreograph

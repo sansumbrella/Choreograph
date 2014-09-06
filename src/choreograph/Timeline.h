@@ -57,23 +57,27 @@ class Timeline
 {
 public:
 
+  template<typename T>
+  Motion<T>& move( Output<T> *output )
+  {
+  }
+
+
   //! Create a Sequence that is connected out to \a output.
   template<typename T>
   Motion<T>& move( T *output )
   {
-    auto sequence = std::make_shared<Sequence<T>>();
-    sequence->_initial_value = *output;
+    auto sequence = std::make_shared<Sequence<T>>( *output );
     return move( output, sequence );
   }
 
   //! Create a Motion that plays \a sequence into \a output.
   template<typename T>
-  Motion<T>& move( T *output, std::shared_ptr<Sequence<T>> sequence )
+  Motion<T>& move( T *output, const SequenceRef<T> &sequence )
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
     remove( output );
 
-    auto c = std::make_shared<Motion<T>>( output );
-    c->_sequence = sequence;
+    auto c = std::make_shared<Motion<T>>( output, sequence );
     _motions.push_back( c );
     return *c;
   }
@@ -92,19 +96,14 @@ public:
 
   //! Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
-  Sequence<T>& queue( Output<T> *output )
+  Sequence<T>& queue( T *output )
   {
     for( auto &motion : _motions ) {
       if( motion->_target == output ) {
         return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
       }
     }
-    auto m = std::make_shared<Motion<T>>( output );
-    m->_sequence = std::make_shared<Sequence<T>>();
-    m->_sequence->_initial_value = *output;
-    _motions.push_back( m );
-    return m->getSequence();
-//    return move( output ).getSequence();
+    return move( output ).getSequence();
   }
 
   //! Advance all current motions.

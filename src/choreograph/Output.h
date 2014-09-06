@@ -45,7 +45,7 @@ public:
 
 private:
   friend class MotionBase;
-  MotionBase    *_input;
+  MotionBase    *_input = nullptr;
 };
 
 //! Safe type for Choreograph outputs.

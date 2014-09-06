@@ -91,6 +91,13 @@ template<typename T>
 class Sequence
 {
 public:
+  Sequence() = delete;
+
+  //! Construct a Sequence with \a value initial value.
+  explicit Sequence( const T &value ):
+    _initial_value( value )
+  {}
+
   T getValue( float atTime );
 
   //! Set current value. An instantaneous hold.
@@ -195,5 +202,8 @@ T Sequence<T>::getValue( float atTime )
   // this should be unreachable, given that we return early if time >= duration
   return endValue();
 }
+
+template<typename T>
+using SequenceRef = std::shared_ptr<Sequence<T>>;
 
 } // namespace choreograph
