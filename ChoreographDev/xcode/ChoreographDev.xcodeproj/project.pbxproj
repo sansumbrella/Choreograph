@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -14,18 +14,13 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		158218A019BBA85000AAD280 /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1582189F19BBA85000AAD280 /* Motion.cpp */; };
+		158218A219BBA8AF00AAD280 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 158218A119BBA8AF00AAD280 /* Output.cpp */; };
+		1683AD090A334430B38F2D37 /* ChoreographDevApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD2C6D05C1094DDF8B01A79B /* ChoreographDevApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		282F3C78C0E14AB8BE3A708B /* Timeline.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 46620042C43D4B7BA865EB15 /* Timeline.hpp */; };
-		7C5F6200ED9E47B8ADD4CB68 /* Sequence.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 581E11D819664B4B8119E463 /* Sequence.hpp */; };
-		E614F490A9A5492E9FD7030C /* Output.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 3AF49E1128C44D14865570E5 /* Output.hpp */; };
-		1593D7C9EBD4430B9F67D98B /* Motion.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 63C7A516B1D54996B6B6DED1 /* Motion.hpp */; };
-		740554C960454C34BA090C7C /* Choreograph.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 6B7CED59119845E088296086 /* Choreograph.hpp */; };
-		D3CC29C1535A40DA82020721 /* ChoreographDev_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 3FFA2E239B794D6591136E25 /* ChoreographDev_Prefix.pch */; };
 		F4F96A9C78434AE4BD8BE3C3 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 855909D4E63747E897AD733B /* CinderApp.icns */; };
-		2294C28BC88C43D2AB63EB4D /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 71ED738A8A084F03A3CE0F94 /* Resources.h */; };
-		1683AD090A334430B38F2D37 /* ChoreographDevApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AD2C6D05C1094DDF8B01A79B /* ChoreographDevApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,21 +32,23 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		15184EA319BBA8D2007139FC /* Motion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Motion.h; path = ../../src/choreograph/Motion.h; sourceTree = "<group>"; };
+		15184EA419BBA8D2007139FC /* Output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Output.h; path = ../../src/choreograph/Output.h; sourceTree = "<group>"; };
+		1582189F19BBA85000AAD280 /* Motion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Motion.cpp; path = ../../src/choreograph/Motion.cpp; sourceTree = "<group>"; };
+		158218A119BBA8AF00AAD280 /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Output.cpp; path = ../../src/choreograph/Output.cpp; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		3FFA2E239B794D6591136E25 /* ChoreographDev_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ChoreographDev_Prefix.pch; sourceTree = "<group>"; };
+		46620042C43D4B7BA865EB15 /* Timeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Timeline.hpp; path = ../../src/choreograph/Timeline.hpp; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		581E11D819664B4B8119E463 /* Sequence.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Sequence.hpp; path = ../../src/choreograph/Sequence.hpp; sourceTree = "<group>"; };
+		6B7CED59119845E088296086 /* Choreograph.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Choreograph.hpp; path = ../../src/choreograph/Choreograph.hpp; sourceTree = "<group>"; };
+		71ED738A8A084F03A3CE0F94 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		855909D4E63747E897AD733B /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* ChoreographDev.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChoreographDev.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AD2C6D05C1094DDF8B01A79B /* ChoreographDevApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ChoreographDevApp.cpp; sourceTree = "<group>"; name = ChoreographDevApp.cpp; };
-		71ED738A8A084F03A3CE0F94 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		855909D4E63747E897AD733B /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
-		CC3ADF2964A7493DB35764A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
-		3FFA2E239B794D6591136E25 /* ChoreographDev_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ChoreographDev_Prefix.pch; sourceTree = "<group>"; name = ChoreographDev_Prefix.pch; };
-		6B7CED59119845E088296086 /* Choreograph.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../../src/choreograph/Choreograph.hpp; sourceTree = "<group>"; name = Choreograph.hpp; };
-		63C7A516B1D54996B6B6DED1 /* Motion.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../../src/choreograph/Motion.hpp; sourceTree = "<group>"; name = Motion.hpp; };
-		3AF49E1128C44D14865570E5 /* Output.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../../src/choreograph/Output.hpp; sourceTree = "<group>"; name = Output.hpp; };
-		581E11D819664B4B8119E463 /* Sequence.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../../src/choreograph/Sequence.hpp; sourceTree = "<group>"; name = Sequence.hpp; };
-		46620042C43D4B7BA865EB15 /* Timeline.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ../../src/choreograph/Timeline.hpp; sourceTree = "<group>"; name = Timeline.hpp; };
+		AD2C6D05C1094DDF8B01A79B /* ChoreographDevApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ChoreographDevApp.cpp; path = ../src/ChoreographDevApp.cpp; sourceTree = "<group>"; };
+		CC3ADF2964A7493DB35764A9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +72,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		01B97315FEAEA392516A2CEA /* Blocks */ = {
+			isa = PBXGroup;
+			children = (
+				58EB4D07EB2D427F9598A44B /* Choreograph */,
+			);
+			name = Blocks;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,42 +135,6 @@
 			name = ChoreographDev;
 			sourceTree = "<group>";
 		};
-		359BEBEEF9174E33BB5876F3 /* choreograph */ = {
-			isa = PBXGroup;
-			children = (
-				6B7CED59119845E088296086 /* Choreograph.hpp */,
-				63C7A516B1D54996B6B6DED1 /* Motion.hpp */,
-				3AF49E1128C44D14865570E5 /* Output.hpp */,
-				581E11D819664B4B8119E463 /* Sequence.hpp */,
-				46620042C43D4B7BA865EB15 /* Timeline.hpp */,
-			);
-			name = choreograph;
-			sourceTree = "<group>";
-		};
-		F4BAC9F80C094C489DCB9D13 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				359BEBEEF9174E33BB5876F3 /* choreograph */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		58EB4D07EB2D427F9598A44B /* Choreograph */ = {
-			isa = PBXGroup;
-			children = (
-				F4BAC9F80C094C489DCB9D13 /* src */,
-			);
-			name = Choreograph;
-			sourceTree = "<group>";
-		};
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-				58EB4D07EB2D427F9598A44B /* Choreograph */,
-			);
-			name = Blocks;
-			sourceTree = "<group>";
-		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
@@ -191,6 +160,36 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		359BEBEEF9174E33BB5876F3 /* choreograph */ = {
+			isa = PBXGroup;
+			children = (
+				15184EA319BBA8D2007139FC /* Motion.h */,
+				15184EA419BBA8D2007139FC /* Output.h */,
+				158218A119BBA8AF00AAD280 /* Output.cpp */,
+				1582189F19BBA85000AAD280 /* Motion.cpp */,
+				6B7CED59119845E088296086 /* Choreograph.hpp */,
+				581E11D819664B4B8119E463 /* Sequence.hpp */,
+				46620042C43D4B7BA865EB15 /* Timeline.hpp */,
+			);
+			name = choreograph;
+			sourceTree = "<group>";
+		};
+		58EB4D07EB2D427F9598A44B /* Choreograph */ = {
+			isa = PBXGroup;
+			children = (
+				F4BAC9F80C094C489DCB9D13 /* src */,
+			);
+			name = Choreograph;
+			sourceTree = "<group>";
+		};
+		F4BAC9F80C094C489DCB9D13 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				359BEBEEF9174E33BB5876F3 /* choreograph */,
+			);
+			name = src;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -219,6 +218,8 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ChoreographDev" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -255,6 +256,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1683AD090A334430B38F2D37 /* ChoreographDevApp.cpp in Sources */,
+				158218A019BBA85000AAD280 /* Motion.cpp in Sources */,
+				158218A219BBA8AF00AAD280 /* Output.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,24 +268,24 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ChoreographDev_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = ChoreographDev_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = ChoreographDev;
-				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
@@ -296,31 +299,31 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = ChoreographDev_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
 				);
-				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = ChoreographDev_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = ChoreographDev;
 				STRIP_INSTALLED_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = x86_64;
-				CINDER_PATH = "../../../..";
+				CINDER_PATH = ../../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
@@ -333,11 +336,11 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = x86_64;
-				CINDER_PATH = "../../../..";
+				CINDER_PATH = ../../../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";

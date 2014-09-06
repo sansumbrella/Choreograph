@@ -30,25 +30,30 @@
 namespace choreograph
 {
 
+class MotionBase;
+
+class OutputBase
+{
+public:
+  virtual ~OutputBase()
+  {
+    disconnect();
+  }
+
+  /// Disconnect from Motion input.
+  void disconnect();
+
+private:
+  friend class MotionBase;
+  MotionBase    *_input;
+};
+
 //! Safe type for Choreograph outputs.
 //! Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
 template<typename T>
 class Output
 {
 public:
-	~Output()
-	{
-		disconnect();
-	}
-
-	//! Removes self from input Motion.
-	void disconnect()
-	{
-		if( mInput ) {
-			mInput->output = nullptr;
-			mInput = nullptr;
-		}
-	}
 
 	Output<T>& operator= ( T value ) { mValue = value; return *this }
 
@@ -70,7 +75,6 @@ public:
 
 private:
 	T				mValue;
-	Motion	*mInput; // consider using a weak_ptr in case Motion is destructed before Output. Or Motion needs to know about Output and inform.
 };
 
 } // namespace choreograph

@@ -1,6 +1,6 @@
 # Choreograph
 
-A simple, header-only C++11 animation and timing library.
+A simple C++11 animation and timing library.
 (Header-only by default as it is templated)
 
 ## Features

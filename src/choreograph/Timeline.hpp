@@ -30,9 +30,6 @@
 namespace choreograph
 {
   //! Remove all elements from \a container that match \a compare
-  //! This is closer to an earlier strategy I had than vector_erase_if,
-  //! but that was plagued by obscure error messages. Will see if this works
-  //! a bit better / more flexibly
   template<class CONTAINER_TYPE, class COMPARATOR>
   void erase_if( CONTAINER_TYPE *container, COMPARATOR compare )
   {
@@ -53,9 +50,7 @@ namespace choreograph
   }
 
 /*
- Holds a collection of Motions.
- Maybe variadic templates to specify an animation with different channel types,
- or one composed of n existing channels...
+ Holds a collection of Motions and updates them through time.
  */
 class Timeline
 {
@@ -101,8 +96,9 @@ public:
 
     if( _auto_clear )
     {
-      erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &c ) { return !c->_continuous && c->time() >= c->getDuration(); } );
+      erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return ! c->_continuous && c->time() >= c->getDuration(); } );
     }
+//    erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return c->isInvalid(); } );
   }
 
   void remove( const std::shared_ptr<MotionBase> &motion )

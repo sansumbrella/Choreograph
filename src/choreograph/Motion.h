@@ -30,6 +30,7 @@
 namespace choreograph
 {
 
+class OutputBase;
 /**
 A connection between a continuous, independent Sequence and an output.
 Non-templated base type so we can store in a polymorphic container.
@@ -37,7 +38,7 @@ Non-templated base type so we can store in a polymorphic container.
 class MotionBase
 {
 public:
-	virtual ~MotionBase() = default;
+	virtual ~MotionBase();
 
 	//! Move forward in time.
 	void step( float dt )
@@ -68,6 +69,9 @@ public:
 	void        setPlaybackSpeed( float s ) { _speed = s; }
 	float       getPlaybackSpeed() const { return _speed; }
 
+protected:
+  void disconnect();
+
 private:
 	//! Playback speed. Set to negative to go in reverse.
 	float       _speed = 1.0f;
@@ -77,6 +81,9 @@ private:
 	float       _previous_time = 0.0f;
 	//! Animation start time in seconds. Time from which Sequence is evaluated.
 	float       _start_time = 0.0f;
+
+  friend class OutputBase;
+  OutputBase  *_output_base;
 };
 
 class Cue : public MotionBase

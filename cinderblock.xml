@@ -9,6 +9,9 @@
 	>
 	<!-- All the headers. -->
 	<headerPattern>src/choreograph/*.hpp</headerPattern>
+	<headerPattern>src/choreograph/*.h</headerPattern>
+	<sourcePattern>src/choreograph/*.cpp</sourcePattern>
+	<!-- Specialization for quaternion slerping. -->
 	<sourceFile>src/specialization/GlmSpecialization.cpp</sourceFile>
 </block>
 </cinder>
