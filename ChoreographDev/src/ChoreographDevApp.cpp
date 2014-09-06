@@ -22,6 +22,8 @@ private:
   ci::vec2              _ball_2 = ci::vec2( 400.0f, 400.0f );
   float                 _ball_radius = 50.0f;
   co::Timeline          _anim;
+
+  vec2          _mouse_follower;
 };
 
 void ChoreographDevApp::setup()
@@ -47,6 +49,7 @@ void ChoreographDevApp::setup()
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
 {
+  _anim.move( &_mouse_follower ).getSequence().rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 }
 
 void ChoreographDevApp::update()
@@ -66,6 +69,9 @@ void ChoreographDevApp::draw()
   gl::drawSolidCircle( vec2( 200.0f, _ball_y ), 120.0f );
   gl::color( 0.0f, 0.0f, 1.0f );
   gl::drawSolidCircle( _ball_2, _ball_radius );
+
+  gl::color( 0.0f, 1.0f, 0.0f );
+  gl::drawSolidCircle( _mouse_follower, 40.0f );
 }
 
 CINDER_APP_NATIVE( ChoreographDevApp, RendererGl )
