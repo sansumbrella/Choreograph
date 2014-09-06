@@ -25,13 +25,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include "Sequence.hpp"
-#include "Motion.h"
-#include "Output.h"
 #include "Timeline.h"
 
-namespace choreograph {} // namespace choreograph
+using namespace choreograph;
 
-namespace co = choreograph;
+void Timeline::step( float dt )
+{
+  for( auto &c : _motions )
+  {
+    c->step( dt );
+  }
+
+  if( _auto_clear )
+  {
+    erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return ! c->_continuous && c->time() >= c->getDuration(); } );
+  }
+  //    erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return c->isInvalid(); } );
+}
+
+void Timeline::remove( const std::shared_ptr<MotionBase> &motion )
+{
+  vector_remove( &_motions, motion );
+}

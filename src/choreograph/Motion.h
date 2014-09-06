@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include "Sequence.hpp"
+
 namespace choreograph
 {
 
@@ -70,9 +72,11 @@ public:
 	void        setPlaybackSpeed( float s ) { _speed = s; }
 	float       getPlaybackSpeed() const { return _speed; }
 
-private:
+protected:
 	// True if the underlying Sequence should play forever.
 	bool        _continuous = false;
+
+private:
 
 	// Null pointer to target, used for comparison with other MotionBase's.
 	void        *_target = nullptr;
@@ -121,7 +125,7 @@ class Motion : public MotionBase
 public:
 	void update() override
 	{
-		CI_ASSERT( isValid() );
+    assert( isValid() );
 
 		if( _startFn ) {
 			if( forward() && time() > 0.0f && previousTime() <= 0.0f )
@@ -132,7 +136,7 @@ public:
 
 		*_output = _sequence->getValue( time() );
 		if( _updateFn ) {
-			_updateFn( *output );
+			_updateFn( *_output );
 		}
 
 		if( _finishFn ){
@@ -172,6 +176,8 @@ private:
 	Callback      _finishFn = nullptr;
 	Callback      _startFn = nullptr;
 	DataCallback  _updateFn = nullptr;
+
+  friend class Timeline;
 };
 
 } // namespace choreograph

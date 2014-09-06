@@ -55,7 +55,7 @@ class Output
 {
 public:
 
-	Output<T>& operator= ( T value ) { mValue = value; return *this }
+	Output<T>& operator= ( T value ) { mValue = value; return *this; }
 
 	//! Returns value.
 	const T& 	value() const { return mValue; }
@@ -71,7 +71,7 @@ public:
 	//! Returns pointer to value.
 	const T* 	ptr() const { return &mValue; }
 	//! Returns pointer to value.
-	T*				ptr() const { return &mValue; }
+	T*				ptr() { return &mValue; }
 
 private:
 	T				mValue;

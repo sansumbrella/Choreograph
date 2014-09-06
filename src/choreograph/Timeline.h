@@ -26,6 +26,7 @@
  */
 
 #pragma once
+#include "Motion.h"
 
 namespace choreograph
 {
@@ -60,13 +61,13 @@ public:
   template<typename T>
   Motion<T>& move( T *output )
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
-    erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->_target == output; } );
+    remove( output );
 
     auto c = std::make_shared<Motion<T>>();
-    c->sequence = std::make_shared<Sequence<T>>();
-    c->output = output;
+    c->_sequence = std::make_shared<Sequence<T>>();
+    c->_output = output;
     c->_target = output;
-    c->sequence->_initial_value = *output;
+    c->_sequence->_initial_value = *output;
     _motions.push_back( c );
     return *c;
   }
@@ -75,7 +76,7 @@ public:
   template<typename T>
   Motion<T>& move( T *output, std::shared_ptr<Sequence<T>> sequence )
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
-    erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &m) { return m->_target == output; } );
+    remove( output );
 
     auto c = std::make_shared<Motion<T>>();
     c->sequence = sequence;
@@ -86,24 +87,16 @@ public:
     return *c;
   }
 
-  // Advance all current connections.
-  void step( float dt )
-  {
-    for( auto &c : _motions )
-    {
-      c->step( dt );
-    }
+  //! Advance all current motions.
+  void step( float dt );
+  //! Remove specific motion.
+  void remove( const std::shared_ptr<MotionBase> &motion );
 
-    if( _auto_clear )
-    {
-      erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return ! c->_continuous && c->time() >= c->getDuration(); } );
-    }
-//    erase_if( &_motions, [] (const std::shared_ptr<MotionBase> &c ) { return c->isInvalid(); } );
-  }
-
-  void remove( const std::shared_ptr<MotionBase> &motion )
+  //! Remove motion associated with specific output.
+  template<typename T>
+  void remove( T *output )
   {
-    vector_remove( &_motions, motion );
+    erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->_target == output; } );
   }
 
 private:
