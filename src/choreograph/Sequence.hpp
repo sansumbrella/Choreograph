@@ -47,8 +47,7 @@ struct LinearRamp
   float operator() ( float t ) const { return t; }
 };
 
-// A position describes a point in time.
-
+//! A Position describes a point in time.
 template<typename T>
 struct Position
 {
@@ -56,15 +55,17 @@ struct Position
   float time;
 };
 
+//! The default templated lerp function.
 template<typename T>
 T lerpT( const T &a, const T &b, float t )
 {
   return a + (b - a) * t;
 }
 
-/*
+/**
  A Phrase is a part of a Sequence.
  It describes the motion between two positions.
+ This is the essence of a Tween, with all values held internally.
  */
 template<typename T>
 struct Phrase
@@ -84,7 +85,7 @@ struct Phrase
 /**
  A Sequence of motions.
  Our essential compositional tool, describing all the transformations to one element.
- The platonic idea of an animation sequence; this describes a motion for all possible points in time.
+ A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
 */
 template<typename T>
 class Sequence
@@ -92,6 +93,7 @@ class Sequence
 public:
   T getValue( float atTime );
 
+  //! Set current value. An instantaneous hold.
   Sequence<T>& set( const T &value )
   {
     if( _segments.empty() ) {
@@ -100,15 +102,19 @@ public:
     else {
       hold( value, 0.0f );
     }
-
     return *this;
   }
 
+  //! Hold on current end value for \a duration seconds.
+  Sequence<T>& wait( float duration ) { hold( duration ); }
+
+  //! Hold on current end value for \a duration seconds.
   Sequence<T>& hold( float duration )
   {
     return hold( endValue(), duration );
   }
 
+  //! Hold on \a value for \a duration seconds.
   Sequence<T>& hold( const T &value, float duration )
   {
     Phrase<T> s;
@@ -123,6 +129,7 @@ public:
     return *this;
   }
 
+  //! Animate to \a value over \a duration seconds using \a ease easing.
   Sequence<T>& rampTo( const T &value, float duration, const EaseFn &ease = LinearRamp() )
   {
     Phrase<T> s;
@@ -137,14 +144,27 @@ public:
     return *this;
   }
 
+  //! Sets the ease function of the last Phrase in the Sequence.
+  Sequence<T>& ease( const EaseFn &easeFn ) {
+    if( ! _segments.empty() ) {
+      _segments.back().motion = easeFn;
+    }
+    return *this;
+  }
+
+  //! Returns the number of seconds required to move through all Phrases.
   float getDuration() const { return _duration; }
+
+  //! Returns the value at the end of the Sequence.
+  T endValue() const { return _segments.empty() ? _initial_value : _segments.back().end.value; }
+
+  //! Returns the value at the beginning of the Sequence.
+  T initialValue() const { return _initial_value; }
 
 private:
   std::vector<Phrase<T>>  _segments;
-  T     _initial_value;
-  T     endValue() const { return _segments.empty() ? _initial_value : _segments.back().end.value; }
-  Phrase<T>& endPhrase() const { return _segments.back(); }
-  float _duration = 0.0f;
+  T                       _initial_value;
+  float                   _duration = 0.0f;
 
   friend class Timeline;
 };
