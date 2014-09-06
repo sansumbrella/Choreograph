@@ -31,9 +31,20 @@
 
 using namespace choreograph;
 
+//
+//  MotionBase
+//
+
 MotionBase::~MotionBase()
 {
   disconnect();
+}
+
+void MotionBase::step( float dt )
+{
+  _time += dt * _speed;
+  update(); // update properties
+  _previous_time = _time;
 }
 
 void MotionBase::disconnect()
@@ -57,3 +68,20 @@ bool MotionBase::isFinished() const
   }
   return false;
 }
+
+//
+//  Cue
+//
+
+void Cue::update()
+{
+  if( forward() && time() >= 0.0f && previousTime() < 0.0f )
+    _cue();
+  else if( forward() && time() <= 0.0f && previousTime() > 0.0f )
+    _cue();
+}
+
+
+//
+//  Motion
+//

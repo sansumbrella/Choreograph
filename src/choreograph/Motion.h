@@ -43,15 +43,13 @@ class MotionBase
 public:
 	virtual ~MotionBase();
 
-	//! Move forward in time.
-	void step( float dt )
-	{
-		_time += dt * _speed;
-		update();
-		_previous_time = _time;
-	}
+	//! Move motion forward in time.
+	void step( float dt );
+
+  //! Overridden to determine what a time step does.
 	virtual void update() = 0;
 
+  //! Returns the duration of the motion.
 	virtual float getDuration() const = 0;
 
 	//! Returns current animation time in seconds.
@@ -105,13 +103,11 @@ private:
 class Cue : public MotionBase
 {
 public:
-	void update() override
-	{
-		if( forward() && time() >= 0.0f && previousTime() < 0.0f )
-			_cue();
-		else if( forward() && time() <= 0.0f && previousTime() > 0.0f )
-			_cue();
-	}
+  //! Calls cue function if time threshold has been crossed.
+	void update() override;
+
+  //! Cues are instantaneous.
+  float getDuration() const override { return 0.0f; }
 private:
 	std::function<void ()> _cue;
 };
@@ -126,7 +122,30 @@ template<typename T>
 class Motion : public MotionBase
 {
 public:
-	void update() override
+  //! Duration is based on the underlying sequence.
+	float getDuration() const override { return _sequence->getDuration(); }
+
+	float getProgress() const { return time() / _sequence->getDuration(); }
+
+	//! Returns the underlying sequence for extension.
+	Sequence<T>&  getSequence() { return *_sequence; }
+
+	typedef std::function<void (const T&)>        DataCallback;
+	typedef std::function<void (Motion<T> &)> Callback;
+	//! Set a function to be called when we reach the end of the sequence.
+	Motion<T>&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
+	//! Set a function to be called when we start the sequence.
+	Motion<T>&  startFn( const Callback &c ) { _startFn = c; return *this; }
+	//! Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
+	Motion<T>&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
+
+	Motion<T>&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
+
+	//! Set the connection to play continuously.
+	Motion<T>&  continuous( bool c ) { _continuous = c; return *this; }
+
+  //! Update
+  void update() override
 	{
     assert( isValid() );
 
@@ -149,27 +168,6 @@ public:
 				_finishFn( *this );
 		}
 	}
-
-	float getDuration() const override { return _sequence->getDuration(); }
-
-	float getProgress() const { return time() / _sequence->getDuration(); }
-
-	//! Returns the underlying sequence for extension.
-	Sequence<T>&  getSequence() { return *_sequence; }
-
-	typedef std::function<void (const T&)>        DataCallback;
-	typedef std::function<void (Motion<T> &)> Callback;
-	//! Set a function to be called when we reach the end of the sequence.
-	Motion<T>&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
-	//! Set a function to be called when we start the sequence.
-	Motion<T>&  startFn( const Callback &c ) { _startFn = c; return *this; }
-	//! Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
-	Motion<T>&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
-
-	Motion<T>&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
-
-	//! Set the connection to play continuously.
-	Motion<T>&  continuous( bool c ) { _continuous = c; return *this; }
 
 private:
 	// shared_ptr to sequence since many connections could share the same sequence
