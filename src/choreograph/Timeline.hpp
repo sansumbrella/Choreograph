@@ -29,17 +29,6 @@
 
 namespace choreograph
 {
-
-  //! Remove all elements from \a vec that match \a compare
-  template<class ELEMENT_TYPE, class COMPARATOR>
-  void vector_erase_if( std::vector<ELEMENT_TYPE> *vec, COMPARATOR compare )
-  {
-    vec->erase( std::remove_if( vec->begin()
-                               , vec->end()
-                               , compare )
-               , vec->end() );
-  }
-
   //! Remove all elements from \a container that match \a compare
   //! This is closer to an earlier strategy I had than vector_erase_if,
   //! but that was plagued by obscure error messages. Will see if this works
@@ -59,7 +48,7 @@ namespace choreograph
   {
     vec->erase( std::remove_if( vec->begin()
                                , vec->end()
-                               , [=](const ELEMENT_TYPE &e){ return e == element; } )
+                               , [element](const ELEMENT_TYPE &e){ return e == element; } )
                , vec->end() );
   }
 
@@ -118,7 +107,7 @@ public:
 
   void remove( const std::shared_ptr<MotionBase> &motion )
   {
-    erase_if( &_motions, [motion] (const std::shared_ptr<MotionBase> &c ) { return c == motion; } );
+    vector_remove( &_motions, motion );
   }
 
 private:
