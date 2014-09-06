@@ -27,10 +27,41 @@
 
 #pragma once
 
-#include "pockets/CollectionUtilities.hpp"
-
 namespace choreograph
 {
+
+  //! Remove all elements from \a vec that match \a compare
+  template<class ELEMENT_TYPE, class COMPARATOR>
+  void vector_erase_if( std::vector<ELEMENT_TYPE> *vec, COMPARATOR compare )
+  {
+    vec->erase( std::remove_if( vec->begin()
+                               , vec->end()
+                               , compare )
+               , vec->end() );
+  }
+
+  //! Remove all elements from \a container that match \a compare
+  //! This is closer to an earlier strategy I had than vector_erase_if,
+  //! but that was plagued by obscure error messages. Will see if this works
+  //! a bit better / more flexibly
+  template<class CONTAINER_TYPE, class COMPARATOR>
+  void erase_if( CONTAINER_TYPE *container, COMPARATOR compare )
+  {
+    container->erase( std::remove_if( container->begin(),
+                                     container->end(),
+                                     compare ),
+                     container->end() );
+  }
+
+  //! Remove all copies of \a element from \a vec
+  template<class ELEMENT_TYPE>
+  void vector_remove( std::vector<ELEMENT_TYPE> *vec, const ELEMENT_TYPE &element )
+  {
+    vec->erase( std::remove_if( vec->begin()
+                               , vec->end()
+                               , [=](const ELEMENT_TYPE &e){ return e == element; } )
+               , vec->end() );
+  }
 
 /*
  Holds a collection of Motions.
@@ -45,7 +76,7 @@ public:
   template<typename T>
   Motion<T>& move( T *output )
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
-    pk::vector_erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->_target == output; } );
+    erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->_target == output; } );
 
     auto c = std::make_shared<Motion<T>>();
     c->sequence = std::make_shared<Sequence<T>>();
@@ -60,7 +91,7 @@ public:
   template<typename T>
   Motion<T>& move( T *output, std::shared_ptr<Sequence<T>> sequence )
   { // remove any existing motions that affect the same variable (because that doesn't make sense within a single timeline)
-    pk::vector_erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &m) { return m->_target == output; } );
+    erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &m) { return m->_target == output; } );
 
     auto c = std::make_shared<Motion<T>>();
     c->sequence = sequence;
@@ -81,7 +112,7 @@ public:
 
     if( _auto_clear )
     {
-      pk::vector_erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &c ) { return !c->_continuous && c->time() >= c->getDuration(); } );
+      erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &c ) { return !c->_continuous && c->time() >= c->getDuration(); } );
 //      _motions.erase( std::remove_if( _motions.begin(), _motions.end(), [=] (const std::shared_ptr<MotionBase> &c ) { return !c->_continuous && c->time >= c->getDuration(); } ), _motions.end() );
     }
   }
