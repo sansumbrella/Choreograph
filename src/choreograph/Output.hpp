@@ -25,9 +25,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- #pragma once
+#pragma once
 
- namespace choreograph
- {
+namespace choreograph
+{
 
- } // namespace choreograph
+//! Safe type for Choreograph outputs.
+//! Disconnects applied Animation on destruction so you don't accidentally modify stale pointers.
+template<typename T>
+class Output
+{
+public:
+	~Output()
+	{
+		disconnect();
+	}
+
+	//! Removes self from parent Animation.
+	void disconnect()
+	{
+		if( mParent ) {
+			mParent->removeOutput( this );
+		}
+	}
+
+	Output<T>& operator= ( T value ) { mValue = value; return *this }
+
+	//! Returns value.
+	const T& 	value() const { return mValue; }
+
+	//! Returns value.
+	const T& 	operator() () const { return mValue; }
+	//! Returns value.
+	T&				operator() () { return mValue; }
+
+	//! Cast to value type.
+	operator const T&()	{ return mValue; }
+
+	//! Returns pointer to value.
+	const T* 	ptr() const { return &mValue; }
+	//! Returns pointer to value.
+	T*				ptr() const { return &mValue; }
+
+private:
+	T				mValue;
+	Motion	*mInput;
+};
+
+} // namespace choreograph
