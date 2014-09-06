@@ -163,11 +163,17 @@ public:
 	Sequence<T>&  getSequence() { return *_sequence; }
 
 	typedef std::function<void (const T&)>        DataCallback;
-	typedef std::function<void (Motion<T> &)> Callback;
-	//! Set a function to be called when we reach the end of the sequence.
+	typedef std::function<void (Motion<T> &)>     Callback;
+  typedef std::function<void ()>                EmptyCallback;
+
+	//! Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
 	Motion<T>&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
-	//! Set a function to be called when we start the sequence.
+  Motion<T>&  finishFn( const EmptyCallback &c ) { _finishFn = [c] (Motion<T> &) { c(); }; return *this; }
+
+	//! Set a function to be called when we start the sequence. Receives *this as an argument.
 	Motion<T>&  startFn( const Callback &c ) { _startFn = c; return *this; }
+  Motion<T>&  startFn( const EmptyCallback &c ) { _startFn = [c] (Motion<T> &) { c(); }; return *this; }
+
 	//! Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
 	Motion<T>&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
 

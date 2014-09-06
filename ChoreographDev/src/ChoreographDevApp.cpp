@@ -29,11 +29,11 @@ private:
 void ChoreographDevApp::setup()
 {
   _anim.move( &_ball_y )
-  .startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } )
+//  .startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } )
   .getSequence().set( 5.0f ).hold( 0.5f ).rampTo( 500.0f, 1.0f, EaseInOutQuad() ).hold( 500.0f, 0.33f ).rampTo( 700.0f, 1.0f ).hold( 20.0f, 1.0f ).set( 400.0f );
 
   _anim.move( &_ball_2 )
-  .startFn( [] (Motion<vec2> &c) { cout << "Start blue" << endl; } )
+//  .startFn( [] (Motion<vec2> &c) { cout << "Start blue" << endl; } )
   .finishFn( [] (Motion<vec2> &c) { c.playbackSpeed( c.getPlaybackSpeed() * -1.0f ); } )
   .continuous( true )
   .updateFn( [&] (const vec2 &v) {
@@ -49,7 +49,8 @@ void ChoreographDevApp::setup()
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
 {
-  _anim.move( &_mouse_follower ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
+  console() << "Mouse Down" << endl;
+  _anim.move( &_mouse_follower ).finishFn( [] { app::console() << "Mouse Anim Finished" << endl; } ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 //  _anim.queue( &_mouse_follower ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
 }

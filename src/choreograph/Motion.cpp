@@ -71,6 +71,7 @@ void MotionBase::disconnect()
   if( _output_base ) {
     _output_base->_input = nullptr;
     _output_base = nullptr;
+    _target = nullptr;
     app::console() << "MotionBase disconnected" << endl;
   }
 }
