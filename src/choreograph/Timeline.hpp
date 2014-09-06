@@ -113,13 +113,12 @@ public:
     if( _auto_clear )
     {
       erase_if( &_motions, [=] (const std::shared_ptr<MotionBase> &c ) { return !c->_continuous && c->time() >= c->getDuration(); } );
-//      _motions.erase( std::remove_if( _motions.begin(), _motions.end(), [=] (const std::shared_ptr<MotionBase> &c ) { return !c->_continuous && c->time >= c->getDuration(); } ), _motions.end() );
     }
   }
 
   void remove( const std::shared_ptr<MotionBase> &motion )
   {
-    _motions.erase( std::remove_if( _motions.begin(), _motions.end(), [=] (const std::shared_ptr<MotionBase> &c ) { return c == motion; } ), _motions.end() );
+    erase_if( &_motions, [motion] (const std::shared_ptr<MotionBase> &c ) { return c == motion; } );
   }
 
 private:
