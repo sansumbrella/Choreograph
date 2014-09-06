@@ -121,6 +121,18 @@ public:
     return move( output ).getSequence();
   }
 
+  //! Add phrases to the end of the Sequence currently connected to \a output.
+  template<typename T>
+  Sequence<T>& queue( Output<T> *output )
+  {
+    for( auto &motion : _motions ) {
+      if( motion->getTarget() == output ) {
+        return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
+      }
+    }
+    return move( output ).getSequence();
+  }
+
   //! Remove specific motion.
   void remove( const std::shared_ptr<MotionBase> &motion );
 
