@@ -31,7 +31,7 @@ namespace choreograph
 {
 
 //! Safe type for Choreograph outputs.
-//! Disconnects applied Animation on destruction so you don't accidentally modify stale pointers.
+//! Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
 template<typename T>
 class Output
 {
@@ -41,11 +41,12 @@ public:
 		disconnect();
 	}
 
-	//! Removes self from parent Animation.
+	//! Removes self from input Motion.
 	void disconnect()
 	{
-		if( mParent ) {
-			mParent->removeOutput( this );
+		if( mInput ) {
+			mInput->output = nullptr;
+			mInput = nullptr;
 		}
 	}
 
@@ -69,7 +70,7 @@ public:
 
 private:
 	T				mValue;
-	Motion	*mInput;
+	Motion	*mInput; // consider using a weak_ptr in case Motion is destructed before Output. Or Motion needs to know about Output and inform.
 };
 
 } // namespace choreograph
