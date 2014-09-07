@@ -65,11 +65,12 @@ public:
     mValue( value )
   {}
 
-  // Assignment would modify the rhs, so we don't allow it.
-  // If we did allow it, would we want to take the Motion input with us?
+  //! Remove copy assignment since it has non-obvious semantics.
   Output<T>& operator= ( const Output<T> &rhs ) = delete;
 
   /*
+  // Assignment would modify the rhs, so we don't allow it.
+  // If we did allow it, would we want to take the Motion input with us?
   Output<T>& operator= ( const Output<T> &rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
@@ -79,7 +80,7 @@ public:
   }
   */
 
-  // Move assignment
+  //! Move assignment takes value and any input Motion.
   Output<T>& operator= ( Output<T> &&rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
@@ -88,13 +89,12 @@ public:
     return *this;
   }
 
+  //! Copy constructor takes value only.
   Output( const Output<T> &rhs ):
     mValue( rhs.mValue )
-  {
-    set( rhs );
-  }
+  {}
 
-  // Move constructor.
+  //! Move constructor takes value and any input Motion.
   Output( Output<T> &&rhs ):
     mValue( rhs.mValue )
   {
