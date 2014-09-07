@@ -1,7 +1,6 @@
 # Choreograph
 
-A simple C++11 animation and timing library.
-(Header-only by default as it is templated)
+A simple C++11 animation and timing library. [WIP]
 
 ## Features
 - Timeline-based animation of generic properties.
