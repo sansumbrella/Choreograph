@@ -57,8 +57,18 @@ template<typename T>
 class Output : public OutputBase
 {
 public:
+  //! Default constructor.
+  Output() = default;
 
+  //! Construct with a value.
+  Output( const T &value ):
+    mValue( value )
+  {}
+
+  // Assignment would modify the rhs, so we don't allow it.
+  // If we did allow it, would we want to take the Motion input with us?
   Output<T>& operator= ( const Output<T> &rhs ) = delete;
+
   /*
   Output<T>& operator= ( const Output<T> &rhs ) {
     if( this != &rhs ) {
@@ -68,6 +78,8 @@ public:
     return *this;
   }
   */
+
+  // Move assignment
   Output<T>& operator= ( Output<T> &&rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
@@ -76,8 +88,17 @@ public:
     return *this;
   }
 
+  // Move constructor.
+  Output( Output<T> &&rhs ):
+    mValue( rhs.mValue )
+  {
+    set( rhs );
+  }
+
   //! Assignment operator.
 	Output<T>& operator= ( T value ) { mValue = value; return *this; }
+
+  Output<T>& operator+= ( T value ) { mValue += value; return *this; }
 
 	//! Returns value.
 	const T& 	value() const { return mValue; }

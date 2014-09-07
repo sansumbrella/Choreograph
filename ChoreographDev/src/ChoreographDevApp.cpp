@@ -26,6 +26,8 @@ private:
 
   co::Output<vec2>      _mouse_follower;
   co::Output<float>     _copied;
+
+  vector<co::Output<vec2>>  _collection;
 };
 
 void ChoreographDevApp::setup()
@@ -57,17 +59,19 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
   if( false )
   {
     // Create a locally-scoped variable to test the MotionBase/OutputBase removal
-    co::Output<float> temp;
+    co::Output<float> temp = 5.0f;
     temp = 10.0f;
     _anim.move( &temp ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
   }
 
   {
     // Copy a local output to a member output
-    co::Output<float> temp;
-    temp = randFloat( getWindowWidth() );
+    co::Output<float> temp = randFloat( getWindowWidth() );
+    temp += 10.0f;
+//    temp = randFloat( getWindowWidth() );
     _anim.move( &temp ).getSequence().rampTo( randFloat( getWindowWidth() ), 1.25f, EaseInOutBack() );
-    _copied = std::move( temp ); // we can copy r-values, but don't allow normal assignment because it might break your expectations.
+    // we allow r-value copying, but don't allow standard copy-assignment because it might break your expectations as it modifies the rhs.
+    _copied = std::move( temp );
   }
 
 }
