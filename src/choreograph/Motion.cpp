@@ -78,10 +78,15 @@ void MotionBase::disconnect( OutputBase *base )
 
 void MotionBase::connect( OutputBase *base )
 {
-  _output_base = base;
-  _target = base;
-  _output_base->_input = this;
-  replaceOutput( base );
+  if( _output_base != base ) {
+    app::console() << "Connecting to " << base << endl;
+    disconnect( _output_base );
+
+    _output_base = base;
+    _target = base;
+    _output_base->_input = this;
+    replaceOutput( base );
+  }
 }
 
 bool MotionBase::isFinished() const

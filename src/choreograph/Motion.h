@@ -95,7 +95,7 @@ public:
 protected:
 	// True if the underlying Sequence should play forever.
 	bool        _continuous = false;
-  virtual void replaceOutput( void *output ) {}
+  virtual void replaceOutput( OutputBase *output ) {}
 private:
 
 	// Null pointer to target, used for comparison with other MotionBase's.
@@ -214,8 +214,8 @@ public:
 		}
 	}
 protected:
-  void replaceOutput( void *output ) {
-    _output = static_cast<T *>(output);
+  void replaceOutput( OutputBase *output ) override {
+    _output = static_cast<Output<T> *>(output)->ptr();
   }
 
 private:

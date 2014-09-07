@@ -43,7 +43,7 @@ public:
   void disconnect();
 
 protected:
-  void set( OutputBase &rhs );
+  void set( const OutputBase &rhs );
 private:
   void connect();
   MotionBase    *_input = nullptr;
@@ -59,6 +59,15 @@ class Output : public OutputBase
 public:
 
   Output<T>& operator= ( const Output<T> &rhs ) = delete;
+  /*
+  Output<T>& operator= ( const Output<T> &rhs ) {
+    if( this != &rhs ) {
+      mValue = rhs.mValue;
+      set( rhs );
+    }
+    return *this;
+  }
+  */
   Output<T>& operator= ( Output<T> &&rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;

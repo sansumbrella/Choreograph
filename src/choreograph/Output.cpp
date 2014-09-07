@@ -38,10 +38,9 @@ void OutputBase::disconnect()
   }
 }
 
-void OutputBase::set( choreograph::OutputBase &rhs )
+void OutputBase::set( const choreograph::OutputBase &rhs )
 {
   disconnect();
-  rhs.disconnect();
 
    _input = rhs._input;
 
@@ -51,6 +50,6 @@ void OutputBase::set( choreograph::OutputBase &rhs )
 void OutputBase::connect()
 {
   if( _input ) {
-    _input->_output_base = this;
+    _input->connect( this );
   }
 }
