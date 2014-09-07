@@ -143,7 +143,10 @@ public:
     erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->getTarget() == output; } );
   }
 
+  //! Removes all motions from this timeline.
   void clear() { _motions.clear(); }
+
+  //! Returns true if there are no motions on this timeline.
   bool empty() const { return _motions.empty(); }
 private:
   bool                                      _auto_clear = true;
