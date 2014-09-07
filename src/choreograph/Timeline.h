@@ -143,6 +143,8 @@ public:
     erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->getTarget() == output; } );
   }
 
+  void clear() { _motions.clear(); }
+  bool empty() const { return _motions.empty(); }
 private:
   bool                                      _auto_clear = true;
   std::vector<std::shared_ptr<MotionBase>>  _motions;

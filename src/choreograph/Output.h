@@ -88,6 +88,12 @@ public:
     return *this;
   }
 
+  Output( const Output<T> &rhs ):
+    mValue( rhs.mValue )
+  {
+    set( rhs );
+  }
+
   // Move constructor.
   Output( Output<T> &&rhs ):
     mValue( rhs.mValue )
