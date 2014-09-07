@@ -25,7 +25,8 @@ private:
   float                 _ball_radius = 50.0f;
   co::Timeline          _timeline;
 
-  co::Output<vec2>      _mouse_follower;
+  co::Output<vec2>      _mouse_queue;
+  co::Output<vec2>      _mouse_move;
   co::Output<float>     _copied;
 
   vector<co::Output<vec2>>  _collection;
@@ -57,8 +58,8 @@ void ChoreographDevApp::setup()
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
 {
-//  _timeline.move( &_mouse_follower ).finishFn( [] { app::console() << "Mouse Anim Finished" << endl; } ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
-  _timeline.queue( &_mouse_follower ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
+  _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
+  _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
   if( false )
   {
@@ -99,8 +100,12 @@ void ChoreographDevApp::draw()
   gl::drawSolidCircle( _ball_2, _ball_radius );
 
   gl::color( 0.0f, 1.0f, 0.0f );
-  gl::drawSolidCircle( _mouse_follower, 40.0f );
+  gl::drawSolidCircle( _mouse_queue, 40.0f );
 
+  gl::color( Color( "steelblue" ) );
+  gl::drawSolidCircle( _mouse_move, 30.0f );
+
+  gl::color( Color( "tomato" ) );
   gl::drawSolidCircle( vec2( _copied(), 20.0f ), 20.0f );
 }
 
