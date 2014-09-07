@@ -27,22 +27,38 @@ private:
   ci::vec2              _ball_2 = ci::vec2( 400.0f, 400.0f );
   float                 _ball_radius = 50.0f;
   co::Timeline          _anim;
-  ci::TimelineRef       _timeline = ci::Timeline::create();
 
   co::Output<vec2>      _mouse_follower;
   co::Output<float>     _copied;
 
   vector<co::Output<vec2>>  _collection;
+
+  shared_ptr<co::Timeline>    CO_TIMELINE = make_shared<co::Timeline>();
+  ci::TimelineRef             CI_TIMELINE = ci::Timeline::create();
 };
 
-const int TEST_ANIMS = 1000;
-const float TEST_DURATION = 0.1f;
+const int TEST_ANIMS = 10000;
+const float TEST_DURATION = 0.2f;
 const float TEST_DT = 1.0f / 60.0f;
 
 void ChoreographDevApp::setup()
 {
   for( int i = 0; i < 50; ++i )
   {
+    CI_TIMELINE->clear();
+    CI_TIMELINE->stepTo( 0.0f );
+    CO_TIMELINE->clear();
+
+    vector<ci::Anim<vec2>> cinder_anims( TEST_ANIMS, vec2( 0 ) );
+    vector<co::Output<vec2>> choreograph_outputs( TEST_ANIMS, vec2( 0 ) );
+
+    for( int i = 0; i < TEST_ANIMS; ++i )
+    {
+      CI_TIMELINE->apply( &cinder_anims[i], vec2( i, i * 2 ), TEST_DURATION );
+      CO_TIMELINE->move( &choreograph_outputs[i] ).getSequence().rampTo( vec2( i, i * 2 ), TEST_DURATION );
+    }
+
+
     Timer ci_timer( true );
     performanceCheckCinder();
     ci_timer.stop();
@@ -50,6 +66,7 @@ void ChoreographDevApp::setup()
     Timer co_timer( true );
     performanceCheckChoreograph();
     co_timer.stop();
+
 
     console() << "Cinder: " << ci_timer.getSeconds() << ", Choreograph: " << co_timer.getSeconds() << endl;
     console() << "Time ratio (Cinder/Choreograph): " << ci_timer.getSeconds() / co_timer.getSeconds() << endl;
@@ -76,34 +93,17 @@ void ChoreographDevApp::setup()
 
 void ChoreographDevApp::performanceCheckCinder()
 {
-  // create 1000 tweens and step through them
-  ci::Anim<vec2>   thing_cinder;
-  ci::TimelineRef   timeline = ci::Timeline::create();
-
-  for( int i = 0; i < TEST_ANIMS; ++i )
-  {
-    timeline->apply( &thing_cinder, vec2( i, i * 2 ), TEST_DURATION );
-  }
-
   for( float t = 0.0f; t < TEST_ANIMS * TEST_DURATION; t += TEST_DT )
   {
-    timeline->step( TEST_DT );
+    CI_TIMELINE->step( TEST_DT );
   }
 }
 
 void ChoreographDevApp::performanceCheckChoreograph()
 {
-  co::Output<vec2> thing_co;
-  shared_ptr<co::Timeline>  timeline = make_shared<co::Timeline>();
-
-  for( int i = 0; i < TEST_ANIMS; ++i )
-  {
-    timeline->move( &thing_co ).getSequence().rampTo( vec2( i, i * 2 ), TEST_DURATION );
-  }
-
   for( float t = 0.0f; t < TEST_ANIMS * TEST_DURATION; t += TEST_DT )
   {
-    timeline->step( TEST_DT );
+    CO_TIMELINE->step( TEST_DT );
   }
 }
 
