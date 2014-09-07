@@ -28,6 +28,7 @@
 #include "Motion.h"
 
 #include "Output.h"
+#include "cinder/Log.h"
 
 using namespace choreograph;
 using namespace std;
@@ -40,7 +41,7 @@ using namespace cinder;
 MotionBase::MotionBase( void *target ):
   _target( target )
 {
-  app::console() << "MotionBase from void*" << endl;
+  CI_LOG_V( "MotionBase from void*" );
 }
 
 MotionBase::MotionBase( OutputBase *target ):
@@ -51,7 +52,7 @@ MotionBase::MotionBase( OutputBase *target ):
     _output_base->_input->disconnect( _output_base );
   }
   _output_base->_input = this;
-   app::console() << "MotionBase from OutputBase*" << endl;
+  CI_LOG_V( "MotionBase from OutputBase*" );
 }
 
 MotionBase::~MotionBase()
@@ -72,14 +73,14 @@ void MotionBase::disconnect( OutputBase *base )
     _output_base->_input = nullptr;
     _output_base = nullptr;
     _target = nullptr;
-    app::console() << "MotionBase disconnected" << endl;
+    CI_LOG_V( "MotionBase disconnected" );
   }
 }
 
 void MotionBase::connect( OutputBase *base )
 {
   if( _output_base != base ) {
-    app::console() << "Connecting to " << base << endl;
+    CI_LOG_V( "MotionBase connecting" );
     disconnect( _output_base );
 
     _output_base = base;
