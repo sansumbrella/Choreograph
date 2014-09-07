@@ -39,22 +39,35 @@ public:
   {
     disconnect();
   }
-
   /// Disconnect from Motion input.
   void disconnect();
 
+protected:
+  void set( OutputBase &rhs );
 private:
-  friend class MotionBase;
+  void connect();
   MotionBase    *_input = nullptr;
+  friend class MotionBase;
 };
 
 //! Safe type for Choreograph outputs.
 //! Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
+// TODO: handle assignment, copy-construction, etc. so things don't go badly there.
 template<typename T>
 class Output : public OutputBase
 {
 public:
 
+  Output<T>& operator= ( const Output<T> &rhs ) = delete;
+  Output<T>& operator= ( Output<T> &&rhs ) {
+    if( this != &rhs ) {
+      mValue = rhs.mValue;
+      set( rhs );
+    }
+    return *this;
+  }
+
+  //! Assignment operator.
 	Output<T>& operator= ( T value ) { mValue = value; return *this; }
 
 	//! Returns value.

@@ -95,7 +95,7 @@ public:
 protected:
 	// True if the underlying Sequence should play forever.
 	bool        _continuous = false;
-
+  virtual void replaceOutput( void *output ) {}
 private:
 
 	// Null pointer to target, used for comparison with other MotionBase's.
@@ -114,7 +114,8 @@ private:
 	float       _start_time = 0.0f;
 
 	//! Called on destruction of either MotionBase or _output_base.
-  void disconnect();
+  void disconnect( OutputBase *base );
+  void connect( OutputBase *base );
 
   friend class OutputBase;
 };
@@ -212,6 +213,10 @@ public:
       }
 		}
 	}
+protected:
+  void replaceOutput( void *output ) {
+    _output = static_cast<T *>(output);
+  }
 
 private:
 	// shared_ptr to sequence since many connections could share the same sequence

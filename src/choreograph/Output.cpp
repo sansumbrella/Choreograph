@@ -30,9 +30,27 @@
 #include "Motion.h"
 
 using namespace choreograph;
+
 void OutputBase::disconnect()
 {
   if( _input ) {
-    _input->disconnect();
+    _input->disconnect( this );
+  }
+}
+
+void OutputBase::set( choreograph::OutputBase &rhs )
+{
+  disconnect();
+  rhs.disconnect();
+
+   _input = rhs._input;
+
+  connect();
+}
+
+void OutputBase::connect()
+{
+  if( _input ) {
+    _input->_output_base = this;
   }
 }

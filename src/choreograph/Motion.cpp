@@ -48,7 +48,7 @@ MotionBase::MotionBase( OutputBase *target ):
   _output_base( target )
 {
   if( _output_base->_input ) {
-    _output_base->_input->disconnect();
+    _output_base->_input->disconnect( _output_base );
   }
   _output_base->_input = this;
    app::console() << "MotionBase from OutputBase*" << endl;
@@ -56,7 +56,7 @@ MotionBase::MotionBase( OutputBase *target ):
 
 MotionBase::~MotionBase()
 {
-  disconnect();
+  disconnect( _output_base );
 }
 
 void MotionBase::step( float dt )
@@ -66,14 +66,22 @@ void MotionBase::step( float dt )
   _previous_time = _time;
 }
 
-void MotionBase::disconnect()
+void MotionBase::disconnect( OutputBase *base )
 {
-  if( _output_base ) {
+  if( _output_base && _output_base == base ) {
     _output_base->_input = nullptr;
     _output_base = nullptr;
     _target = nullptr;
     app::console() << "MotionBase disconnected" << endl;
   }
+}
+
+void MotionBase::connect( OutputBase *base )
+{
+  _output_base = base;
+  _target = base;
+  _output_base->_input = this;
+  replaceOutput( base );
 }
 
 bool MotionBase::isFinished() const

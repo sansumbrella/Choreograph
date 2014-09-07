@@ -4,6 +4,7 @@
 
 #include "Choreograph.hpp"
 #include "cinder/Easing.h"
+#include "cinder/Rand.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -24,6 +25,7 @@ private:
   co::Timeline          _anim;
 
   co::Output<vec2>      _mouse_follower;
+  co::Output<float>     _copied;
 };
 
 void ChoreographDevApp::setup()
@@ -52,6 +54,21 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
 //  _anim.move( &_mouse_follower ).finishFn( [] { app::console() << "Mouse Anim Finished" << endl; } ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
   _anim.queue( &_mouse_follower ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
+  {
+    // Create a locally-scoped variable to test the MotionBase/OutputBase removal
+    co::Output<float> temp;
+    temp = 10.0f;
+    _anim.move( &temp ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
+  }
+
+  {
+    // Copy a local output to a member output
+    co::Output<float> temp;
+    temp = 30.0f;
+    _anim.move( &temp ).getSequence().rampTo( randFloat( getWindowWidth() ), 2.5f, EaseInBack() );
+    _copied = std::move(temp); // make it an rvalue to copy
+  }
+
 }
 
 void ChoreographDevApp::update()
@@ -74,6 +91,8 @@ void ChoreographDevApp::draw()
 
   gl::color( 0.0f, 1.0f, 0.0f );
   gl::drawSolidCircle( _mouse_follower, 40.0f );
+
+  gl::drawSolidCircle( vec2( _copied(), 20.0f ), 20.0f );
 }
 
 CINDER_APP_NATIVE( ChoreographDevApp, RendererGl )
