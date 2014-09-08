@@ -81,16 +81,27 @@ public:
 
   virtual ~Phrase() = default;
 
-  void startAt( float time, const T &value ) {
+  //! Set start time to \a time. End time is adjusted to preserve duration.
+  void shiftStartTimeTo( float time ) {
     float delta = time - start.time;
-    start.time += delta;
+    start.time = time;
     end.time += delta;
+  }
+
+  //! Change start value to \a value.
+  void setStartValue( const T &value )
+  {
     start.value = value;
   }
+
+  //! Returns the value at the beginning of this phrase.
   inline const T& getStartValue() const { return start.value; }
+  //! Returns the value at the end of this phrase.
   inline const T& getEndValue() const { return end.value; }
 
+  //! Returns the time at the beginning of this phrase.
   inline float getStartTime() const { return start.time; }
+  //! Returns the time at the end of this phrase.
   inline float getEndTime() const { return end.time; }
 
   //! Returns normalized time if t is in range [start.time, end.time].
@@ -98,6 +109,7 @@ public:
   //! Returns the duration of this phrase.
   inline float getDuration() const { return end.time - start.time; }
 
+  //! Returns the interpolated value at the given time.
   virtual T getValue( float atTime ) const
   {
     return lerpFn( start.value, end.value, motion( normalizeTime( atTime ) ) );
@@ -115,11 +127,13 @@ using PhraseRef = std::shared_ptr<Phrase<T>>;
 /**
  Phrase with separately-interpolated components.
  Allows for the use of separate ease functions per component.
+ All components must be of the same type.
  */
 template<typename T>
 class Phrase2 : public Phrase<T>
 {
 public:
+
   //! Returns the interpolated value at the given time.
   T getValue( float atTime ) const override
   {
@@ -127,6 +141,7 @@ public:
     return T( componentLerpFn( Phrase<T>::getStartValue().x, Phrase<T>::getEndValue().x, motion_x( t ) ),
              componentLerpFn( Phrase<T>::getStartValue().y, Phrase<T>::getEndValue().y, motion_y( t ) ) );
   }
+
   //! Set ease functions for first and second components.
   void setEase( const EaseFn &component_0, const EaseFn &component_1 ) {
     motion_x = component_0;
@@ -134,7 +149,7 @@ public:
   }
 
 private:
-  using ComponentT = decltype( std::declval<T>().x ); // get the type of T thing.x;
+  using ComponentT = decltype( T().x ); // get the type of the x component;
   using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
   ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
   EaseFn          motion_x;
