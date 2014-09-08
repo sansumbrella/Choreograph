@@ -47,12 +47,21 @@ struct LinearRamp
   float operator() ( float t ) const { return t; }
 };
 
+inline float easeNone( float t ) { return t; }
+
 //! A Position describes a point in time.
 template<typename T>
 struct Position
 {
+  Position() = default;
+
+  Position( const T &value, float time = 0.0f ):
+    time( time ),
+    value( value )
+  {}
+
+  float time = 0.0f;
   T     value;
-  float time;
 };
 
 //! The default templated lerp function.
@@ -73,7 +82,12 @@ class Phrase
 public:
   using LerpFn = std::function<T (const T&, const T&, float)>;
 
-  Phrase( const Position<T> &start, const Position<T> &end, const EaseFn &easeFn ):
+  Phrase( const T &end, float duration, const EaseFn &easeFn = &easeNone ):
+    end( end, duration ),
+    motion( easeFn )
+  {}
+
+  Phrase( const Position<T> &start, const Position<T> &end, const EaseFn &easeFn = &easeNone ):
     start( start ),
     end( end ),
     motion( easeFn )
@@ -133,6 +147,17 @@ template<typename T>
 class Phrase2 : public Phrase<T>
 {
 public:
+  Phrase2( const T &end, float duration, const EaseFn &ease_x, const EaseFn &ease_y ):
+    Phrase<T>( end, duration ),
+    motion_x( ease_x ),
+    motion_y( ease_y )
+  {}
+
+  Phrase2( const Position<T> &start, const Position<T> &end, const EaseFn &ease_x, const EaseFn &ease_y ):
+    Phrase<T>( start, end ),
+    motion_x( ease_x ),
+    motion_y( ease_y )
+  {}
 
   //! Returns the interpolated value at the given time.
   T getValue( float atTime ) const override
@@ -151,6 +176,7 @@ public:
 private:
   using ComponentT = decltype( T().x ); // get the type of the x component;
   using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
+
   ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
   EaseFn          motion_x;
   EaseFn          motion_y;
@@ -233,10 +259,22 @@ public:
     Position<T> start{ endValue(), _duration };
     Position<T> end{ value, _duration + duration };
     auto phrase = std::make_shared<PhraseT>( start, end, args... );
-    phrase->startAt( _duration, endValue() );
+    // Would expect the following to make my dream user syntax work.
+//    auto phrase = std::make_shared<PhraseT<T>>( start, end, args... );
 
     _segments.push_back( phrase );
     _duration = phrase->getEndTime();
+
+    return *this;
+  }
+
+  Sequence<T>& then( const PhraseRef<T>& phrase )
+  {
+    phrase->setStartValue( endValue() );
+    phrase->shiftStartTimeTo( _duration );
+    _duration = phrase->getEndTime();
+
+    _segments.push_back( phrase );
 
     return *this;
   }

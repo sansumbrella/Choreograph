@@ -27,6 +27,7 @@ private:
 
   co::Output<vec2>      _mouse_queue;
   co::Output<vec2>      _mouse_move;
+  co::Output<vec2>      _arc;
   co::Output<float>     _copied;
 
   vector<co::Output<vec2>>  _collection;
@@ -73,6 +74,11 @@ void ChoreographDevApp::setup()
     app::console() << "Virtual Phrases: " << perf.getSeconds() * 1000 << "ms" << endl;
   }
 
+  _timeline.move( &_arc ).getSequence()
+    .then<co::Phrase2<vec2>>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
+    // I want to be able to use the syntax on the next line
+//    .then<co::Phrase2>( vec2( 50.0f, 50.0f ), 1.0f, EaseNone(), EaseInOutBounce() )
+    .then( make_shared<Phrase2<vec2>>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() ) );
 }
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
@@ -126,6 +132,9 @@ void ChoreographDevApp::draw()
 
   gl::color( Color( "tomato" ) );
   gl::drawSolidCircle( vec2( _copied(), 20.0f ), 20.0f );
+
+  gl::color( Color( "magenta" ) );
+  gl::drawSolidCircle( _arc, 30.0f );
 }
 
 CINDER_APP_NATIVE( ChoreographDevApp, RendererGl )
