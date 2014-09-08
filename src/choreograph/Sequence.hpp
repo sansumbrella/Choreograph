@@ -146,9 +146,10 @@ template<typename T>
 class Sequence
 {
 public:
+  // Sequences always need to have some valid value.
   Sequence() = delete;
 
-  //! Construct a Sequence with \a value initial value.
+  //! Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
     _initial_value( value )
   {}
