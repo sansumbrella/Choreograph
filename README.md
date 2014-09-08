@@ -46,8 +46,10 @@ A Sequence is a collection of phrases. Sequences are the main object you will ma
 
 Sequences are timeless, you can query their value at any point in time and always get a valid response; they are clamped at their endpoints.
 
-### Motion
+### Motion and Output
 A Motion is the application of a choreograph Sequence. It uses a Sequence of Phrases to move some external variable in time. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they should happen and currently are.
+
+Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop. You can use a raw pointer to any type as an output, as well, but you need to be very careful about object lifetime and memory management if you do.
 
 ### Timeline
 Timelines manage a collection of Motions.
