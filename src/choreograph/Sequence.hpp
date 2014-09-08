@@ -91,7 +91,7 @@ struct Phrase2
 {
   Position<T> start;
   Position<T> end;
-  using ComponentT = decltype( std::declval<T>().x );
+  using ComponentT = decltype( std::declval<T>().x ); // get the type of T thing.x;
   std::function<ComponentT (const ComponentT&, const ComponentT&, float)> lerpFn = &lerpT<ComponentT>;
   EaseFn      motion1;
   EaseFn      motion2;
