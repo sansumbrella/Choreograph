@@ -70,12 +70,13 @@ T lerpT( const T &a, const T &b, float t )
 template<typename T>
 struct Phrase
 {
+//  virtual ~Phrase() = default;
   Position<T> start;
   Position<T> end;
   EaseFn      motion;
   std::function<T (const T&, const T&, float)> lerpFn = &lerpT<T>;
 
-  T getValue( float atTime ) const
+  virtual T getValue( float atTime ) const
   {
     float t = (atTime - start.time) / (end.time - start.time);
     return lerpFn( start.value, end.value, motion( t ) );
@@ -87,7 +88,7 @@ struct Phrase
  Allows for the use of separate ease functions per component.
  */
 template<typename T>
-struct Phrase2
+struct Phrase2 : public Phrase<T>
 {
   Position<T> start;
   Position<T> end;
@@ -96,7 +97,7 @@ struct Phrase2
   EaseFn      motion1;
   EaseFn      motion2;
 
-  T getValue( float atTime ) const
+  T getValue( float atTime ) const override
   {
     float t = (atTime - start.time) / (end.time - start.time);
     return T( lerpFn( start.value.x, end.value.x, motion1( t ) ), lerpFn( start.value.y, end.value.y, motion2( t ) ) );
