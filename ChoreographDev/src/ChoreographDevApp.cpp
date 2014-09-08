@@ -54,6 +54,15 @@ void ChoreographDevApp::setup()
   } )
   .getSequence().rampTo( vec2( app::getWindowSize() ) / 2.0f, 2.0f ).rampTo( vec2( app::getWindowSize() ), 2.0f ).rampTo( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f ).rampTo( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
 
+  co::Phrase2<vec2> phrase;
+  phrase.start = Position<vec2>{ vec2( 0 ), 0.0f };
+  phrase.end = Position<vec2>{ vec2( 10 ), 2.0f };
+  phrase.motion1 = EaseOutQuad();
+  phrase.motion2 = EaseInQuad();
+
+  for( float t = 0.0f; t <= phrase.end.time; t += 0.1f ) {
+    console() << "Separated phrase values: " << phrase.getValue( t ) << endl;
+  }
 }
 
 void ChoreographDevApp::mouseDown( MouseEvent event )

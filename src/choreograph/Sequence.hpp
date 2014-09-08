@@ -83,6 +83,27 @@ struct Phrase
 };
 
 /**
+ Phrase with separately-interpolated components.
+ Allows for the use of separate ease functions per component.
+ */
+template<typename T>
+struct Phrase2
+{
+  Position<T> start;
+  Position<T> end;
+  using ComponentT = decltype( std::declval<T>().x );
+  std::function<ComponentT (const ComponentT&, const ComponentT&, float)> lerpFn = &lerpT<ComponentT>;
+  EaseFn      motion1;
+  EaseFn      motion2;
+
+  T getValue( float atTime ) const
+  {
+    float t = (atTime - start.time) / (end.time - start.time);
+    return T( lerpFn( start.value.x, end.value.x, motion1( t ) ), lerpFn( start.value.y, end.value.y, motion2( t ) ) );
+  }
+};
+
+/**
  A Sequence of motions.
  Our essential compositional tool, describing all the transformations to one element.
  A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
