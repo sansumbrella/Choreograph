@@ -62,5 +62,6 @@ Timelines manage a collection of Motions.
 ### Using the lerp specializations
 Add the relevant specialization cpp file to your build sources.
 
-Tweening alternatives:
-Choreograph v1 eventually became cinder::Timeline.
+#### History/Tweening alternatives:
+Cinder's Timeline is an excellent, production-ready tweening option. It is based on the previous version of Choreograph.  
+Choreograph itself was originally inspired by Flash tweening libraries like Greensock's TweenMax.
