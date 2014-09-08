@@ -68,19 +68,18 @@ T lerpT( const T &a, const T &b, float t )
  This is the essence of a Tween, with all values held internally.
  */
 template<typename T>
-struct Phrase
+class Phrase
 {
 public:
-  Phrase( const Position<T> &start, const Position<T> &end ):
+  using LerpFn = std::function<T (const T&, const T&, float)>;
+
+  Phrase( const Position<T> &start, const Position<T> &end, const EaseFn &easeFn ):
     start( start ),
-    end( end )
+    end( end ),
+    motion( easeFn )
   {}
 
   virtual ~Phrase() = default;
-  Position<T> start;
-  Position<T> end;
-  EaseFn      motion;
-  std::function<T (const T&, const T&, float)> lerpFn = &lerpT<T>;
 
   void startAt( float time, const T &value ) {
     float delta = time - start.time;
@@ -88,7 +87,6 @@ public:
     end.time += delta;
     start.value = value;
   }
-
   inline const T& getStartValue() const { return start.value; }
   inline const T& getEndValue() const { return end.value; }
 
@@ -104,6 +102,11 @@ public:
   {
     return lerpFn( start.value, end.value, motion( normalizeTime( atTime ) ) );
   }
+private:
+  Position<T> start;
+  Position<T> end;
+  EaseFn      motion;
+  LerpFn      lerpFn = &lerpT<T>;
 };
 
 template<typename T>
@@ -114,13 +117,9 @@ using PhraseRef = std::shared_ptr<Phrase<T>>;
  Allows for the use of separate ease functions per component.
  */
 template<typename T>
-struct Phrase2 : public Phrase<T>
+class Phrase2 : public Phrase<T>
 {
-  using ComponentT = decltype( std::declval<T>().x ); // get the type of T thing.x;
-  std::function<ComponentT (const ComponentT&, const ComponentT&, float)> componentLerpFn = &lerpT<ComponentT>;
-  EaseFn      motion_x;
-  EaseFn      motion_y;
-
+public:
   //! Returns the interpolated value at the given time.
   T getValue( float atTime ) const override
   {
@@ -128,12 +127,18 @@ struct Phrase2 : public Phrase<T>
     return T( componentLerpFn( Phrase<T>::getStartValue().x, Phrase<T>::getEndValue().x, motion_x( t ) ),
              componentLerpFn( Phrase<T>::getStartValue().y, Phrase<T>::getEndValue().y, motion_y( t ) ) );
   }
-
   //! Set ease functions for first and second components.
   void setEase( const EaseFn &component_0, const EaseFn &component_1 ) {
     motion_x = component_0;
     motion_y = component_1;
   }
+
+private:
+  using ComponentT = decltype( std::declval<T>().x ); // get the type of T thing.x;
+  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
+  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
+  EaseFn          motion_x;
+  EaseFn          motion_y;
 };
 
 
@@ -185,8 +190,7 @@ public:
   {
     Position<T> start{ value, _duration };
     Position<T> end{ value, _duration + duration };
-    auto phrase = std::make_shared<Phrase<T>>( start, end );
-    phrase->motion = Hold();
+    auto phrase = std::make_shared<Phrase<T>>( start, end, Hold() );
 
     _segments.push_back( phrase );
     _duration = phrase->getEndTime();
@@ -199,8 +203,7 @@ public:
   {
     Position<T> start{ endValue(), _duration };
     Position<T> end{ value, _duration + duration };
-    auto phrase = std::make_shared<Phrase<T>>( start, end );
-    phrase->motion = ease;
+    auto phrase = std::make_shared<Phrase<T>>( start, end, ease );
 
     _segments.push_back( phrase );
 
@@ -235,7 +238,7 @@ public:
   float getDuration() const { return _duration; }
 
   //! Returns the value at the end of the Sequence.
-  T endValue() const { return _segments.empty() ? _initial_value : _segments.back()->end.value; }
+  T endValue() const { return _segments.empty() ? _initial_value : _segments.back()->getEndValue(); }
 
   //! Returns the value at the beginning of the Sequence.
   T initialValue() const { return _initial_value; }
@@ -264,7 +267,7 @@ T Sequence<T>::getValue( float atTime )
 
   auto iter = _segments.begin();
   while( iter < _segments.end() ) {
-    if( (*iter)->end.time > atTime )
+    if( (*iter)->getEndTime() > atTime )
     {
       return (*iter)->getValue( atTime );
     }
