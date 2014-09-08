@@ -54,6 +54,8 @@ void ChoreographDevApp::setup()
   } )
   .getSequence().rampTo( vec2( app::getWindowSize() ) / 2.0f, 2.0f ).rampTo( vec2( app::getWindowSize() ), 2.0f ).rampTo( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f ).rampTo( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
 
+  co::Phrase2<vec2> instantiate;
+
   for( int j = 0; j < 10; ++j )
   {
     co::Timeline test_timeline;
@@ -70,7 +72,7 @@ void ChoreographDevApp::setup()
       }
     }
     perf.stop();
-    app::console() << "Non-virtual Phrases: " << perf.getSeconds() * 1000 << "ms" << endl;
+    app::console() << "Virtual Phrases: " << perf.getSeconds() * 1000 << "ms" << endl;
   }
 
 }

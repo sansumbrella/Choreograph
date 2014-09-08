@@ -70,7 +70,7 @@ T lerpT( const T &a, const T &b, float t )
 template<typename T>
 struct Phrase
 {
-//  virtual ~Phrase() = default;
+  virtual ~Phrase() = default;
   Position<T> start;
   Position<T> end;
   EaseFn      motion;
@@ -82,6 +82,9 @@ struct Phrase
     return lerpFn( start.value, end.value, motion( t ) );
   }
 };
+
+template<typename T>
+using PhraseRef = std::shared_ptr<Phrase<T>>;
 
 /**
  Phrase with separately-interpolated components.
@@ -149,10 +152,10 @@ public:
   //! Hold on \a value for \a duration seconds.
   Sequence<T>& hold( const T &value, float duration )
   {
-    Phrase<T> s;
-    s.start = Position<T>{ value, _duration };
-    s.end = Position<T>{ value, _duration + duration };
-    s.motion = Hold();
+    auto s = std::make_shared<Phrase<T>>();
+    s->start = Position<T>{ value, _duration };
+    s->end = Position<T>{ value, _duration + duration };
+    s->motion = Hold();
 
     _segments.push_back( s );
 
@@ -164,10 +167,10 @@ public:
   //! Animate to \a value over \a duration seconds using \a ease easing.
   Sequence<T>& rampTo( const T &value, float duration, const EaseFn &ease = LinearRamp() )
   {
-    Phrase<T> s;
-    s.start = Position<T>{ endValue(), _duration };
-    s.end = Position<T>{ value, _duration + duration };
-    s.motion = ease;
+    auto s = std::make_shared<Phrase<T>>();
+    s->start = Position<T>{ endValue(), _duration };
+    s->end = Position<T>{ value, _duration + duration };
+    s->motion = ease;
 
     _segments.push_back( s );
 
@@ -188,13 +191,13 @@ public:
   float getDuration() const { return _duration; }
 
   //! Returns the value at the end of the Sequence.
-  T endValue() const { return _segments.empty() ? _initial_value : _segments.back().end.value; }
+  T endValue() const { return _segments.empty() ? _initial_value : _segments.back()->end.value; }
 
   //! Returns the value at the beginning of the Sequence.
   T initialValue() const { return _initial_value; }
 
 private:
-  std::vector<Phrase<T>>  _segments;
+  std::vector<PhraseRef<T>>  _segments;
   T                       _initial_value;
   float                   _duration = 0.0f;
 
@@ -217,9 +220,9 @@ T Sequence<T>::getValue( float atTime )
 
   auto iter = _segments.begin();
   while( iter < _segments.end() ) {
-    if( (*iter).end.time > atTime )
+    if( (*iter)->end.time > atTime )
     {
-      return (*iter).getValue( atTime );
+      return (*iter)->getValue( atTime );
     }
     ++iter;
   }
