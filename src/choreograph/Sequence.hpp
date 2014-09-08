@@ -70,16 +70,39 @@ T lerpT( const T &a, const T &b, float t )
 template<typename T>
 struct Phrase
 {
+public:
+  Phrase( const Position<T> &start, const Position<T> &end ):
+    start( start ),
+    end( end )
+  {}
+
   virtual ~Phrase() = default;
   Position<T> start;
   Position<T> end;
   EaseFn      motion;
   std::function<T (const T&, const T&, float)> lerpFn = &lerpT<T>;
 
+  void startAt( float time, const T &value ) {
+    float delta = time - start.time;
+    start.time += delta;
+    end.time += delta;
+    start.value = value;
+  }
+
+  inline const T& getStartValue() const { return start.value; }
+  inline const T& getEndValue() const { return end.value; }
+
+  inline float getStartTime() const { return start.time; }
+  inline float getEndTime() const { return end.time; }
+
+  //! Returns normalized time if t is in range [start.time, end.time].
+  inline float normalizeTime( float t ) const { return (t - start.time) / (end.time - start.time); }
+  //! Returns the duration of this phrase.
+  inline float getDuration() const { return end.time - start.time; }
+
   virtual T getValue( float atTime ) const
   {
-    float t = (atTime - start.time) / (end.time - start.time);
-    return lerpFn( start.value, end.value, motion( t ) );
+    return lerpFn( start.value, end.value, motion( normalizeTime( atTime ) ) );
   }
 };
 
@@ -93,19 +116,26 @@ using PhraseRef = std::shared_ptr<Phrase<T>>;
 template<typename T>
 struct Phrase2 : public Phrase<T>
 {
-  Position<T> start;
-  Position<T> end;
   using ComponentT = decltype( std::declval<T>().x ); // get the type of T thing.x;
-  std::function<ComponentT (const ComponentT&, const ComponentT&, float)> lerpFn = &lerpT<ComponentT>;
-  EaseFn      motion1;
-  EaseFn      motion2;
+  std::function<ComponentT (const ComponentT&, const ComponentT&, float)> componentLerpFn = &lerpT<ComponentT>;
+  EaseFn      motion_x;
+  EaseFn      motion_y;
 
+  //! Returns the interpolated value at the given time.
   T getValue( float atTime ) const override
   {
-    float t = (atTime - start.time) / (end.time - start.time);
-    return T( lerpFn( start.value.x, end.value.x, motion1( t ) ), lerpFn( start.value.y, end.value.y, motion2( t ) ) );
+    float t = Phrase<T>::normalizeTime( atTime );
+    return T( componentLerpFn( Phrase<T>::getStartValue().x, Phrase<T>::getEndValue().x, motion_x( t ) ),
+             componentLerpFn( Phrase<T>::getStartValue().y, Phrase<T>::getEndValue().y, motion_y( t ) ) );
+  }
+
+  //! Set ease functions for first and second components.
+  void setEase( const EaseFn &component_0, const EaseFn &component_1 ) {
+    motion_x = component_0;
+    motion_y = component_1;
   }
 };
+
 
 /**
  A Sequence of motions.
@@ -152,14 +182,13 @@ public:
   //! Hold on \a value for \a duration seconds.
   Sequence<T>& hold( const T &value, float duration )
   {
-    auto s = std::make_shared<Phrase<T>>();
-    s->start = Position<T>{ value, _duration };
-    s->end = Position<T>{ value, _duration + duration };
-    s->motion = Hold();
+    Position<T> start{ value, _duration };
+    Position<T> end{ value, _duration + duration };
+    auto phrase = std::make_shared<Phrase<T>>( start, end );
+    phrase->motion = Hold();
 
-    _segments.push_back( s );
-
-    _duration += duration;
+    _segments.push_back( phrase );
+    _duration = phrase->getEndTime();
 
     return *this;
   }
@@ -167,14 +196,28 @@ public:
   //! Animate to \a value over \a duration seconds using \a ease easing.
   Sequence<T>& rampTo( const T &value, float duration, const EaseFn &ease = LinearRamp() )
   {
-    auto s = std::make_shared<Phrase<T>>();
-    s->start = Position<T>{ endValue(), _duration };
-    s->end = Position<T>{ value, _duration + duration };
-    s->motion = ease;
+    Position<T> start{ endValue(), _duration };
+    Position<T> end{ value, _duration + duration };
+    auto phrase = std::make_shared<Phrase<T>>( start, end );
+    phrase->motion = ease;
 
-    _segments.push_back( s );
+    _segments.push_back( phrase );
 
-    _duration += duration;
+    _duration = phrase->getEndTime();
+
+    return *this;
+  }
+
+  template<typename PhraseT, typename... Args>
+  Sequence<T>& then( const T& value, float duration, Args... args )
+  {
+    Position<T> start{ endValue(), _duration };
+    Position<T> end{ value, _duration + duration };
+    auto phrase = std::make_shared<PhraseT>( start, end, args... );
+    phrase->startAt( _duration, endValue() );
+
+    _segments.push_back( phrase );
+    _duration = phrase->getEndTime();
 
     return *this;
   }
