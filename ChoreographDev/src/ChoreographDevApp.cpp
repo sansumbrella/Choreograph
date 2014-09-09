@@ -31,9 +31,6 @@ private:
   co::Output<float>     _copied;
 
   vector<co::Output<vec2>>  _collection;
-
-  shared_ptr<co::Timeline>    CO_TIMELINE = make_shared<co::Timeline>();
-  ci::TimelineRef             CI_TIMELINE = ci::Timeline::create();
 };
 
 void ChoreographDevApp::setup()
@@ -78,7 +75,7 @@ void ChoreographDevApp::setup()
     .then<co::Phrase2<vec2>>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
     // I want to be able to use the syntax on the next line
 //    .then<co::Phrase2>( vec2( 50.0f, 50.0f ), 1.0f, EaseNone(), EaseInOutBounce() )
-    .then( make_shared<Phrase2<vec2>>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() ) );
+    .then( make_shared<Phrase2v>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() ) );
 }
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
@@ -86,12 +83,17 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
   _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
   _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
-  if( false )
   {
     // Create a locally-scoped variable to test the MotionBase/OutputBase removal
-    co::Output<float> temp = 5.0f;
-    temp = 10.0f;
-    _timeline.move( &temp ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
+    // Make sure it's dynamically allocated, since stack-allocated variables can mask memory stomping issues.
+
+    // shows invalid pointer issue
+//    unique_ptr<float> temp( new float( 5.0f ) );
+//    _timeline.move( temp.get() ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
+
+    // Demonstrates that Output<T> fixes the invalid pointer issue
+    unique_ptr<co::Output<float>> temp( new co::Output<float>( 5.0f ) );
+    _timeline.move( temp.get() ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
   }
 
   {
