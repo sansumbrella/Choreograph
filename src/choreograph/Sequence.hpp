@@ -37,17 +37,14 @@ namespace choreograph
 // then again, might just make a curve struct that is callable and have a way to set its initial and final derivatives.
 typedef std::function<float (float)> EaseFn;
 
-struct Hold
+namespace
 {
-  float operator() ( float t ) const { return 0.0f; }
-};
-
-struct LinearRamp
-{
-  float operator() ( float t ) const { return t; }
-};
-
+//! Default ease function for holds. Keeps constant value output.
+inline float easeHold( float t ) { return 0.0f; }
+//! Default ease function for ramps.
 inline float easeNone( float t ) { return t; }
+
+} // namespace
 
 //! A Position describes a point in time.
 template<typename T>
@@ -202,7 +199,19 @@ public:
     _initial_value( value )
   {}
 
+  //! Returns the Sequence value at \a atTime.
   T getValue( float atTime );
+
+  //! Returns the Sequence value at \a time, looping past the end from inflection point to the end.
+  T getValueWrapped( float time, float inflectionPoint = 0.0f ) const
+  {
+    if( time > getDuration() ) {
+      return getValue( inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint ) );
+    }
+    else {
+      return getValue( time );
+    }
+  }
 
   //! Set current value. An instantaneous hold.
   Sequence<T>& set( const T &value )
@@ -233,7 +242,7 @@ public:
   {
     Position<T> start{ value, _duration };
     Position<T> end{ value, _duration + duration };
-    auto phrase = std::make_shared<Phrase<T>>( start, end, Hold() );
+    auto phrase = std::make_shared<Phrase<T>>( start, end, &easeHold );
 
     _segments.push_back( phrase );
     _duration = phrase->getEndTime();
@@ -242,7 +251,7 @@ public:
   }
 
   //! Animate to \a value over \a duration seconds using \a ease easing.
-  Sequence<T>& rampTo( const T &value, float duration, const EaseFn &ease = LinearRamp() )
+  Sequence<T>& rampTo( const T &value, float duration, const EaseFn &ease = &easeNone )
   {
     Position<T> start{ endValue(), _duration };
     Position<T> end{ value, _duration + duration };
