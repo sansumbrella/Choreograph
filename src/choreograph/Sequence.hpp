@@ -202,7 +202,7 @@ public:
   {}
 
   //! Returns the Sequence value at \a atTime.
-  T getValue( float atTime );
+  T getValue( float atTime ) const;
 
   //! Returns the Sequence value at \a time, looping past the end from inflection point to the end.
   T getValueWrapped( float time, float inflectionPoint = 0.0f ) const
@@ -320,7 +320,7 @@ private:
 //! Returns the value of this sequence for a given point in time.
 // Would be nice to have a constant-time check (without a while loop).
 template<typename T>
-T Sequence<T>::getValue( float atTime )
+T Sequence<T>::getValue( float atTime ) const
 {
   if( atTime < 0.0f )
   {
