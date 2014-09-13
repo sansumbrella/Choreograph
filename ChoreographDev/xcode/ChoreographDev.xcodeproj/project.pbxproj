@@ -75,7 +75,6 @@
 		15F4B45F19BD332600A411C1 /* SampleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleBase.cpp; sourceTree = "<group>"; };
 		15F4B46019BD332600A411C1 /* SampleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleBase.h; sourceTree = "<group>"; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
-		15F905A219C498C3003C06A4 /* Benchmarks_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Benchmarks_test.cpp; sourceTree = "<group>"; };
 		15F905A319C49A05003C06A4 /* Choreograph_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Choreograph_test.cpp; sourceTree = "<group>"; };
 		15F905C419C49F72003C06A4 /* ChoreographTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ChoreographTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		15F905CE19C4A2D6003C06A4 /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = System/Library/Frameworks/QuickTime.framework; sourceTree = SDKROOT; };
@@ -196,7 +195,6 @@
 			children = (
 				15F905A119C498C3003C06A4 /* catch.hpp */,
 				15F905A319C49A05003C06A4 /* Choreograph_test.cpp */,
-				15F905A219C498C3003C06A4 /* Benchmarks_test.cpp */,
 			);
 			name = tests;
 			path = ../../tests;
