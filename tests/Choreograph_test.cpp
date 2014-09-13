@@ -52,15 +52,10 @@ TEST_CASE( "Sequence", "[sequence]" ) {
 
   SECTION( "Looped sequence values are correct." ) {
     float offset = 2.015f;
-    float inflectionPoint = 1.0f;
-    const float epsilon = std::numeric_limits<float>::epsilon();
+    const float e2 = std::numeric_limits<float>::epsilon() * 2;
     REQUIRE( std::fmod( 3.6, 2.0 ) == 1.6 );
-    REQUIRE( (sequence.getTimeWrapped( sequence.getDuration() + offset ) - offset) < epsilon );
-
-    float t = inflectionPoint + std::fmodf( 40.0f + offset, 20.0f - inflectionPoint );
-    cout << "Offset " << offset << ", t " << t << endl;
-    cout << sequence.getValueWrapped( sequence.getDuration() + offset ) << ", " << sequence.getValue( offset ) << endl;
-    REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset )) < epsilon );
-    REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValueWrapped( offset )) < epsilon );
+    REQUIRE( (sequence.getTimeWrapped( 10 * sequence.getDuration() + offset ) - offset) <= e2 );
+    REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset ) ) <= e2 );
+    REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) <= e2 );
   }
 }

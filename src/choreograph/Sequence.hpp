@@ -207,7 +207,7 @@ public:
   float getTimeWrapped( float time, float inflectionPoint = 0.0f ) const
   {
     if( time > getDuration() ) {
-      return inflectionPoint + std::fmod( time, getDuration() - inflectionPoint );
+      return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
     }
     else {
       return time;
