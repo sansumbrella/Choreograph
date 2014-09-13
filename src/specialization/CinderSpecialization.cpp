@@ -7,25 +7,21 @@ using namespace cinder;
 namespace choreograph
 {
 
-// Specialization of lerpT for Quaternions to use slerping.
+// Specialization of lerpT for Quaternions to use slerping
+// Currently untested.
 template<>
-inline Quatf lerpT( const Quatf &start, const Quatf &end, float time )
+inline quat lerpT( const quat &start, const quat &end, float time )
 {
-	Quatf val = start.slerp( time, end ).normalized();
-	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
-		return val;
-	else
-		return Quatf::identity();
-}
-
-template<>
-inline Quatd lerpT( const Quatd &start, const Quatd &end, float time )
-{
-	Quatd val = start.slerp( time, end ).normalized();
-	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
-		return val;
-	else
-		return Quatd::identity();
+  quat val = quaternion::normalize( quaternion::slerp( start, end, time ) );
+  vec3 axis = val.axis();
+  if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) )
+  {
+    return val;
+  }
+  else
+  {
+    return quat();
+  }
 }
 
 } // namespace choreograph

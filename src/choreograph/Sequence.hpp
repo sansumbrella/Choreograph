@@ -179,9 +179,6 @@ private:
   EaseFn          motion_y;
 };
 
-using Phrase2v = Phrase2<ci::vec2>;
-
-
 /**
  A Sequence of motions.
  Our essential compositional tool, describing all the transformations to one element.
