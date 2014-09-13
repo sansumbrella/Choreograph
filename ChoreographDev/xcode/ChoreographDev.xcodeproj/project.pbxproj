@@ -17,6 +17,12 @@
 		154DECBB19BBAD7900A8D56B /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 154DECBA19BBAD7900A8D56B /* Timeline.cpp */; };
 		158218A019BBA85000AAD280 /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1582189F19BBA85000AAD280 /* Motion.cpp */; };
 		158218A219BBA8AF00AAD280 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 158218A119BBA8AF00AAD280 /* Output.cpp */; };
+		15E864B019C4AD1500B1DA73 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */; };
+		15E864B119C4AD2000B1DA73 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
+		15E864B219C4AD2000B1DA73 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
+		15E864B319C4ADFA00B1DA73 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 154DECBA19BBAD7900A8D56B /* Timeline.cpp */; };
+		15E864B419C4ADFA00B1DA73 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 158218A119BBA8AF00AAD280 /* Output.cpp */; };
+		15E864B519C4ADFA00B1DA73 /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1582189F19BBA85000AAD280 /* Motion.cpp */; };
 		15F4B42E19BD325E00A411C1 /* ChoreographDevApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F4B42D19BD325E00A411C1 /* ChoreographDevApp.cpp */; };
 		15F4B45E19BD32EE00A411C1 /* InfiniteLooper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F4B45C19BD32EE00A411C1 /* InfiniteLooper.cpp */; };
 		15F4B46119BD332600A411C1 /* SampleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F4B45F19BD332600A411C1 /* SampleBase.cpp */; };
@@ -62,6 +68,7 @@
 		154DECBA19BBAD7900A8D56B /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timeline.cpp; path = ../../src/choreograph/Timeline.cpp; sourceTree = "<group>"; };
 		1582189F19BBA85000AAD280 /* Motion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Motion.cpp; path = ../../src/choreograph/Motion.cpp; sourceTree = "<group>"; };
 		158218A119BBA8AF00AAD280 /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Output.cpp; path = ../../src/choreograph/Output.cpp; sourceTree = "<group>"; };
+		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F4B42D19BD325E00A411C1 /* ChoreographDevApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChoreographDevApp.cpp; sourceTree = "<group>"; };
 		15F4B45C19BD32EE00A411C1 /* InfiniteLooper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InfiniteLooper.cpp; sourceTree = "<group>"; };
 		15F4B45D19BD32EE00A411C1 /* InfiniteLooper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfiniteLooper.h; sourceTree = "<group>"; };
@@ -96,6 +103,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15E864B119C4AD2000B1DA73 /* AudioToolbox.framework in Frameworks */,
+				15E864B219C4AD2000B1DA73 /* AudioUnit.framework in Frameworks */,
+				15E864B019C4AD1500B1DA73 /* CoreVideo.framework in Frameworks */,
 				15F905DA19C4A31B003C06A4 /* OpenGL.framework in Frameworks */,
 				15F905D819C4A316003C06A4 /* Cocoa.framework in Frameworks */,
 				15F905CD19C4A2D1003C06A4 /* AVFoundation.framework in Frameworks */,
@@ -247,6 +257,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */,
 				15F905D919C4A31B003C06A4 /* OpenGL.framework */,
 				15F905D719C4A316003C06A4 /* Cocoa.framework */,
 				15F905D519C4A305003C06A4 /* QTKit.framework */,
@@ -372,7 +383,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15E864B319C4ADFA00B1DA73 /* Timeline.cpp in Sources */,
+				15E864B519C4ADFA00B1DA73 /* Motion.cpp in Sources */,
 				15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */,
+				15E864B419C4ADFA00B1DA73 /* Output.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -423,6 +437,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../src ../../tests";
 			};
@@ -453,6 +468,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../src ../../tests";
 			};

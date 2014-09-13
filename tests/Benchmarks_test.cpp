@@ -1,5 +1,13 @@
 // Some day, I will figure out how to use Catch nicely within Xcode to run some tests
 
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
+#include "choreograph/Choreograph.hpp"
+
+
+TEST_CASE
+
 const int TEST_ANIMS = 10000;
 const float TEST_DURATION = 0.2f;
 const float TEST_DT = 1.0f / 60.0f;

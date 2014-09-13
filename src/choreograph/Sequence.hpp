@@ -25,7 +25,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- #pragma once
+#pragma once
+
+// Includes needed for tests.
+#include <functional>
+#include <vector>
+#include <cmath>
 
 namespace choreograph
 {
