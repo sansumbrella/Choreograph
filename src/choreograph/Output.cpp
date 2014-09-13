@@ -38,7 +38,7 @@ void OutputBase::disconnect()
   }
 }
 
-void OutputBase::set( const choreograph::OutputBase &rhs )
+void OutputBase::supplant( const choreograph::OutputBase &rhs )
 {
   disconnect();
 

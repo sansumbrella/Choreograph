@@ -43,7 +43,7 @@ public:
   void disconnect();
 
 protected:
-  void set( const OutputBase &rhs );
+  void supplant( const OutputBase &rhs );
 private:
   void connect();
   MotionBase    *_input = nullptr;
@@ -69,12 +69,14 @@ public:
   Output<T>& operator= ( const Output<T> &rhs ) = delete;
 
   /*
-  // Assignment would modify the rhs, so we don't allow it.
+  // Copy-assignment would modify the rhs, so we don't allow it.
   // If we did allow it, would we want to take the Motion input with us?
+  // Instead, you can use move-assignment, like so
+  // output = std::move( rhs );
   Output<T>& operator= ( const Output<T> &rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
-      set( rhs );
+      supplant( rhs );
     }
     return *this;
   }
@@ -84,21 +86,23 @@ public:
   Output<T>& operator= ( Output<T> &&rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
-      set( rhs );
+      supplant( rhs );
     }
     return *this;
   }
 
-  //! Copy constructor takes value only.
+  //! Copy constructor takes value and any motions.
   Output( const Output<T> &rhs ):
     mValue( rhs.mValue )
-  {}
+  {
+    supplant( rhs );
+  }
 
   //! Move constructor takes value and any input Motion.
   Output( Output<T> &&rhs ):
     mValue( rhs.mValue )
   {
-    set( rhs );
+    supplant( rhs );
   }
 
   //! Assignment operator.
