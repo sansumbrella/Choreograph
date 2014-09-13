@@ -32,6 +32,9 @@ TEST_CASE( "Sequences can be whatevered", "[sequence]" )
 }
 
 TEST_CASE( "Sequence", "[sequence]" ) {
+  std::cout.precision( 10 );
+  std::cerr.precision( 10 );
+
   Sequence<float> sequence( 0.0f );
   // 4 second sequence.
   sequence.set( 1.0f ).hold( 1.0f ).rampTo( 2.0f, 1.0f ).rampTo( 10.0f, 1.0f ).rampTo( 2.0f, 1.0f );
@@ -49,7 +52,15 @@ TEST_CASE( "Sequence", "[sequence]" ) {
 
   SECTION( "Looped sequence values are correct." ) {
     float offset = 2.015f;
-    REQUIRE( sequence.getValueWrapped( sequence.getDuration() + offset ) == sequence.getValueWrapped( offset ) );
-    REQUIRE( sequence.getValueWrapped( (7 * sequence.getDuration()) + offset ) == sequence.getValueWrapped( offset ) );
+    float inflectionPoint = 1.0f;
+    const float epsilon = std::numeric_limits<float>::epsilon();
+    REQUIRE( std::fmod( 3.6, 2.0 ) == 1.6 );
+    REQUIRE( (sequence.getTimeWrapped( sequence.getDuration() + offset ) - offset) < epsilon );
+
+    float t = inflectionPoint + std::fmodf( 40.0f + offset, 20.0f - inflectionPoint );
+    cout << "Offset " << offset << ", t " << t << endl;
+    cout << sequence.getValueWrapped( sequence.getDuration() + offset ) << ", " << sequence.getValue( offset ) << endl;
+    REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset )) < epsilon );
+    REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValueWrapped( offset )) < epsilon );
   }
 }

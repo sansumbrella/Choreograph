@@ -204,15 +204,20 @@ public:
   //! Returns the Sequence value at \a atTime.
   T getValue( float atTime ) const;
 
+  float getTimeWrapped( float time, float inflectionPoint = 0.0f ) const
+  {
+    if( time > getDuration() ) {
+      return inflectionPoint + std::fmod( time, getDuration() - inflectionPoint );
+    }
+    else {
+      return time;
+    }
+  }
+
   //! Returns the Sequence value at \a time, looping past the end from inflection point to the end.
   T getValueWrapped( float time, float inflectionPoint = 0.0f ) const
   {
-    if( time > getDuration() ) {
-      return getValue( inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint ) );
-    }
-    else {
-      return getValue( time );
-    }
+    return getValue( getTimeWrapped( time, inflectionPoint ) );
   }
 
   //! Set current value. An instantaneous hold.
