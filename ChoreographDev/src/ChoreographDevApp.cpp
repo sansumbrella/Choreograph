@@ -3,6 +3,7 @@
 #include "cinder/gl/gl.h"
 
 #include "Choreograph.hpp"
+#include "specialization/CinderSpecialization.h"
 #include "cinder/Easing.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
@@ -51,25 +52,6 @@ void ChoreographDevApp::setup()
     _ball_radius = shortest;
   } )
   .getSequence().rampTo( vec2( app::getWindowSize() ) / 2.0f, 2.0f ).rampTo( vec2( app::getWindowSize() ), 2.0f ).rampTo( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f ).rampTo( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
-
-  for( int j = 0; j < 10; ++j )
-  {
-    co::Timeline test_timeline;
-    const int tween_count = 5000;
-    const float dt = 1.0f / 60.0f;
-    vector<co::Output<vec2>> targets( tween_count, vec2( 0 ) );
-    ci::Timer perf( true );
-    for( int i = 0; i < tween_count; ++i )
-    {
-      test_timeline.move( &targets[i] ).getSequence().hold( 1.0f ).rampTo( vec2( i * 5, i * 20 ), 2.0f );
-
-      for( float t = 0.0f; t <= 3.0f; t += dt ) {
-        test_timeline.step( dt );
-      }
-    }
-    perf.stop();
-    app::console() << "Virtual Phrases: " << perf.getSeconds() * 1000 << "ms" << endl;
-  }
 
   _timeline.move( &_arc ).getSequence()
     .then<co::Phrase2<vec2>>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
