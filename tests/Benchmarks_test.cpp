@@ -22,7 +22,11 @@ public:
   ~ScopedTimer()
   {
     _timer.stop();
-    cout << "[" + _message + "] Elapsed time: " << _timer.getSeconds() * 1000 << "ms" << endl;
+    string message = "[" + _message + "]";
+    if( message.size() < 50 ) {
+      message = message + string( 50 - message.size(), ' ' );
+    }
+    cout << message << _timer.getSeconds() * 1000 << "ms" << endl;
     if( _output ) {
       *_output = _timer.getSeconds() * 1000;
     }
@@ -33,7 +37,72 @@ private:
   ci::Timer   _timer = ci::Timer( true );
 };
 
-TEST_CASE( "Performance stuff", "[library]" ) {
+TEST_CASE( "Creating Motions" ) {
+  co::Timeline test_timeline;
+  float dt = 1.0f / 60.0f;
+  const size_t count = 10e3; // 10k
+  SequenceRef<vec2> sequence = make_shared<Sequence<vec2>>( vec2( 1.0f ) );
+  sequence->rampTo( vec2( 5.0f ), 1.0f ).rampTo( vec2( 10.0f, 6.0f ), 0.5f );
+
+  cout << "Working with " << count << " motions." << endl;
+
+  vector<Output<vec2>> targets( count, vec2( 0 ) );
+  {
+    ScopedTimer timer( "Creating Motions" );
+    for( auto &target : targets ) {
+      test_timeline.move( &target ).getSequence().rampTo( vec2( 10.0f ), 1.0f );
+    }
+  }
+
+  {
+    ScopedTimer timer( "Stepping Motions 1x" );
+
+    test_timeline.step( dt );
+  }
+
+  {
+    ScopedTimer timer( "Stepping Motions 60x" );
+    for( int i = 0; i < 60; ++i ) {
+      test_timeline.step( dt );
+    }
+  }
+
+  {
+    ScopedTimer timer( "Clearing Motions" );
+    for( auto &target : targets ) {
+      target.disconnect();
+    }
+  }
+
+  {
+    ScopedTimer timer( "Stepping Empty Timeline 60x" );
+    for( int i = 0; i < 60; ++i ) {
+      test_timeline.step( dt );
+    }
+  }
+
+  {
+    ScopedTimer timer( "Creating Motions from shared Sequence" );
+    for( auto &target : targets ) {
+      test_timeline.move( &target, sequence );
+    }
+  }
+
+  {
+    ScopedTimer timer( "Stepping Motions with shared Sequence 1x" );
+
+    test_timeline.step( dt );
+  }
+
+  {
+    ScopedTimer timer( "Stepping Motions with shared Sequence 60x" );
+    for( int i = 0; i < 60; ++i ) {
+      test_timeline.step( dt );
+    }
+  }
+}
+
+TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
   co::Timeline test_timeline;
   ci::TimelineRef cinder_timeline = ci::Timeline::create();
 
@@ -110,9 +179,6 @@ TEST_CASE( "Performance stuff", "[library]" ) {
       cout << "Comparative timeline performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
     }
   }
-  
-  SECTION( "" ) {
-    
-  }
-  cout << endl << endl;
+
+  cout << endl;
 }
