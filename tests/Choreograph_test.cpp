@@ -68,7 +68,7 @@ TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
   SECTION( "Looped sequence values are correct." ) {
     float offset = 2.015f;
 
-    REQUIRE( (sequence.getTimeWrapped( 10 * sequence.getDuration() + offset ) - offset) < epsilon );
+    REQUIRE( (sequence.wrapTime( 10 * sequence.getDuration() + offset ) - offset) < epsilon );
     REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset ) ) < epsilon );
     REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
     REQUIRE( (sequence.getValueWrapped( (50 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );

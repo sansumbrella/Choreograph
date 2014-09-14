@@ -51,10 +51,18 @@ public:
     _initial_value( value )
   {}
 
+  /// Construct a Sequence from an array of Phrases.
+  explicit Sequence( const std::vector<PhraseT> &phrases ):
+    _initial_value( phrases.begin().getStartValue() ),
+    _phrases( phrases ),
+    _duration( phrases.back().getEndTime() )
+  {}
+
   /// Returns the Sequence value at \a atTime.
   T getValue( float atTime ) const;
 
-  float getTimeWrapped( float time, float inflectionPoint = 0.0f ) const
+  /// Wrap \a time around \a inflectionPoint in the Sequence.
+  float wrapTime( float time, float inflectionPoint = 0.0f ) const
   {
     if( time > getDuration() ) {
       return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
@@ -65,10 +73,7 @@ public:
   }
 
   /// Returns the Sequence value at \a time, looping past the end from inflection point to the end.
-  T getValueWrapped( float time, float inflectionPoint = 0.0f ) const
-  {
-    return getValue( getTimeWrapped( time, inflectionPoint ) );
-  }
+  T getValueWrapped( float time, float inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Set current value. An instantaneous hold.
   SequenceT& set( const T &value )
@@ -84,6 +89,13 @@ public:
 
   /// Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
   std::shared_ptr<SequenceT> copy() const { return std::make_shared<SequenceT>( *this ); }
+
+  /// Returns a sequence containing the Phrases of this sequence from [begin, end)
+  SequenceT slice( size_t begin, size_t size ) const {
+    assert( begin < _phrases.size() );
+    assert( (begin + size) <= _phrases.size() );
+    return SequenceT( std::vector<PhraseT>( _phrases.begin() + begin, _phrases.begin() + begin + size ) );
+  }
 
   /// Hold on current end value for \a duration seconds.
   SequenceT& wait( float duration ) { return hold( duration ); }
@@ -161,6 +173,9 @@ public:
 
   /// Returns the value at the beginning of the Sequence.
   T initialValue() const { return _initial_value; }
+
+  /// Returns the number of phrases in the Sequence.
+  size_t getPhraseCount() const { return _phrases.size(); }
 
 private:
   std::vector<PhraseT>  _phrases;
