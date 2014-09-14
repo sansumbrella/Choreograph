@@ -30,6 +30,7 @@ private:
   co::Output<vec2>      _mouse_move;
   co::Output<vec2>      _arc;
   co::Output<quat>      _orientation;
+  co::Output<quat>      _circular_orientation;
 
   vector<co::Output<vec2>>  _collection;
 };
@@ -63,7 +64,11 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
   _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
   _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
-  _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+//  _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+
+  quat step = glm::angleAxis<float>( M_PI / 2, vec3( 0, 1, 0 ) );
+  quat target = _circular_orientation() * step;
+  _timeline.move( &_circular_orientation ).getSequence().rampTo( target, 0.33f, EaseOutQuad() );
 }
 
 void ChoreographDevApp::keyDown( KeyEvent event )
@@ -105,13 +110,24 @@ void ChoreographDevApp::draw()
 
   gl::enableDepthRead();
   gl::enableDepthWrite();
-  gl::translate( getWindowCenter() );
-  gl::rotate( _orientation );
-  const int n = 3;
-  for( int i = 0; i < n; ++i ) {
-    vec3 pos = glm::mix( vec3( -100.0f, 0.0f, 0.0f ), vec3( 100.0f, 0.0f, 0.0f ), i / (n - 1.0f) );
-    float size = mix( 20.0f, 60.0f, i / (n - 1.0f) );
-    gl::drawColorCube( pos, vec3( size ) );
+  {
+    gl::ScopedMatrices orientMatrices;
+    gl::translate( getWindowCenter() );
+    gl::rotate( _orientation );
+    const int n = 3;
+    for( int i = 0; i < n; ++i ) {
+      vec3 pos = glm::mix( vec3( -100.0f, 0.0f, 0.0f ), vec3( 100.0f, 0.0f, 0.0f ), i / (n - 1.0f) );
+      float size = mix( 20.0f, 60.0f, i / (n - 1.0f) );
+      gl::drawColorCube( pos, vec3( size ) );
+    }
+  }
+  {
+    gl::ScopedMatrices orientMatrices;
+    gl::translate( vec2( 100, 100 ) );
+//    gl::rotate( _circular_orientation );
+    gl::rotate( toDegrees( glm::angle( _circular_orientation() ) ), glm::axis( _circular_orientation() ) );
+//    gl::rotate( toDegrees( 6.2806 ), vec3( 0, 0.992, 0 ) );
+    gl::drawColorCube( vec3( 0 ), vec3( 50.0f ) );
   }
 }
 
