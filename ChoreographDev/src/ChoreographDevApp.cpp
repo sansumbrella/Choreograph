@@ -37,6 +37,7 @@ private:
 
 void ChoreographDevApp::setup()
 {
+
   _timeline.move( &_ball_y )
   .startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } )
   .getSequence().set( 5.0f ).hold( 0.5f ).rampTo( 500.0f, 1.0f, EaseInOutQuad() ).hold( 500.0f, 0.33f ).rampTo( 700.0f, 1.0f ).hold( 20.0f, 1.0f ).set( 400.0f );
@@ -64,11 +65,11 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
   _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
   _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
-//  _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+  _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
 
   quat step = glm::angleAxis<float>( M_PI / 2, vec3( 0, 1, 0 ) );
   quat target = _circular_orientation() * step;
-  _timeline.move( &_circular_orientation ).getSequence().rampTo( target, 0.33f, EaseOutQuad() );
+  _timeline.move( &_circular_orientation ).getSequence().rampTo( normalize( target ), 0.33f, EaseOutQuad() );
 }
 
 void ChoreographDevApp::keyDown( KeyEvent event )
@@ -124,9 +125,7 @@ void ChoreographDevApp::draw()
   {
     gl::ScopedMatrices orientMatrices;
     gl::translate( vec2( 100, 100 ) );
-//    gl::rotate( _circular_orientation );
-    gl::rotate( toDegrees( glm::angle( _circular_orientation() ) ), glm::axis( _circular_orientation() ) );
-//    gl::rotate( toDegrees( 6.2806 ), vec3( 0, 0.992, 0 ) );
+    gl::rotate( _circular_orientation );
     gl::drawColorCube( vec3( 0 ), vec3( 50.0f ) );
   }
 }
