@@ -35,17 +35,12 @@ namespace  choreograph
 using Phrase2v = Phrase2<ci::vec2>;
 
 //! Specialization of lerpT for quaternions to use slerping.
+//! To prevent disappearing geometry, make sure to normalize your quat targets.
+//! The final value of your tween is what you put in, so make sure it's normalized.
 template<>
 inline ci::quat lerpT( const ci::quat &start, const ci::quat &end, float time )
 {
-  ci::quat val = glm::normalize( glm::slerp( start, end, time ) );
-  ci::vec3 axis = glm::axis( val );
-  if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) ) {
-    return val;
-  }
-  else {
-    return ci::quat();
-  }
+  return glm::normalize( glm::slerp( start, end, time ) );
 }
 
 } // namespace choreograph

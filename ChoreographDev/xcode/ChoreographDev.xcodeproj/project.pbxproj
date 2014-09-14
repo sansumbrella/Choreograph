@@ -14,6 +14,20 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		1515D27219C5D774002CB6A6 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 154DECBA19BBAD7900A8D56B /* Timeline.cpp */; };
+		1515D27319C5D774002CB6A6 /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1582189F19BBA85000AAD280 /* Motion.cpp */; };
+		1515D27519C5D774002CB6A6 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 158218A119BBA8AF00AAD280 /* Output.cpp */; };
+		1515D27719C5D774002CB6A6 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
+		1515D27819C5D774002CB6A6 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
+		1515D27919C5D774002CB6A6 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */; };
+		1515D27A19C5D774002CB6A6 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D919C4A31B003C06A4 /* OpenGL.framework */; };
+		1515D27B19C5D774002CB6A6 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D719C4A316003C06A4 /* Cocoa.framework */; };
+		1515D27C19C5D774002CB6A6 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720219952D00008149E2 /* AVFoundation.framework */; };
+		1515D27D19C5D774002CB6A6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D519C4A305003C06A4 /* QTKit.framework */; };
+		1515D27E19C5D774002CB6A6 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
+		1515D27F19C5D774002CB6A6 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		1515D28019C5D774002CB6A6 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720319952D00008149E2 /* CoreMedia.framework */; };
+		1515D28619C5D786002CB6A6 /* Benchmarks_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */; };
 		154DECBB19BBAD7900A8D56B /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 154DECBA19BBAD7900A8D56B /* Timeline.cpp */; };
 		158218A019BBA85000AAD280 /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1582189F19BBA85000AAD280 /* Motion.cpp */; };
 		158218A219BBA8AF00AAD280 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 158218A119BBA8AF00AAD280 /* Output.cpp */; };
@@ -41,6 +55,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1515D28119C5D774002CB6A6 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		15F905C219C49F72003C06A4 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -61,6 +84,8 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Benchmarks_test.cpp; sourceTree = "<group>"; };
+		1515D28519C5D774002CB6A6 /* ChoreographTests copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ChoreographTests copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		15184EA319BBA8D2007139FC /* Motion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Motion.h; path = ../../src/choreograph/Motion.h; sourceTree = "<group>"; };
 		15184EA419BBA8D2007139FC /* Output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Output.h; path = ../../src/choreograph/Output.h; sourceTree = "<group>"; };
 		154DECB919BBAD7900A8D56B /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Timeline.h; path = ../../src/choreograph/Timeline.h; sourceTree = "<group>"; };
@@ -97,6 +122,23 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1515D27619C5D774002CB6A6 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1515D27719C5D774002CB6A6 /* AudioToolbox.framework in Frameworks */,
+				1515D27819C5D774002CB6A6 /* AudioUnit.framework in Frameworks */,
+				1515D27919C5D774002CB6A6 /* CoreVideo.framework in Frameworks */,
+				1515D27A19C5D774002CB6A6 /* OpenGL.framework in Frameworks */,
+				1515D27B19C5D774002CB6A6 /* Cocoa.framework in Frameworks */,
+				1515D27C19C5D774002CB6A6 /* AVFoundation.framework in Frameworks */,
+				1515D27D19C5D774002CB6A6 /* QTKit.framework in Frameworks */,
+				1515D27E19C5D774002CB6A6 /* Accelerate.framework in Frameworks */,
+				1515D27F19C5D774002CB6A6 /* CoreAudio.framework in Frameworks */,
+				1515D28019C5D774002CB6A6 /* CoreMedia.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		15F905C119C49F72003C06A4 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -194,6 +236,7 @@
 			children = (
 				15F905A119C498C3003C06A4 /* catch.hpp */,
 				15F905A319C49A05003C06A4 /* Choreograph_test.cpp */,
+				1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */,
 			);
 			name = tests;
 			path = ../../tests;
@@ -213,6 +256,7 @@
 			children = (
 				8D1107320486CEB800E47090 /* ChoreographDev.app */,
 				15F905C419C49F72003C06A4 /* ChoreographTests */,
+				1515D28519C5D774002CB6A6 /* ChoreographTests copy */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -301,6 +345,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1515D27019C5D774002CB6A6 /* BenchmarkTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1515D28219C5D774002CB6A6 /* Build configuration list for PBXNativeTarget "BenchmarkTests" */;
+			buildPhases = (
+				1515D27119C5D774002CB6A6 /* Sources */,
+				1515D27619C5D774002CB6A6 /* Frameworks */,
+				1515D28119C5D774002CB6A6 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BenchmarkTests;
+			productName = ChoreographTestsCmdLine;
+			productReference = 1515D28519C5D774002CB6A6 /* ChoreographTests copy */;
+			productType = "com.apple.product-type.tool";
+		};
 		15F905C319C49F72003C06A4 /* ChoreographTests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 15F905CA19C49F72003C06A4 /* Build configuration list for PBXNativeTarget "ChoreographTests" */;
@@ -360,6 +421,7 @@
 			targets = (
 				8D1107260486CEB800E47090 /* ChoreographDev */,
 				15F905C319C49F72003C06A4 /* ChoreographTests */,
+				1515D27019C5D774002CB6A6 /* BenchmarkTests */,
 			);
 		};
 /* End PBXProject section */
@@ -376,6 +438,17 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1515D27119C5D774002CB6A6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1515D27219C5D774002CB6A6 /* Timeline.cpp in Sources */,
+				1515D28619C5D786002CB6A6 /* Benchmarks_test.cpp in Sources */,
+				1515D27319C5D774002CB6A6 /* Motion.cpp in Sources */,
+				1515D27519C5D774002CB6A6 /* Output.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		15F905C019C49F72003C06A4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -403,6 +476,75 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		1515D28319C5D774002CB6A6 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				PRODUCT_NAME = BenchmarkTests;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../src ../../tests";
+			};
+			name = Debug;
+		};
+		1515D28419C5D774002CB6A6 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
+				GCC_PREPROCESSOR_DEFINITIONS = "NDEBUG=1";
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				PRODUCT_NAME = BenchmarkTests;
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../src ../../tests";
+			};
+			name = Release;
+		};
 		15F905CB19C49F72003C06A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -560,6 +702,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1515D28219C5D774002CB6A6 /* Build configuration list for PBXNativeTarget "BenchmarkTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1515D28319C5D774002CB6A6 /* Debug */,
+				1515D28419C5D774002CB6A6 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		15F905CA19C49F72003C06A4 /* Build configuration list for PBXNativeTarget "ChoreographTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

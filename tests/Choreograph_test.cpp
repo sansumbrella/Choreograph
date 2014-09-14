@@ -1,4 +1,3 @@
-// Some day, I will figure out how to use Catch nicely within Xcode to run some tests
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
@@ -33,9 +32,19 @@ private:
   ci::Timer   _timer = ci::Timer( true );
 };
 
-TEST_CASE( "Sequences can be whatevered", "[sequence]" )
-{
 
+TEST_CASE( "Separate component interpolation", "[sequence]" ) {
+
+  // Animate XY from and to same values with different ease curves.
+  Sequence<vec2, Phrase2<vec2>> sequence( vec2( 1 ) );
+  sequence.then( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
+
+  SECTION( "Compare Values" ) {
+    REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
+    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
+    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );
+    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
+  }
 }
 
 TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
@@ -166,44 +175,4 @@ TEST_CASE( "Output Connections", "[output]" ) {
     motion.skipTo( 2.0f );
     REQUIRE( copy.value() == 10.0f );
   }
-}
-
-TEST_CASE( "Performance stuff", "[library]" ) {
-  for( int j = 0; j < 2; ++j )
-  {
-    co::Timeline test_timeline;
-    ci::TimelineRef cinder_timeline = ci::Timeline::create();
-
-    const int tween_count = 5000;
-    const float dt = 1.0f / 60.0f;
-    vector<Output<vec2>> targets( tween_count, vec2( 0 ) );
-    vector<Anim<vec2>> cinder_targets( tween_count, vec2( 0 ) );
-    float choreograph, cinder;
-
-    { // Measure basic performance.
-      ScopedTimer performance( "Choreograph Timeline", &choreograph );
-      //
-      for( int i = 0; i < tween_count; ++i )
-      {
-        test_timeline.move( &targets[i] ).getSequence().hold( 1.0f ).rampTo( vec2( i * 5, i * 20 ), 2.0f );
-      }
-      for( float t = 0.0f; t <= 3.0f; t += dt ) {
-        test_timeline.step( dt );
-      }
-    }
-
-    { // Compare to cinder timeline perf.
-      ScopedTimer perf( "Cinder Timeline", &cinder );
-      for( int i = 0; i < tween_count; ++i )
-      {
-        cinder_timeline->apply( &cinder_targets[i], vec2( i * 5, i * 20 ), 2.0f ).delay( 1.0f );
-      }
-      for( float t = 0.0f; t <= 3.0f; t += dt ) {
-        cinder_timeline->step( dt );
-      }
-    }
-
-    cout << "Comparative timeline performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
-  }
-  cout << endl << endl;
 }
