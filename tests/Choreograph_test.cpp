@@ -33,9 +33,13 @@ private:
   ci::Timer   _timer = ci::Timer( true );
 };
 
-TEST_CASE( "Sequences can be whatevered", "[sequence]" )
-{
 
+TEST_CASE( "Separate component interpolation", "[sequence]" ) {
+  Sequence<vec2, Phrase2<vec2>> sequence( vec2( 1 ) );
+  sequence.then( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
+  for( float t = 0.0f; t <= 1.01f; t += 0.1f ) {
+    cout << "T: " << t << ", value: " << sequence.getValue( t ) << endl;
+  }
 }
 
 TEST_CASE( "Sequence Interpolation", "[sequence]" ) {

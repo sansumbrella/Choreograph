@@ -135,36 +135,49 @@ private:
   LerpFn      lerpFn = &lerpT<T>;
 };
 
-template<typename T>
-using PhraseRef = std::shared_ptr<Phrase<T>>;
-
 /**
  Phrase with separately-interpolated components.
  Allows for the use of separate ease functions per component.
  All components must be of the same type.
  */
 template<typename T>
-class Phrase2 : public Phrase<T>
+class Phrase2
 {
 public:
   Phrase2( const T &end, float duration, const EaseFn &ease_x, const EaseFn &ease_y ):
-  Phrase<T>( end, duration ),
-  motion_x( ease_x ),
-  motion_y( ease_y )
+    _end( end ),
+    motion_x( ease_x ),
+    motion_y( ease_y )
   {}
 
   Phrase2( const Position<T> &start, const Position<T> &end, const EaseFn &ease_x, const EaseFn &ease_y ):
-  Phrase<T>( start, end ),
-  motion_x( ease_x ),
-  motion_y( ease_y )
+    _start( start ),
+    _end( end ),
+    motion_x( ease_x ),
+    motion_y( ease_y )
   {}
 
+  //! Returns the value at the beginning of this phrase.
+  inline const T& getStartValue() const { return _start.value; }
+  //! Returns the value at the end of this phrase.
+  inline const T& getEndValue() const { return _end.value; }
+
+  //! Returns the time at the beginning of this phrase.
+  inline float getStartTime() const { return _start.time; }
+  //! Returns the time at the end of this phrase.
+  inline float getEndTime() const { return _end.time; }
+
+  //! Returns normalized time if t is in range [start.time, end.time].
+  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
+  //! Returns the duration of this phrase.
+  inline float getDuration() const { return _end.time - _start.time; }
+
   //! Returns the interpolated value at the given time.
-  T getValue( float atTime ) const override
+  T getValue( float atTime ) const
   {
-    float t = Phrase<T>::normalizeTime( atTime );
-    return T( componentLerpFn( Phrase<T>::getStartValue().x, Phrase<T>::getEndValue().x, motion_x( t ) ),
-             componentLerpFn( Phrase<T>::getStartValue().y, Phrase<T>::getEndValue().y, motion_y( t ) ) );
+    float t = normalizeTime( atTime );
+    return T( componentLerpFn( getStartValue().x, getEndValue().x, motion_x( t ) ),
+             componentLerpFn( getStartValue().y, getEndValue().y, motion_y( t ) ) );
   }
 
   //! Set ease functions for first and second components.
@@ -178,6 +191,8 @@ private:
   using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
 
   ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
+  Position<T>     _start;
+  Position<T>     _end;
   EaseFn          motion_x;
   EaseFn          motion_y;
 };
