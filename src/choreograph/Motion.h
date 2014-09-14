@@ -205,6 +205,7 @@ public:
 		}
 
 		*_output = _sequence->getValue( time() );
+
 		if( _updateFn ) {
 			_updateFn( *_output );
 		}
