@@ -197,7 +197,7 @@ T Sequence<T, PhraseT>::getValue( float atTime ) const
   return endValue();
 }
 
-template<typename T>
-using SequenceRef = std::shared_ptr<Sequence<T>>;
+template<typename T, typename PhraseT = Phrase<T>>
+using SequenceRef = std::shared_ptr<Sequence<T, PhraseT>>;
 
 } // namespace choreograph

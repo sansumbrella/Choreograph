@@ -17,6 +17,7 @@ class ChoreographDevApp : public AppNative {
   public:
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
+  void keyDown( KeyEvent event ) override;
 	void update() override;
 	void draw() override;
 private:
@@ -52,9 +53,9 @@ void ChoreographDevApp::setup()
   } )
   .getSequence().rampTo( vec2( app::getWindowSize() ) / 2.0f, 2.0f ).rampTo( vec2( app::getWindowSize() ), 2.0f ).rampTo( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f ).rampTo( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
 
-  _timeline.move( &_arc ).getSequence()
-    .then<co::Phrase2v>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
-    .then( make_shared<Phrase2v>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() ) );
+  _timeline.move<vec2, Phrase2v>( &_arc ).getSequence()
+    .then( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
+    .then( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() );
 }
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
@@ -63,6 +64,13 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
   _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
   _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+}
+
+void ChoreographDevApp::keyDown( KeyEvent event )
+{
+  _timeline.move<vec2, Phrase2v>( &_arc ).getSequence()
+    .then( vec2( getWindowSize() ), 3.0f, EaseNone(), EaseInOutQuint() )
+    .then( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() );
 }
 
 void ChoreographDevApp::update()

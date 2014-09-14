@@ -61,16 +61,16 @@ public:
   // Sequence creation. Safe methods.
   //
 
-  template<typename T>
-  Motion<T>& move( Output<T> *output )
+  template<typename T, typename PhraseT=Phrase<T>>
+  Motion<T, PhraseT>& move( Output<T> *output )
   {
-    return move( output, std::make_shared<Sequence<T>>( *output ) );
+    return move( output, std::make_shared<Sequence<T, PhraseT>>( *output ) );
   }
 
-  template<typename T>
-  Motion<T>& move( Output<T> *output, const SequenceRef<T> &sequence )
-  { // We don't need to remove here, since previous parents will be invalidated through the Output/Motion relationship.
-    auto motion = std::make_shared<Motion<T>>( output, sequence );
+  template<typename T, typename PhraseT=Phrase<T>>
+  Motion<T, PhraseT>& move( Output<T> *output, const std::shared_ptr<Sequence<T, PhraseT>> &sequence )
+  {
+    auto motion = std::make_shared<Motion<T, PhraseT>>( output, sequence );
     _motions.push_back( motion );
     return *motion;
   }

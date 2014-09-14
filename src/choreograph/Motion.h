@@ -141,19 +141,26 @@ A connection between a continuous, independent Sequence and an output.
 Drives a Sequence and sends its value to a user-defined variable.
 Might mirror the Sequence interface for easier animation.
 */
-template<typename T>
+template<typename T, typename PhraseT=Phrase<T>>
 class Motion : public MotionBase
 {
 public:
+  using MotionT       = Motion<T, PhraseT>;
+  using SequenceT     = Sequence<T, PhraseT>;
+  using SequenceRefT  = SequenceRef<T, PhraseT>;
+  using DataCallback  = std::function<void (const T&)>;
+  using Callback      = std::function<void (MotionT&)>;
+  using EmptyCallback = std::function<void ()>;
+
   Motion() = delete;
 
-  Motion( T *target, const SequenceRef<T> &sequence ):
+  Motion( T *target, const SequenceRefT &sequence ):
     MotionBase( target ),
     _output( target ),
     _sequence( sequence )
   {}
 
-  Motion( Output<T> *target, const SequenceRef<T> &sequence ):
+  Motion( Output<T> *target, const SequenceRefT &sequence ):
     MotionBase( target ),
     _output( target->ptr() ),
     _sequence( sequence )
@@ -166,11 +173,8 @@ public:
 	float getProgress() const { return time() / _sequence->getDuration(); }
 
 	//! Returns the underlying sequence for extension.
-	Sequence<T>&  getSequence() { return *_sequence; }
+	SequenceT&  getSequence() { return *_sequence; }
 
-	typedef std::function<void (const T&)>        DataCallback;
-	typedef std::function<void (Motion<T> &)>     Callback;
-  typedef std::function<void ()>                EmptyCallback;
 
 	//! Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
 	Motion<T>&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
@@ -224,7 +228,7 @@ protected:
 private:
 	// shared_ptr to sequence since many connections could share the same sequence
 	// this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-  SequenceRef<T>  _sequence = nullptr;
+  SequenceRefT    _sequence = nullptr;
 	T               *_output = nullptr;
 
 	Callback        _finishFn = nullptr;
