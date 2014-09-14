@@ -1,4 +1,3 @@
-// Some day, I will figure out how to use Catch nicely within Xcode to run some tests
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
