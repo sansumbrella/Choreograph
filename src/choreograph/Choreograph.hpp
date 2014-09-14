@@ -32,6 +32,10 @@
 #include "Output.h"
 #include "Timeline.h"
 
+#if defined( CINDER_CINDER )
+  #include "specialization/CinderSpecialization.hpp"
+#endif
+
 namespace choreograph {} // namespace choreograph
 
 namespace co = choreograph;

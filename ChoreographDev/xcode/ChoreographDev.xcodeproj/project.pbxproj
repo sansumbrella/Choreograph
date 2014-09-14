@@ -34,7 +34,6 @@
 		15F905D819C4A316003C06A4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D719C4A316003C06A4 /* Cocoa.framework */; };
 		15F905DA19C4A31B003C06A4 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D919C4A31B003C06A4 /* OpenGL.framework */; };
 		15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F905A319C49A05003C06A4 /* Choreograph_test.cpp */; };
-		15FE94DD19C4A46F009DF6C8 /* CinderSpecialization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15FE94DB19C4A46F009DF6C8 /* CinderSpecialization.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -82,8 +81,7 @@
 		15F905D519C4A305003C06A4 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		15F905D719C4A316003C06A4 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		15F905D919C4A31B003C06A4 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
-		15FE94DB19C4A46F009DF6C8 /* CinderSpecialization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CinderSpecialization.cpp; sourceTree = "<group>"; };
-		15FE94DF19C4A76B009DF6C8 /* CinderSpecialization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderSpecialization.h; sourceTree = "<group>"; };
+		15FE94DF19C4A76B009DF6C8 /* CinderSpecialization.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CinderSpecialization.hpp; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		3FFA2E239B794D6591136E25 /* ChoreographDev_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ChoreographDev_Prefix.pch; sourceTree = "<group>"; };
@@ -203,8 +201,7 @@
 		15FE94DA19C4A46F009DF6C8 /* specialization */ = {
 			isa = PBXGroup;
 			children = (
-				15FE94DB19C4A46F009DF6C8 /* CinderSpecialization.cpp */,
-				15FE94DF19C4A76B009DF6C8 /* CinderSpecialization.h */,
+				15FE94DF19C4A76B009DF6C8 /* CinderSpecialization.hpp */,
 			);
 			name = specialization;
 			path = ../../src/specialization;
@@ -398,7 +395,6 @@
 				158218A219BBA8AF00AAD280 /* Output.cpp in Sources */,
 				15F4B46119BD332600A411C1 /* SampleBase.cpp in Sources */,
 				15F4B45E19BD32EE00A411C1 /* InfiniteLooper.cpp in Sources */,
-				15FE94DD19C4A46F009DF6C8 /* CinderSpecialization.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

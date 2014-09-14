@@ -3,7 +3,6 @@
 #include "cinder/gl/gl.h"
 
 #include "Choreograph.hpp"
-#include "specialization/CinderSpecialization.h"
 #include "cinder/Easing.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
