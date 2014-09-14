@@ -29,7 +29,6 @@ private:
   co::Output<vec2>      _mouse_queue;
   co::Output<vec2>      _mouse_move;
   co::Output<vec2>      _arc;
-  co::Output<float>     _copied;
 
   vector<co::Output<vec2>>  _collection;
 };
@@ -64,30 +63,6 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
 {
   _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
   _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
-
-  {
-    // Create a locally-scoped variable to test the MotionBase/OutputBase removal
-    // Make sure it's dynamically allocated, since stack-allocated variables can mask memory stomping issues.
-
-    // shows invalid pointer issue
-//    unique_ptr<float> temp( new float( 5.0f ) );
-//    _timeline.move( temp.get() ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
-
-    // Demonstrates that Output<T> fixes the invalid pointer issue
-    unique_ptr<co::Output<float>> temp( new co::Output<float>( 5.0f ) );
-    _timeline.move( temp.get() ).getSequence().wait( 10.0f ).rampTo( 500.0f, 1.0f );
-  }
-
-  {
-    // Copy a local output to a member output
-    co::Output<float> temp = randFloat( getWindowWidth() );
-    temp += 10.0f;
-//    temp = randFloat( getWindowWidth() );
-    _timeline.move( &temp ).getSequence().rampTo( randFloat( getWindowWidth() ), 1.25f, EaseInOutBack() );
-    // we allow r-value copying, but don't allow standard copy-assignment because it might break your expectations as it modifies the rhs.
-    _copied = std::move( temp );
-  }
-
 }
 
 void ChoreographDevApp::update()
@@ -114,8 +89,6 @@ void ChoreographDevApp::draw()
   gl::color( Color( "steelblue" ) );
   gl::drawSolidCircle( _mouse_move, 30.0f );
 
-  gl::color( Color( "tomato" ) );
-  gl::drawSolidCircle( vec2( _copied(), 20.0f ), 20.0f );
 
   gl::color( Color( "magenta" ) );
   gl::drawSolidCircle( _arc, 30.0f );
