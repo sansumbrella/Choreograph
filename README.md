@@ -1,7 +1,7 @@
 # Choreograph
 
 A simple C++11 animation and timing library.  
-v0.1.0 development. API is unstable.
+v0.2.0 development. API is unstable.
 
 ## Features
 - Timeline-based animation of generic properties.
