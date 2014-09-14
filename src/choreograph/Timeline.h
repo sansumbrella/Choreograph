@@ -30,7 +30,7 @@
 
 namespace choreograph
 {
-  //! Remove all elements from \a container that match \a compare
+  /// Remove all elements from \a container that match \a compare
   template<class CONTAINER_TYPE, class COMPARATOR>
   void erase_if( CONTAINER_TYPE *container, COMPARATOR compare )
   {
@@ -40,7 +40,7 @@ namespace choreograph
                      container->end() );
   }
 
-  //! Remove all copies of \a element from \a vec
+  /// Remove all copies of \a element from \a vec
   template<class ELEMENT_TYPE>
   void vector_remove( std::vector<ELEMENT_TYPE> *vec, const ELEMENT_TYPE &element )
   {
@@ -79,14 +79,14 @@ public:
   // Sequence creation. Bare pointer methods.
   //
 
-  //! Create a Sequence that is connected out to \a output.
+  /// Create a Sequence that is connected out to \a output.
   template<typename T>
   Motion<T>& move( T *output )
   {
     return move( output, std::make_shared<Sequence<T>>( *output ) );
   }
 
-  //! Create a Motion that plays \a sequence into \a output.
+  /// Create a Motion that plays \a sequence into \a output.
   template<typename T>
   Motion<T>& move( T *output, const SequenceRef<T> &sequence )
   { // Remove any existing motions that affect the same variable.
@@ -102,14 +102,14 @@ public:
   // Time manipulation.
   //
 
-  //! Advance all current motions.
+  /// Advance all current motions.
   void step( float dt );
 
   //
   // Sequence manipulation.
   //
 
-  //! Add phrases to the end of the Sequence currently connected to \a output.
+  /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
   Sequence<T>& queue( T *output )
   {
@@ -121,7 +121,7 @@ public:
     return move( output ).getSequence();
   }
 
-  //! Add phrases to the end of the Sequence currently connected to \a output.
+  /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
   Sequence<T>& queue( Output<T> *output )
   {
@@ -133,27 +133,27 @@ public:
     return move( output ).getSequence();
   }
 
-  //! Remove specific motion.
-  void remove( const std::shared_ptr<MotionBase> &motion );
+  /// Remove specific motion.
+  void remove( const MotionRef &motion );
 
-  //! Remove motion associated with specific output.
+  /// Remove motion associated with specific output.
   template<typename T>
   void remove( T *output )
   {
-    erase_if( &_motions, [=] (std::shared_ptr<MotionBase> m) { return m->getTarget() == output; } );
+    erase_if( &_motions, [=] (const MotionRef &m) { return m->getTarget() == output; } );
   }
 
-  //! Removes all motions from this timeline.
+  /// Removes all motions from this timeline.
   void clear() { _motions.clear(); }
 
-  //! Returns true if there are no motions on this timeline.
+  /// Returns true if there are no motions on this timeline.
   bool empty() const { return _motions.empty(); }
 
-  //! Returns the number of motions on this timeline.
+  /// Returns the number of motions on this timeline.
   size_t size() const { return _motions.size(); }
 private:
-  bool                                      _auto_clear = true;
-  std::vector<std::shared_ptr<MotionBase>>  _motions;
+  bool                    _auto_clear = true;
+  std::vector<MotionRef>  _motions;
 };
 
 } // namespace choreograph

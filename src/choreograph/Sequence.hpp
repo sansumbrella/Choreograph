@@ -46,12 +46,12 @@ public:
   Sequence() = delete;
   using SequenceT = Sequence<T, PhraseT>;
 
-  //! Construct a Sequence with an initial \a value.
+  /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
     _initial_value( value )
   {}
 
-  //! Returns the Sequence value at \a atTime.
+  /// Returns the Sequence value at \a atTime.
   T getValue( float atTime ) const;
 
   float getTimeWrapped( float time, float inflectionPoint = 0.0f ) const
@@ -64,16 +64,16 @@ public:
     }
   }
 
-  //! Returns the Sequence value at \a time, looping past the end from inflection point to the end.
+  /// Returns the Sequence value at \a time, looping past the end from inflection point to the end.
   T getValueWrapped( float time, float inflectionPoint = 0.0f ) const
   {
     return getValue( getTimeWrapped( time, inflectionPoint ) );
   }
 
-  //! Set current value. An instantaneous hold.
+  /// Set current value. An instantaneous hold.
   SequenceT& set( const T &value )
   {
-    if( _segments.empty() ) {
+    if( _phrases.empty() ) {
       _initial_value = value;
     }
     else {
@@ -82,39 +82,39 @@ public:
     return *this;
   }
 
-  //! Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
+  /// Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
   std::shared_ptr<SequenceT> copy() const { return std::make_shared<SequenceT>( *this ); }
 
-  //! Hold on current end value for \a duration seconds.
+  /// Hold on current end value for \a duration seconds.
   SequenceT& wait( float duration ) { return hold( duration ); }
 
-  //! Hold on current end value for \a duration seconds.
+  /// Hold on current end value for \a duration seconds.
   SequenceT& hold( float duration )
   {
     return hold( endValue(), duration );
   }
 
-  //! Hold on \a value for \a duration seconds.
+  /// Hold on \a value for \a duration seconds.
   SequenceT& hold( const T &value, float duration )
   {
     Position<T> start{ value, _duration };
     Position<T> end{ value, _duration + duration };
     Phrase<T> phrase( start, end, &easeHold );
 
-    _segments.push_back( phrase );
+    _phrases.push_back( phrase );
     _duration = phrase.getEndTime();
 
     return *this;
   }
 
-  //! Animate to \a value over \a duration seconds using \a ease easing.
+  /// Animate to \a value over \a duration seconds using \a ease easing.
   SequenceT& rampTo( const T &value, float duration, const EaseFn &ease = &easeNone )
   {
     Position<T> start{ endValue(), _duration };
     Position<T> end{ value, _duration + duration };
     Phrase<T> phrase( start, end, ease );
 
-    _segments.push_back( phrase );
+    _phrases.push_back( phrase );
 
     _duration = phrase.getEndTime();
 
@@ -128,7 +128,7 @@ public:
     Position<T> end{ value, _duration + duration };
     PhraseT phrase( start, end, args... );
 
-    _segments.push_back( phrase );
+    _phrases.push_back( phrase );
     _duration = phrase.getEndTime();
 
     return *this;
@@ -140,37 +140,35 @@ public:
     phrase.shiftStartTimeTo( _duration );
     _duration = phrase.getEndTime();
 
-    _segments.push_back( phrase );
+    _phrases.push_back( phrase );
 
     return *this;
   }
 
-  //! Sets the ease function of the last Phrase in the Sequence.
+  /// Sets the ease function of the last Phrase in the Sequence.
   SequenceT& ease( const EaseFn &easeFn ) {
-    if( ! _segments.empty() ) {
-      _segments.back().motion = easeFn;
+    if( ! _phrases.empty() ) {
+      _phrases.back().motion = easeFn;
     }
     return *this;
   }
 
-  //! Returns the number of seconds required to move through all Phrases.
+  /// Returns the number of seconds required to move through all Phrases.
   float getDuration() const { return _duration; }
 
-  //! Returns the value at the end of the Sequence.
-  T endValue() const { return _segments.empty() ? _initial_value : _segments.back().getEndValue(); }
+  /// Returns the value at the end of the Sequence.
+  T endValue() const { return _phrases.empty() ? _initial_value : _phrases.back().getEndValue(); }
 
-  //! Returns the value at the beginning of the Sequence.
+  /// Returns the value at the beginning of the Sequence.
   T initialValue() const { return _initial_value; }
 
 private:
-  std::vector<PhraseT>  _segments;
-  T                       _initial_value;
-  float                   _duration = 0.0f;
-
-  friend class Timeline;
+  std::vector<PhraseT>  _phrases;
+  T                     _initial_value;
+  float                 _duration = 0.0f;
 };
 
-//! Returns the value of this sequence for a given point in time.
+/// Returns the value of this sequence for a given point in time.
 // Would be nice to have a constant-time check (without a while loop).
 template<typename T, typename PhraseT>
 T Sequence<T, PhraseT>::getValue( float atTime ) const
@@ -184,8 +182,8 @@ T Sequence<T, PhraseT>::getValue( float atTime ) const
     return endValue();
   }
 
-  auto iter = _segments.begin();
-  while( iter < _segments.end() ) {
+  auto iter = _phrases.begin();
+  while( iter < _phrases.end() ) {
     if( (*iter).getEndTime() > atTime )
     {
       return (*iter).getValue( atTime );

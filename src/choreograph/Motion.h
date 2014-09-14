@@ -34,6 +34,7 @@ namespace choreograph
 {
 
 class OutputBase;
+using MotionRef = std::shared_ptr<class MotionBase>;
 
 /**
 A connection between a continuous, independent Sequence and an output.
@@ -48,75 +49,76 @@ public:
 
   MotionBase( OutputBase *base );
 
-	virtual ~MotionBase();
+  virtual ~MotionBase();
 
-	//! Advance motion in time. Affected by Motion's speed.
-	void step( float dt );
+  /// Advance motion in time. Affected by Motion's speed.
+  void step( float dt );
 
-  //! Skip to a point in motion. Ignores Motion's speed.
+  /// Skip to a point in motion. Ignores Motion's speed.
   void skipTo( float time );
 
-  //! Overridden to determine what a time step does.
-	virtual void update() = 0;
+  /// Overridden to determine what a time step does.
+  virtual void update() = 0;
 
-  //! Returns the duration of the motion.
-	virtual float getDuration() const = 0;
+  /// Returns the duration of the motion.
+  virtual float getDuration() const = 0;
 
-	//! Returns current animation time in seconds.
-	float time() const { return _time - _start_time; }
+  /// Returns current animation time in seconds.
+  float time() const { return _time - _start_time; }
 
-	//! Returns previous step's animation time in seconds.
-	float previousTime() const { return _previous_time - _start_time; }
+  /// Returns previous step's animation time in seconds.
+  float previousTime() const { return _previous_time - _start_time; }
 
-	//! Returns true if animation plays forward with positive time steps.
-	bool  forward() const { return _speed >= 0.0f; }
+  /// Returns true if animation plays forward with positive time steps.
+  bool  forward() const { return _speed >= 0.0f; }
 
-	//! Returns true if animation plays backward with positive time steps.
-	bool  backward() const { return _speed < 0.0f; }
+  /// Returns true if animation plays backward with positive time steps.
+  bool  backward() const { return _speed < 0.0f; }
 
-  //! Returns true if this Motion's time is past the end of its duration. Accounts for reversed playback.
+  /// Returns true if this Motion's time is past the end of its duration. Accounts for reversed playback.
   bool  isFinished() const;
 
-  //! Set playback speed of motion. Use negative numbers to play in reverse.
-	void  setPlaybackSpeed( float s ) { _speed = s; }
+  /// Set playback speed of motion. Use negative numbers to play in reverse.
+  void  setPlaybackSpeed( float s ) { _speed = s; }
 
-  //! Returns the current playback speed of motion.
-	float getPlaybackSpeed() const { return _speed; }
+  /// Returns the current playback speed of motion.
+  float getPlaybackSpeed() const { return _speed; }
 
-  //! Reset motion to beginning. Accounts for reversed playback.
+  /// Reset motion to beginning. Accounts for reversed playback.
   void  resetTime();
 
-	//! Returns true if this Motion has an output.
-	bool  isValid() const { return _target != nullptr; }
+  /// Returns true if this Motion has an output.
+  bool  isValid() const { return _target != nullptr; }
 
-	//! Returns true if this Motion has no output.
-	bool  isInvalid() const { return _target == nullptr; }
+  /// Returns true if this Motion has no output.
+  bool  isInvalid() const { return _target == nullptr; }
 
-  //! Returns pointer to target variable. Used for comparison.
+  /// Returns pointer to target variable. Used for comparison.
   void* getTarget() const { return _target; }
 
 protected:
-	// True if the underlying Sequence should play forever.
-	bool        _continuous = false;
+  // True if the underlying Sequence should play forever.
+  bool        _continuous = false;
+  /// Replace current output target with new target. Called from connect.
   virtual void replaceOutput( OutputBase *output ) {}
 private:
 
-	// Null pointer to target, used for comparison with other MotionBase's.
-	void        *_target = nullptr;
+  // Null pointer to target, used for comparison with other MotionBase's.
+  void        *_target = nullptr;
   // Pointer to safe handle type. Exists if created with an Output<T> target.
   OutputBase  *_output_base = nullptr;
 
-	//! Playback speed. Set to negative to go in reverse.
-	float       _speed = 1.0f;
-	//! Current animation time in seconds. Time at which Sequence is evaluated.
-	float       _time = 0.0f;
-	//! Previous animation time in seconds.
-	float       _previous_time = 0.0f;
-	//! Animation start time in seconds. Time from which Sequence is evaluated.
-  //! Use to apply a delay.
-	float       _start_time = 0.0f;
+  /// Playback speed. Set to negative to go in reverse.
+  float       _speed = 1.0f;
+  /// Current animation time in seconds. Time at which Sequence is evaluated.
+  float       _time = 0.0f;
+  /// Previous animation time in seconds.
+  float       _previous_time = 0.0f;
+  /// Animation start time in seconds. Time from which Sequence is evaluated.
+  /// Use to apply a delay.
+  float       _start_time = 0.0f;
 
-	//! Called on destruction of either MotionBase or _output_base.
+  /// Called on destruction of either MotionBase or _output_base.
   void disconnect( OutputBase *base );
   void connect( OutputBase *base );
 
@@ -126,13 +128,13 @@ private:
 class Cue : public MotionBase
 {
 public:
-  //! Calls cue function if time threshold has been crossed.
-	void update() override;
+  /// Calls cue function if time threshold has been crossed.
+  void update() override;
 
-  //! Cues are instantaneous.
+  /// Cues are instantaneous.
   float getDuration() const override { return 0.0f; }
 private:
-	std::function<void ()> _cue;
+  std::function<void ()> _cue;
 };
 
 /**
@@ -167,74 +169,74 @@ public:
   {}
 
 
-  //! Duration is based on the underlying sequence.
-	float getDuration() const override { return _sequence->getDuration(); }
+  /// Duration is based on the underlying sequence.
+  float getDuration() const override { return _sequence->getDuration(); }
 
-	float getProgress() const { return time() / _sequence->getDuration(); }
+  float getProgress() const { return time() / _sequence->getDuration(); }
 
-	//! Returns the underlying sequence for extension.
-	SequenceT&  getSequence() { return *_sequence; }
+  /// Returns the underlying sequence for extension.
+  SequenceT&  getSequence() { return *_sequence; }
 
 
-	//! Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
-	MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
+  /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
+  MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
   MotionT&  finishFn( const EmptyCallback &c ) { _finishFn = [c] (MotionT &) { c(); }; return *this; }
 
-	//! Set a function to be called when we start the sequence. Receives *this as an argument.
-	MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
+  /// Set a function to be called when we start the sequence. Receives *this as an argument.
+  MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
   MotionT&  startFn( const EmptyCallback &c ) { _startFn = [c] (MotionT &) { c(); }; return *this; }
 
-	//! Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
-	MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
+  /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
+  MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
 
-	MotionT&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
+  MotionT&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
 
-	//! Set the connection to play continuously.
-	MotionT&  continuous( bool c ) { _continuous = c; return *this; }
+  /// Set the connection to play continuously.
+  MotionT&  continuous( bool c ) { _continuous = c; return *this; }
 
-  //! Update
+  /// Update
   void update() override
-	{
+  {
     assert( isValid() );
 
-		if( _startFn ) {
-			if( forward() && time() > 0.0f && previousTime() <= 0.0f )
-				_startFn( *this );
-			else if( backward() && time() < _sequence->getDuration() && previousTime() >= _sequence->getDuration() )
-				_startFn( *this );
-		}
+    if( _startFn ) {
+      if( forward() && time() > 0.0f && previousTime() <= 0.0f )
+        _startFn( *this );
+      else if( backward() && time() < _sequence->getDuration() && previousTime() >= _sequence->getDuration() )
+        _startFn( *this );
+    }
 
-		*_output = _sequence->getValue( time() );
+    *_output = _sequence->getValue( time() );
 
-		if( _updateFn ) {
-			_updateFn( *_output );
-		}
+    if( _updateFn ) {
+      _updateFn( *_output );
+    }
 
-		if( _finishFn ){
-			if( forward() && time() >= _sequence->getDuration() && previousTime() < _sequence->getDuration() )
+    if( _finishFn ){
+      if( forward() && time() >= _sequence->getDuration() && previousTime() < _sequence->getDuration() )
       {
-				_finishFn( *this );
+        _finishFn( *this );
       }
-			else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
+      else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
       {
-				_finishFn( *this );
+        _finishFn( *this );
       }
-		}
-	}
+    }
+  }
 protected:
   void replaceOutput( OutputBase *output ) override {
     _output = static_cast<Output<T> *>(output)->ptr();
   }
 
 private:
-	// shared_ptr to sequence since many connections could share the same sequence
-	// this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-  SequenceRefT    _sequence = nullptr;
-	T               *_output = nullptr;
+  // shared_ptr to sequence since many connections could share the same sequence
+  // this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
+  SequenceRefT    _sequence;
+  T               *_output;
 
-	Callback        _finishFn = nullptr;
-	Callback        _startFn = nullptr;
-	DataCallback    _updateFn = nullptr;
+  Callback        _finishFn = nullptr;
+  Callback        _startFn  = nullptr;
+  DataCallback    _updateFn = nullptr;
 };
 
 } // namespace choreograph

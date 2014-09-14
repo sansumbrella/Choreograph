@@ -35,13 +35,12 @@ class MotionBase;
 class OutputBase
 {
 public:
-  virtual ~OutputBase()
-  {
-    disconnect();
-  }
+  /// Disconnect on destruction.
+  virtual ~OutputBase() { disconnect(); }
   /// Disconnect from Motion input.
   void disconnect();
 
+  /// Returns true iff this output has a connected input.
   bool isConnected() const { return _input != nullptr; }
 
 protected:
@@ -53,24 +52,24 @@ private:
   friend class MotionBase;
 };
 
-//! Safe type for Choreograph outputs.
-//! Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
+/// Safe type for Choreograph outputs.
+/// Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
 // TODO: handle assignment, copy-construction, etc. so things don't go badly there.
 template<typename T>
 class Output : public OutputBase
 {
 public:
-  //! Default constructor.
+  /// Default constructor.
   Output() = default;
 
-  //! Construct with a value.
+  /// Construct with a value.
   Output( const T &value ):
     mValue( value )
   {}
 
-  //! Remove copy assignment since it has non-obvious semantics.
-  //! Instead, you can use move-assignment, like so
-  //! output = std::move( rhs );
+  /// Remove copy assignment since it has non-obvious semantics.
+  /// Instead, you can use move-assignment, like so
+  /// output = std::move( rhs );
 //  Output<T>& operator= ( const Output<T> &rhs ) = delete;
   Output<T>& operator= ( const Output<T> &rhs ) {
     if( this != &rhs ) {
@@ -80,7 +79,7 @@ public:
     return *this;
   }
 
-  //! Move assignment takes value and any input Motion.
+  /// Move assignment takes value and any input Motion.
   Output<T>& operator= ( Output<T> &&rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
@@ -89,39 +88,39 @@ public:
     return *this;
   }
 
-  //! Copy constructor takes value and any motions.
+  /// Copy constructor takes value and any motions.
   Output( const Output<T> &rhs ):
     mValue( rhs.mValue )
   {
     supplant( rhs );
   }
 
-  //! Move constructor takes value and any input Motion.
+  /// Move constructor takes value and any input Motion.
   Output( Output<T> &&rhs ):
     mValue( rhs.mValue )
   {
     supplant( rhs );
   }
 
-  //! Assignment operator.
+  /// Assignment operator.
 	Output<T>& operator= ( T value ) { mValue = value; return *this; }
 
   Output<T>& operator+= ( T value ) { mValue += value; return *this; }
 
-	//! Returns value.
+	/// Returns value.
 	const T& 	value() const { return mValue; }
 
-	//! Returns value.
+	/// Returns value.
 	const T& 	operator() () const { return mValue; }
-	//! Returns value.
+	/// Returns value.
 	T&				operator() () { return mValue; }
 
-	//! Cast to value type.
+	/// Cast to value type.
 	operator const T&()	{ return mValue; }
 
-	//! Returns pointer to value.
+	/// Returns pointer to value.
 	const T* 	ptr() const { return &mValue; }
-	//! Returns pointer to value.
+	/// Returns pointer to value.
 	T*				ptr() { return &mValue; }
 
 private:

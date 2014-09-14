@@ -32,7 +32,7 @@ using namespace choreograph;
 void Timeline::step( float dt )
 {
   // Remove any motions that have stale pointers
-  erase_if( &_motions, [] ( const std::shared_ptr<MotionBase> &c ) { return c->isInvalid(); } );
+  erase_if( &_motions, [] ( const MotionRef &motion ) { return motion->isInvalid(); } );
 
 
   // Update all animation outputs.
@@ -42,11 +42,11 @@ void Timeline::step( float dt )
 
   // Remove any completed motions
   if( _auto_clear ) {
-    erase_if( &_motions, [] ( const std::shared_ptr<MotionBase> &c ) { return c->isFinished(); } );
+    erase_if( &_motions, [] ( const MotionRef &motion ) { return motion->isFinished(); } );
   }
 }
 
-void Timeline::remove( const std::shared_ptr<MotionBase> &motion )
+void Timeline::remove( const MotionRef &motion )
 {
   vector_remove( &_motions, motion );
 }
