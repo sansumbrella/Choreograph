@@ -53,9 +53,7 @@ void ChoreographDevApp::setup()
   .getSequence().rampTo( vec2( app::getWindowSize() ) / 2.0f, 2.0f ).rampTo( vec2( app::getWindowSize() ), 2.0f ).rampTo( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f ).rampTo( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
 
   _timeline.move( &_arc ).getSequence()
-    .then<co::Phrase2<vec2>>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
-    // I want to be able to use the syntax on the next line
-//    .then<co::Phrase2>( vec2( 50.0f, 50.0f ), 1.0f, EaseNone(), EaseInOutBounce() )
+    .then<co::Phrase2v>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
     .then( make_shared<Phrase2v>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() ) );
 }
 
