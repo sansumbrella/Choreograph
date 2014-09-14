@@ -1,7 +1,7 @@
 # Choreograph
 
 A simple C++11 animation and timing library.  
-v0.1.0 development.
+v0.1.0 development. API is unstable.
 
 ## Features
 - Timeline-based animation of generic properties.
@@ -12,7 +12,9 @@ v0.1.0 development.
 - Support for custom ease functions.
 - Support for custom interpolation methods.
 - TODO: Cues (function callback at a given time).
-- Specializations support intuitive animation of glm quaternions.
+- Template specializations support intuitive animation of glm quaternions.
+- Separable easing of vector components.
+- Reversible, time-warpable motions.
 
 ## Basic Usage
 ```c++
@@ -54,11 +56,6 @@ Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap 
 
 ### Timeline
 Timelines manage a collection of Motions.
-
-## Animating Custom types
-```c++
-
-```
 
 ### Using the lerp specializations
 Add the relevant specialization cpp file to your build sources.
