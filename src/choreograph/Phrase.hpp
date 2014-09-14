@@ -93,7 +93,7 @@ public:
   motion( easeFn )
   {}
 
-  virtual ~Phrase() = default;
+  ~Phrase() = default;
 
   //! Set start time to \a time. End time is adjusted to preserve duration.
   void shiftStartTimeTo( float time ) {
@@ -124,7 +124,7 @@ public:
   inline float getDuration() const { return end.time - start.time; }
 
   //! Returns the interpolated value at the given time.
-  virtual T getValue( float atTime ) const
+  T getValue( float atTime ) const
   {
     return lerpFn( start.value, end.value, motion( normalizeTime( atTime ) ) );
   }

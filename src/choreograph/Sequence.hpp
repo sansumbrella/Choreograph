@@ -98,10 +98,10 @@ public:
   {
     Position<T> start{ value, _duration };
     Position<T> end{ value, _duration + duration };
-    auto phrase = std::make_shared<Phrase<T>>( start, end, &easeHold );
+    Phrase<T> phrase( start, end, &easeHold );
 
     _segments.push_back( phrase );
-    _duration = phrase->getEndTime();
+    _duration = phrase.getEndTime();
 
     return *this;
   }
@@ -111,11 +111,11 @@ public:
   {
     Position<T> start{ endValue(), _duration };
     Position<T> end{ value, _duration + duration };
-    auto phrase = std::make_shared<Phrase<T>>( start, end, ease );
+    Phrase<T> phrase( start, end, ease );
 
     _segments.push_back( phrase );
 
-    _duration = phrase->getEndTime();
+    _duration = phrase.getEndTime();
 
     return *this;
   }
@@ -130,7 +130,7 @@ public:
 //    auto phrase = std::make_shared<PhraseT<T>>( start, end, args... );
 
     _segments.push_back( phrase );
-    _duration = phrase->getEndTime();
+    _duration = phrase.getEndTime();
 
     return *this;
   }
@@ -139,7 +139,7 @@ public:
   {
     phrase->setStartValue( endValue() );
     phrase->shiftStartTimeTo( _duration );
-    _duration = phrase->getEndTime();
+    _duration = phrase.getEndTime();
 
     _segments.push_back( phrase );
 
@@ -158,13 +158,13 @@ public:
   float getDuration() const { return _duration; }
 
   //! Returns the value at the end of the Sequence.
-  T endValue() const { return _segments.empty() ? _initial_value : _segments.back()->getEndValue(); }
+  T endValue() const { return _segments.empty() ? _initial_value : _segments.back().getEndValue(); }
 
   //! Returns the value at the beginning of the Sequence.
   T initialValue() const { return _initial_value; }
 
 private:
-  std::vector<PhraseRef<T>>  _segments;
+  std::vector<Phrase<T>>  _segments;
   T                       _initial_value;
   float                   _duration = 0.0f;
 
@@ -187,9 +187,9 @@ T Sequence<T>::getValue( float atTime ) const
 
   auto iter = _segments.begin();
   while( iter < _segments.end() ) {
-    if( (*iter)->getEndTime() > atTime )
+    if( (*iter).getEndTime() > atTime )
     {
-      return (*iter)->getValue( atTime );
+      return (*iter).getValue( atTime );
     }
     ++iter;
   }
