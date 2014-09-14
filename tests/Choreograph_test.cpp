@@ -35,10 +35,16 @@ private:
 
 
 TEST_CASE( "Separate component interpolation", "[sequence]" ) {
+
+  // Animate XY from and to same values with different ease curves.
   Sequence<vec2, Phrase2<vec2>> sequence( vec2( 1 ) );
   sequence.then( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
-  for( float t = 0.0f; t <= 1.01f; t += 0.1f ) {
-    cout << "T: " << t << ", value: " << sequence.getValue( t ) << endl;
+
+  SECTION( "Compare Values" ) {
+    REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
+    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
+    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );
+    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
   }
 }
 
