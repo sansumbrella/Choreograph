@@ -32,7 +32,12 @@
 namespace  choreograph
 {
 
+/// Aliases for separate-component easing phrases.
 using Phrase2v = Phrase2<ci::vec2>;
+using Phrase3v = Phrase3<ci::vec2>;
+
+using Sequence2v = Sequence<ci::vec2, Phrase2v>;
+using Sequence3v = Sequence<ci::vec3, Phrase3v>;
 
 /// Specialization of lerpT for quaternions to use slerping.
 /// To prevent disappearing geometry, make sure to normalize your quat targets.

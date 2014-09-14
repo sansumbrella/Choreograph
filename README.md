@@ -58,7 +58,7 @@ Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap 
 Timelines manage a collection of Motions.
 
 ### Using the lerp specializations
-Add the relevant specialization cpp file to your build sources.
+If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
 
 #### History/Tweening alternatives:
 Cinder's Timeline is an excellent, production-ready tweening option. It is based on the previous version of Choreograph.  

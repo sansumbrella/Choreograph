@@ -136,7 +136,7 @@ private:
 };
 
 /**
- Phrase with separately-interpolated components.
+ Phrase with two separately-interpolated components.
  Allows for the use of separate ease functions per component.
  All components must be of the same type.
  */
@@ -177,7 +177,7 @@ public:
   {
     float t = normalizeTime( atTime );
     return T( componentLerpFn( getStartValue().x, getEndValue().x, _ease_x( t ) ),
-             componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ) );
+              componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ) );
   }
 
   /// Set ease functions for first and second components.
@@ -195,6 +195,73 @@ private:
   Position<T>     _end;
   EaseFn          _ease_x;
   EaseFn          _ease_y;
+};
+
+/**
+ Phrase with three separately-interpolated components.
+ Allows for the use of separate ease functions per component.
+ All components must be of the same type.
+ */
+template<typename T>
+class Phrase3
+{
+public:
+  Phrase3( const T &_end, float duration, const EaseFn &ease_x, const EaseFn &ease_y, const EaseFn &ease_z ):
+    _end( _end ),
+    _ease_x( ease_x ),
+    _ease_y( ease_y ),
+    _ease_z( ease_z )
+  {}
+
+  Phrase3( const Position<T> &start, const Position<T> &_end, const EaseFn &ease_x, const EaseFn &ease_y, const EaseFn &ease_z ):
+    _start( start ),
+    _end( _end ),
+    _ease_x( ease_x ),
+    _ease_y( ease_y ),
+    _ease_z( ease_z )
+  {}
+
+  /// Returns the value at the beginning of this phrase.
+  inline const T& getStartValue() const { return _start.value; }
+  /// Returns the value at the _end of this phrase.
+  inline const T& getEndValue() const { return _end.value; }
+
+  /// Returns the time at the beginning of this phrase.
+  inline float getStartTime() const { return _start.time; }
+  /// Returns the time at the _end of this phrase.
+  inline float getEndTime() const { return _end.time; }
+
+  /// Returns normalized time if t is in range [start.time, _end.time].
+  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
+  /// Returns the duration of this phrase.
+  inline float getDuration() const { return _end.time - _start.time; }
+
+  /// Returns the interpolated value at the given time.
+  T getValue( float atTime ) const
+  {
+    float t = normalizeTime( atTime );
+    return T( componentLerpFn( getStartValue().x, getEndValue().x, _ease_x( t ) ),
+              componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ),
+              componentLerpFn( getStartValue().z, getEndValue().z, _ease_z( t ) ) );
+  }
+
+  /// Set ease functions for first and second components.
+  void setEase( const EaseFn &component_0, const EaseFn &component_1, const EaseFn &component_2 ) {
+    _ease_x = component_0;
+    _ease_y = component_1;
+    _ease_z = component_2;
+  }
+
+private:
+  using ComponentT = decltype( T().x ); // get the type of the x component;
+  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
+
+  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
+  Position<T>     _start;
+  Position<T>     _end;
+  EaseFn          _ease_x;
+  EaseFn          _ease_y;
+  EaseFn          _ease_z;
 };
 
 } // namespace atlantic
