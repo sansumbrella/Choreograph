@@ -125,6 +125,41 @@ TEST_CASE( "Output Connections", "[output]" ) {
     copy = std::move( base );
     motion.skipTo( 1.0f );
 
+    REQUIRE( copy.value() == 5.0f );
+
+    motion.skipTo( 2.0f );
+    REQUIRE( copy.value() == 10.0f );
+  }
+
+  SECTION( "Vector of outputs can be copied." ) {
+    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> copy;
+
+    for( auto &output : outputs ) {
+      timeline.move( &output, sequence );
+    }
+    copy = outputs;
+
+    timeline.step( 1.0f );
+    bool all_five = true;
+    for( auto &c : copy ) {
+      if( c != 5.0f ) {
+        all_five = false;
+      }
+    }
+    REQUIRE( copy.front() == 5.0f );
+    REQUIRE( all_five == true );
+    REQUIRE( outputs.front() == 0.0f );
+  }
+
+  SECTION( "Copy assignment brings motion along." ) {
+    Output<float> base( 1.0f );
+    Output<float> copy( 0.0f );
+
+    Motion<float> motion( &base, sequence );
+    copy = base;
+    motion.skipTo( 1.0f );
+
     REQUIRE( base.value() == 1.0f );
     REQUIRE( copy.value() == 5.0f );
 

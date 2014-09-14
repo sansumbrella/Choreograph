@@ -71,7 +71,14 @@ public:
   //! Remove copy assignment since it has non-obvious semantics.
   //! Instead, you can use move-assignment, like so
   //! output = std::move( rhs );
-  Output<T>& operator= ( const Output<T> &rhs ) = delete;
+//  Output<T>& operator= ( const Output<T> &rhs ) = delete;
+  Output<T>& operator= ( const Output<T> &rhs ) {
+    if( this != &rhs ) {
+      mValue = rhs.mValue;
+      supplant( rhs );
+    }
+    return *this;
+  }
 
   //! Move assignment takes value and any input Motion.
   Output<T>& operator= ( Output<T> &&rhs ) {
