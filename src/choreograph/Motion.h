@@ -177,20 +177,20 @@ public:
 
 
 	//! Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
-	Motion<T>&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
-  Motion<T>&  finishFn( const EmptyCallback &c ) { _finishFn = [c] (Motion<T> &) { c(); }; return *this; }
+	MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
+  MotionT&  finishFn( const EmptyCallback &c ) { _finishFn = [c] (MotionT &) { c(); }; return *this; }
 
 	//! Set a function to be called when we start the sequence. Receives *this as an argument.
-	Motion<T>&  startFn( const Callback &c ) { _startFn = c; return *this; }
-  Motion<T>&  startFn( const EmptyCallback &c ) { _startFn = [c] (Motion<T> &) { c(); }; return *this; }
+	MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
+  MotionT&  startFn( const EmptyCallback &c ) { _startFn = [c] (MotionT &) { c(); }; return *this; }
 
 	//! Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
-	Motion<T>&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
+	MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
 
-	Motion<T>&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
+	MotionT&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
 
 	//! Set the connection to play continuously.
-	Motion<T>&  continuous( bool c ) { _continuous = c; return *this; }
+	MotionT&  continuous( bool c ) { _continuous = c; return *this; }
 
   //! Update
   void update() override
