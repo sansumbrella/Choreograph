@@ -42,7 +42,10 @@ public:
   /// Disconnect from Motion input.
   void disconnect();
 
+  bool isConnected() const { return _input != nullptr; }
+
 protected:
+  /// Replaces \a rhs in its relationship to a MotionBase input.
   void supplant( const OutputBase &rhs );
 private:
   void connect();

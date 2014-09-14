@@ -64,6 +64,13 @@ void MotionBase::step( float dt )
   _previous_time = _time;
 }
 
+void MotionBase::skipTo( float time )
+{
+  _time = time;
+  update(); // update properties
+  _previous_time = _time;
+}
+
 void MotionBase::disconnect( OutputBase *base )
 {
   if( _output_base && _output_base == base ) {

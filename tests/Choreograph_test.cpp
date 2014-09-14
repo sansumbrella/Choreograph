@@ -66,6 +66,73 @@ TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
   }
 }
 
+TEST_CASE( "Output Connections", "[output]" ) {
+
+  co::Timeline timeline;
+  auto sequence = make_shared<Sequence<float>>( 0.0f );
+  sequence->rampTo( 10.0f, 2.0f );
+
+  SECTION( "Output falling out of scope disconnects" ) {
+    { // create locally scoped output
+      Output<vec4> temp;
+      timeline.move( &temp ).getSequence().rampTo( vec4( 5 ), 1.0f );
+
+      REQUIRE( timeline.size() == 1 );
+    }
+
+    // Part of test is that nothing fails when stepping the timeline.
+    timeline.step( 0.5f );
+    REQUIRE( timeline.empty() == true );
+  }
+
+  SECTION( "Motion falling out of scope disconnects" ) {
+    Output<float> output;
+
+    { // hook up a motion to our output
+      Motion<float> temp( &output, sequence );
+
+      REQUIRE( output.isConnected() == true );
+    }
+
+    REQUIRE( output.isConnected() == false );
+  }
+
+  SECTION( "Vector of outputs can be moved." ) {
+    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> copy;
+
+    for( auto &output : outputs ) {
+      timeline.move( &output, sequence );
+    }
+    copy = std::move( outputs );
+
+    timeline.step( 1.0f );
+    bool all_five = true;
+    for( auto &c : copy ) {
+      if( c != 5.0f ) {
+        all_five = false;
+      }
+    }
+    REQUIRE( copy.front() == 5.0f );
+    REQUIRE( all_five == true );
+  }
+
+  SECTION( "Move assignment brings motion along." ) {
+    Output<float> base( 1.0f );
+    Output<float> copy( 0.0f );
+
+    Motion<float> motion( &base, sequence );
+    copy = std::move( base );
+    motion.skipTo( 1.0f );
+
+    REQUIRE( base.value() == 1.0f );
+    REQUIRE( copy.value() == 5.0f );
+
+    motion.skipTo( 2.0f );
+    REQUIRE( copy.value() == 10.0f );
+  }
+}
+
 TEST_CASE( "Performance stuff", "[library]" ) {
   for( int j = 0; j < 2; ++j )
   {
@@ -103,4 +170,5 @@ TEST_CASE( "Performance stuff", "[library]" ) {
 
     cout << "Comparative timeline performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
   }
+  cout << endl << endl;
 }

@@ -148,6 +148,9 @@ public:
 
   //! Returns true if there are no motions on this timeline.
   bool empty() const { return _motions.empty(); }
+
+  //! Returns the number of motions on this timeline.
+  size_t size() const { return _motions.size(); }
 private:
   bool                                      _auto_clear = true;
   std::vector<std::shared_ptr<MotionBase>>  _motions;

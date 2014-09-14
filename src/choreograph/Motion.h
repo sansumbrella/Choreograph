@@ -50,8 +50,11 @@ public:
 
 	virtual ~MotionBase();
 
-	//! Move motion forward in time.
+	//! Advance motion in time. Affected by Motion's speed.
 	void step( float dt );
+
+  //! Skip to a point in motion. Ignores Motion's speed.
+  void skipTo( float time );
 
   //! Overridden to determine what a time step does.
 	virtual void update() = 0;
