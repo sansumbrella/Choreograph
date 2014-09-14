@@ -29,6 +29,7 @@ private:
   co::Output<vec2>      _mouse_queue;
   co::Output<vec2>      _mouse_move;
   co::Output<vec2>      _arc;
+  co::Output<quat>      _orientation;
 
   vector<co::Output<vec2>>  _collection;
 };
@@ -63,6 +64,8 @@ void ChoreographDevApp::mouseDown( MouseEvent event )
 {
   _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
   _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
+
+  _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
 }
 
 void ChoreographDevApp::update()
@@ -73,6 +76,9 @@ void ChoreographDevApp::update()
 void ChoreographDevApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
+
+  gl::ScopedMatrices matrices;
+  gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 1000.0f );
 
   gl::disableDepthRead();
   gl::disableDepthWrite();
@@ -89,9 +95,14 @@ void ChoreographDevApp::draw()
   gl::color( Color( "steelblue" ) );
   gl::drawSolidCircle( _mouse_move, 30.0f );
 
-
   gl::color( Color( "magenta" ) );
   gl::drawSolidCircle( _arc, 30.0f );
+
+  gl::enableDepthRead();
+  gl::enableDepthWrite();
+  gl::translate( getWindowCenter() );
+  gl::rotate( _orientation );
+  gl::drawColorCube( vec3( 0 ), vec3( 80.0f ) );
 }
 
 CINDER_APP_NATIVE( ChoreographDevApp, RendererGl )

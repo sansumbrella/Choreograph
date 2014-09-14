@@ -1,17 +1,18 @@
 # Choreograph
 
-A simple C++11 animation and timing library. [WIP]
+A simple C++11 animation and timing library.  
+v0.1.0 development.
 
 ## Features
 - Timeline-based animation of generic properties.
 - Use same Sequence to animate multiple properties.
 - Chainable animation syntax.
 - Motion event callbacks (start, update, finish).
-- Cues (function callback at a given time).
 - Delayed/staggered animation callbacks.
 - Support for custom ease functions.
 - Support for custom interpolation methods.
-- Specializations support intuitive animation of Cinder and GLM quaternions.
+- TODO: Cues (function callback at a given time).
+- Specializations support intuitive animation of glm quaternions.
 
 ## Basic Usage
 ```c++

@@ -26,11 +26,26 @@
  */
 
 #pragma once
+
 #include "choreograph/Sequence.hpp"
 
 namespace  choreograph
 {
 
 using Phrase2v = Phrase2<ci::vec2>;
+
+//! Specialization of lerpT for quaternions to use slerping.
+template<>
+inline ci::quat lerpT( const ci::quat &start, const ci::quat &end, float time )
+{
+  ci::quat val = glm::normalize( glm::slerp( start, end, time ) );
+  ci::vec3 axis = glm::axis( val );
+  if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) ) {
+    return val;
+  }
+  else {
+    return ci::quat();
+  }
+}
 
 } // namespace choreograph
