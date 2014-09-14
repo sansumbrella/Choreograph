@@ -83,7 +83,7 @@ public:
   }
 
   //! Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
-  std::shared_ptr<Sequence<T>> copy() const { return std::make_shared<Sequence<T>>( *this ); }
+  std::shared_ptr<SequenceT> copy() const { return std::make_shared<SequenceT>( *this ); }
 
   //! Hold on current end value for \a duration seconds.
   SequenceT& wait( float duration ) { return hold( duration ); }
@@ -134,7 +134,7 @@ public:
     return *this;
   }
 
-  Sequence<T, PhraseT>& then( PhraseT phrase )
+  SequenceT& then( PhraseT phrase )
   {
     phrase.setStartValue( endValue() );
     phrase.shiftStartTimeTo( _duration );
