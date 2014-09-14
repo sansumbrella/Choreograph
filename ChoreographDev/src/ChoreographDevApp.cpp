@@ -99,7 +99,12 @@ void ChoreographDevApp::draw()
   gl::enableDepthWrite();
   gl::translate( getWindowCenter() );
   gl::rotate( _orientation );
-  gl::drawColorCube( vec3( 0 ), vec3( 80.0f ) );
+  const int n = 3;
+  for( int i = 0; i < n; ++i ) {
+    vec3 pos = glm::mix( vec3( -100.0f, 0.0f, 0.0f ), vec3( 100.0f, 0.0f, 0.0f ), i / (n - 1.0f) );
+    float size = mix( 20.0f, 60.0f, i / (n - 1.0f) );
+    gl::drawColorCube( pos, vec3( size ) );
+  }
 }
 
 CINDER_APP_NATIVE( ChoreographDevApp, RendererGl )
