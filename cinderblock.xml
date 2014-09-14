@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<block
+	name		= "Choreograph"
+	id			= "com.sansumbrella.choreograph"
+	author	= "David Wicks"
+	summary	= "Timeline animation and sequencing."
+	license	= "BSD"
+	git			= "git://github.com/sansumbrella/sc-Choreograph.git"
+	url			= "http://github.com/sansumbrella/sc-Choreograph/"
+	>
+	<!-- All the headers. -->
+	<includePath>src/</includePath>
+	<headerPattern>src/choreograph/*.hpp</headerPattern>
+	<headerPattern>src/choreograph/*.h</headerPattern>
+	<sourcePattern>src/choreograph/*.cpp</sourcePattern>
+	<!-- Specialization for quaternion slerping. -->
+	<sourcePattern>src/specialization/GlmSpecialization.cpp</sourcePattern>
+</block>
+</cinder>
