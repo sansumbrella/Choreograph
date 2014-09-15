@@ -264,4 +264,38 @@ private:
   EaseFn          _ease_z;
 };
 
+/**
+ A phrase that steps from beginning to next.
+ Useful for keyframe animation.
+ */
+template<typename T>
+class PhraseStepped
+{
+public:
+  /// Returns the value at the beginning of this phrase.
+  inline const T& getStartValue() const { return _start.value; }
+  /// Returns the value at the _end of this phrase.
+  inline const T& getEndValue() const { return _end.value; }
+
+  /// Returns the time at the beginning of this phrase.
+  inline float getStartTime() const { return _start.time; }
+  /// Returns the time at the _end of this phrase.
+  inline float getEndTime() const { return _end.time; }
+
+  /// Returns normalized time if t is in range [start.time, _end.time].
+  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
+  /// Returns the duration of this phrase.
+  inline float getDuration() const { return _end.time - _start.time; }
+
+  /// Returns the current value at time.
+  T getValue( float atTime ) const
+  {
+    float t = normalizeTime( atTime );
+    return t >= 1.0f ? getEndValue() : getStartValue();
+  }
+private:
+  Position<T> _start;
+  Position<T> _end;
+};
+
 } // namespace atlantic
