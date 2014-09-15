@@ -57,6 +57,12 @@ Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap 
 ### Timeline
 Timelines manage a collection of Motions.
 
+## Building and running
+
+Samples are run from the projects inside the Samples directory. Currently only set up for OSX.
+
+Development, including running unit and regression tests, is done with the ChoreographDev projects. Currently only set up for OSX.
+
 ### Using the lerp specializations
 If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
 

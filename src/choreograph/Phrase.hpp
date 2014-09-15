@@ -83,14 +83,15 @@ public:
   using LerpFn = std::function<T (const T&, const T&, float)>;
 
   Phrase( const T &_end, float duration, const EaseFn &easeFn = &easeNone ):
-  _end( _end, duration ),
-  _easeFn( easeFn )
+    _end( _end, duration ),
+    _easeFn( easeFn )
   {}
 
-  Phrase( const Position<T> &start, const Position<T> &_end, const EaseFn &easeFn = &easeNone ):
-  _start( start ),
-  _end( _end ),
-  _easeFn( easeFn )
+  Phrase( const Position<T> &start, const Position<T> &_end, const EaseFn &easeFn = &easeNone, const LerpFn &lerpFn = &lerpT<T> ):
+    _start( start ),
+    _end( _end ),
+    _easeFn( easeFn ),
+    _lerpFn( lerpFn )
   {}
 
   ~Phrase() = default;

@@ -38,8 +38,6 @@
 		15E864B419C4ADFA00B1DA73 /* Output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 158218A119BBA8AF00AAD280 /* Output.cpp */; };
 		15E864B519C4ADFA00B1DA73 /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1582189F19BBA85000AAD280 /* Motion.cpp */; };
 		15F4B42E19BD325E00A411C1 /* ChoreographDevApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F4B42D19BD325E00A411C1 /* ChoreographDevApp.cpp */; };
-		15F4B45E19BD32EE00A411C1 /* InfiniteLooper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F4B45C19BD32EE00A411C1 /* InfiniteLooper.cpp */; };
-		15F4B46119BD332600A411C1 /* SampleBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F4B45F19BD332600A411C1 /* SampleBase.cpp */; };
 		15F905CD19C4A2D1003C06A4 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720219952D00008149E2 /* AVFoundation.framework */; };
 		15F905D019C4A2E9003C06A4 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		15F905D119C4A2E9003C06A4 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D720319952D00008149E2 /* CoreMedia.framework */; };
@@ -85,7 +83,7 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Benchmarks_test.cpp; sourceTree = "<group>"; };
-		1515D28519C5D774002CB6A6 /* ChoreographTests copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "ChoreographTests copy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1515D28519C5D774002CB6A6 /* ChoreographTests copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "ChoreographTests copy"; path = BenchmarkTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		15184EA319BBA8D2007139FC /* Motion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Motion.h; path = ../../src/choreograph/Motion.h; sourceTree = "<group>"; };
 		15184EA419BBA8D2007139FC /* Output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Output.h; path = ../../src/choreograph/Output.h; sourceTree = "<group>"; };
 		154DECB919BBAD7900A8D56B /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Timeline.h; path = ../../src/choreograph/Timeline.h; sourceTree = "<group>"; };
@@ -95,10 +93,6 @@
 		158218A119BBA8AF00AAD280 /* Output.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Output.cpp; path = ../../src/choreograph/Output.cpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F4B42D19BD325E00A411C1 /* ChoreographDevApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChoreographDevApp.cpp; sourceTree = "<group>"; };
-		15F4B45C19BD32EE00A411C1 /* InfiniteLooper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = InfiniteLooper.cpp; sourceTree = "<group>"; };
-		15F4B45D19BD32EE00A411C1 /* InfiniteLooper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfiniteLooper.h; sourceTree = "<group>"; };
-		15F4B45F19BD332600A411C1 /* SampleBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SampleBase.cpp; sourceTree = "<group>"; };
-		15F4B46019BD332600A411C1 /* SampleBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SampleBase.h; sourceTree = "<group>"; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
 		15F905A319C49A05003C06A4 /* Choreograph_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Choreograph_test.cpp; sourceTree = "<group>"; };
 		15F905C419C49F72003C06A4 /* ChoreographTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = ChoreographTests; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -219,18 +213,6 @@
 			path = ../src;
 			sourceTree = "<group>";
 		};
-		15F4B42F19BD327800A411C1 /* samples */ = {
-			isa = PBXGroup;
-			children = (
-				15F4B45C19BD32EE00A411C1 /* InfiniteLooper.cpp */,
-				15F4B45D19BD32EE00A411C1 /* InfiniteLooper.h */,
-				15F4B45F19BD332600A411C1 /* SampleBase.cpp */,
-				15F4B46019BD332600A411C1 /* SampleBase.h */,
-			);
-			name = samples;
-			path = ../../samples;
-			sourceTree = "<group>";
-		};
 		15F905A019C498C3003C06A4 /* tests */ = {
 			isa = PBXGroup;
 			children = (
@@ -267,7 +249,6 @@
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				15F4B42C19BD325E00A411C1 /* src */,
-				15F4B42F19BD327800A411C1 /* samples */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -468,8 +449,6 @@
 				15F4B42E19BD325E00A411C1 /* ChoreographDevApp.cpp in Sources */,
 				158218A019BBA85000AAD280 /* Motion.cpp in Sources */,
 				158218A219BBA8AF00AAD280 /* Output.cpp in Sources */,
-				15F4B46119BD332600A411C1 /* SampleBase.cpp in Sources */,
-				15F4B45E19BD32EE00A411C1 /* InfiniteLooper.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
