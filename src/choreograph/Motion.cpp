@@ -31,7 +31,6 @@
 
 using namespace choreograph;
 using namespace std;
-using namespace cinder;
 
 //
 //  MotionBase

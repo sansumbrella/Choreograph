@@ -123,6 +123,8 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         {
           test_timeline.move( &targets[i] ).getSequence().hold( 1.0f ).rampTo( vec2( i * 5, i * 20 ), 2.0f );
         }
+
+        ScopedTimer steps( "Choreograph Steps" );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           test_timeline.step( dt );
         }
@@ -134,6 +136,8 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         {
           cinder_timeline->apply( &cinder_targets[i], vec2( i * 5, i * 20 ), 2.0f ).delay( 1.0f );
         }
+
+        ScopedTimer steps( "Cinder Steps" );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           cinder_timeline->step( dt );
         }
@@ -159,6 +163,8 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         {
           test_timeline.queue( &target ).hold( 1.0f ).rampTo( vec2( i * 5, i * 20 ), 2.0f );
         }
+
+        ScopedTimer steps( "Choreograph Steps" );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           test_timeline.step( dt );
         }
@@ -170,6 +176,8 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         {
           cinder_timeline->appendTo( &cinder_target, vec2( i * 5, i * 20 ), 2.0f ).delay( 1.0f );
         }
+
+        ScopedTimer steps( "Cinder Steps" );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           cinder_timeline->step( dt );
         }
