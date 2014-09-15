@@ -83,7 +83,7 @@
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Benchmarks_test.cpp; sourceTree = "<group>"; };
-		1515D28519C5D774002CB6A6 /* ChoreographTests copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; name = "ChoreographTests copy"; path = BenchmarkTests; sourceTree = BUILT_PRODUCTS_DIR; };
+		1515D28519C5D774002CB6A6 /* BenchmarkTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BenchmarkTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		15184EA319BBA8D2007139FC /* Motion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Motion.h; path = ../../src/choreograph/Motion.h; sourceTree = "<group>"; };
 		15184EA419BBA8D2007139FC /* Output.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Output.h; path = ../../src/choreograph/Output.h; sourceTree = "<group>"; };
 		154DECB919BBAD7900A8D56B /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Timeline.h; path = ../../src/choreograph/Timeline.h; sourceTree = "<group>"; };
@@ -238,7 +238,7 @@
 			children = (
 				8D1107320486CEB800E47090 /* ChoreographDev.app */,
 				15F905C419C49F72003C06A4 /* ChoreographTests */,
-				1515D28519C5D774002CB6A6 /* ChoreographTests copy */,
+				1515D28519C5D774002CB6A6 /* BenchmarkTests */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -340,7 +340,7 @@
 			);
 			name = BenchmarkTests;
 			productName = ChoreographTestsCmdLine;
-			productReference = 1515D28519C5D774002CB6A6 /* ChoreographTests copy */;
+			productReference = 1515D28519C5D774002CB6A6 /* BenchmarkTests */;
 			productType = "com.apple.product-type.tool";
 		};
 		15F905C319C49F72003C06A4 /* ChoreographTests */ = {

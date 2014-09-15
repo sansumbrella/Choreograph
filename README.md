@@ -66,6 +66,14 @@ Development, including running unit and regression tests, is done with the Chore
 ### Using the lerp specializations
 If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
 
+### Dependencies
+
+The base Choreograph library has no third-party dependencies, so you can use it with whatever other C++ library you like. It does require a modern compiler. Tested with Apple LLVM 5.1 (Clang 502).
+
+Choreograph's tests use the Catch framework, which is included in the tests/ directory.
+
+Choreograph's samples and dev application use Cinder for system interaction and graphics display. Any recent version of the glNext branch should work. Clone Choreograph to your blocks directory.
+
 #### History/Tweening alternatives:
 Cinder's Timeline is an excellent, production-ready tweening option. It is based on the previous version of Choreograph.  
 Choreograph itself was originally inspired by Flash tweening libraries like Greensock's TweenMax.

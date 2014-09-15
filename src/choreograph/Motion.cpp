@@ -28,7 +28,6 @@
 #include "Motion.h"
 
 #include "Output.h"
-#include "cinder/Log.h"
 
 using namespace choreograph;
 using namespace std;
