@@ -29,13 +29,16 @@
 
 #include "Choreograph.hpp"
 
+using SampleRef = std::shared_ptr<class SampleBase>;
+
 class SampleBase
 {
 public:
   virtual ~SampleBase() = default;
 
+  virtual void setup() {}
   virtual void update() {}
-  virtual void draw() = 0;
+  virtual void draw() const = 0;
 private:
   co::Timeline mTimeline;
 };
