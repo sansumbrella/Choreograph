@@ -30,6 +30,10 @@
 namespace choreograph
 {
 
+///
+/// A Source of motion.
+/// Virtual base class with concept of value and implementation of time.
+///
 template<typename T>
 class Source
 {
@@ -40,11 +44,13 @@ public:
   /// Override to provide value at requested time.
   virtual T getValue( float atTime ) const = 0;
 
-  inline float getStartTime() const { return _start_time; }
-  inline float getEndTime() const { return _end_time; }
   /// Returns normalized time if t is in range [start_time, end_time].
   inline float normalizeTime( float t ) const { return (t - _start_time) / (_end_time - _start_time); }
-  /// Returns the duration of this phrase.
+  /// Returns the start time of this source.
+  inline float getStartTime() const { return _start_time; }
+  /// Returns the end time of this source.
+  inline float getEndTime() const { return _end_time; }
+  /// Returns the duration of this source.
   inline float getDuration() const { return _end_time - _start_time; }
 
 
