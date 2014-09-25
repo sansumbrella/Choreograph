@@ -39,7 +39,7 @@ private:
 TEST_CASE( "Creating Motions" ) {
   co::Timeline test_timeline;
   float dt = 1.0f / 60.0f;
-  const size_t count = 10e3; // 10k
+  const size_t count = 150e3; // 10k
   SequenceRef<vec2> sequence = make_shared<Sequence<vec2>>( vec2( 1.0f ) );
   sequence->rampTo( vec2( 5.0f ), 1.0f ).rampTo( vec2( 10.0f, 6.0f ), 0.5f );
 
