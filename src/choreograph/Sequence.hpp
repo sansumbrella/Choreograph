@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "Source.h"
 #include "Phrase.hpp"
 #include <cmath>
 
@@ -39,7 +40,7 @@ namespace choreograph
  A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
 */
 template<typename T, typename PhraseT=Phrase<T>>
-class Sequence
+class Sequence : public Source<T>
 {
 public:
   // Sequences always need to have some valid value.
