@@ -254,8 +254,11 @@
 				19C28FACFE9D520D11CA2CBB /* Products */,
 				15F905A019C498C3003C06A4 /* tests */,
 			);
+			indentWidth = 2;
 			name = ChoreographDev;
 			sourceTree = "<group>";
+			tabWidth = 2;
+			usesTabs = 0;
 		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
