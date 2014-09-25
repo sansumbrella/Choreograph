@@ -24,15 +24,25 @@ Makes mixing signals difficult.
 
 ## Most Flexible
 
-Source<T> (virtual T getValue(time))
+Source<T> (virtual T getValue(time), non-virtual start and end times)
 	- Phrase inherits
 		- Phrase2, Phrase3, etc. inherit (template on number of components?)
 	- Sequence inherits
-		- list of Phrase<T> (non-virtual getTime, etc.)
+		- list of sequential SourceRef<T>
 	- Mix inherits
-		- list of SourceRef<T> with contribution factors
-Motion
-	SourceRef<T>
+		- list of concurrent SourceRef<T> with contribution factors
+	- safe and fast since we're calculating based on our internal states
+
+TimelineItem (steppable)
+	Motion (Maybe rename to Connection)
+		SourceRef<T>
+		OutputRef<T>
+		begin/end/update callbacks
+	Cue
+		simple callback at time
+
+TimeLine
+	list of TimelineItemRefs
 
 Issues:
 Will have about a 15-20% performance hit relative to fastest path.
