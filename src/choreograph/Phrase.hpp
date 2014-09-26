@@ -107,6 +107,35 @@ private:
   LerpFn  _lerpFn = &lerpT<T>;
 };
 
+template<typename T>
+class Hold : public Source<T>
+{
+public:
+
+  Hold( float start_time, float end_time, const T &start_value, const T &end_value ):
+  Source<T>( start_time, end_time ),
+  _value( start_value )
+  {}
+
+  T getValue( float atTime ) const override
+  {
+    return _value;
+  }
+
+  T getStartValue() const override
+  {
+    return _value;
+  }
+
+  T getEndValue() const override
+  {
+    return _value;
+  }
+
+private:
+  T       _value;
+};
+
 /**
  A Phrase is a part of a Sequence.
  It describes the motion between two positions.

@@ -48,12 +48,17 @@ public:
   virtual ~Source() = default;
 
   /// Override to provide value at requested time.
+  /// Returns the interpolated value at the given time.
   virtual T getValue( float atTime ) const = 0;
+
   /// Override to provide value at start (and before).
   virtual T getStartValue() const = 0;
+
   /// Override to provide value at end (and beyond).
   virtual T getEndValue() const = 0;
+
   /// Returns the Source value at \a time, looping past the end from inflection point to the end.
+  /// Relies on the subclass implementation of getValue( t ).
   T getValueWrapped( float time, float inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Returns normalized time if t is in range [start_time, end_time].

@@ -49,6 +49,7 @@ public:
 
   /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
+    Source<T>( 0, 0 ),
     _initial_value( value )
   {}
 
@@ -69,22 +70,19 @@ public:
       _initial_value = value;
     }
     else {
-//      hold( value, 0.0f );
+      then<Hold>( value, 0.0f );
     }
     return *this;
   }
 
   /// Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
   std::shared_ptr<SequenceT> copy() const { return std::make_shared<SequenceT>( *this ); }
-/*
-  /// Returns a sequence containing the Phrases of this sequence from [begin, end)
-  SequenceT slice( size_t begin, size_t size ) const {
-    assert( begin < _phrases.size() );
-    assert( (begin + size) <= _phrases.size() );
-    return SequenceT( std::vector<PhraseT>( _phrases.begin() + begin, _phrases.begin() + begin + size ) );
-  }
-*/
 
+  /// Add a phrase to the end of the sequence.
+  /// All phrases will receive the following arguments to their constructors:
+  /// start time, end time, start value (last sequence value), end value
+  /// If additional arguments are passed to then(), those arguments come after the required ones.
+  /// sequence.then<RampTo>( targetValue, duration, other phrase parameters ).then<Hold>( holdValue, duration );
   template<template <typename> class PhraseT, typename... Args>
   SequenceT& then( const T &value, float duration, Args... args )
   {
@@ -104,6 +102,15 @@ public:
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
+  /// TODO: implement sequence concatenation.
+  static SequenceT& concatenate( const SequenceT &lhs, const SequenceT &rhs );
+
+  /// Recursively concatenate any number of sequences.
+  template<typename... Args>
+  static SequenceT& concatenate( const SequenceT &first, const SequenceT &second, Args... additional )
+  {
+    return concatenate( concatenate( first, second ), std::forward( additional... ) );
+  }
 private:
   std::vector<SourceRef<T>> _phrases;
   T                         _initial_value;

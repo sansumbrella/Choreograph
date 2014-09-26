@@ -40,7 +40,7 @@ void ChoreographDevApp::setup()
 
   _timeline.move( &_ball_y )
   .startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } )
-  .getSource<Sequence<float>>()->set( 5.0f ).then<RampTo>( 500.0f, 1.0f, EaseInOutQuad() ).then<RampTo>( 700.0f, 1.0f, EaseNone() ).then<RampTo>( 200.0f, 1.0f );
+  .getSource<Sequence<float>>()->set( 5.0f ).then<RampTo>( 500.0f, 1.0f, EaseInOutQuad() ).then<Hold>( 500.0f, 2.0f ).then<RampTo>( 700.0f, 1.0f, EaseNone() ).then<RampTo>( 200.0f, 1.0f );
 
   _timeline.move( &_ball_2 )
   .startFn( [] (Motion<vec2> &c) { cout << "Start blue" << endl; } )
