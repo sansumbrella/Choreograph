@@ -22,7 +22,7 @@ class ChoreographDevApp : public AppNative {
 	void draw() override;
 private:
   float                 _ball_y;
-  ci::vec2              _ball_2 = ci::vec2( 400.0f, 400.0f );
+  ci::vec2              _ball_2 = ci::vec2( 0 );
   float                 _ball_radius = 50.0f;
   co::Timeline          _timeline;
 
@@ -53,15 +53,14 @@ void ChoreographDevApp::setup()
     float shortest = std::min( v.x, size.x - v.x );
     shortest = std::min( shortest, size.y - v.y );
     shortest = std::min( shortest, v.y );
-    _ball_radius = shortest;
+    _ball_radius = 12.0f + shortest / 2;
   } )
   .getSource<Sequence<vec2>>();
 
   blueMotion->
-  then<RampTo>( vec2( app::getWindowSize() ) / 2.0f, 2.0f )
-  .then<RampTo>( vec2( app::getWindowSize() ), 2.0f )
-  .then<RampTo>( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f )
-  .then<RampTo>( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
+  then<RampTo>( vec2( getWindowSize() ) / 2.0f, 1.0f )
+  .then<RampTo>( vec2( getWindowSize() ), 0.66f )
+  .then<RampTo2>( vec2( 0, 0 ), 2.0f, EaseNone(), EaseInOutCubic() );
 /*
   _timeline.move<vec2, Phrase2v>( &_arc ).getSequence()
     .then( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )

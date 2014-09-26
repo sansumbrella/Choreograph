@@ -40,6 +40,15 @@ namespace choreograph
 // then again, might just make a curve struct that is callable and have a way to set its initial and final derivatives.
 typedef std::function<float (float)> EaseFn;
 
+
+/**
+ \file
+ Phrases for use in Choreograph.
+ A Phrase is a part of a Sequence.
+ It describes the motion between two positions.
+ This is the essence of a Tween, with all values held internally.
+ */
+
 namespace
 {
   /// Default ease function for holds. Keeps constant value output.
@@ -49,21 +58,6 @@ namespace
 
 } // namespace
 
-/// A Position describes a point in time.
-template<typename T>
-struct Position
-{
-  Position() = default;
-
-  Position( const T &value, float time = 0.0f ):
-    time( time ),
-    value( value )
-  {}
-
-  float time = 0.0f;
-  T     value;
-};
-
 /// The default templated lerp function.
 template<typename T>
 T lerpT( const T &a, const T &b, float t )
@@ -71,6 +65,9 @@ T lerpT( const T &a, const T &b, float t )
   return a + (b - a) * t;
 }
 
+/**
+ RampTo is a phrase that interpolates all components with an ease function.
+ */
 template<typename T>
 class RampTo : public Source<T>
 {
@@ -90,15 +87,9 @@ public:
     return _lerpFn( _start_value, _end_value, _easeFn( this->normalizeTime( atTime ) ) );
   }
 
-  T getStartValue() const override
-  {
-    return _start_value;
-  }
+  T getStartValue() const override { return _start_value; }
 
-  T getEndValue() const override
-  {
-    return _end_value;
-  }
+  T getEndValue() const override { return _end_value; }
 
 private:
   T       _start_value;
@@ -107,6 +98,51 @@ private:
   LerpFn  _lerpFn = &lerpT<T>;
 };
 
+
+/**
+ RampTo2 is a phrase with two separately-interpolated components.
+ Allows for the use of separate ease functions per component.
+ All components must be of the same type.
+ */
+template<typename T>
+class RampTo2 : public Source<T>
+{
+
+public:
+
+  RampTo2( float start_time, float end_time, const T &start_value, const T &end_value, const EaseFn &ease_x, const EaseFn &ease_y ):
+    Source<T>( start_time, end_time ),
+    _start_value( start_value ),
+    _end_value( end_value ),
+    _ease_x( ease_x ),
+    _ease_y( ease_y )
+  {}
+
+  /// Returns the interpolated value at the given time.
+  T getValue( float atTime ) const override
+  {
+    float t = this->normalizeTime( atTime );
+    return T( componentLerpFn( getStartValue().x, getEndValue().x, _ease_x( t ) ),
+              componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ) );
+  }
+
+  T getStartValue() const override { return _start_value; }
+  T getEndValue() const override { return _end_value; }
+
+private:
+  using ComponentT = decltype( T().x ); // get the type of the x component;
+  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
+
+  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
+  T               _start_value;
+  T               _end_value;
+  EaseFn          _ease_x;
+  EaseFn          _ease_y;
+};
+
+/**
+ Hold is a phrase that hangs in there, never changing.
+ */
 template<typename T>
 class Hold : public Source<T>
 {
@@ -134,234 +170,6 @@ public:
 
 private:
   T       _value;
-};
-
-/**
- A Phrase is a part of a Sequence.
- It describes the motion between two positions.
- This is the essence of a Tween, with all values held internally.
- */
-template<typename T>
-class Phrase
-{
-public:
-  using LerpFn = std::function<T (const T&, const T&, float)>;
-
-  Phrase( const T &_end, float duration, const EaseFn &easeFn = &easeNone ):
-    _end( _end, duration ),
-    _easeFn( easeFn )
-  {}
-
-  Phrase( const Position<T> &start, const Position<T> &_end, const EaseFn &easeFn = &easeNone, const LerpFn &lerpFn = &lerpT<T> ):
-    _start( start ),
-    _end( _end ),
-    _easeFn( easeFn ),
-    _lerpFn( lerpFn )
-  {}
-
-  ~Phrase() = default;
-
-  /// Set start time to \a time. End time is adjusted to preserve duration.
-  void shiftStartTimeTo( float time ) {
-    float delta = time - _start.time;
-    _start.time = time;
-    _end.time += delta;
-  }
-
-  /// Change start value to \a value.
-  void setStartValue( const T &value )
-  {
-    _start.value = value;
-  }
-
-  /// Returns the value at the beginning of this phrase.
-  inline const T& getStartValue() const { return _start.value; }
-  /// Returns the value at the end of this phrase.
-  inline const T& getEndValue() const { return _end.value; }
-
-  /// Returns the time at the beginning of this phrase.
-  inline float getStartTime() const { return _start.time; }
-  /// Returns the time at the end of this phrase.
-  inline float getEndTime() const { return _end.time; }
-
-  /// Returns normalized time if t is in range [_start.time, _end.time].
-  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
-  /// Returns the duration of this phrase.
-  inline float getDuration() const { return _end.time - _start.time; }
-
-  /// Returns the interpolated value at the given time.
-  T getValue( float atTime ) const
-  {
-    return _lerpFn( _start.value, _end.value, _easeFn( normalizeTime( atTime ) ) );
-  }
-private:
-  Position<T> _start;
-  Position<T> _end;
-  EaseFn      _easeFn;
-  LerpFn      _lerpFn = &lerpT<T>;
-};
-
-/**
- Phrase with two separately-interpolated components.
- Allows for the use of separate ease functions per component.
- All components must be of the same type.
- */
-template<typename T>
-class Phrase2
-{
-public:
-  Phrase2( const T &_end, float duration, const EaseFn &ease_x, const EaseFn &ease_y ):
-    _end( _end ),
-    _ease_x( ease_x ),
-    _ease_y( ease_y )
-  {}
-
-  Phrase2( const Position<T> &start, const Position<T> &_end, const EaseFn &ease_x, const EaseFn &ease_y ):
-    _start( start ),
-    _end( _end ),
-    _ease_x( ease_x ),
-    _ease_y( ease_y )
-  {}
-
-  /// Returns the value at the beginning of this phrase.
-  inline const T& getStartValue() const { return _start.value; }
-  /// Returns the value at the _end of this phrase.
-  inline const T& getEndValue() const { return _end.value; }
-
-  /// Returns the time at the beginning of this phrase.
-  inline float getStartTime() const { return _start.time; }
-  /// Returns the time at the _end of this phrase.
-  inline float getEndTime() const { return _end.time; }
-
-  /// Returns normalized time if t is in range [start.time, _end.time].
-  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
-  /// Returns the duration of this phrase.
-  inline float getDuration() const { return _end.time - _start.time; }
-
-  /// Returns the interpolated value at the given time.
-  T getValue( float atTime ) const
-  {
-    float t = normalizeTime( atTime );
-    return T( componentLerpFn( getStartValue().x, getEndValue().x, _ease_x( t ) ),
-              componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ) );
-  }
-
-  /// Set ease functions for first and second components.
-  void setEase( const EaseFn &component_0, const EaseFn &component_1 ) {
-    _ease_x = component_0;
-    _ease_y = component_1;
-  }
-
-private:
-  using ComponentT = decltype( T().x ); // get the type of the x component;
-  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
-
-  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
-  Position<T>     _start;
-  Position<T>     _end;
-  EaseFn          _ease_x;
-  EaseFn          _ease_y;
-};
-
-/**
- Phrase with three separately-interpolated components.
- Allows for the use of separate ease functions per component.
- All components must be of the same type.
- */
-template<typename T>
-class Phrase3
-{
-public:
-  Phrase3( const T &_end, float duration, const EaseFn &ease_x, const EaseFn &ease_y, const EaseFn &ease_z ):
-    _end( _end ),
-    _ease_x( ease_x ),
-    _ease_y( ease_y ),
-    _ease_z( ease_z )
-  {}
-
-  Phrase3( const Position<T> &start, const Position<T> &_end, const EaseFn &ease_x, const EaseFn &ease_y, const EaseFn &ease_z ):
-    _start( start ),
-    _end( _end ),
-    _ease_x( ease_x ),
-    _ease_y( ease_y ),
-    _ease_z( ease_z )
-  {}
-
-  /// Returns the value at the beginning of this phrase.
-  inline const T& getStartValue() const { return _start.value; }
-  /// Returns the value at the _end of this phrase.
-  inline const T& getEndValue() const { return _end.value; }
-
-  /// Returns the time at the beginning of this phrase.
-  inline float getStartTime() const { return _start.time; }
-  /// Returns the time at the _end of this phrase.
-  inline float getEndTime() const { return _end.time; }
-
-  /// Returns normalized time if t is in range [start.time, _end.time].
-  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
-  /// Returns the duration of this phrase.
-  inline float getDuration() const { return _end.time - _start.time; }
-
-  /// Returns the interpolated value at the given time.
-  T getValue( float atTime ) const
-  {
-    float t = normalizeTime( atTime );
-    return T( componentLerpFn( getStartValue().x, getEndValue().x, _ease_x( t ) ),
-              componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ),
-              componentLerpFn( getStartValue().z, getEndValue().z, _ease_z( t ) ) );
-  }
-
-  /// Set ease functions for first and second components.
-  void setEase( const EaseFn &component_0, const EaseFn &component_1, const EaseFn &component_2 ) {
-    _ease_x = component_0;
-    _ease_y = component_1;
-    _ease_z = component_2;
-  }
-
-private:
-  using ComponentT = decltype( T().x ); // get the type of the x component;
-  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
-
-  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
-  Position<T>     _start;
-  Position<T>     _end;
-  EaseFn          _ease_x;
-  EaseFn          _ease_y;
-  EaseFn          _ease_z;
-};
-
-/**
- A phrase that steps from beginning to next.
- Useful for keyframe animation.
- */
-template<typename T>
-class PhraseStepped
-{
-public:
-  /// Returns the value at the beginning of this phrase.
-  inline const T& getStartValue() const { return _start.value; }
-  /// Returns the value at the _end of this phrase.
-  inline const T& getEndValue() const { return _end.value; }
-
-  /// Returns the time at the beginning of this phrase.
-  inline float getStartTime() const { return _start.time; }
-  /// Returns the time at the _end of this phrase.
-  inline float getEndTime() const { return _end.time; }
-
-  /// Returns normalized time if t is in range [start.time, _end.time].
-  inline float normalizeTime( float t ) const { return (t - _start.time) / (_end.time - _start.time); }
-  /// Returns the duration of this phrase.
-  inline float getDuration() const { return _end.time - _start.time; }
-
-  /// Returns the current value at time.
-  T getValue( float atTime ) const
-  {
-    float t = normalizeTime( atTime );
-    return t >= 1.0f ? getEndValue() : getStartValue();
-  }
-private:
-  Position<T> _start;
-  Position<T> _end;
 };
 
 } // namespace atlantic
