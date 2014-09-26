@@ -86,11 +86,30 @@ public:
   template<template <typename> class PhraseT, typename... Args>
   SequenceT& then( const T &value, float duration, Args... args )
   {
-    auto phrase = std::make_shared<PhraseT<T>>( this->getEndTime(), this->getEndTime() + duration, this->getEndValue(), value, args... );
-    _phrases.push_back( phrase );
-    this->setEndTime( phrase->getEndTime() );
+    float end_time = this->getEndTime() + duration;
+    _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, args... ) ) );
+    this->setEndTime( end_time );
 
     return *this;
+  }
+
+  /// Add a pre-existing phrase to the end of the sequence.
+  template<typename PhraseT>
+  SequenceT& then( const PhraseT &phrase )
+  {
+    auto p = std::unique_ptr<PhraseT>( new PhraseT( phrase ) );
+    p->setStartTime( this->getEndTime() );
+    this->setEndTime( p->getEndTime() );
+    _phrases.push_back( std::move( p ) );
+
+    return *this;
+  }
+
+  SequenceT& append( const SequenceT &next )
+  {
+    for( auto &phrase : next._phrases ) {
+      then( phrase.get() );
+    }
   }
 
   /// Returns the value at the end of the Sequence.
@@ -103,7 +122,10 @@ public:
   size_t getPhraseCount() const { return _phrases.size(); }
 
   /// TODO: implement sequence concatenation.
-  static SequenceT& concatenate( const SequenceT &lhs, const SequenceT &rhs );
+  static SequenceT& concatenate( SequenceT lhs, const SequenceT &rhs )
+  {
+    return lhs.append( rhs );
+  }
 
   /// Recursively concatenate any number of sequences.
   template<typename... Args>
@@ -111,8 +133,19 @@ public:
   {
     return concatenate( concatenate( first, second ), std::forward( additional... ) );
   }
+protected:
+  void startTimeShifted( float delta ) override
+  {
+    for( const SourceUniqueRef<T> &phrase : _phrases )
+    {
+      phrase->shiftTime( delta );
+    }
+  }
+
 private:
-  std::vector<SourceRef<T>> _phrases;
+  // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
+  // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
+  std::vector<SourceUniqueRef<T>> _phrases;
   T                         _initial_value;
 };
 

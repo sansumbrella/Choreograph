@@ -80,14 +80,18 @@ public:
       return time;
     }
   }
+  /// Offsets start and end times.
+  void shiftTime( float amount ) { _start_time += amount; _end_time += amount; startTimeShifted( amount ); }
 
 protected:
   /// Sets end time.
   void setEndTime( float t ) { _end_time = t; }
-  /// Offsets start and end times.
-  void shiftTime( float amount ) { _start_time += amount; _end_time += amount; }
   /// Sets start time while preserving duration.
-  void setStartTime( float t ) { float delta = t - _start_time; _start_time += delta; _end_time += delta; }
+  void setStartTime( float t ) { float delta = t - _start_time; _start_time += delta; _end_time += delta; startTimeShifted( delta ); }
+
+  /// Override to handle special cases when time changes.
+  /// Needed by Sequence so it can shift all its child sources.
+  virtual void startTimeShifted( float delta ) {}
 
 private:
   float _start_time = 0.0f;
