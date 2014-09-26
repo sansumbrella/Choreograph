@@ -52,12 +52,45 @@ namespace choreograph
 
 //
 // Motion options returned when you make a motion using the timeline.
+// TODO: hide the underlying motion and sequence and provide a fresh interface on top.
+// The MotionOptions interface will come around once other parts have solidified a bit.
 //
 template<typename T>
-struct MotionOptions
+class MotionOptions
 {
-  Motion<T>   &motion;
-  Sequence<T> &sequence;
+public:
+  using SelfT = MotionOptions<T>;
+
+  MotionOptions( const MotionRef<T> &motion, const SequenceRef<T> &sequence ):
+    _motion( motion ),
+    _sequence( sequence )
+  {}
+
+  //
+  //  Motion Interface Mirroring.
+  //
+
+  /// Set function to be called when Motion starts. Receives reference to motion.
+  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
+  /// Set function to be called when Motion updates. Receives current target value.
+  SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->updateFn( fn ); return *this; }
+  /// Set function to be called when Motion finishes. Receives reference to motion.
+  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
+  /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
+  SelfT& continuous( bool isContinuous ) { _motion->continuous( isContinuous ); return *this; }
+
+  //
+  //  Sequence Interface Mirroring.
+  //
+
+  SelfT& set( const T &value ) { _sequence->set( value ); return *this; }
+  /// Append a phrase to the Sequence.
+  template<template <typename> class PhraseT, typename... Args>
+  SelfT& then( const T &value, float duration, Args... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
+
+private:
+  MotionRef<T>   _motion;
+  SequenceRef<T> _sequence;
 };
 
 /**
@@ -80,7 +113,7 @@ public:
 
     _motions.push_back( motion );
 
-    return MotionOptions<T>{ *motion, *sequence };
+    return MotionOptions<T>{ motion, sequence };
   }
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
@@ -109,7 +142,7 @@ public:
 
     _motions.push_back( motion );
 
-    return MotionOptions<T>{ *motion, *sequence };
+    return MotionOptions<T>{ motion, sequence };
   }
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
@@ -134,13 +167,13 @@ public:
 
 
   /// Remove specific motion.
-  void remove( const MotionRef &motion );
+  void remove( const MotionBaseRef &motion );
 
   /// Remove motion associated with specific output.
   template<typename T>
   void remove( T *output )
   {
-    erase_if( &_motions, [=] (const MotionRef &m) { return m->getTarget() == output; } );
+    erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
   }
 
   /// Removes all motions from this timeline.
@@ -152,8 +185,8 @@ public:
   /// Returns the number of motions on this timeline.
   size_t size() const { return _motions.size(); }
 private:
-  bool                    _auto_clear = true;
-  std::vector<MotionRef>  _motions;
+  bool                        _auto_clear = true;
+  std::vector<MotionBaseRef>  _motions;
 };
 
 } // namespace choreograph

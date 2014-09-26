@@ -74,9 +74,6 @@ public:
     return *this;
   }
 
-  /// Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
-  std::shared_ptr<SequenceT> copy() const { return std::make_shared<SequenceT>( *this ); }
-
   /// Add a phrase to the end of the sequence.
   /// All phrases will receive the following arguments to their constructors:
   /// start time, end time, start value (last sequence value), end value
@@ -86,7 +83,7 @@ public:
   SequenceT& then( const T &value, float duration, Args... args )
   {
     float end_time = this->getEndTime() + duration;
-    _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, args... ) ) );
+    _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
     this->setEndTime( end_time );
 
     return *this;
@@ -120,15 +117,15 @@ public:
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
-  /// TODO: implement sequence concatenation.
-  static SequenceT& concatenate( SequenceT lhs, const SequenceT &rhs )
+  /// Add two sequences together to form a third sequence.
+  static SequenceT concatenate( SequenceT lhs, const SequenceT &rhs )
   {
     return lhs.append( rhs );
   }
 
   /// Recursively concatenate any number of sequences.
   template<typename... Args>
-  static SequenceT& concatenate( const SequenceT &first, const SequenceT &second, Args... additional )
+  static SequenceT concatenate( const SequenceT &first, const SequenceT &second, Args... additional )
   {
     return concatenate( concatenate( first, second ), std::forward( additional... ) );
   }

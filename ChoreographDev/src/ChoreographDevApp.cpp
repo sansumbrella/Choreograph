@@ -39,12 +39,12 @@ void ChoreographDevApp::setup()
 {
 
   auto redMotion = _timeline.apply( &_ball_y );
-  redMotion.motion.startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } );
+  redMotion.startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } );
 
-  redMotion.sequence.set( 5.0f ).then<RampTo>( 500.0f, 1.0f, EaseInOutQuad() ).then<Hold>( 500.0f, 2.0f ).then<RampTo>( 700.0f, 1.0f, EaseNone() ).then<RampTo>( 200.0f, 1.0f );
+  redMotion.set( 5.0f ).then<RampTo>( 500.0f, 1.0f, EaseInOutQuad() ).then<Hold>( 500.0f, 2.0f ).then<RampTo>( 700.0f, 1.0f, EaseNone() ).then<RampTo>( 200.0f, 1.0f );
 
   auto blueMotion = _timeline.apply( &_ball_2 );
-  blueMotion.motion.startFn( [] (Motion<vec2> &c) { cout << "Start blue" << endl; } )
+  blueMotion.startFn( [] (Motion<vec2> &c) { cout << "Start blue" << endl; } )
   .finishFn( [] (Motion<vec2> &c) { c.playbackSpeed( c.getPlaybackSpeed() * -1.0f ); } )
   .continuous( true )
   .updateFn( [&] (const vec2 &v) {
@@ -55,7 +55,7 @@ void ChoreographDevApp::setup()
     _ball_radius = 12.0f + shortest / 2;
   } );
 
-  blueMotion.sequence.then<RampTo>( vec2( getWindowSize() ) / 2.0f, 1.0f )
+  blueMotion.then<RampTo>( vec2( getWindowSize() ) / 2.0f, 1.0f )
   .then<RampTo>( vec2( getWindowSize() ), 0.66f )
   .then<RampTo2>( vec2( 0, 0 ), 2.0f, EaseNone(), EaseInOutCubic() );
 /*

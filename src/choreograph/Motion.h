@@ -34,7 +34,7 @@ namespace choreograph
 {
 
 class OutputBase;
-using MotionRef = std::shared_ptr<class MotionBase>;
+using MotionBaseRef = std::shared_ptr<class MotionBase>;
 
 /**
 A connection between a continuous, independent Sequence and an output.
@@ -240,5 +240,8 @@ private:
   Callback        _startFn  = nullptr;
   DataCallback    _updateFn = nullptr;
 };
+
+template<typename T>
+using MotionRef = std::shared_ptr<Motion<T>>;
 
 } // namespace choreograph
