@@ -53,6 +53,8 @@ public:
   virtual T getStartValue() const = 0;
   /// Override to provide value at end (and beyond).
   virtual T getEndValue() const = 0;
+  /// Returns the Source value at \a time, looping past the end from inflection point to the end.
+  T getValueWrapped( float time, float inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Returns normalized time if t is in range [start_time, end_time].
   inline float normalizeTime( float t ) const { return (t - _start_time) / (_end_time - _start_time); }
@@ -62,6 +64,17 @@ public:
   inline float getEndTime() const { return _end_time; }
   /// Returns the duration of this source.
   inline float getDuration() const { return _end_time - _start_time; }
+
+  /// Wrap \a time around \a inflectionPoint in the Sequence.
+  float wrapTime( float time, float inflectionPoint = 0.0f ) const
+  {
+    if( time > getDuration() ) {
+      return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
+    }
+    else {
+      return time;
+    }
+  }
 
 protected:
   /// Sets end time.

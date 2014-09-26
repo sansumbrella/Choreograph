@@ -43,10 +43,6 @@ template<typename T>
 class Sequence : public Source<T>
 {
 public:
-  float getDuration() const { return Source<T>::getDuration(); }
-  float getStartTime() const { return Source<T>::getStartTime(); }
-  float getEndTime() const { return Source<T>::getEndTime(); }
-
   // Sequences always need to have some valid value.
   Sequence() = delete;
   using SequenceT = Sequence<T>;
@@ -65,20 +61,6 @@ public:
 
   /// Returns the Sequence value at \a atTime.
   T getValue( float atTime ) const override;
-
-  /// Wrap \a time around \a inflectionPoint in the Sequence.
-  float wrapTime( float time, float inflectionPoint = 0.0f ) const
-  {
-    if( time > getDuration() ) {
-      return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
-    }
-    else {
-      return time;
-    }
-  }
-
-  /// Returns the Sequence value at \a time, looping past the end from inflection point to the end.
-  T getValueWrapped( float time, float inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Set current value. An instantaneous hold.
   SequenceT& set( const T &value )
@@ -106,7 +88,7 @@ public:
   template<typename PhraseT, typename... Args>
   SequenceT& then( const T &value, float duration, Args... args )
   {
-    auto phrase = std::make_shared<PhraseT>( getEndTime(), getEndTime() + duration, getEndValue(), value, args... );
+    auto phrase = std::make_shared<PhraseT>( this->getEndTime(), this->getEndTime() + duration, this->getEndValue(), value, args... );
     _phrases.push_back( phrase );
     this->setEndTime( phrase->getEndTime() );
 
@@ -132,11 +114,11 @@ private:
 template<typename T>
 T Sequence<T>::getValue( float atTime ) const
 {
-  if( atTime < getStartTime() )
+  if( atTime < this->getStartTime() )
   {
     return _initial_value;
   }
-  else if ( atTime >= getEndTime() )
+  else if ( atTime >= this->getEndTime() )
   {
     return getEndValue();
   }
