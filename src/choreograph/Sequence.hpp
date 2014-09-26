@@ -29,7 +29,6 @@
 
 #include "Source.h"
 #include "Phrase.hpp"
-#include <cmath>
 
 namespace choreograph
 {

@@ -41,7 +41,7 @@ TEST_CASE( "Creating Motions" ) {
   float dt = 1.0f / 60.0f;
   const size_t count = 150e3; // 10k
   SequenceRef<vec2> sequence = make_shared<Sequence<vec2>>( vec2( 1.0f ) );
-  sequence->rampTo( vec2( 5.0f ), 1.0f ).rampTo( vec2( 10.0f, 6.0f ), 0.5f );
+  sequence->then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
 
   cout << "Working with " << count << " motions." << endl;
 
@@ -49,7 +49,7 @@ TEST_CASE( "Creating Motions" ) {
   {
     ScopedTimer timer( "Creating Motions" );
     for( auto &target : targets ) {
-      test_timeline.move( &target ).getSequence().rampTo( vec2( 10.0f ), 1.0f );
+      test_timeline.move( &target ).getSource<Sequence<vec2>>()->then<RampTo>( vec2( 10.0f ), 1.0f );
     }
   }
 
@@ -121,7 +121,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         //
         for( int i = 0; i < tween_count; ++i )
         {
-          test_timeline.move( &targets[i] ).getSequence().hold( 1.0f ).rampTo( vec2( i * 5, i * 20 ), 2.0f );
+          test_timeline.move( &targets[i] ).getSource<Sequence<vec2>>()->then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
         }
 
         ScopedTimer steps( "Choreograph Steps" );
@@ -161,7 +161,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         //
         for( int i = 0; i < tween_count; ++i )
         {
-          test_timeline.queue( &target ).hold( 1.0f ).rampTo( vec2( i * 5, i * 20 ), 2.0f );
+          test_timeline.queue( &target )->then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
         }
 
         ScopedTimer steps( "Choreograph Steps" );

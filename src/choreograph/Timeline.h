@@ -123,14 +123,15 @@ public:
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
-  Sequence<T>& queue( Output<T> *output )
+  SequenceRef<T> queue( Output<T> *output )
   {
     for( auto &motion : _motions ) {
       if( motion->getTarget() == output ) {
-        return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
+        auto mm = std::static_pointer_cast<Motion<T>>( motion );
+        return mm->template getSource< Sequence<T> >();
       }
     }
-    return move( output ).getSequence();
+    return move( output ).template getSource<Sequence<T>>();
   }
 
   /// Remove specific motion.

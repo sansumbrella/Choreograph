@@ -26,6 +26,8 @@
  */
 
 #pragma once
+#include <cmath>
+#include <memory>
 
 namespace choreograph
 {
