@@ -143,13 +143,13 @@ A connection between a continuous, independent Sequence and an output.
 Drives a Sequence and sends its value to a user-defined variable.
 Might mirror the Sequence interface for easier animation.
 */
-template<typename T, typename PhraseT=Phrase<T>>
+template<typename T>
 class Motion : public MotionBase
 {
 public:
-  using MotionT       = Motion<T, PhraseT>;
-  using SequenceT     = Sequence<T, PhraseT>;
-  using SequenceRefT  = SequenceRef<T, PhraseT>;
+  using MotionT       = Motion<T>;
+  using SequenceT     = Sequence<T>;
+  using SequenceRefT  = SequenceRef<T>;
   using DataCallback  = std::function<void (const T&)>;
   using Callback      = std::function<void (MotionT&)>;
   using EmptyCallback = std::function<void ()>;
@@ -159,23 +159,25 @@ public:
   Motion( T *target, const SequenceRefT &sequence ):
     MotionBase( target ),
     _output( target ),
-    _sequence( sequence )
+    _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceRefT &sequence ):
     MotionBase( target ),
     _output( target->ptr() ),
-    _sequence( sequence )
+    _source( sequence )
   {}
 
 
   /// Duration is based on the underlying sequence.
-  float getDuration() const override { return _sequence->getDuration(); }
+  float getDuration() const override { return _source->getDuration(); }
 
-  float getProgress() const { return time() / _sequence->getDuration(); }
+  float getProgress() const { return time() / _source->getDuration(); }
 
-  /// Returns the underlying sequence for extension.
-  SequenceT&  getSequence() { return *_sequence; }
+  /// Returns the underlying source of this motion.
+  /// Uses a dynamic cast, so make sure you get back a valid pointer before using.
+  template<typename SourceT>
+  std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
 
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
@@ -202,18 +204,18 @@ public:
     if( _startFn ) {
       if( forward() && time() > 0.0f && previousTime() <= 0.0f )
         _startFn( *this );
-      else if( backward() && time() < _sequence->getDuration() && previousTime() >= _sequence->getDuration() )
+      else if( backward() && time() < _source->getDuration() && previousTime() >= _source->getDuration() )
         _startFn( *this );
     }
 
-    *_output = _sequence->getValue( time() );
+    *_output = _source->getValue( time() );
 
     if( _updateFn ) {
       _updateFn( *_output );
     }
 
     if( _finishFn ){
-      if( forward() && time() >= _sequence->getDuration() && previousTime() < _sequence->getDuration() )
+      if( forward() && time() >= _source->getDuration() && previousTime() < _source->getDuration() )
       {
         _finishFn( *this );
       }
@@ -231,7 +233,7 @@ protected:
 private:
   // shared_ptr to sequence since many connections could share the same sequence
   // this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-  SequenceRefT    _sequence;
+  SourceRef<T>    _source;
   T               *_output;
 
   Callback        _finishFn = nullptr;

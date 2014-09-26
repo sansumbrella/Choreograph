@@ -39,10 +39,20 @@ class Source
 {
 public:
   Source() = default;
+
+  Source( float startTime, float endTime ):
+    _start_time( startTime ),
+    _end_time( endTime )
+  {}
+
   virtual ~Source() = default;
 
   /// Override to provide value at requested time.
   virtual T getValue( float atTime ) const = 0;
+  /// Override to provide value at start (and before).
+  virtual T getStartValue() const = 0;
+  /// Override to provide value at end (and beyond).
+  virtual T getEndValue() const = 0;
 
   /// Returns normalized time if t is in range [start_time, end_time].
   inline float normalizeTime( float t ) const { return (t - _start_time) / (_end_time - _start_time); }
@@ -53,10 +63,29 @@ public:
   /// Returns the duration of this source.
   inline float getDuration() const { return _end_time - _start_time; }
 
+protected:
+  /// Sets end time.
+  void setEndTime( float t ) { _end_time = t; }
+  /// Offsets start and end times.
+  void shiftTime( float amount ) { _start_time += amount; _end_time += amount; }
+  /// Sets start time while preserving duration.
+  void setStartTime( float t ) { float delta = t - _start_time; _start_time += delta; _end_time += delta; }
 
 private:
   float _start_time = 0.0f;
   float _end_time = 0.0f;
 };
+
+template<typename T>
+class SourceT
+{
+
+};
+
+template<typename T>
+using SourceRef = std::shared_ptr<Source<T>>;
+
+template<typename T>
+using SourceUniqueRef = std::unique_ptr<Source<T>>;
 
 } // namespace choreograph

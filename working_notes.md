@@ -9,11 +9,11 @@ Always stack-allocate.
 
 Performance is approximately as follows:
 Working with 150000 motions.
-[Creating Motions]                                70.905ms
-[Stepping Motions 1x]                             10.843ms
-[Stepping Motions 60x]                            667.836ms
-[Creating Motions from shared Sequence]           62ms
-[Stepping Motions with shared Sequence 1x]        11.651ms
+[Creating Motions]                                70.905ms  
+[Stepping Motions 1x]                             10.843ms  
+[Stepping Motions 60x]                            667.836ms  
+[Creating Motions from shared Sequence]           62ms  
+[Stepping Motions with shared Sequence 1x]        11.651ms  
 [Stepping Motions with shared Sequence 60x]       715.132ms
 
 Issues:
@@ -25,18 +25,19 @@ Makes mixing signals difficult.
 ## Most Flexible
 
 Source<T> (virtual T getValue(time), non-virtual start and end times)
-	- Phrase inherits
-		- Phrase2, Phrase3, etc. inherit (template on number of components?)
-	- Sequence inherits
-		- list of sequential SourceRef<T>
-	- Mix inherits
-		- list of concurrent SourceRef<T> with contribution factors
-	- safe and fast since we're calculating based on our internal states
+- Phrase inherits
+	- Phrase2, Phrase3, etc. inherit (template on number of components?)
+- Sequence inherits
+	- list of sequential SourceRef<T>
+- Mix inherits
+	- list of concurrent SourceRef<T> with contribution factors
+- safe and fast since we're calculating based on our internal states
 
 TimelineItem (steppable)
 	Motion (Maybe rename to Connection)
 		SourceRef<T>
 		OutputRef<T>
+		playhead position
 		begin/end/update callbacks
 	Cue
 		simple callback at time
@@ -52,11 +53,11 @@ which results in a nice performance boost when everyone does the same thing.
 
 Performance is approximately as follows (measured with virtual Sequence type, most flexi not yet implemented):
 Working with 150000 motions.
-[Creating Motions]                                71.751ms
-[Stepping Motions 1x]                             13.117ms
-[Stepping Motions 60x]                            776.125ms		// virtual method dispatch slows us down a bit
-[Creating Motions from shared Sequence]           23.696ms		// copying only a pointer, hence speed here
-[Stepping Motions with shared Sequence 1x]        9.40001ms		// less memory traversal due to pseudo-instancing
+[Creating Motions]                                71.751ms  
+[Stepping Motions 1x]                             13.117ms  
+[Stepping Motions 60x]                            776.125ms		// virtual method dispatch slows us down a bit  
+[Creating Motions from shared Sequence]           23.696ms		// copying only a pointer, hence speed here  
+[Stepping Motions with shared Sequence 1x]        9.40001ms		// less memory traversal due to pseudo-instancing  
 [Stepping Motions with shared Sequence 60x]       556.052ms
 
 TODO:

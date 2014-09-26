@@ -71,6 +71,42 @@ T lerpT( const T &a, const T &b, float t )
   return a + (b - a) * t;
 }
 
+template<typename T>
+class RampTo : public Source<T>
+{
+public:
+  using LerpFn = std::function<T (const T&, const T&, float)>;
+
+  RampTo( float start_time, float end_time, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone ):
+    Source<T>( start_time, end_time ),
+    _start_value( start_value ),
+    _end_value( end_value ),
+    _easeFn( ease_fn )
+  {}
+
+  /// Returns the interpolated value at the given time.
+  T getValue( float atTime ) const override
+  {
+    return _lerpFn( _start_value, _end_value, _easeFn( this->normalizeTime( atTime ) ) );
+  }
+
+  T getStartValue() const override
+  {
+    return _start_value;
+  }
+
+  T getEndValue() const override
+  {
+    return _end_value;
+  }
+
+private:
+  T       _start_value;
+  T       _end_value;
+  EaseFn  _easeFn;
+  LerpFn  _lerpFn = &lerpT<T>;
+};
+
 /**
  A Phrase is a part of a Sequence.
  It describes the motion between two positions.

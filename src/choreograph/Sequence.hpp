@@ -39,13 +39,17 @@ namespace choreograph
  Our essential compositional tool, describing all the transformations to one element.
  A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
 */
-template<typename T, typename PhraseT=Phrase<T>>
+template<typename T>
 class Sequence : public Source<T>
 {
 public:
+  float getDuration() const { return Source<T>::getDuration(); }
+  float getStartTime() const { return Source<T>::getStartTime(); }
+  float getEndTime() const { return Source<T>::getEndTime(); }
+
   // Sequences always need to have some valid value.
   Sequence() = delete;
-  using SequenceT = Sequence<T, PhraseT>;
+  using SequenceT = Sequence<T>;
 
   /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
@@ -53,14 +57,14 @@ public:
   {}
 
   /// Construct a Sequence from an array of Phrases.
-  explicit Sequence( const std::vector<PhraseT> &phrases ):
-    _initial_value( phrases.begin().getStartValue() ),
-    _phrases( phrases ),
-    _duration( phrases.back().getEndTime() )
+  explicit Sequence( const std::vector<SourceRef<T>> &phrases ):
+    Source<T>( phrases.front()->getStartTime(), phrases.back()->getEndTime() ),
+    _initial_value( phrases.front()->getStartValue() ),
+    _phrases( phrases )
   {}
 
   /// Returns the Sequence value at \a atTime.
-  T getValue( float atTime ) const;
+  T getValue( float atTime ) const override;
 
   /// Wrap \a time around \a inflectionPoint in the Sequence.
   float wrapTime( float time, float inflectionPoint = 0.0f ) const
@@ -83,135 +87,74 @@ public:
       _initial_value = value;
     }
     else {
-      hold( value, 0.0f );
+//      hold( value, 0.0f );
     }
     return *this;
   }
 
   /// Returns a copy of this sequence. Useful if you want to make a base animation and modify that.
   std::shared_ptr<SequenceT> copy() const { return std::make_shared<SequenceT>( *this ); }
-
+/*
   /// Returns a sequence containing the Phrases of this sequence from [begin, end)
   SequenceT slice( size_t begin, size_t size ) const {
     assert( begin < _phrases.size() );
     assert( (begin + size) <= _phrases.size() );
     return SequenceT( std::vector<PhraseT>( _phrases.begin() + begin, _phrases.begin() + begin + size ) );
   }
+*/
 
-  /// Hold on current end value for \a duration seconds.
-  SequenceT& wait( float duration ) { return hold( duration ); }
-
-  /// Hold on current end value for \a duration seconds.
-  SequenceT& hold( float duration )
-  {
-    return hold( endValue(), duration );
-  }
-
-  /// Hold on \a value for \a duration seconds.
-  SequenceT& hold( const T &value, float duration )
-  {
-    Position<T> start{ value, _duration };
-    Position<T> end{ value, _duration + duration };
-    Phrase<T> phrase( start, end, &easeHold );
-
-    _phrases.push_back( phrase );
-    _duration = phrase.getEndTime();
-
-    return *this;
-  }
-
-  /// Animate to \a value over \a duration seconds using \a ease easing.
-  SequenceT& rampTo( const T &value, float duration, const EaseFn &ease = &easeNone )
-  {
-    Position<T> start{ endValue(), _duration };
-    Position<T> end{ value, _duration + duration };
-    Phrase<T> phrase( start, end, ease );
-
-    _phrases.push_back( phrase );
-
-    _duration = phrase.getEndTime();
-
-    return *this;
-  }
-
-  template<typename... Args>
+  template<typename PhraseT, typename... Args>
   SequenceT& then( const T &value, float duration, Args... args )
   {
-    Position<T> start{ endValue(), _duration };
-    Position<T> end{ value, _duration + duration };
-    PhraseT phrase( start, end, args... );
-
+    auto phrase = std::make_shared<PhraseT>( getEndTime(), getEndTime() + duration, getEndValue(), value, args... );
     _phrases.push_back( phrase );
-    _duration = phrase.getEndTime();
+    this->setEndTime( phrase->getEndTime() );
 
     return *this;
   }
-
-  SequenceT& then( PhraseT phrase )
-  {
-    phrase.setStartValue( endValue() );
-    phrase.shiftStartTimeTo( _duration );
-    _duration = phrase.getEndTime();
-
-    _phrases.push_back( phrase );
-
-    return *this;
-  }
-
-  /// Sets the ease function of the last Phrase in the Sequence.
-  SequenceT& ease( const EaseFn &easeFn ) {
-    if( ! _phrases.empty() ) {
-      _phrases.back().motion = easeFn;
-    }
-    return *this;
-  }
-
-  /// Returns the number of seconds required to move through all Phrases.
-  float getDuration() const { return _duration; }
 
   /// Returns the value at the end of the Sequence.
-  T endValue() const { return _phrases.empty() ? _initial_value : _phrases.back().getEndValue(); }
+  T getEndValue() const override { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
 
   /// Returns the value at the beginning of the Sequence.
-  T initialValue() const { return _initial_value; }
+  T getStartValue() const override { return _initial_value; }
 
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
 private:
-  std::vector<PhraseT>  _phrases;
-  T                     _initial_value;
-  float                 _duration = 0.0f;
+  std::vector<SourceRef<T>> _phrases;
+  T                         _initial_value;
 };
 
 /// Returns the value of this sequence for a given point in time.
 // Would be nice to have a constant-time check (without a while loop).
-template<typename T, typename PhraseT>
-T Sequence<T, PhraseT>::getValue( float atTime ) const
+template<typename T>
+T Sequence<T>::getValue( float atTime ) const
 {
-  if( atTime < 0.0f )
+  if( atTime < getStartTime() )
   {
     return _initial_value;
   }
-  else if ( atTime >= _duration )
+  else if ( atTime >= getEndTime() )
   {
-    return endValue();
+    return getEndValue();
   }
 
   auto iter = _phrases.begin();
   while( iter < _phrases.end() ) {
-    if( (*iter).getEndTime() > atTime )
+    if( (*iter)->getEndTime() > atTime )
     {
-      return (*iter).getValue( atTime );
+      return (*iter)->getValue( atTime );
     }
     ++iter;
   }
   // past the end, get the final value
   // this should be unreachable, given that we return early if time >= duration
-  return endValue();
+  return getEndValue();
 }
 
-template<typename T, typename PhraseT = Phrase<T>>
-using SequenceRef = std::shared_ptr<Sequence<T, PhraseT>>;
+template<typename T>
+using SequenceRef = std::shared_ptr<Sequence<T>>;
 
 } // namespace choreograph
