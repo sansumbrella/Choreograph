@@ -85,10 +85,10 @@ public:
   }
 */
 
-  template<typename PhraseT, typename... Args>
+  template<template <typename> class PhraseT, typename... Args>
   SequenceT& then( const T &value, float duration, Args... args )
   {
-    auto phrase = std::make_shared<PhraseT>( this->getEndTime(), this->getEndTime() + duration, this->getEndValue(), value, args... );
+    auto phrase = std::make_shared<PhraseT<T>>( this->getEndTime(), this->getEndTime() + duration, this->getEndValue(), value, args... );
     _phrases.push_back( phrase );
     this->setEndTime( phrase->getEndTime() );
 

@@ -40,7 +40,7 @@ void ChoreographDevApp::setup()
 
   _timeline.move( &_ball_y )
   .startFn( [] (Motion<float> &c) { cout << "Start red" << endl; } )
-  .getSource<Sequence<float>>()->set( 5.0f ).then<RampTo<float>>( 500.0f, 1.0f, EaseInOutQuad() ).then<RampTo<float>>( 700.0f, 1.0f, EaseNone() ).then<RampTo<float>>( 200.0f, 1.0f );
+  .getSource<Sequence<float>>()->set( 5.0f ).then<RampTo>( 500.0f, 1.0f, EaseInOutQuad() ).then<RampTo>( 700.0f, 1.0f, EaseNone() ).then<RampTo>( 200.0f, 1.0f );
 
   _timeline.move( &_ball_2 )
   .startFn( [] (Motion<vec2> &c) { cout << "Start blue" << endl; } )
@@ -54,10 +54,10 @@ void ChoreographDevApp::setup()
     _ball_radius = shortest;
   } )
   .getSource<Sequence<vec2>>()->
-  then<RampTo<vec2>>( vec2( app::getWindowSize() ) / 2.0f, 2.0f )
-  .then<RampTo<vec2>>( vec2( app::getWindowSize() ), 2.0f )
-  .then<RampTo<vec2>>( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f )
-  .then<RampTo<vec2>>( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
+  then<RampTo>( vec2( app::getWindowSize() ) / 2.0f, 2.0f )
+  .then<RampTo>( vec2( app::getWindowSize() ), 2.0f )
+  .then<RampTo>( vec2( app::getWindowWidth() / 2.0f, 10.0f ), 3.0f )
+  .then<RampTo>( vec2( app::getWindowSize() ) / 2.0f, 0.5f );
 /*
   _timeline.move<vec2, Phrase2v>( &_arc ).getSequence()
     .then( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
