@@ -80,7 +80,7 @@ public:
   /// If additional arguments are passed to then(), those arguments come after the required ones.
   /// sequence.then<RampTo>( targetValue, duration, other phrase parameters ).then<Hold>( holdValue, duration );
   template<template <typename> class PhraseT, typename... Args>
-  SequenceT& then( const T &value, float duration, Args... args )
+  SequenceT& then( const T &value, float duration, Args&&... args )
   {
     float end_time = this->getEndTime() + duration;
     _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, std::forward<Args>(args)... ) ) );

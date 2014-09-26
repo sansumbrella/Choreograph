@@ -86,7 +86,7 @@ public:
   SelfT& set( const T &value ) { _sequence->set( value ); return *this; }
   /// Append a phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
-  SelfT& then( const T &value, float duration, Args... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
+  SelfT& then( const T &value, float duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
 private:
   MotionRef<T>   _motion;
