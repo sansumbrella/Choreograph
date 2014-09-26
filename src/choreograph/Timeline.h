@@ -50,7 +50,17 @@ namespace choreograph
                , vec->end() );
   }
 
-/*
+//
+// Motion options returned when you make a motion using the timeline.
+//
+template<typename T>
+struct MotionOptions
+{
+  Motion<T>   &motion;
+  Sequence<T> &sequence;
+};
+
+/**
  Holds a collection of Motions and updates them through time.
  */
 class Timeline
@@ -58,44 +68,61 @@ class Timeline
 public:
 
   //
-  // Sequence creation. Safe methods.
+  // NEW INTERFACE. apply() and append() only.
   //
 
+  /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  Motion<T>& move( Output<T> *output )
+  MotionOptions<T>  apply( Output<T> *output )
   {
-    return move( output, std::make_shared<Sequence<T>>( *output ) );
-  }
-
-  template<typename T>
-  Motion<T>& move( Output<T> *output, const std::shared_ptr<Sequence<T>> &sequence )
-  {
+    auto sequence = std::make_shared<Sequence<T>>( *output );
     auto motion = std::make_shared<Motion<T>>( output, sequence );
+
     _motions.push_back( motion );
-    return *motion;
+
+    return MotionOptions<T>{ *motion, *sequence };
   }
 
-  //
-  // Sequence creation. Bare pointer methods.
-  //
-
-  /// Create a Sequence that is connected out to \a output.
+  /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
-  Motion<T>& move( T *output )
+  MotionOptions<T>& append( Output<T> *output )
   {
-    return move( output, std::make_shared<Sequence<T>>( *output ) );
+    for( auto &motion : _motions ) {
+      if( motion->getTarget() == output ) {
+        auto mm = std::static_pointer_cast<Motion<T>>( motion );
+        return mm->template getSource< Sequence<T> >();
+      }
+    }
+    return apply( output );
   }
 
-  /// Create a Motion that plays \a sequence into \a output.
+  /// Apply a source to output, overwriting any previous connections. Raw pointer edition.
+  /// Unless you have a strong need, prefer the use of apply( Output<T> *output );
   template<typename T>
-  Motion<T>& move( T *output, const SequenceRef<T> &sequence )
+  MotionOptions<T>  apply( T *output )
   { // Remove any existing motions that affect the same variable.
     // This is a raw pointer, so we don't know about any prior relationships.
     remove( output );
 
+    auto sequence = std::make_shared<Sequence<T>>( *output );
     auto motion = std::make_shared<Motion<T>>( output, sequence );
+
     _motions.push_back( motion );
-    return *motion;
+
+    return MotionOptions<T>{ *motion, *sequence };
+  }
+
+  /// Add phrases to the end of the Sequence currently connected to \a output.
+  /// Unless you have a strong need, prefer the use of append( Output<T> *output );
+  template<typename T>
+  MotionOptions<T>& append( T *output )
+  {
+    for( auto &motion : _motions ) {
+      if( motion->getTarget() == output ) {
+        return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
+      }
+    }
+    return apply( output );
   }
 
   //
@@ -105,34 +132,6 @@ public:
   /// Advance all current motions.
   void step( float dt );
 
-  //
-  // Sequence manipulation.
-  //
-
-  /// Add phrases to the end of the Sequence currently connected to \a output.
-  template<typename T>
-  Sequence<T>& queue( T *output )
-  {
-    for( auto &motion : _motions ) {
-      if( motion->getTarget() == output ) {
-        return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
-      }
-    }
-    return move( output ).getSequence();
-  }
-
-  /// Add phrases to the end of the Sequence currently connected to \a output.
-  template<typename T>
-  SequenceRef<T> queue( Output<T> *output )
-  {
-    for( auto &motion : _motions ) {
-      if( motion->getTarget() == output ) {
-        auto mm = std::static_pointer_cast<Motion<T>>( motion );
-        return mm->template getSource< Sequence<T> >();
-      }
-    }
-    return move( output ).template getSource<Sequence<T>>();
-  }
 
   /// Remove specific motion.
   void remove( const MotionRef &motion );
