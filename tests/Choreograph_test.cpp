@@ -36,8 +36,8 @@ private:
 TEST_CASE( "Separate component interpolation", "[sequence]" ) {
 
   // Animate XY from and to same values with different ease curves.
-  Sequence<vec2, Phrase2<vec2>> sequence( vec2( 1 ) );
-  sequence.then( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
+  Sequence<vec2> sequence( vec2( 1 ) );
+  sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
 
   SECTION( "Compare Values" ) {
     REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
@@ -52,7 +52,7 @@ TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
 
   Sequence<float> sequence( 0.0f );
   // 4 second sequence.
-  sequence.set( 1.0f ).hold( 1.0f ).rampTo( 2.0f, 1.0f ).rampTo( 10.0f, 1.0f ).rampTo( 2.0f, 1.0f );
+  sequence.set( 1.0f ).then<Hold>( 1.0f, 1.0f ).then<RampTo>( 2.0f, 1.0f ).then<RampTo>( 10.0f, 1.0f ).then<RampTo>( 2.0f, 1.0f );
 
   SECTION( "Sequence values within duration are correct." ) {
     REQUIRE( sequence.getValue( 0.5f ) == 1.0f );
@@ -79,12 +79,12 @@ TEST_CASE( "Output Connections", "[output]" ) {
 
   co::Timeline timeline;
   auto sequence = make_shared<Sequence<float>>( 0.0f );
-  sequence->rampTo( 10.0f, 2.0f );
+  sequence->then<RampTo>( 10.0f, 2.0f );
 
   SECTION( "Output falling out of scope disconnects" ) {
     { // create locally scoped output
       Output<vec4> temp;
-      timeline.move( &temp ).getSequence().rampTo( vec4( 5 ), 1.0f );
+      timeline.move( &temp ).getSource<Sequence<vec4>>()->then<RampTo>( vec4( 5 ), 1.0f );
 
       REQUIRE( timeline.size() == 1 );
     }
