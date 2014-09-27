@@ -28,10 +28,12 @@
 #pragma once
 
 #include <memory>
-#include "Output.hpp"
 
 namespace choreograph
 {
+
+template<typename T>
+class Output;
 
 ///
 /// Connection maintains a connection to an output.
