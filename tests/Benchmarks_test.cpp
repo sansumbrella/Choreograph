@@ -152,7 +152,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         }
       }
 
-      cout << "Step performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
+      cout << "Step performance (Cinder:Choreograph): " << (cinder / choreograph) << endl;
     }
 
   }
@@ -192,7 +192,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         }
       }
 
-      cout << "Step performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
+      cout << "Step performance (Cinder:Choreograph): " << (cinder / choreograph) << endl;
     }
   }
 
