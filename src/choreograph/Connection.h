@@ -28,59 +28,94 @@
 #pragma once
 
 #include <memory>
+#include "Output.h"
 
 namespace choreograph
 {
 
-class OutputBase;
-using ConnectionBaseRef = std::shared_ptr<class ConnectionBase>;
-
 ///
-/// ConnectionBase is the foundation of a connection to an output.
-/// Manages lifecycle of connection along with OutputBase.
+/// Connection is the foundation of a connection to an output.
+/// Manages lifecycle of connection along with Output<T>.
 /// If connected to a raw pointer, no lifecycle management occurs.
-/// TODO: consider CRTP for stronger compile-time safety guarantees.
 ///
 
-class ConnectionBase
+template<typename T>
+class Connection
 {
 public:
   /// Constructs and invalid Connection.
-  ConnectionBase() = default;
+  Connection() = default;
 
-  virtual ~ConnectionBase();
+  virtual ~Connection();
 
   /// Create a Connection to a managed Output pointer. Preferred use.
-  explicit ConnectionBase( OutputBase *base );
+  explicit Connection( Output<T> *base ):
+    _output_base( base ),
+    _raw_target( base->ptr() )
+  {
+    _output_base->disconnect();
+    _output_base->_input = this;
+  }
 
   /// Create a Connection to a raw pointer. Not recommended.
-  explicit ConnectionBase( void *target );
-
+  explicit Connection( T *target ):
+    _raw_target( target )
+  {}
 
   /// Returns true iff this Connection has an output.
   bool  isConnected() const { return _raw_target != nullptr; }
 
   /// Returns raw pointer to target variable. Used for comparison.
-  void* getTarget() const { return _raw_target; }
+  const T* getTarget() const { return _raw_target; }
 
-protected:
-  /// Replace current output target with new target. Called from connect.
-  /// Use to cast new output pointer to correct type.
-  virtual void replaceOutput( OutputBase *output ) {}
+  /// Returns reference to target variable. Used for assignment.
+  T& target() { return *_raw_target; }
 
 private:
   // void pointer to target, used for comparison with other MotionBase's.
-  void        *_raw_target = nullptr;
+  T          *_raw_target = nullptr;
   // Pointer to safe handle type. Exists iff created with an OutputBase target.
-  OutputBase  *_output_base = nullptr;
+  Output<T>  *_output_base = nullptr;
 
   /// Remove connection to Output.
   /// Called on destruction of either this or _output_base.
-  void disconnect( OutputBase *base );
+  void disconnect( Output<T> *base );
   /// Connect to a new Output (or just update the pointer to the same outputbase).
   /// Called by OutputBase when one Output supplants another (e.g. in copy-construction, move assignment, etc).
-  void connect( OutputBase *base );
-  
-  friend class OutputBase;
+  void connect( Output<T> *base );
+
+  friend class Output<T>;
 };
+
+template<typename T>
+Connection<T>::~Connection()
+{
+  disconnect( _output_base );
+}
+
+template<typename T>
+void Connection<T>::disconnect( Output<T> *base )
+{
+  if( _output_base && _output_base == base ) {
+    _output_base->_input = nullptr;
+    _output_base = nullptr;
+    _raw_target = nullptr;
+  }
+}
+
+template<typename T>
+void Connection<T>::connect( Output<T> *base )
+{
+  if( _output_base != base ) {
+    disconnect( _output_base );
+
+    _output_base = base;
+    _raw_target = base->ptr();
+    _output_base->_input = this;
+  }
+}
+
+template<typename T>
+using ConnectionRef = std::shared_ptr<Connection<T>>;
+
 }

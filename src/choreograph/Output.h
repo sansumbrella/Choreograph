@@ -30,35 +30,23 @@
 namespace choreograph
 {
 
-class ConnectionBase;
+template<typename T>
+class Connection;
 
-class OutputBase
+/// Safe type for Choreograph outputs.
+/// Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
+template<typename T>
+class Output
 {
 public:
   /// Disconnect on destruction.
-  virtual ~OutputBase() { disconnect(); }
+  virtual ~Output() { disconnect(); }
   /// Disconnect from Motion input.
   void disconnect();
 
   /// Returns true iff this output has a connected input.
   bool isConnected() const { return _input != nullptr; }
 
-protected:
-  /// Replaces \a rhs in its relationship to a MotionBase input.
-  void supplant( const OutputBase &rhs );
-private:
-  void connect( ConnectionBase *input );
-
-  ConnectionBase  *_input = nullptr;
-  friend class    ConnectionBase;
-};
-
-/// Safe type for Choreograph outputs.
-/// Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
-template<typename T>
-class Output : public OutputBase
-{
-public:
   /// Default constructor.
   Output() = default;
 
@@ -124,8 +112,38 @@ public:
 	/// Returns pointer to value.
 	T*				ptr() { return &mValue; }
 
+  /// Replaces \a rhs in its relationship to a MotionBase input.
+  void supplant( const Output<T> &rhs );
 private:
 	T				mValue;
+
+  void connect( Connection<T> *input );
+  Connection<T>  *_input = nullptr;
+  friend class    Connection<T>;
 };
+
+template<typename T>
+void Output<T>::disconnect()
+{
+  if( _input ) {
+    _input->disconnect( this );
+  }
+}
+
+template<typename T>
+void Output<T>::supplant( const Output<T> &rhs )
+{
+  disconnect();
+  connect( rhs._input );
+}
+
+template<typename T>
+void Output<T>::connect( Connection<T> *input )
+{
+  if( input ) {
+    input->connect( this );
+  }
+}
+
 
 } // namespace choreograph

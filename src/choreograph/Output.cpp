@@ -29,23 +29,3 @@
 #include "Connection.h"
 
 using namespace choreograph;
-
-void OutputBase::disconnect()
-{
-  if( _input ) {
-    _input->disconnect( this );
-  }
-}
-
-void OutputBase::supplant( const choreograph::OutputBase &rhs )
-{
-  disconnect();
-  connect( rhs._input );
-}
-
-void OutputBase::connect( ConnectionBase *input )
-{
-  if( input ) {
-    input->connect( this );
-  }
-}

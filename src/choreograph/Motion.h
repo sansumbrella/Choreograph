@@ -39,14 +39,10 @@ using MotionBaseRef = std::shared_ptr<class MotionBase>;
 /// MotionBase: non-templated base for polymorphic Motions.
 /// Connects a Sequence and an Output.
 ///
-class MotionBase : public ConnectionBase
+class MotionBase
 {
 public:
   MotionBase() = default;
-
-  explicit MotionBase( void *target ): ConnectionBase( target ) {}
-
-  explicit MotionBase( OutputBase *base ): ConnectionBase( base ) {}
 
   /// Advance motion in time. Affected by Motion's speed.
   void step( float dt );
@@ -59,6 +55,10 @@ public:
 
   /// Returns the duration of the motion.
   virtual float getDuration() const = 0;
+
+  /// STOPGAP: virtualize isConnected method since base isn't a connection.
+  virtual bool isConnected() const { return true; }
+  virtual const void* getTarget() const { return nullptr; }
 
   /// Returns current animation time in seconds.
   float time() const { return _time - _start_time; }
@@ -125,7 +125,7 @@ private:
 /// Moves a playhead along a Sequence and sends its value to a user-defined output.
 ///
 template<typename T>
-class Motion : public MotionBase
+class Motion : public MotionBase, public Connection<T>
 {
 public:
   using MotionT       = Motion<T>;
@@ -138,14 +138,12 @@ public:
   Motion() = delete;
 
   Motion( T *target, const SequenceRefT &sequence ):
-    MotionBase( target ),
-    _output( target ),
+    Connection<T>( target ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceRefT &sequence ):
-    MotionBase( target ),
-    _output( target->ptr() ),
+    Connection<T>( target ),
     _source( sequence )
   {}
 
@@ -160,6 +158,8 @@ public:
   template<typename SourceT>
   std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
 
+  bool isConnected() const override { return Connection<T>::isConnected(); }
+  const void* getTarget() const override { return Connection<T>::getTarget(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
@@ -180,7 +180,7 @@ public:
   /// Update
   void update() override
   {
-    assert( isConnected() );
+    assert( this->isConnected() );
 
     if( _startFn ) {
       if( forward() && time() > 0.0f && previousTime() <= 0.0f )
@@ -189,10 +189,10 @@ public:
         _startFn( *this );
     }
 
-    *_output = _source->getValue( time() );
+    this->target() = _source->getValue( time() );
 
     if( _updateFn ) {
-      _updateFn( *_output );
+      _updateFn( this->target() );
     }
 
     if( _finishFn ){
@@ -206,16 +206,11 @@ public:
       }
     }
   }
-protected:
-  void replaceOutput( OutputBase *output ) override {
-    _output = static_cast<Output<T>*>( output )->ptr();
-  }
 
 private:
   // shared_ptr to sequence since many connections could share the same sequence
   // this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
   SourceRef<T>    _source;
-  T               *_output;
 
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
