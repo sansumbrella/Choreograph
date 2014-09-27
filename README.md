@@ -74,7 +74,11 @@ Choreograph itself has no third-party dependencies.
 
 You will need a modern C++ compiler. I am developing Choreograph against Apple LLVM 6.0 (Clang 600), and will eventually ensure compatibility with Visual Studio 2013.
 
-Choreograph’s tests use the Catch framework, which is included in the tests/ directory.
+Choreograph’s tests use the Catch framework, which is included in the tests/ directory. 
+
+Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This will enable a handful of additional tests.
+
+Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph's performance vs ci::Timeline.
 
 Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of Cinder's glNext branch should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 

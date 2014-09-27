@@ -67,10 +67,19 @@ TEST_CASE( "Creating Motions" ) {
   }
 
   {
-    ScopedTimer timer( "Clearing Motions" );
+    ScopedTimer timer( "Disconnecting Motions" );
     for( auto &target : targets ) {
       target.disconnect();
     }
+  }
+
+  {
+    REQUIRE( test_timeline.empty() == false );
+    {
+      ScopedTimer time( "Stepping Disconnected Timeline" );
+      test_timeline.step( dt );
+    }
+    REQUIRE( test_timeline.empty() == true );
   }
 
   {
@@ -117,33 +126,33 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
       float choreograph, cinder;
 
       { // Measure basic performance.
-        ScopedTimer performance( "Choreograph Timeline", &choreograph );
+        ScopedTimer performance( "Choreograph Timeline" );
         //
         for( int i = 0; i < tween_count; ++i )
         {
           test_timeline.apply( &targets[i] ).then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
         }
 
-        ScopedTimer steps( "Choreograph Steps" );
+        ScopedTimer steps( "Choreograph Steps", &choreograph );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           test_timeline.step( dt );
         }
       }
 
       { // Compare to cinder timeline perf.
-        ScopedTimer perf( "Cinder Timeline", &cinder );
+        ScopedTimer perf( "Cinder Timeline" );
         for( int i = 0; i < tween_count; ++i )
         {
           cinder_timeline->apply( &cinder_targets[i], vec2( i * 5, i * 20 ), 2.0f ).delay( 1.0f );
         }
 
-        ScopedTimer steps( "Cinder Steps" );
+        ScopedTimer steps( "Cinder Steps", &cinder );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           cinder_timeline->step( dt );
         }
       }
 
-      cout << "Comparative timeline performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
+      cout << "Step performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
     }
 
   }
@@ -157,33 +166,33 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
       float choreograph, cinder;
 
       { // Measure basic performance.
-        ScopedTimer performance( "Choreograph Timeline", &choreograph );
+        ScopedTimer performance( "Choreograph Timeline" );
         //
         for( int i = 0; i < tween_count; ++i )
         {
           test_timeline.append( &target ).then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
         }
 
-        ScopedTimer steps( "Choreograph Steps" );
+        ScopedTimer steps( "Choreograph Steps", &choreograph );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           test_timeline.step( dt );
         }
       }
 
       { // Compare to cinder timeline perf.
-        ScopedTimer perf( "Cinder Timeline", &cinder );
+        ScopedTimer perf( "Cinder Timeline" );
         for( int i = 0; i < tween_count; ++i )
         {
           cinder_timeline->appendTo( &cinder_target, vec2( i * 5, i * 20 ), 2.0f ).delay( 1.0f );
         }
 
-        ScopedTimer steps( "Cinder Steps" );
+        ScopedTimer steps( "Cinder Steps", &cinder );
         for( float t = 0.0f; t <= 3.0f; t += dt ) {
           cinder_timeline->step( dt );
         }
       }
 
-      cout << "Comparative timeline performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
+      cout << "Step performance (Choreograph:Cinder): " << (choreograph / cinder) << endl;
     }
   }
 
