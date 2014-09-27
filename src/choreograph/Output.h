@@ -43,11 +43,6 @@ class Output
 public:
   /// Disconnect on destruction.
   virtual ~Output() { disconnect(); }
-  /// Disconnect from Motion input.
-  void disconnect();
-
-  /// Returns true iff this output has a connected input.
-  bool isConnected() const { return _input != nullptr; }
 
   /// Default constructor.
   Output() = default;
@@ -57,41 +52,25 @@ public:
     mValue( value )
   {}
 
-  /// Consider removing copy assignment since it has non-obvious semantics.
-  /// Instead, you can use move-assignment, like so
-  /// output = std::move( rhs );
-//  Output<T>& operator= ( const Output<T> &rhs ) = delete;
+  /// Disconnect from Motion input.
+  void disconnect();
+
+  /// Returns true iff this output has a connected input.
+  bool isConnected() const { return _input != nullptr; }
+
   /// Copy assignment takes value and any input Motion.
-  Output<T>& operator= ( const Output<T> &rhs ) {
-    if( this != &rhs ) {
-      mValue = rhs.mValue;
-      supplant( rhs );
-    }
-    return *this;
-  }
+  /// May remove copy assignment since it has non-obvious semantics.
+  Output<T>& operator= ( const Output<T> &rhs );
+//  Output<T>& operator= ( const Output<T> &rhs ) = delete;
 
   /// Move assignment takes value and any input Motion.
-  Output<T>& operator= ( Output<T> &&rhs ) {
-    if( this != &rhs ) {
-      mValue = rhs.mValue;
-      supplant( rhs );
-    }
-    return *this;
-  }
+  Output<T>& operator= ( Output<T> &&rhs );
 
   /// Copy constructor takes value and any motions.
-  Output( const Output<T> &rhs ):
-    mValue( rhs.mValue )
-  {
-    supplant( rhs );
-  }
+  Output( const Output<T> &rhs );
 
   /// Move constructor takes value and any input Motion.
-  Output( Output<T> &&rhs ):
-    mValue( rhs.mValue )
-  {
-    supplant( rhs );
-  }
+  Output( Output<T> &&rhs );
 
   /// Assignment operator.
 	Output<T>& operator= ( T value ) { mValue = value; return *this; }
@@ -114,15 +93,57 @@ public:
 	/// Returns pointer to value.
 	T*				ptr() { return &mValue; }
 
+private:
+	T               mValue;
+  Connection<T>  *_input = nullptr;
+
   /// Replaces \a rhs in its relationship to a MotionBase input.
   void supplant( const Output<T> &rhs );
-private:
-	T				mValue;
-
+  /// Connects this output to a new Connection.
   void connect( Connection<T> *input );
-  Connection<T>  *_input = nullptr;
+
   friend class    Connection<T>;
 };
+
+//=================================================
+// Output Implementation
+//=================================================
+
+/// Copy assignment takes value and any input Motion.
+template<typename T>
+Output<T>& Output<T>::operator= ( const Output<T> &rhs ) {
+  if( this != &rhs ) {
+    mValue = rhs.mValue;
+    supplant( rhs );
+  }
+  return *this;
+}
+
+/// Move assignment takes value and any input Motion.
+template<typename T>
+Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
+  if( this != &rhs ) {
+    mValue = rhs.mValue;
+    supplant( rhs );
+  }
+  return *this;
+}
+
+/// Copy constructor takes value and any motions.
+template<typename T>
+Output<T>::Output( const Output<T> &rhs ):
+mValue( rhs.mValue )
+{
+  supplant( rhs );
+}
+
+/// Move constructor takes value and any input Motion.
+template<typename T>
+Output<T>::Output( Output<T> &&rhs ):
+mValue( rhs.mValue )
+{
+  supplant( rhs );
+}
 
 template<typename T>
 void Output<T>::disconnect()
@@ -146,6 +167,5 @@ void Output<T>::connect( Connection<T> *input )
     input->connect( this );
   }
 }
-
 
 } // namespace choreograph

@@ -48,19 +48,14 @@ public:
 
   ~Connection();
 
-  /// Create a Connection to a managed Output pointer. Preferred use.
-  explicit Connection( Output<T> *base ):
-    _output_base( base ),
-    _raw_target( base->ptr() )
-  {
-    _output_base->disconnect();
-    _output_base->_input = this;
-  }
+  /// Create a Connection to a managed Output pointer.
+  /// Connection will be disconnected when either Connection or Output falls out of scope.
+  explicit Connection( Output<T> *base );
 
-  /// Create a Connection to a raw pointer. Not recommended.
-  explicit Connection( T *target ):
-    _raw_target( target )
-  {}
+  /// Create a Connection to a raw pointer.
+  /// No lifetime management will occur.
+  /// In most cases, use Connection( Output<T>* ) instead of this.
+  explicit Connection( T *target );
 
   /// Returns true iff this Connection has an output.
   bool  isConnected() const { return _raw_target != nullptr; }
@@ -80,12 +75,31 @@ private:
   /// Remove connection to Output.
   /// Called on destruction of either this or _output_base.
   void disconnect( Output<T> *base );
-  /// Connect to a new Output (or just update the pointer to the same outputbase).
+
+  /// Connect to a new Output (or update the pointer if Output's address changed).
   /// Called by OutputBase when one Output supplants another (e.g. in copy-construction, move assignment, etc).
   void connect( Output<T> *base );
 
   friend class Output<T>;
 };
+
+//=================================================
+// Connection Implementation
+//=================================================
+
+template<typename T>
+Connection<T>::Connection( Output<T> *base ):
+  _output_base( base ),
+  _raw_target( base->ptr() )
+{
+  _output_base->disconnect();
+  _output_base->_input = this;
+}
+
+template<typename T>
+Connection<T>::Connection( T *target ):
+  _raw_target( target )
+{}
 
 template<typename T>
 Connection<T>::~Connection()

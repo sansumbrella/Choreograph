@@ -181,7 +181,7 @@ public:
   /// Update
   void update() override
   {
-    assert( this->isConnected() );
+    assert( this->isValid() );
 
     if( _startFn ) {
       if( forward() && time() > 0.0f && previousTime() <= 0.0f )
@@ -209,8 +209,8 @@ public:
   }
 
 private:
-  // shared_ptr to sequence since many connections could share the same sequence
-  // this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
+  // shared_ptr to source since many connections could share the same source.
+  // This enables us to do pseudo-instancing on our animations, reducing their memory footprint.
   SourceRef<T>    _source;
   Connection<T>   _connection;
 
