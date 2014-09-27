@@ -33,8 +33,10 @@ namespace choreograph
 template<typename T>
 class Connection;
 
+///
 /// Safe type for Choreograph outputs.
 /// Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
+///
 template<typename T>
 class Output
 {
