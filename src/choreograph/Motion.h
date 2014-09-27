@@ -56,8 +56,10 @@ public:
   /// Returns the duration of the motion.
   virtual float getDuration() const = 0;
 
-  /// STOPGAP: virtualize isConnected method since base isn't a connection.
-  virtual bool isConnected() const { return true; }
+  /// Returns true if motion is valid.
+  virtual bool isValid() const { return true; }
+
+  /// Returns target if motion has one.
   virtual const void* getTarget() const { return nullptr; }
 
   /// Returns current animation time in seconds.
@@ -158,7 +160,7 @@ public:
   template<typename SourceT>
   std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
 
-  bool isConnected() const override { return _connection.isConnected(); }
+  bool isValid() const override { return _connection.isConnected(); }
   const void* getTarget() const override { return _connection.getTarget(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
