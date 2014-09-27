@@ -29,7 +29,7 @@
 
 #include "Sequence.hpp"
 #include "Motion.h"
-#include "Output.h"
+#include "Output.hpp"
 #include "Timeline.h"
 
 #if defined( CINDER_CINDER )

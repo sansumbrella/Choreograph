@@ -28,7 +28,7 @@
 #pragma once
 
 #include <memory>
-#include "Output.h"
+#include "Output.hpp"
 
 namespace choreograph
 {

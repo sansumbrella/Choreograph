@@ -28,8 +28,8 @@
 #pragma once
 
 #include "Sequence.hpp"
-#include "Connection.h"
-#include "Output.h"
+#include "Connection.hpp"
+#include "Output.hpp"
 
 namespace choreograph
 {

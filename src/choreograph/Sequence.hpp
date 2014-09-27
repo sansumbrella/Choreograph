@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "Source.h"
+#include "Source.hpp"
 #include "Phrase.hpp"
 
 namespace choreograph
