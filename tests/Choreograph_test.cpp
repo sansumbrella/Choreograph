@@ -106,11 +106,11 @@ TEST_CASE( "Output Connections", "[output]" ) {
 
     Motion<float> motion( &base, sequence );
     copy = std::move( base );
-    motion.skipTo( 1.0f );
+    motion.jumpTo( 1.0f );
 
     REQUIRE( copy.value() == 5.0f );
 
-    motion.skipTo( 2.0f );
+    motion.jumpTo( 2.0f );
     REQUIRE( copy.value() == 10.0f );
   }
 
@@ -141,12 +141,12 @@ TEST_CASE( "Output Connections", "[output]" ) {
 
     Motion<float> motion( &base, sequence );
     copy = base;
-    motion.skipTo( 1.0f );
+    motion.jumpTo( 1.0f );
 
     REQUIRE( base.value() == 1.0f );
     REQUIRE( copy.value() == 5.0f );
 
-    motion.skipTo( 2.0f );
+    motion.jumpTo( 2.0f );
     REQUIRE( copy.value() == 10.0f );
   }
 }

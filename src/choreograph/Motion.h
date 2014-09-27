@@ -36,10 +36,10 @@ namespace choreograph
 using MotionBaseRef = std::shared_ptr<class MotionBase>;
 
 
-/**
-A connection between a continuous, independent Sequence and an output.
-Non-templated base type so we can store in a polymorphic container.
-*/
+///
+/// MotionBase: non-templated base for polymorphic Motions.
+/// Connects a Sequence and an Output.
+///
 class MotionBase : public ConnectionBase
 {
 public:
@@ -52,8 +52,8 @@ public:
   /// Advance motion in time. Affected by Motion's speed.
   void step( float dt );
 
-  /// Skip to a point in motion. Ignores Motion's speed.
-  void skipTo( float time );
+  /// Jump to a point in time. Ignores Motion's speed.
+  void jumpTo( float time );
 
   /// Overridden to determine what a time step does.
   virtual void update() = 0;
@@ -112,12 +112,10 @@ private:
   std::function<void ()> _cue;
 };
 
-/**
-Motion: a sequence embedded in time and connected to an output.
-A connection between a continuous, independent Sequence and an output.
-Drives a Sequence and sends its value to a user-defined variable.
-Might mirror the Sequence interface for easier animation.
-*/
+///
+/// Motion: a connection between a continuous, independent Sequence and an output.
+/// Moves a playhead along a Sequence and sends its value to a user-defined output.
+///
 template<typename T>
 class Motion : public MotionBase
 {

@@ -41,7 +41,7 @@ void MotionBase::step( float dt )
   _previous_time = _time;
 }
 
-void MotionBase::skipTo( float time )
+void MotionBase::jumpTo( float time )
 {
   _time = time;
   update(); // update properties
