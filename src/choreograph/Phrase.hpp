@@ -119,13 +119,11 @@ public:
     _start_value( start_value ),
     _end_value( end_value )
   {
-    std::vector<EaseFn> list = { args... };
-    for( size_t i = 0; i < SIZE && i < list.size(); ++i )
-    {
+    std::vector<EaseFn> list = { std::forward<Args>( args )... };
+    for( size_t i = 0; i < SIZE && i < list.size(); ++i ) {
       _ease_fns[i] = list[i];
     }
-    for( size_t i = list.size(); i < SIZE; ++i )
-    {
+    for( size_t i = list.size(); i < SIZE; ++i ) {
       _ease_fns[i] = list.back();
     }
   }
