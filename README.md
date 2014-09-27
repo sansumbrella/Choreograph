@@ -66,21 +66,23 @@ Timelines manage a collection of Motions. They provide a straightforward interfa
 
 Initial v0.2.0 development is being done on OSX with Xcode 6. Once I have a relatively stable API, I will make sure things are building and happy in Visual Studio 2013.
 
-Development, including running tests, is done with the ChoreographDev project. The dev app is a dumping ground for various thoughts on the library. The tests and dev app have Cinder as a dependency, though Choreograph itself has no dependencies.
+Development, including running tests, is done with the ChoreographDev project. The dev app is a dumping ground for various thoughts on the library. Code likely won’t live there for long, but may find new life in the tests or as a sample.
+
+### Dependencies
+
+Choreograph itself has no third-party dependencies.
+
+You will need a modern C++ compiler. I am developing Choreograph against Apple LLVM 6.0 (Clang 600), and will eventually ensure compatibility with Visual Studio 2013.
+
+Choreograph’s tests use the Catch framework, which is included in the tests/ directory.
+
+Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of Cinder's glNext branch should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 
 Samples are run from the projects inside the Samples directory. There aren't any right now.
 
 ### Using the lerp specializations
 If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
 
-### Dependencies
-
-The base Choreograph library has no third-party dependencies, so you can use it with whatever other C++ libraries you like. It does require a modern compiler. Tested with Apple LLVM 5.1 (Clang 502).
-
-Choreograph's tests use the Catch framework, which is included in the tests/ directory.
-
-Choreograph's samples and dev application use Cinder for system interaction and graphics display. Any recent version of Cinder's glNext branch should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
-
-#### History/Tweening alternatives:
+## History/Tweening alternatives:
 Cinder's Timeline is an excellent, production-ready tweening option. It is based on the previous version of Choreograph.  
 Choreograph itself was originally inspired by Flash tweening libraries like Greensock's TweenMax. While they aren't for C++, you might draw your own inspiration from them.

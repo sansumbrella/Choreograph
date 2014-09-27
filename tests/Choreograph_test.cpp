@@ -1,28 +1,13 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-
 #include "choreograph/Choreograph.hpp"
-#include "cinder/Vector.h"
-#include "cinder/Easing.h"
+
+// If true, will test vec2 and vec3 animation and different ease functions.
+#define BUILD_CINDER_DEPENDENT_TESTS 1
 
 using namespace std;
-using namespace cinder;
 using namespace choreograph;
-
-TEST_CASE( "Separate component interpolation", "[sequence]" ) {
-
-  // Animate XY from and to same values with different ease curves.
-  Sequence<vec2> sequence( vec2( 1 ) );
-  sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
-
-  SECTION( "Compare Values" ) {
-    REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
-    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
-    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );
-    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
-  }
-}
 
 TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
   const float epsilon = std::numeric_limits<float>::epsilon() * 20;
@@ -59,16 +44,15 @@ TEST_CASE( "Output Connections", "[output]" ) {
   sequence->then<RampTo>( 10.0f, 2.0f );
 
   SECTION( "Output falling out of scope disconnects" ) {
-    { // create locally scoped output
-      Output<vec4> temp;
-      timeline.apply( &temp ).then<RampTo>( vec4( 5 ), 1.0f );
+    MotionRef<float> motion;
 
-      REQUIRE( timeline.size() == 1 );
+    { // create locally scoped output
+      Output<float> temp;
+      motion = make_shared<Motion<float>>( &temp, sequence );
+      REQUIRE( motion->isValid() );
     }
 
-    // Part of test is that nothing fails when stepping the timeline.
-    timeline.step( 0.5f );
-    REQUIRE( timeline.empty() == true );
+    REQUIRE( motion->isInvalid() );
   }
 
   SECTION( "Motion falling out of scope disconnects" ) {
@@ -81,6 +65,19 @@ TEST_CASE( "Output Connections", "[output]" ) {
     }
 
     REQUIRE( output.isConnected() == false );
+  }
+
+  SECTION( "Timeline Removes Invalid Connections" ) {
+    { // create locally scoped output
+      Output<float> temp;
+      timeline.apply( &temp ).then<RampTo>( 5.0f, 1.0f );
+
+      REQUIRE( timeline.size() == 1 );
+    }
+
+    // Part of test is that nothing fails when stepping the timeline.
+    timeline.step( 0.5f );
+    REQUIRE( timeline.empty() == true );
   }
 
   SECTION( "Vector of outputs can be moved." ) {
@@ -153,3 +150,25 @@ TEST_CASE( "Output Connections", "[output]" ) {
     REQUIRE( copy.value() == 10.0f );
   }
 }
+
+#if BUILD_CINDER_DEPENDENT_TESTS
+
+#include "cinder/Vector.h"
+#include "cinder/Easing.h"
+using namespace cinder;
+
+TEST_CASE( "Separate component interpolation", "[sequence]" ) {
+
+  // Animate XY from and to same values with different ease curves.
+  Sequence<vec2> sequence( vec2( 1 ) );
+  sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
+
+  SECTION( "Compare Values" ) {
+    REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
+    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
+    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );
+    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
+  }
+}
+
+#endif

@@ -74,11 +74,12 @@ class RampTo : public Source<T>
 public:
   using LerpFn = std::function<T (const T&, const T&, float)>;
 
-  RampTo( float start_time, float end_time, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone ):
+  RampTo( float start_time, float end_time, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone, const LerpFn &lerp_fn = &lerpT<T> ):
     Source<T>( start_time, end_time ),
     _start_value( start_value ),
     _end_value( end_value ),
-    _easeFn( ease_fn )
+    _easeFn( ease_fn ),
+    _lerpFn( lerp_fn )
   {}
 
   /// Returns the interpolated value at the given time.
@@ -95,7 +96,7 @@ private:
   T       _start_value;
   T       _end_value;
   EaseFn  _easeFn;
-  LerpFn  _lerpFn = &lerpT<T>;
+  LerpFn  _lerpFn;
 };
 
 

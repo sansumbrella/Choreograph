@@ -67,10 +67,11 @@ public:
     mValue( value )
   {}
 
-  /// Remove copy assignment since it has non-obvious semantics.
+  /// Consider removing copy assignment since it has non-obvious semantics.
   /// Instead, you can use move-assignment, like so
   /// output = std::move( rhs );
 //  Output<T>& operator= ( const Output<T> &rhs ) = delete;
+  /// Copy assignment takes value and any input Motion.
   Output<T>& operator= ( const Output<T> &rhs ) {
     if( this != &rhs ) {
       mValue = rhs.mValue;
