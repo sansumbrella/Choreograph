@@ -14,6 +14,7 @@ v0.2.0 development. API is unstable.
 - Template specializations support intuitive animation of cinder/glm quaternions.
 - Reversible, time-warpable motions.
 - TODO: Cues (function callback at a given time).
+- Works as a Cinder Block. Clone to Cinder/blocks/Choreograph
 
 ## Basic Usage
 ```c++
@@ -80,7 +81,7 @@ Choreograph_test has no linker dependencies, but will try to include vector and 
 
 Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph's performance vs ci::Timeline.
 
-Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of Cinder's glNext branch should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
+Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of [Cinder's glNext branch](https://github.com/cinder/cinder/tree/glNext) should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 
 Samples are run from the projects inside the Samples directory. There aren't any right now.
 
