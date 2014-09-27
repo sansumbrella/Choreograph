@@ -34,7 +34,7 @@ namespace choreograph
 {
 
 ///
-/// Connection is the foundation of a connection to an output.
+/// Connection maintains a connection to an output.
 /// Manages lifecycle of connection along with Output<T>.
 /// If connected to a raw pointer, no lifecycle management occurs.
 ///
@@ -46,7 +46,7 @@ public:
   /// Constructs and invalid Connection.
   Connection() = default;
 
-  virtual ~Connection();
+  ~Connection();
 
   /// Create a Connection to a managed Output pointer. Preferred use.
   explicit Connection( Output<T> *base ):

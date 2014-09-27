@@ -125,7 +125,7 @@ private:
 /// Moves a playhead along a Sequence and sends its value to a user-defined output.
 ///
 template<typename T>
-class Motion : public MotionBase, public Connection<T>
+class Motion : public MotionBase
 {
 public:
   using MotionT       = Motion<T>;
@@ -138,12 +138,12 @@ public:
   Motion() = delete;
 
   Motion( T *target, const SequenceRefT &sequence ):
-    Connection<T>( target ),
+    _connection( target ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceRefT &sequence ):
-    Connection<T>( target ),
+    _connection( target ),
     _source( sequence )
   {}
 
@@ -158,8 +158,8 @@ public:
   template<typename SourceT>
   std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
 
-  bool isConnected() const override { return Connection<T>::isConnected(); }
-  const void* getTarget() const override { return Connection<T>::getTarget(); }
+  bool isConnected() const override { return _connection.isConnected(); }
+  const void* getTarget() const override { return _connection.getTarget(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
@@ -189,10 +189,10 @@ public:
         _startFn( *this );
     }
 
-    this->target() = _source->getValue( time() );
+    _connection.target() = _source->getValue( time() );
 
     if( _updateFn ) {
-      _updateFn( this->target() );
+      _updateFn( _connection.target() );
     }
 
     if( _finishFn ){
@@ -211,6 +211,7 @@ private:
   // shared_ptr to sequence since many connections could share the same sequence
   // this enables us to do pseudo-instancing on our animations, reducing their memory footprint.
   SourceRef<T>    _source;
+  Connection<T>   _connection;
 
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
