@@ -3,35 +3,12 @@
 #include "catch.hpp"
 
 #include "choreograph/Choreograph.hpp"
-#include "cinder/Timer.h"
 #include "cinder/Vector.h"
-#include "cinder/Timeline.h"
+#include "cinder/Easing.h"
 
 using namespace std;
 using namespace cinder;
 using namespace choreograph;
-
-class ScopedTimer
-{
-public:
-  ScopedTimer( const std::string &message, float *output = nullptr ):
-    _message( message ),
-    _output( output )
-  {}
-  ~ScopedTimer()
-  {
-    _timer.stop();
-    cout << "[" + _message + "] Elapsed time: " << _timer.getSeconds() * 1000 << "ms" << endl;
-    if( _output ) {
-      *_output = _timer.getSeconds() * 1000;
-    }
-  }
-private:
-  float       *_output = nullptr;
-  std::string _message;
-  ci::Timer   _timer = ci::Timer( true );
-};
-
 
 TEST_CASE( "Separate component interpolation", "[sequence]" ) {
 
