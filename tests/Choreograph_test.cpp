@@ -260,9 +260,6 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
     REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).z );
 
-    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );  // past the end
-    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).z );  // past the end
-
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
     REQUIRE( sequence.getValue( 0.5f ).y != sequence.getValue( 0.5f ).z );
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).z );
@@ -277,14 +274,11 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
 
     REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
     REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).z );
-
-    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );  // past the end
-    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).z );  // past the end
+    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).w );
 
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
     REQUIRE( sequence.getValue( 0.5f ).y != sequence.getValue( 0.5f ).z );
-    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).z );
-    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).w );
+    REQUIRE( sequence.getValue( 0.5f ).z != sequence.getValue( 0.5f ).w );
   }
 
   SECTION( "Over- and Under-fill Separate Easings" ) {
