@@ -27,34 +27,14 @@
 
 #pragma once
 #include "Motion.h"
+#include "detail/VectorManipulation.hpp"
 
 namespace choreograph
 {
-  /// Remove all elements from \a container that match \a compare
-  template<class CONTAINER_TYPE, class COMPARATOR>
-  void erase_if( CONTAINER_TYPE *container, COMPARATOR compare )
-  {
-    container->erase( std::remove_if( container->begin(),
-                                     container->end(),
-                                     compare ),
-                     container->end() );
-  }
-
-  /// Remove all copies of \a element from \a vec
-  template<class ELEMENT_TYPE>
-  void vector_remove( std::vector<ELEMENT_TYPE> *vec, const ELEMENT_TYPE &element )
-  {
-    vec->erase( std::remove_if( vec->begin()
-                               , vec->end()
-                               , [element](const ELEMENT_TYPE &e){ return e == element; } )
-               , vec->end() );
-  }
-
-//
-// Motion options returned when you make a motion using the timeline.
-// TODO: hide the underlying motion and sequence and provide a fresh interface on top.
-// The MotionOptions interface will come around once other parts have solidified a bit.
-//
+///
+/// MotionOptions provide a facade for manipulating a timeline Motion and its underlying Sequence.
+/// All methods return a reference back to the MotionOptions object for chaining.
+///
 template<typename T>
 class MotionOptions
 {
@@ -66,9 +46,9 @@ public:
     _sequence( sequence )
   {}
 
-  //
+  //=================================================
   //  Motion Interface Mirroring.
-  //
+  //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
   SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
@@ -79,11 +59,11 @@ public:
   /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
   SelfT& continuous( bool isContinuous ) { _motion->continuous( isContinuous ); return *this; }
 
-  //
+  //=================================================
   //  Sequence Interface Mirroring.
-  //
+  //=================================================
 
-  /// Set the initial value of the Sequence or create and instantaneous hold of a value. 
+  /// Set the current value of the Sequence. Acts as an instantaneous hold.
   SelfT& set( const T &value ) { _sequence->set( value ); return *this; }
   /// Append a phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
@@ -198,7 +178,7 @@ public:
   template<typename T>
   void remove( T *output )
   {
-    erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
+    detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
   }
 
   /// Remove all motions from this timeline.

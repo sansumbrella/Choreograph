@@ -25,28 +25,32 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Timeline.h"
+#pragma once
 
-using namespace choreograph;
-
-void Timeline::step( float dt )
+namespace choreograph
 {
-  // Remove any motions that have stale pointers or that have completed playing.
-  bool do_clear = _auto_clear;
-  detail::erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
+namespace detail
+{
 
-  // Update all animation outputs.
-  for( auto &c : _motions ) {
-    c->step( dt );
-  }
+/// Remove all elements from \a container that match \a compare
+template<class CONTAINER_TYPE, class COMPARATOR>
+void erase_if( CONTAINER_TYPE *container, COMPARATOR compare )
+{
+  container->erase( std::remove_if( container->begin(),
+                                   container->end(),
+                                   compare ),
+                   container->end() );
 }
 
-void Timeline::remove( const MotionBaseRef &motion )
+/// Remove all copies of \a element from \a vec
+template<class ELEMENT_TYPE>
+void vector_remove( std::vector<ELEMENT_TYPE> *vec, const ELEMENT_TYPE &element )
 {
-  detail::vector_remove( &_motions, motion );
+  vec->erase( std::remove_if( vec->begin()
+                             , vec->end()
+                             , [element](const ELEMENT_TYPE &e){ return e == element; } )
+             , vec->end() );
 }
 
-void Timeline::cue( const std::function<void ()> &fn, float delay )
-{
-  _motions.push_back( std::make_shared<Cue>( fn, delay ) );
-}
+} // namespace detail
+} // namespace choreograph
