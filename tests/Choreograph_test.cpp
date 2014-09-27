@@ -50,6 +50,7 @@ TEST_CASE( "Output Connections", "[output]" ) {
       Output<float> temp;
       motion = make_shared<Motion<float>>( &temp, sequence );
       REQUIRE( motion->isValid() );
+      REQUIRE( temp.isConnected() );
     }
 
     REQUIRE( ! motion->isValid() );
@@ -62,6 +63,7 @@ TEST_CASE( "Output Connections", "[output]" ) {
       Motion<float> temp( &output, sequence );
 
       REQUIRE( output.isConnected() == true );
+      REQUIRE( temp.isValid() == true );
     }
 
     REQUIRE( output.isConnected() == false );
@@ -166,7 +168,7 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
   SECTION( "Compare Values" ) {
     REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
     REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
-    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );
+    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );  // past the end
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
   }
 }

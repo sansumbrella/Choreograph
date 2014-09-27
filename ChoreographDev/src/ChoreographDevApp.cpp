@@ -58,34 +58,30 @@ void ChoreographDevApp::setup()
   blueMotion.then<RampTo>( vec2( getWindowSize() ) / 2.0f, 1.0f )
   .then<RampTo>( vec2( getWindowSize() ), 0.66f )
   .then<RampTo2>( vec2( 0, 0 ), 2.0f, EaseNone(), EaseInOutCubic() );
-/*
-  _timeline.move<vec2, Phrase2v>( &_arc ).getSequence()
-    .then( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
-    .then( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() );
-    */
+
+  _timeline.apply( &_arc )
+    .then<RampTo2>( vec2( getWindowSize() ), 4.0f, EaseNone(), EaseInOutQuint() )
+    .then<RampTo2>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() );
 }
 
 void ChoreographDevApp::mouseDown( MouseEvent event )
 {
-/*
-  _timeline.move( &_mouse_move ).getSequence().wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
-  _timeline.queue( &_mouse_queue ).wait( 0.1f ).rampTo( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
 
-  _timeline.queue( &_orientation ).rampTo( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+  _timeline.apply( &_mouse_move ).hold( 0.1f ).then<RampTo>( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
+  _timeline.append( &_mouse_queue ).hold( 0.1f ).then<RampTo>( vec2( event.getPos() ), 1.0f, EaseInOutCubic() );
+
+  _timeline.append( &_orientation ).then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
 
   quat step = glm::angleAxis<float>( M_PI / 2, vec3( 0, 1, 0 ) );
   quat target = _circular_orientation() * step;
-  _timeline.move( &_circular_orientation ).getSequence().rampTo( normalize( target ), 0.33f, EaseOutQuad() );
-  */
+  _timeline.apply( &_circular_orientation ).then<RampTo>( normalize( target ), 0.33f, EaseOutQuad() );
 }
 
 void ChoreographDevApp::keyDown( KeyEvent event )
 {
-/*
-  _timeline.move<vec2, Phrase2v>( &_arc ).getSequence()
-    .then( vec2( getWindowSize() ), 3.0f, EaseNone(), EaseInOutQuint() )
-    .then( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() );
-    */
+  _timeline.apply( &_arc )
+    .then<RampTo2>( vec2( getWindowSize() ), 3.0f, EaseNone(), EaseInOutQuint() )
+    .then<RampTo2>( vec2( 0, getWindowHeight() / 2.0f ), 2.0f, EaseNone(), EaseInOutAtan() );
 }
 
 void ChoreographDevApp::update()
