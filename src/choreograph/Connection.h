@@ -61,7 +61,7 @@ public:
   bool  isConnected() const { return _raw_target != nullptr; }
 
   /// Returns raw pointer to target variable. Used for comparison.
-  const T* getTarget() const { return _raw_target; }
+  const T* targetPtr() const { return _raw_target; }
 
   /// Returns reference to target variable. Used for assignment.
   T& target() { return *_raw_target; }
@@ -90,7 +90,7 @@ private:
 template<typename T>
 Connection<T>::Connection( Output<T> *base ):
   _output_base( base ),
-  _raw_target( base->ptr() )
+  _raw_target( base->valuePtr() )
 {
   _output_base->disconnect();
   _output_base->_input = this;
@@ -124,7 +124,7 @@ void Connection<T>::connect( Output<T> *base )
     disconnect( _output_base );
 
     _output_base = base;
-    _raw_target = base->ptr();
+    _raw_target = base->valuePtr();
     _output_base->_input = this;
   }
 }

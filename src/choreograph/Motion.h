@@ -160,7 +160,7 @@ public:
   std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
 
   bool isValid() const override { return _connection.isConnected(); }
-  const void* getTarget() const override { return _connection.getTarget(); }
+  const void* getTarget() const override { return _connection.targetPtr(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }

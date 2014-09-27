@@ -77,21 +77,23 @@ public:
 
   Output<T>& operator+= ( T value ) { mValue += value; return *this; }
 
-	/// Returns value.
+	/// Returns value of output.
 	const T& 	value() const { return mValue; }
 
-	/// Returns value.
+	/// Returns value of output.
 	const T& 	operator() () const { return mValue; }
-	/// Returns value.
+
+	/// Returns value of output for manipulating.
 	T&				operator() () { return mValue; }
 
-	/// Cast to value type.
+	/// Enable cast to value type.
 	operator const T&()	{ return mValue; }
 
 	/// Returns pointer to value.
-	const T* 	ptr() const { return &mValue; }
+	const T* 	valuePtr() const { return &mValue; }
+
 	/// Returns pointer to value.
-	T*				ptr() { return &mValue; }
+	T*				valuePtr() { return &mValue; }
 
 private:
 	T               mValue;
