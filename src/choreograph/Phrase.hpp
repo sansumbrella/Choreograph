@@ -27,7 +27,7 @@
 
 #pragma once
 
-// Includes needed for tests.
+// Includes needed for tests to build (since they don't include the pch).
 #include <functional>
 #include <vector>
 
@@ -170,6 +170,40 @@ public:
 
 private:
   T       _value;
+};
+
+/**
+ AnalyticChange is a phrase that calls a std::function every step.
+ You could do similar things with a Motion's updateFn, but this is composable within Sequences.
+ */
+template<typename T>
+class AnalyticChange : public Source<T>
+{
+public:
+  /// Analytic Function receives start, end, and normalized time.
+  /// Most basic would be mix( a, b, t ) or lerp( a, b, t ).
+  /// Intended use is to apply something like cos() or random jitter.
+  using Function = std::function<T (const T& startValue, const T& endValue, float normalizedTime, float duration)>;
+
+  AnalyticChange( float start_time, float end_time, const T &start_value, const T &end_value, const Function &fn ):
+    Source<T>( start_time, end_time ),
+    _function( fn ),
+    _start_value( start_value ),
+    _end_value( end_value )
+  {}
+
+  T getValue( float atTime ) const override
+  {
+    return _function( _start_value, _end_value, this->normalizeTime( atTime ), this->getDuration() );
+  }
+
+  T getStartValue() const override { return _start_value; }
+  T getEndValue() const override { return _end_value; }
+
+private:
+  Function  _function;
+  T         _start_value;
+  T         _end_value;
 };
 
 } // namespace atlantic
