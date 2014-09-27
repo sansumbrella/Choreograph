@@ -49,7 +49,7 @@ TEST_CASE( "Creating Motions" ) {
   {
     ScopedTimer timer( "Creating Motions" );
     for( auto &target : targets ) {
-      test_timeline.move( &target ).getSource<Sequence<vec2>>()->then<RampTo>( vec2( 10.0f ), 1.0f );
+      test_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f );
     }
   }
 
@@ -83,7 +83,7 @@ TEST_CASE( "Creating Motions" ) {
   {
     ScopedTimer timer( "Creating Motions from shared Sequence" );
     for( auto &target : targets ) {
-      test_timeline.move( &target, sequence );
+      test_timeline.apply( &target, sequence );
     }
   }
 
@@ -121,7 +121,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         //
         for( int i = 0; i < tween_count; ++i )
         {
-          test_timeline.move( &targets[i] ).getSource<Sequence<vec2>>()->then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
+          test_timeline.apply( &targets[i] ).then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
         }
 
         ScopedTimer steps( "Choreograph Steps" );
@@ -161,7 +161,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         //
         for( int i = 0; i < tween_count; ++i )
         {
-          test_timeline.queue( &target )->then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
+          test_timeline.append( &target ).then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
         }
 
         ScopedTimer steps( "Choreograph Steps" );

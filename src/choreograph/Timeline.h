@@ -116,6 +116,17 @@ public:
     return MotionOptions<T>{ motion, sequence };
   }
 
+  /// Apply a source to output, overwriting any previous connections.
+  template<typename T>
+  MotionOptions<T> apply( Output<T> *output, const SequenceRef<T> &sequence )
+  {
+    auto motion = std::make_shared<Motion<T>>( output, sequence );
+
+    _motions.push_back( motion );
+
+    return MotionOptions<T>{ motion, sequence };
+  }
+
   /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
   MotionOptions<T> append( Output<T> *output )

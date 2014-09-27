@@ -84,7 +84,7 @@ TEST_CASE( "Output Connections", "[output]" ) {
   SECTION( "Output falling out of scope disconnects" ) {
     { // create locally scoped output
       Output<vec4> temp;
-      timeline.move( &temp ).getSource<Sequence<vec4>>()->then<RampTo>( vec4( 5 ), 1.0f );
+      timeline.apply( &temp ).then<RampTo>( vec4( 5 ), 1.0f );
 
       REQUIRE( timeline.size() == 1 );
     }
@@ -111,7 +111,7 @@ TEST_CASE( "Output Connections", "[output]" ) {
     vector<Output<float>> copy;
 
     for( auto &output : outputs ) {
-      timeline.move( &output, sequence );
+      timeline.apply( &output, sequence );
     }
     copy = std::move( outputs );
 
@@ -145,7 +145,7 @@ TEST_CASE( "Output Connections", "[output]" ) {
     vector<Output<float>> copy;
 
     for( auto &output : outputs ) {
-      timeline.move( &output, sequence );
+      timeline.apply( &output, sequence );
     }
     copy = outputs;
 

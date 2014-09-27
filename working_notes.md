@@ -60,5 +60,17 @@ Working with 150000 motions.
 [Stepping Motions with shared Sequence 1x]        9.40001ms		// less memory traversal due to pseudo-instancing  
 [Stepping Motions with shared Sequence 60x]       556.052ms
 
+Measured below with very flexible Choreograph Sequence setup:
+Working with 150000 motions.
+[Creating Motions]                                75.445ms
+[Stepping Motions 1x]                             14.291ms
+[Stepping Motions 60x]                            819.195ms
+[Clearing Motions]                                0.501037ms
+[Stepping Empty Timeline 60x]                     0.00101328ms
+[Creating Motions from shared Sequence]           29.138ms
+[Stepping Motions with shared Sequence 1x]        9.709ms
+[Stepping Motions with shared Sequence 60x]       544.271ms
+
+
 TODO:
 Implement `Most Flexible` approach.
