@@ -31,18 +31,13 @@ using namespace choreograph;
 
 void Timeline::step( float dt )
 {
-  // Remove any motions that have stale pointers.
-  // It would be cool (and 10-15% faster) if isValid() were not a virtual method.
-  erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return ! motion->isValid(); } );
+  // Remove any motions that have stale pointers or that have completed playing.
+  bool do_clear = _auto_clear;
+  erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
     c->step( dt );
-  }
-
-  // Remove any completed motions
-  if( _auto_clear ) {
-    erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished(); } );
   }
 }
 
