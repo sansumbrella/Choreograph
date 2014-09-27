@@ -30,7 +30,7 @@
 namespace choreograph
 {
 
-class MotionBase;
+class ConnectionBase;
 
 class OutputBase
 {
@@ -47,9 +47,10 @@ protected:
   /// Replaces \a rhs in its relationship to a MotionBase input.
   void supplant( const OutputBase &rhs );
 private:
-  void connect();
-  MotionBase    *_input = nullptr;
-  friend class MotionBase;
+  void connect( ConnectionBase *input );
+
+  ConnectionBase  *_input = nullptr;
+  friend class    ConnectionBase;
 };
 
 /// Safe type for Choreograph outputs.

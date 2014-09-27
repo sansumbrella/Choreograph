@@ -41,15 +41,12 @@ void OutputBase::disconnect()
 void OutputBase::supplant( const choreograph::OutputBase &rhs )
 {
   disconnect();
-
-   _input = rhs._input;
-
-  connect();
+  connect( rhs._input );
 }
 
-void OutputBase::connect()
+void OutputBase::connect( ConnectionBase *input )
 {
-  if( _input ) {
-    _input->connect( this );
+  if( input ) {
+    input->connect( this );
   }
 }

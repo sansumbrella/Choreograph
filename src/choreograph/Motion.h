@@ -32,24 +32,69 @@
 
 namespace choreograph
 {
-
 class OutputBase;
 using MotionBaseRef = std::shared_ptr<class MotionBase>;
+using ConnectionBaseRef = std::shared_ptr<class ConnectionBase>;
+
+/**
+ ConnectionBase is the foundation of a connection to an output.
+ Manages lifecycle of connection along with OutputBase.
+ If connected to a raw pointer, no lifecycle management occurs.
+ */
+class ConnectionBase
+{
+public:
+  /// Constructs and invalid Connection.
+  ConnectionBase() = default;
+
+  virtual ~ConnectionBase();
+
+  /// Create a Connection to a managed Output pointer. Preferred use.
+  explicit ConnectionBase( OutputBase *base );
+
+  /// Create a Connection to a raw pointer. Not recommended.
+  explicit ConnectionBase( void *target );
+
+
+  /// Returns true if this Motion has an output.
+  bool  isValid() const { return _raw_target != nullptr; }
+
+  /// Returns true if this Motion has no output.
+  bool  isInvalid() const { return _raw_target == nullptr; }
+
+  /// Returns raw pointer to target variable. Used for comparison.
+  void* getTarget() const { return _raw_target; }
+
+protected:
+  /// Replace current output target with new target. Called from connect.
+  virtual void replaceOutput( OutputBase *output ) {}
+
+private:
+  // void pointer to target, used for comparison with other MotionBase's.
+  void        *_raw_target = nullptr;
+  // Pointer to safe handle type. Exists iff created with an OutputBase target.
+  OutputBase  *_output_base = nullptr;
+
+  /// Called on destruction of either MotionBase or _output_base.
+  void disconnect( OutputBase *base );
+  void connect( OutputBase *base );
+
+  friend class OutputBase;
+};
+
 
 /**
 A connection between a continuous, independent Sequence and an output.
 Non-templated base type so we can store in a polymorphic container.
 */
-class MotionBase
+class MotionBase : public ConnectionBase
 {
 public:
   MotionBase() = default;
 
-  explicit MotionBase( void *target );
+  explicit MotionBase( void *target ): ConnectionBase( target ) {}
 
-  MotionBase( OutputBase *base );
-
-  virtual ~MotionBase();
+  explicit MotionBase( OutputBase *base ): ConnectionBase( base ) {}
 
   /// Advance motion in time. Affected by Motion's speed.
   void step( float dt );
@@ -87,27 +132,10 @@ public:
   /// Reset motion to beginning. Accounts for reversed playback.
   void  resetTime();
 
-  /// Returns true if this Motion has an output.
-  bool  isValid() const { return _target != nullptr; }
-
-  /// Returns true if this Motion has no output.
-  bool  isInvalid() const { return _target == nullptr; }
-
-  /// Returns pointer to target variable. Used for comparison.
-  void* getTarget() const { return _target; }
-
 protected:
   // True if the underlying Sequence should play forever.
   bool        _continuous = false;
-  /// Replace current output target with new target. Called from connect.
-  virtual void replaceOutput( OutputBase *output ) {}
 private:
-
-  // Null pointer to target, used for comparison with other MotionBase's.
-  void        *_target = nullptr;
-  // Pointer to safe handle type. Exists if created with an Output<T> target.
-  OutputBase  *_output_base = nullptr;
-
   /// Playback speed. Set to negative to go in reverse.
   float       _speed = 1.0f;
   /// Current animation time in seconds. Time at which Sequence is evaluated.
@@ -117,12 +145,6 @@ private:
   /// Animation start time in seconds. Time from which Sequence is evaluated.
   /// Use to apply a delay.
   float       _start_time = 0.0f;
-
-  /// Called on destruction of either MotionBase or _output_base.
-  void disconnect( OutputBase *base );
-  void connect( OutputBase *base );
-
-  friend class OutputBase;
 };
 
 class Cue : public MotionBase
@@ -227,7 +249,7 @@ public:
   }
 protected:
   void replaceOutput( OutputBase *output ) override {
-    _output = static_cast<Output<T> *>(output)->ptr();
+    _output = static_cast<Output<T>*>( output )->ptr();
   }
 
 private:

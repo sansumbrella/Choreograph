@@ -32,28 +32,55 @@
 using namespace choreograph;
 using namespace std;
 
-//
-//  MotionBase
-//
+//=================================================
+// ConnectionBase
+//=================================================
 
-MotionBase::MotionBase( void *target ):
-  _target( target )
-{}
-
-MotionBase::MotionBase( OutputBase *target ):
-  _target( target ),
-  _output_base( target )
-{
-  if( _output_base->_input ) {
-    _output_base->_input->disconnect( _output_base );
-  }
-  _output_base->_input = this;
-}
-
-MotionBase::~MotionBase()
+ConnectionBase::~ConnectionBase()
 {
   disconnect( _output_base );
 }
+
+ConnectionBase::ConnectionBase( void *target ):
+  _raw_target( target )
+{}
+
+ConnectionBase::ConnectionBase( OutputBase *output ):
+  _raw_target( output ),
+  _output_base( output )
+{
+  // Disconnect output from previous parent.
+  // No need to compare against this, as this didn't exist before.
+  _output_base->disconnect();
+  // Tell output about ourselves.
+  _output_base->_input = this;
+}
+
+void ConnectionBase::disconnect( OutputBase *base )
+{
+  if( _output_base && _output_base == base ) {
+    _output_base->_input = nullptr;
+    _output_base = nullptr;
+    _raw_target = nullptr;
+  }
+}
+
+void ConnectionBase::connect( OutputBase *base )
+{
+  if( _output_base != base ) {
+    disconnect( _output_base );
+
+    _output_base = base;
+    _raw_target = base;
+    _output_base->_input = this;
+    // Tell derived class to do the right thing.
+    replaceOutput( base );
+  }
+}
+
+//=================================================
+// MotionBase
+//=================================================
 
 void MotionBase::step( float dt )
 {
@@ -67,27 +94,6 @@ void MotionBase::skipTo( float time )
   _time = time;
   update(); // update properties
   _previous_time = _time;
-}
-
-void MotionBase::disconnect( OutputBase *base )
-{
-  if( _output_base && _output_base == base ) {
-    _output_base->_input = nullptr;
-    _output_base = nullptr;
-    _target = nullptr;
-  }
-}
-
-void MotionBase::connect( OutputBase *base )
-{
-  if( _output_base != base ) {
-    disconnect( _output_base );
-
-    _output_base = base;
-    _target = base;
-    _output_base->_input = this;
-    replaceOutput( base );
-  }
 }
 
 bool MotionBase::isFinished() const
@@ -127,8 +133,3 @@ void Cue::update()
   else if( forward() && time() <= 0.0f && previousTime() > 0.0f )
     _cue();
 }
-
-
-//
-//  Motion
-//
