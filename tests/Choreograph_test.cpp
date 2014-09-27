@@ -48,7 +48,7 @@ TEST_CASE( "Raw Pointers" ) {
     SequenceRef<float> continuation = createSequence( 5.0f );
     continuation->then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
 
-    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( *continuation );
+    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( continuation );
 
     REQUIRE( sequence->getDuration() == 4.5f );
 
@@ -86,7 +86,7 @@ TEST_CASE( "Sequence Composition", "[sequence]" ) {
     SequenceRef<float> continuation = createSequence( 5.0f );
     continuation->then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
 
-    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( *continuation );
+    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( continuation );
 
     REQUIRE( sequence->getDuration() == 4.5f );
 
@@ -98,7 +98,7 @@ TEST_CASE( "Sequence Composition", "[sequence]" ) {
     REQUIRE( target == 10.0f );
 
     timeline.apply( &target, sequence );
-    REQUIRE( motion.isValid() == false );
+    REQUIRE( motion.isValid() == false ); // management will invalidate the motion (because it's been superseded).
 
     timeline.jumpTo( 0.0f );
     REQUIRE( target == 1.0f );

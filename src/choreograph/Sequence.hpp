@@ -119,6 +119,13 @@ public:
     return *this;
   }
 
+  /// Accept shared_ptr's as input.
+  template<typename PhraseT>
+  SequenceT& then( const std::shared_ptr<PhraseT> &phrase_ptr )
+  {
+    return then( *phrase_ptr );
+  }
+
   /// Append all Phrases from another sequence to this sequence.
   /// Specializes then.
   SequenceT& then( const SequenceT &next )
