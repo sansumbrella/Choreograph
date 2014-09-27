@@ -31,7 +31,8 @@ using namespace choreograph;
 
 void Timeline::step( float dt )
 {
-  // Remove any motions that have stale pointers
+  // Remove any motions that have stale pointers.
+  // It would be cool (and 10-15% faster) if isValid() were not a virtual method.
   erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return ! motion->isValid(); } );
 
   // Update all animation outputs.
