@@ -51,8 +51,6 @@ typedef std::function<float (float)> EaseFn;
 
 namespace
 {
-  /// Default ease function for holds. Keeps constant value output.
-  inline float easeHold( float t ) { return 0.0f; }
   /// Default ease function for ramps.
   inline float easeNone( float t ) { return t; }
 
