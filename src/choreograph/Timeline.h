@@ -31,6 +31,9 @@
 
 namespace choreograph
 {
+
+class Timeline;
+
 ///
 /// MotionOptions provide a facade for manipulating a timeline Motion and its underlying Sequence.
 /// All methods return a reference back to the MotionOptions object for chaining.
@@ -41,13 +44,14 @@ class MotionOptions
 public:
   using SelfT = MotionOptions<T>;
 
-  MotionOptions( const MotionRef<T> &motion, const SequenceRef<T> &sequence ):
+  MotionOptions( const MotionRef<T> &motion, const SequenceRef<T> &sequence, const Timeline &timeline ):
     _motion( motion ),
-    _sequence( sequence )
+    _sequence( sequence ),
+    _timeline( timeline )
   {}
 
   //=================================================
-  //  Motion Interface Mirroring.
+  // Motion Interface Mirroring.
   //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
@@ -60,7 +64,7 @@ public:
   SelfT& continuous( bool isContinuous ) { _motion->continuous( isContinuous ); return *this; }
 
   //=================================================
-  //  Sequence Interface Mirroring.
+  // Sequence Interface Mirroring.
   //=================================================
 
   /// Set the current value of the Sequence. Acts as an instantaneous hold.
@@ -73,9 +77,17 @@ public:
   /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
   SelfT& hold( float duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
 
+  //=================================================
+  // Extra Sugar.
+  //=================================================
+
+  /// Set the start time of this motion to the current end of all motions of \a other.
+  SelfT& after( void *other );
+
 private:
-  MotionRef<T>   _motion;
-  SequenceRef<T> _sequence;
+  MotionRef<T>    _motion;
+  SequenceRef<T>  _sequence;
+  const Timeline  &_timeline;
 };
 
 /**
@@ -97,7 +109,7 @@ public:
 
     _motions.push_back( motion );
 
-    return MotionOptions<T>{ motion, sequence };
+    return MotionOptions<T>( motion, sequence, *this );
   }
 
   /// Apply a source to output, overwriting any previous connections.
@@ -108,7 +120,7 @@ public:
 
     _motions.push_back( motion );
 
-    return MotionOptions<T>{ motion, sequence };
+    return MotionOptions<T>( motion, sequence, *this );
   }
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
@@ -117,11 +129,9 @@ public:
   {
     if( output->isConnected() )
     {
-      for( auto &m : _motions ) {
-        if( m->getTarget() == output ) {
-          auto motion = std::static_pointer_cast<Motion<T>>( m );
-          return MotionOptions<T>{ motion, motion->getSequence() };
-        }
+      auto motion = find( output->valuePtr() );
+      if( motion ) {
+        return MotionOptions<T>( motion, motion->getSequence(), *this );
       }
     }
     return apply( output );
@@ -144,7 +154,7 @@ public:
 
     _motions.push_back( motion );
 
-    return MotionOptions<T>{ motion, sequence };
+    return MotionOptions<T>( motion, sequence, *this );
   }
 
   /// Apply a source to output, overwriting any previous connections.
@@ -163,11 +173,9 @@ public:
   template<typename T>
   MotionOptions<T> append( T *output )
   {
-    for( auto &m : _motions ) {
-      if( m->getTarget() == output ) {
-        auto motion = std::static_pointer_cast<Motion<T>>( m );
-        return MotionOptions<T>{ motion, motion->getSequence() };
-      }
+    auto motion = find( output );
+    if( motion ) {
+      return MotionOptions<T>( motion, motion->getSequence(), *this );
     }
     return apply( output );
   }
@@ -193,6 +201,17 @@ public:
   // Timeline element manipulation.
   //=================================================
 
+  template<typename T>
+  MotionRef<T> find( T *output )
+  {
+    for( auto &m : _motions ) {
+      if( m->getTarget() == output ) {
+        return std::static_pointer_cast<Motion<T>>( m );
+      }
+    }
+    return nullptr;
+  }
+
   /// Remove specific motion.
   void remove( const MotionBaseRef &motion );
 
@@ -217,5 +236,20 @@ private:
   bool                        _auto_clear = true;
   std::vector<MotionBaseRef>  _motions;
 };
+
+//=================================================
+// Additional MotionOptions Implementation.
+//=================================================
+
+template<typename T>
+MotionOptions<T>& MotionOptions<T>::after( void *other )
+{
+  auto ptr = _timeline.find( other );
+  if( ptr ) {
+    _motion->setStartTime( ptr->getEndTime() );
+  }
+  return *this;
+}
+
 
 } // namespace choreograph

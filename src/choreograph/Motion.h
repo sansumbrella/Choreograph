@@ -86,6 +86,9 @@ public:
   /// Reset motion to beginning. Accounts for reversed playback.
   void  resetTime();
 
+  /// Returns the current end time of this motion.
+  float getEndTime() const { return getStartTime() + getDuration(); }
+
   /// Set the start time of this motion. Use to delay entire motion.
   void setStartTime( float t ) { _start_time = t; }
   float getStartTime() const { return _start_time; }
