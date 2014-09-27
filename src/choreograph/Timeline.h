@@ -131,10 +131,13 @@ public:
   template<typename T>
   MotionOptions<T> append( Output<T> *output )
   {
-    for( auto &m : _motions ) {
-      if( m->getTarget() == output ) {
-        auto motion = std::static_pointer_cast<Motion<T>>( m );
-        return MotionOptions<T>{ motion, motion->template getSource<Sequence<T>>() };
+    if( output->isConnected() )
+    {
+      for( auto &m : _motions ) {
+        if( m->getTarget() == output ) {
+          auto motion = std::static_pointer_cast<Motion<T>>( m );
+          return MotionOptions<T>{ motion, motion->template getSource<Sequence<T>>() };
+        }
       }
     }
     return apply( output );
@@ -169,6 +172,13 @@ public:
     }
     return apply( output );
   }
+
+  //=================================================
+  // Creating Cues.
+  //=================================================
+
+  /// Add a cue to the timeline. It will be called after \a delay time elapses.
+  void cue( const std::function<void ()> &fn, float delay );
 
   //=================================================
   // Time manipulation.

@@ -35,7 +35,6 @@ namespace choreograph
 {
 using MotionBaseRef = std::shared_ptr<class MotionBase>;
 
-
 ///
 /// MotionBase: non-templated base for polymorphic Motions.
 /// Connects a Sequence and an Output.
@@ -85,6 +84,10 @@ public:
   /// Reset motion to beginning. Accounts for reversed playback.
   void  resetTime();
 
+  /// Set the start time of this motion. Use to delay entire motion.
+  void setStartTime( float t ) { _start_time = t; }
+  float getStartTime() const { return _start_time; }
+
 protected:
   // True if the underlying Sequence should play forever.
   bool        _continuous = false;
@@ -103,6 +106,11 @@ private:
 class Cue : public MotionBase
 {
 public:
+  Cue() = delete;
+
+  /// Creates a cue from a function and a delay.
+  Cue( const std::function<void ()> &fn, float delay );
+
   /// Calls cue function if time threshold has been crossed.
   void update() override;
 

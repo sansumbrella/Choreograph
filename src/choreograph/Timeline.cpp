@@ -50,3 +50,8 @@ void Timeline::remove( const MotionBaseRef &motion )
 {
   vector_remove( &_motions, motion );
 }
+
+void Timeline::cue( const std::function<void ()> &fn, float delay )
+{
+  _motions.push_back( std::make_shared<Cue>( fn, delay ) );
+}

@@ -35,11 +35,13 @@ namespace choreograph
 class OutputBase;
 using ConnectionBaseRef = std::shared_ptr<class ConnectionBase>;
 
-/**
- ConnectionBase is the foundation of a connection to an output.
- Manages lifecycle of connection along with OutputBase.
- If connected to a raw pointer, no lifecycle management occurs.
- */
+///
+/// ConnectionBase is the foundation of a connection to an output.
+/// Manages lifecycle of connection along with OutputBase.
+/// If connected to a raw pointer, no lifecycle management occurs.
+/// TODO: consider CRTP for stronger compile-time safety guarantees.
+///
+
 class ConnectionBase
 {
 public:

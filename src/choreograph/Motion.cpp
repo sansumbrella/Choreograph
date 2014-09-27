@@ -74,9 +74,15 @@ void MotionBase::resetTime()
   }
 }
 
-//
-//  Cue
-//
+//=================================================
+// Cue
+//=================================================
+
+Cue::Cue( const function<void ()> &fn, float delay ):
+  _cue( fn )
+{
+  setStartTime( delay );
+}
 
 void Cue::update()
 {
