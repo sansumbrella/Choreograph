@@ -37,6 +37,9 @@
 		153607EA19D4622D001ECD25 /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607E819D4622D001ECD25 /* Source.cpp */; };
 		153607EB19D4622D001ECD25 /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607E819D4622D001ECD25 /* Source.cpp */; };
 		153607EC19D4622D001ECD25 /* Source.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607E819D4622D001ECD25 /* Source.cpp */; };
+		1597E20919D7061E00A049D4 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1597E20719D7061E00A049D4 /* Connection.cpp */; };
+		1597E20A19D706F300A049D4 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1597E20719D7061E00A049D4 /* Connection.cpp */; };
+		1597E20B19D706F400A049D4 /* Connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1597E20719D7061E00A049D4 /* Connection.cpp */; };
 		15E864B019C4AD1500B1DA73 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */; };
 		15E864B119C4AD2000B1DA73 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		15E864B219C4AD2000B1DA73 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
@@ -99,6 +102,8 @@
 		153607DE19D46195001ECD25 /* CinderSpecialization.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CinderSpecialization.hpp; sourceTree = "<group>"; };
 		153607E819D4622D001ECD25 /* Source.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Source.cpp; sourceTree = "<group>"; };
 		153607E919D4622D001ECD25 /* Source.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Source.h; sourceTree = "<group>"; };
+		1597E20719D7061E00A049D4 /* Connection.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Connection.cpp; sourceTree = "<group>"; };
+		1597E20819D7061E00A049D4 /* Connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Connection.h; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F4B42D19BD325E00A411C1 /* ChoreographDevApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChoreographDevApp.cpp; sourceTree = "<group>"; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = catch.hpp; sourceTree = "<group>"; };
@@ -233,6 +238,8 @@
 				153607DC19D46195001ECD25 /* Timeline.h */,
 				153607E819D4622D001ECD25 /* Source.cpp */,
 				153607E919D4622D001ECD25 /* Source.h */,
+				1597E20719D7061E00A049D4 /* Connection.cpp */,
+				1597E20819D7061E00A049D4 /* Connection.h */,
 			);
 			path = choreograph;
 			sourceTree = "<group>";
@@ -436,6 +443,7 @@
 				153607E719D46195001ECD25 /* Timeline.cpp in Sources */,
 				1515D28619C5D786002CB6A6 /* Benchmarks_test.cpp in Sources */,
 				153607E119D46195001ECD25 /* Motion.cpp in Sources */,
+				1597E20B19D706F400A049D4 /* Connection.cpp in Sources */,
 				153607EC19D4622D001ECD25 /* Source.cpp in Sources */,
 				153607E419D46195001ECD25 /* Output.cpp in Sources */,
 			);
@@ -448,6 +456,7 @@
 				153607E619D46195001ECD25 /* Timeline.cpp in Sources */,
 				15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */,
 				153607E019D46195001ECD25 /* Motion.cpp in Sources */,
+				1597E20A19D706F300A049D4 /* Connection.cpp in Sources */,
 				153607EB19D4622D001ECD25 /* Source.cpp in Sources */,
 				153607E319D46195001ECD25 /* Output.cpp in Sources */,
 			);
@@ -460,6 +469,7 @@
 				153607E519D46195001ECD25 /* Timeline.cpp in Sources */,
 				15F4B42E19BD325E00A411C1 /* ChoreographDevApp.cpp in Sources */,
 				153607DF19D46195001ECD25 /* Motion.cpp in Sources */,
+				1597E20919D7061E00A049D4 /* Connection.cpp in Sources */,
 				153607EA19D4622D001ECD25 /* Source.cpp in Sources */,
 				153607E219D46195001ECD25 /* Output.cpp in Sources */,
 			);

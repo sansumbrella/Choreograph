@@ -25,27 +25,54 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Output.h"
 #include "Connection.h"
+#include "Output.h"
 
+using namespace std;
 using namespace choreograph;
 
-void OutputBase::disconnect()
+//=================================================
+// ConnectionBase
+//=================================================
+
+ConnectionBase::~ConnectionBase()
 {
-  if( _input ) {
-    _input->disconnect( this );
+  disconnect( _output_base );
+}
+
+ConnectionBase::ConnectionBase( void *target ):
+_raw_target( target )
+{}
+
+ConnectionBase::ConnectionBase( OutputBase *output ):
+_raw_target( output ),
+_output_base( output )
+{
+  // Disconnect output from previous parent.
+  // No need to compare against this, as this didn't exist before.
+  _output_base->disconnect();
+  // Tell output about ourselves.
+  _output_base->_input = this;
+}
+
+void ConnectionBase::disconnect( OutputBase *base )
+{
+  if( _output_base && _output_base == base ) {
+    _output_base->_input = nullptr;
+    _output_base = nullptr;
+    _raw_target = nullptr;
   }
 }
 
-void OutputBase::supplant( const choreograph::OutputBase &rhs )
+void ConnectionBase::connect( OutputBase *base )
 {
-  disconnect();
-  connect( rhs._input );
-}
+  if( _output_base != base ) {
+    disconnect( _output_base );
 
-void OutputBase::connect( ConnectionBase *input )
-{
-  if( input ) {
-    input->connect( this );
+    _output_base = base;
+    _raw_target = base;
+    _output_base->_input = this;
+    // Tell derived class to do the right thing.
+    replaceOutput( base );
   }
 }
