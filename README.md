@@ -5,75 +5,82 @@ v0.2.0 development. API is unstable.
 
 ## Features
 - Timeline-based animation of generic properties.
-- Use same Sequence to animate multiple properties.
+- Pseudo-instancing of Sequences to animate multiple targets.
 - Chainable animation syntax.
 - Motion event callbacks (start, update, finish).
-- Delayed/staggered animation callbacks.
 - Support for custom ease functions.
 - Support for custom interpolation methods.
-- TODO: Cues (function callback at a given time).
-- Template specializations support intuitive animation of glm quaternions.
 - Separable easing of vector components.
+- Template specializations support intuitive animation of cinder/glm quaternions.
 - Reversible, time-warpable motions.
+- TODO: Cues (function callback at a given time).
 
 ## Basic Usage
 ```c++
 	using namespace choreograph;
 	Timeline timeline;
+	Output<float> value_a;
+	Output<float> value_b;
 
 	// Use a pre-defined sequence
 	auto sequence = make_shared<Sequence<float>>();
 	sequence->set( 100.0f )
-		.rampTo( 50.0f, 1.0f )
-		.hold( 1.0f )
-		.rampTo( 100.0f, 0.5f )
+		.then<RampTo>( 50.0f, 1.0f )
+		.then<Hold>( 50.0f, 1.0f )
+		.then<RampTo>( 100.0f, 0.5f )
 		.set( 50.0f );
+	timeline.apply( &value_a, sequence )
+					.finishFn( [] { cout << "Finished animating value A." << endl } );
 
-	float some_value;
-
-	timeline.move( &some_value, sequence ).finishFn( [] { cout << "Finished animating some value" << endl; });
-
-	// Create a sequence in-place.
-	vec2 other_value;
-	timeline.move( &other_value ).getSequence().rampTo( vec2( 100.0f, 500.0f ), 0.33f );
+	// Define Sequence in-place
+	timeline.apply( &value_b )
+					.then<RampTo>( 10.0f, 0.3f )
+					.then<Hold>( 10.0f, 0.2f )
+					.then<RampTo>( 100.0f, 0.5f )
+					.finishFn( [] { cout << "Finished animating value B." << endl; } );
 ```
 
 ## Concepts
 
-### Position, Phrase, Sequence
-A Position is a value at a point in time.
+### Source, Phrase, Sequence
 
-A Phrase connects two Positions with a transition. Phrases are the basic atom of choreograph.
+A Source provides a value that can vary over time. It is the base for the various Phrase types and Sequence.
+
+A Phrase defines a simple change in value over time. The built-in phrase types include various Ramps and Holds. It is simple to add your own Phrases by implementing the Source<T> interface.
 
 A Sequence is a collection of phrases. Sequences are the main object you will manipulate to build animations. A method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time.
 
-Sequences are timeless, you can query their value at any point in time and always get a valid response; they are clamped at their endpoints.
+Sequences are conceptually timeless, you can query their value at any point in time and always get a valid response; they are clamped at their endpoints.
 
 ### Motion and Output
-A Motion is the application of a choreograph Sequence. It uses a Sequence of Phrases to move some external variable in time. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they should happen and currently are.
+A Motion is the application of a choreograph Sequence. It uses a Sequence to move some external variable in time. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they should happen and currently are.
 
-Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop. You can use a raw pointer to any type as an output, as well, but you need to be very careful about object lifetime and memory management if you do.
+Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop.
+
+You can use a raw pointer to any type as an output, as well, but you need to be very careful about object lifetime and memory management since there will be no smart communication between your non-Output<T> pointer and the Motion.
 
 ### Timeline
-Timelines manage a collection of Motions.
+Timelines manage a collection of Motions. They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in place.
 
 ## Building and running
 
-Samples are run from the projects inside the Samples directory. Currently only set up for OSX.
+Initial v0.2.0 development is being done on OSX with Xcode 6. Once I have a relatively stable API, I will make sure things are building and happy in Visual Studio 2013.
 
-Development, including running unit and regression tests, is done with the ChoreographDev projects. Currently only set up for OSX.
+Development, including running tests, is done with the ChoreographDev project. The dev app is a dumping ground for various thoughts on the library. The tests and dev app have Cinder as a dependency, though Choreograph itself has no dependencies.
+
+Samples are run from the projects inside the Samples directory. There aren't any right now.
 
 ### Using the lerp specializations
 If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
 
 ### Dependencies
 
-The base Choreograph library has no third-party dependencies, so you can use it with whatever other C++ library you like. It does require a modern compiler. Tested with Apple LLVM 5.1 (Clang 502).
+The base Choreograph library has no third-party dependencies, so you can use it with whatever other C++ libraries you like. It does require a modern compiler. Tested with Apple LLVM 5.1 (Clang 502).
 
 Choreograph's tests use the Catch framework, which is included in the tests/ directory.
 
-Choreograph's samples and dev application use Cinder for system interaction and graphics display. Any recent version of the glNext branch should work. Clone Choreograph to your blocks directory.
+Choreograph's samples and dev application use Cinder for system interaction and graphics display. Any recent version of Cinder's glNext branch should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 
 #### History/Tweening alternatives:
 Cinder's Timeline is an excellent, production-ready tweening option. It is based on the previous version of Choreograph.  
-Choreograph itself was originally inspired by Flash tweening libraries like Greensock's TweenMax.
+Choreograph itself was originally inspired by Flash tweening libraries like Greensock's TweenMax. While they aren't for C++, you might draw your own inspiration from them.
