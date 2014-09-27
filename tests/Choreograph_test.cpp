@@ -234,19 +234,38 @@ TEST_CASE( "Output Connections", "[output]" ) {
 
 #include "cinder/Vector.h"
 #include "cinder/Easing.h"
+#include <array>
 using namespace cinder;
 
 TEST_CASE( "Separate component interpolation", "[sequence]" ) {
 
-  // Animate XY from and to same values with different ease curves.
-  Sequence<vec2> sequence( vec2( 1 ) );
-  sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
 
-  SECTION( "Compare Values" ) {
+  SECTION( "Compare 2-Component Values" ) {
+    // Animate XY from and to same values with different ease curves.
+    Sequence<vec2> sequence( vec2( 1 ) );
+    sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
     REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
     REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
     REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );  // past the end
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
+  }
+
+  SECTION( "Compare 3-Component Values" ) {
+    Sequence<vec3> sequence( vec3( 1 ) );
+    sequence.then<RampTo3>( vec3( 10.0f ), 1.0f, std::array<EaseFn, 3>{ EaseOutQuad(), EaseInQuad(), EaseInOutQuad() } );
+
+    REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).y );
+    REQUIRE( sequence.getValue( 0.0f ).x == sequence.getValue( 0.0f ).z );
+
+    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).y );
+    REQUIRE( sequence.getValue( 1.0f ).x == sequence.getValue( 1.0f ).z );
+
+    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).y );  // past the end
+    REQUIRE( sequence.getValue( 2.0f ).x == sequence.getValue( 2.0f ).z );  // past the end
+
+    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
+    REQUIRE( sequence.getValue( 0.5f ).y != sequence.getValue( 0.5f ).z );
+    REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).z );
   }
 }
 

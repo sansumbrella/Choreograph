@@ -125,8 +125,8 @@ public:
   T getValue( float atTime ) const override
   {
     float t = this->normalizeTime( atTime );
-    return T( componentLerpFn( getStartValue().x, getEndValue().x, _ease_x( t ) ),
-              componentLerpFn( getStartValue().y, getEndValue().y, _ease_y( t ) ) );
+    return T( componentLerpFn( _start_value.x, _end_value.x, _ease_x( t ) ),
+              componentLerpFn( _start_value.y, _end_value.y, _ease_y( t ) ) );
   }
 
   T getStartValue() const override { return _start_value; }
@@ -144,6 +144,57 @@ private:
   EaseFn          _ease_x;
   EaseFn          _ease_y;
 };
+
+/**
+ RampTo2 is a phrase with two separately-interpolated components.
+ Allows for the use of separate ease functions per component.
+ All components must be of the same type.
+ */
+template<unsigned int SIZE, typename T>
+class RampToN : public Source<T>
+{
+
+public:
+
+  RampToN( float start_time, float end_time, const T &start_value, const T &end_value, const std::array<EaseFn, SIZE> &ease_fns ):
+  Source<T>( start_time, end_time ),
+  _start_value( start_value ),
+  _end_value( end_value ),
+  _ease_fns( ease_fns )
+  {}
+
+  /// Returns the interpolated value at the given time.
+  T getValue( float atTime ) const override
+  {
+    float t = this->normalizeTime( atTime );
+    T out;
+    for( int i = 0; i < SIZE; ++i )
+    {
+      out[i] = componentLerpFn( _start_value[i], _end_value[i], _ease_fns[i]( t ) );
+    }
+    return out;
+  }
+
+  T getStartValue() const override { return _start_value; }
+  T getEndValue() const override { return _end_value; }
+
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new RampToN<SIZE, T>( *this ) ); }
+
+private:
+  using ComponentT = decltype( T().x ); // get the type of the x component. decltype( T()[0] ) doesn't compile with glm's vecN unions.
+  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
+
+  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
+  T               _start_value;
+  T               _end_value;
+  std::array<EaseFn, SIZE> _ease_fns;
+};
+
+template<typename T>
+using RampTo3 = RampToN<3, T>;
+
+template<typename T>
+using RampTo4 = RampToN<4, T>;
 
 /**
  Hold is a phrase that hangs in there, never changing.
