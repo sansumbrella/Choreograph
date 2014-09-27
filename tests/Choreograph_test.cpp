@@ -10,6 +10,8 @@ using namespace std;
 using namespace choreograph;
 
 TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
+  // Since the precision of floats decreases as they get larger,
+  // we need an epsilon larger than the delta from 1.0 to the next float.
   const float epsilon = std::numeric_limits<float>::epsilon() * 20;
 
   Sequence<float> sequence( 0.0f );
@@ -34,6 +36,81 @@ TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
     REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset ) ) < epsilon );
     REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
     REQUIRE( (sequence.getValueWrapped( (50 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
+  }
+}
+
+TEST_CASE( "Raw Pointers" ) {
+  float target = 0.0f;
+  Timeline timeline;
+
+  SECTION( "Composing Sequences in Sequences" ) {
+    auto sequence = createSequence( 1.0f );
+    SequenceRef<float> continuation = createSequence( 5.0f );
+    continuation->then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
+
+    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( *continuation );
+
+    REQUIRE( sequence->getDuration() == 4.5f );
+
+    Motion<float> motion( &target, sequence );
+    motion.jumpTo( 1.0f );
+    REQUIRE( target == 7.5f );
+
+    motion.jumpTo( 1.5f );
+    REQUIRE( target == 10.0f );
+
+    timeline.apply( &target, sequence );
+    REQUIRE( motion.isValid() == true ); // Working with raw pointer, no management will have happened.
+
+    timeline.jumpTo( 0.0f );
+    REQUIRE( target == 1.0f );
+
+    timeline.step( 1.0f );
+    REQUIRE( target == 7.5f );
+
+    timeline.step( 0.5f );
+    REQUIRE( target == 10.0f );
+
+    timeline.step( 0.5f );
+    REQUIRE( target == 3.0f );
+  }
+
+}
+
+TEST_CASE( "Sequence Composition", "[sequence]" ) {
+  Output<float> target = 0.0f;
+  Timeline timeline;
+
+  SECTION( "Composing Sequences in Sequences" ) {
+    auto sequence = createSequence( 1.0f );
+    SequenceRef<float> continuation = createSequence( 5.0f );
+    continuation->then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
+
+    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( *continuation );
+
+    REQUIRE( sequence->getDuration() == 4.5f );
+
+    Motion<float> motion( &target, sequence );
+    motion.jumpTo( 1.0f );
+    REQUIRE( target == 7.5f );
+
+    motion.jumpTo( 1.5f );
+    REQUIRE( target == 10.0f );
+
+    timeline.apply( &target, sequence );
+    REQUIRE( motion.isValid() == false );
+
+    timeline.jumpTo( 0.0f );
+    REQUIRE( target == 1.0f );
+
+    timeline.step( 1.0f );
+    REQUIRE( target == 7.5f );
+
+    timeline.step( 0.5f );
+    REQUIRE( target == 10.0f );
+
+    timeline.step( 0.5f );
+    REQUIRE( target == 3.0f );
   }
 }
 

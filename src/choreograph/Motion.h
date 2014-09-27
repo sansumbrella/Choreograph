@@ -130,7 +130,6 @@ class Motion : public MotionBase
 {
 public:
   using MotionT       = Motion<T>;
-  using SequenceT     = Sequence<T>;
   using SequenceRefT  = SequenceRef<T>;
   using DataCallback  = std::function<void (const T&)>;
   using Callback      = std::function<void (MotionT&)>;
@@ -154,10 +153,14 @@ public:
 
   float getProgress() const { return time() / _source->getDuration(); }
 
+/*
   /// Returns the underlying source of this motion.
   /// Uses a dynamic cast, so make sure you get back a valid pointer before using.
   template<typename SourceT>
   std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
+*/
+
+  SequenceRefT  getSequence() { return _source; }
 
   bool isValid() const override { return _connection.isConnected(); }
   const void* getTarget() const override { return _connection.targetPtr(); }
@@ -211,7 +214,7 @@ public:
 private:
   // shared_ptr to source since many connections could share the same source.
   // This enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-  SourceRef<T>    _source;
+  SequenceRefT    _source;
   Connection<T>   _connection;
 
   Callback        _finishFn = nullptr;

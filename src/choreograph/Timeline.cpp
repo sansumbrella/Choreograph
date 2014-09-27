@@ -41,6 +41,18 @@ void Timeline::step( float dt )
   }
 }
 
+void Timeline::jumpTo( float time )
+{
+  // Remove any motions that have stale pointers or that have completed playing.
+  bool do_clear = _auto_clear;
+  detail::erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
+
+  // Update all animation outputs.
+  for( auto &c : _motions ) {
+    c->jumpTo( time );
+  }
+}
+
 void Timeline::remove( const MotionBaseRef &motion )
 {
   detail::vector_remove( &_motions, motion );

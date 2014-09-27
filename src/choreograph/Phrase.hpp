@@ -92,6 +92,8 @@ public:
 
   T getEndValue() const override { return _end_value; }
 
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new RampTo<T>( *this ) ); }
+
 private:
   T       _start_value;
   T       _end_value;
@@ -130,6 +132,8 @@ public:
   T getStartValue() const override { return _start_value; }
   T getEndValue() const override { return _end_value; }
 
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new RampTo2<T>( *this ) ); }
+
 private:
   using ComponentT = decltype( T().x ); // get the type of the x component;
   using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
@@ -151,7 +155,7 @@ public:
 
   Hold( float start_time, float end_time, const T &start_value, const T &end_value ):
   Source<T>( start_time, end_time ),
-  _value( start_value )
+  _value( end_value )
   {}
 
   T getValue( float atTime ) const override
@@ -168,6 +172,8 @@ public:
   {
     return _value;
   }
+
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new Hold<T>( *this ) ); }
 
 private:
   T       _value;
@@ -200,6 +206,8 @@ public:
 
   T getStartValue() const override { return _start_value; }
   T getEndValue() const override { return _end_value; }
+
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new AnalyticChange<T>( *this ) ); }
 
 private:
   Function  _function;

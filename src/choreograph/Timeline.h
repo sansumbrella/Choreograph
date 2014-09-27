@@ -85,7 +85,7 @@ class Timeline
 {
 public:
   //=================================================
-  // Creating Motions.
+  // Creating Motions. Output<T>* Versions
   //=================================================
 
   /// Apply a source to output, overwriting any previous connections.
@@ -120,12 +120,16 @@ public:
       for( auto &m : _motions ) {
         if( m->getTarget() == output ) {
           auto motion = std::static_pointer_cast<Motion<T>>( m );
-          return MotionOptions<T>{ motion, motion->template getSource<Sequence<T>>() };
+          return MotionOptions<T>{ motion, motion->getSequence() };
         }
       }
     }
     return apply( output );
   }
+
+  //=================================================
+  // Creating Motions. T* Versions.
+  //=================================================
 
   /// Apply a source to output, overwriting any previous connections. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of apply( Output<T> *output ) over this version.
@@ -143,6 +147,17 @@ public:
     return MotionOptions<T>{ motion, sequence };
   }
 
+  /// Apply a source to output, overwriting any previous connections.
+  template<typename T>
+  MotionOptions<T> apply( T *output, const SequenceRef<T> &sequence )
+  { // Remove any existing motions that affect the same variable.
+    remove( output );
+    auto motion = std::make_shared<Motion<T>>( output, sequence );
+    _motions.push_back( motion );
+
+    return MotionOptions<T>{ motion, sequence };
+  }
+
   /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
@@ -151,7 +166,7 @@ public:
     for( auto &m : _motions ) {
       if( m->getTarget() == output ) {
         auto motion = std::static_pointer_cast<Motion<T>>( m );
-        return MotionOptions<T>{ motion, motion->template getSource<Sequence<T>>() };
+        return MotionOptions<T>{ motion, motion->getSequence() };
       }
     }
     return apply( output );
@@ -170,6 +185,9 @@ public:
 
   /// Advance all current motions.
   void step( float dt );
+
+  /// Set all motions to \a time.
+  void jumpTo( float time );
 
   //=================================================
   // Timeline element manipulation.

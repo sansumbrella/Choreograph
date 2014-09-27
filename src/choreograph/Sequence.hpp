@@ -52,6 +52,17 @@ public:
     _initial_value( value )
   {}
 
+  explicit Sequence( T &&value ):
+    Source<T>( 0, 0 ),
+    _initial_value( std::forward<T>( value ) )
+  {}
+
+  Sequence( const Sequence &other ):
+    _initial_value( other._initial_value )
+  {
+    then( other );
+  }
+
   /// Construct a Sequence from an array of Phrases.
   explicit Sequence( const std::vector<SourceRef<T>> &phrases ):
     Source<T>( phrases.front()->getStartTime(), phrases.back()->getEndTime() ),
@@ -89,23 +100,34 @@ public:
     return *this;
   }
 
+  /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new SequenceT( *this ) ); }
+
   /// Add a pre-existing phrase to the end of the sequence.
+  /// Any Source<T> is valid.
   template<typename PhraseT>
   SequenceT& then( const PhraseT &phrase )
   {
-    auto p = std::unique_ptr<PhraseT>( new PhraseT( phrase ) );
-    p->setStartTime( this->getEndTime() );
-    this->setEndTime( p->getEndTime() );
-    _phrases.push_back( std::move( p ) );
+    std::unique_ptr<Source<T>> p( phrase.clone() );
+    float time = this->getEndTime();
+    float end_time = time + p->getDuration();
+
+    p->setStartTime( time );
+    this->setEndTime( end_time );
+    _phrases.emplace_back( std::move( p ) );
 
     return *this;
   }
 
-  SequenceT& append( const SequenceT &next )
+  /// Append all Phrases from another sequence to this sequence.
+  /// Specializes then.
+  SequenceT& then( const SequenceT &next )
   {
     for( auto &phrase : next._phrases ) {
-      then( phrase.get() );
+      then( *phrase );
     }
+
+    return *this;
   }
 
   /// Returns the value at the end of the Sequence.
@@ -120,7 +142,7 @@ public:
   /// Add two sequences together to form a third sequence.
   static SequenceT concatenate( SequenceT lhs, const SequenceT &rhs )
   {
-    return lhs.append( rhs );
+    return lhs.then( rhs );
   }
 
   /// Recursively concatenate any number of sequences.
@@ -129,7 +151,14 @@ public:
   {
     return concatenate( concatenate( first, second ), std::forward( additional... ) );
   }
-protected:
+
+private:
+  // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
+  // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
+  std::vector<SourceUniqueRef<T>> _phrases;
+  T                         _initial_value;
+
+private:
   void startTimeShifted( float delta ) override
   {
     for( const SourceUniqueRef<T> &phrase : _phrases )
@@ -137,12 +166,6 @@ protected:
       phrase->shiftTime( delta );
     }
   }
-
-private:
-  // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
-  // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
-  std::vector<SourceUniqueRef<T>> _phrases;
-  T                         _initial_value;
 };
 
 /// Returns the value of this sequence for a given point in time.
@@ -161,7 +184,7 @@ T Sequence<T>::getValue( float atTime ) const
 
   auto iter = _phrases.begin();
   while( iter < _phrases.end() ) {
-    if( (*iter)->getEndTime() > atTime )
+    if( (*iter)->getEndTime() >= atTime )
     {
       return (*iter)->getValue( atTime );
     }
@@ -174,5 +197,17 @@ T Sequence<T>::getValue( float atTime ) const
 
 template<typename T>
 using SequenceRef = std::shared_ptr<Sequence<T>>;
+
+template<typename T>
+SequenceRef<T> createSequence( T &&initialValue )
+{
+  return std::make_shared<Sequence<T>>( std::forward<T>( initialValue ) );
+}
+
+template<typename T>
+SequenceRef<T> createSequence( const T &initialValue )
+{
+  return std::make_shared<Sequence<T>>( initialValue );
+}
 
 } // namespace choreograph

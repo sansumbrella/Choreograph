@@ -32,6 +32,9 @@
 namespace choreograph
 {
 
+template<typename T>
+class Sequence;
+
 ///
 /// A Source of motion.
 /// Virtual base class with concept of value and implementation of time.
@@ -59,6 +62,9 @@ public:
   /// Override to provide value at end (and beyond).
   virtual T getEndValue() const = 0;
 
+  /// Override to provide a copy of the derived Source. Needed for phrases to be copy-composable.
+  virtual std::unique_ptr<Source<T>> clone() const = 0;
+
   /// Returns the Source value at \a time, looping past the end from inflection point to the end.
   /// Relies on the subclass implementation of getValue( t ).
   T getValueWrapped( float time, float inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
@@ -82,10 +88,14 @@ public:
       return time;
     }
   }
+private:
+  float _start_time = 0.0f;
+  float _end_time = 0.0f;
+
+private:
   /// Offsets start and end times.
   void shiftTime( float amount ) { _start_time += amount; _end_time += amount; startTimeShifted( amount ); }
 
-protected:
   /// Sets end time.
   void setEndTime( float t ) { _end_time = t; }
   /// Sets start time while preserving duration.
@@ -95,15 +105,7 @@ protected:
   /// Needed by Sequence so it can shift all its child sources.
   virtual void startTimeShifted( float delta ) {}
 
-private:
-  float _start_time = 0.0f;
-  float _end_time = 0.0f;
-};
-
-template<typename T>
-class SourceT
-{
-
+  friend class Sequence<T>;
 };
 
 template<typename T>
