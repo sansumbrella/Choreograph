@@ -28,6 +28,7 @@
 #pragma once
 
 #include "choreograph/Sequence.hpp"
+#include "cinder/Quaternion.h"
 
 namespace  choreograph
 {

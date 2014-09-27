@@ -65,9 +65,9 @@ T lerpT( const T &a, const T &b, float t )
   return a + (b - a) * t;
 }
 
-/**
- RampTo is a phrase that interpolates all components with an ease function.
- */
+///
+/// RampTo is a phrase that interpolates all components with an ease function.
+///
 template<typename T>
 class RampTo : public Source<T>
 {
@@ -102,66 +102,35 @@ private:
 };
 
 
-/**
- RampTo2 is a phrase with two separately-interpolated components.
- Allows for the use of separate ease functions per component.
- All components must be of the same type.
- */
-template<typename T>
-class RampTo2 : public Source<T>
-{
-
-public:
-
-  RampTo2( float start_time, float end_time, const T &start_value, const T &end_value, const EaseFn &ease_x, const EaseFn &ease_y ):
-    Source<T>( start_time, end_time ),
-    _start_value( start_value ),
-    _end_value( end_value ),
-    _ease_x( ease_x ),
-    _ease_y( ease_y )
-  {}
-
-  /// Returns the interpolated value at the given time.
-  T getValue( float atTime ) const override
-  {
-    float t = this->normalizeTime( atTime );
-    return T( componentLerpFn( _start_value.x, _end_value.x, _ease_x( t ) ),
-              componentLerpFn( _start_value.y, _end_value.y, _ease_y( t ) ) );
-  }
-
-  T getStartValue() const override { return _start_value; }
-  T getEndValue() const override { return _end_value; }
-
-  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new RampTo2<T>( *this ) ); }
-
-private:
-  using ComponentT = decltype( T().x ); // get the type of the x component;
-  using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
-
-  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
-  T               _start_value;
-  T               _end_value;
-  EaseFn          _ease_x;
-  EaseFn          _ease_y;
-};
-
-/**
- RampTo2 is a phrase with two separately-interpolated components.
- Allows for the use of separate ease functions per component.
- All components must be of the same type.
- */
+///
+/// RampToN is a phrase template with N separately-interpolated components.
+/// Allows for the use of separate ease functions per component.
+/// All components must be of the same type.
+/// If fewer than N ease functions are provided, the last ease function will be used to fill out remaining components.
+/// If you only want one ease function for all components, use a normal RampTo.
+///
 template<unsigned int SIZE, typename T>
 class RampToN : public Source<T>
 {
 
 public:
 
-  RampToN( float start_time, float end_time, const T &start_value, const T &end_value, const std::array<EaseFn, SIZE> &ease_fns ):
-  Source<T>( start_time, end_time ),
-  _start_value( start_value ),
-  _end_value( end_value ),
-  _ease_fns( ease_fns )
-  {}
+  template<typename... Args>
+  RampToN( float start_time, float end_time, const T &start_value, const T &end_value, Args&&... args ):
+    Source<T>( start_time, end_time ),
+    _start_value( start_value ),
+    _end_value( end_value )
+  {
+    std::vector<EaseFn> list = { args... };
+    for( size_t i = 0; i < SIZE && i < list.size(); ++i )
+    {
+      _ease_fns[i] = list[i];
+    }
+    for( size_t i = list.size(); i < SIZE; ++i )
+    {
+      _ease_fns[i] = list.back();
+    }
+  }
 
   /// Returns the interpolated value at the given time.
   T getValue( float atTime ) const override
@@ -170,7 +139,7 @@ public:
     T out;
     for( int i = 0; i < SIZE; ++i )
     {
-      out[i] = componentLerpFn( _start_value[i], _end_value[i], _ease_fns[i]( t ) );
+      out[i] = _componentLerpFn( _start_value[i], _end_value[i], _ease_fns[i]( t ) );
     }
     return out;
   }
@@ -184,21 +153,27 @@ private:
   using ComponentT = decltype( T().x ); // get the type of the x component. decltype( T()[0] ) doesn't compile with glm's vecN unions.
   using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
 
-  ComponentLerpFn componentLerpFn = &lerpT<ComponentT>;
-  T               _start_value;
-  T               _end_value;
-  std::array<EaseFn, SIZE> _ease_fns;
+  ComponentLerpFn           _componentLerpFn = &lerpT<ComponentT>;
+  T                         _start_value;
+  T                         _end_value;
+  std::array<EaseFn, SIZE>  _ease_fns;
 };
 
+/// RampTo2 is a phrase with 2 separately-interpolated components.
+template<typename T>
+using RampTo2 = RampToN<2, T>;
+
+/// RampTo3 is a phrase with 3 separately-interpolated components.
 template<typename T>
 using RampTo3 = RampToN<3, T>;
 
+/// RampTo4 is a phrase with 4 separately-interpolated components.
 template<typename T>
 using RampTo4 = RampToN<4, T>;
 
-/**
- Hold is a phrase that hangs in there, never changing.
- */
+///
+/// Hold is a phrase that hangs in there, never changing.
+///
 template<typename T>
 class Hold : public Source<T>
 {
