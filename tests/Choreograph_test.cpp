@@ -49,10 +49,10 @@ TEST_CASE( "Output Connections", "[output]" ) {
     { // create locally scoped output
       Output<float> temp;
       motion = make_shared<Motion<float>>( &temp, sequence );
-      REQUIRE( motion->isValid() );
+      REQUIRE( motion->isConnected() );
     }
 
-    REQUIRE( motion->isInvalid() );
+    REQUIRE( ! motion->isConnected() );
   }
 
   SECTION( "Motion falling out of scope disconnects" ) {

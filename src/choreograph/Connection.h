@@ -55,17 +55,15 @@ public:
   explicit ConnectionBase( void *target );
 
 
-  /// Returns true if this Motion has an output.
-  bool  isValid() const { return _raw_target != nullptr; }
-
-  /// Returns true if this Motion has no output.
-  bool  isInvalid() const { return _raw_target == nullptr; }
+  /// Returns true iff this Connection has an output.
+  bool  isConnected() const { return _raw_target != nullptr; }
 
   /// Returns raw pointer to target variable. Used for comparison.
   void* getTarget() const { return _raw_target; }
 
 protected:
   /// Replace current output target with new target. Called from connect.
+  /// Use to cast new output pointer to correct type.
   virtual void replaceOutput( OutputBase *output ) {}
 
 private:
@@ -74,8 +72,11 @@ private:
   // Pointer to safe handle type. Exists iff created with an OutputBase target.
   OutputBase  *_output_base = nullptr;
 
-  /// Called on destruction of either MotionBase or _output_base.
+  /// Remove connection to Output.
+  /// Called on destruction of either this or _output_base.
   void disconnect( OutputBase *base );
+  /// Connect to a new Output (or just update the pointer to the same outputbase).
+  /// Called by OutputBase when one Output supplants another (e.g. in copy-construction, move assignment, etc).
   void connect( OutputBase *base );
   
   friend class OutputBase;

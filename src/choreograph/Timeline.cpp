@@ -32,7 +32,7 @@ using namespace choreograph;
 void Timeline::step( float dt )
 {
   // Remove any motions that have stale pointers
-  erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isInvalid(); } );
+  erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return ! motion->isConnected(); } );
 
 
   // Update all animation outputs.

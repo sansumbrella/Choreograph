@@ -174,7 +174,7 @@ public:
   /// Update
   void update() override
   {
-    assert( isValid() );
+    assert( isConnected() );
 
     if( _startFn ) {
       if( forward() && time() > 0.0f && previousTime() <= 0.0f )

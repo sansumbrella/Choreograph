@@ -55,7 +55,6 @@ private:
 
 /// Safe type for Choreograph outputs.
 /// Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
-// TODO: handle assignment, copy-construction, etc. so things don't go badly there.
 template<typename T>
 class Output : public OutputBase
 {
