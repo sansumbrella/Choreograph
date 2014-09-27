@@ -42,7 +42,7 @@ class Output
 {
 public:
   /// Disconnect on destruction.
-  virtual ~Output() { disconnect(); }
+  ~Output() { disconnect(); }
 
   /// Default constructor.
   Output() = default;
