@@ -62,7 +62,7 @@ public:
   /// Returns the Sequence value at \a atTime.
   T getValue( float atTime ) const override;
 
-  /// Set current value. An instantaneous hold.
+  /// Set last value of Sequence. An instantaneous hold.
   SequenceT& set( const T &value )
   {
     if( _phrases.empty() ) {

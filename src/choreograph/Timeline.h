@@ -83,6 +83,7 @@ public:
   //  Sequence Interface Mirroring.
   //
 
+  /// Set the initial value of the Sequence or create and instantaneous hold of a value. 
   SelfT& set( const T &value ) { _sequence->set( value ); return *this; }
   /// Append a phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
@@ -99,14 +100,13 @@ private:
 class Timeline
 {
 public:
-
-  //
-  // NEW INTERFACE. apply() and append() only.
-  //
+  //=================================================
+  // Creating Motions.
+  //=================================================
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T>  apply( Output<T> *output )
+  MotionOptions<T> apply( Output<T> *output )
   {
     auto sequence = std::make_shared<Sequence<T>>( *output );
     auto motion = std::make_shared<Motion<T>>( output, sequence );
@@ -118,21 +118,21 @@ public:
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
-  MotionOptions<T>& append( Output<T> *output )
+  MotionOptions<T> append( Output<T> *output )
   {
-    for( auto &motion : _motions ) {
-      if( motion->getTarget() == output ) {
-        auto mm = std::static_pointer_cast<Motion<T>>( motion );
-        return mm->template getSource< Sequence<T> >();
+    for( auto &m : _motions ) {
+      if( m->getTarget() == output ) {
+        auto motion = std::static_pointer_cast<Motion<T>>( m );
+        return MotionOptions<T>{ motion, motion->template getSource<Sequence<T>>() };
       }
     }
     return apply( output );
   }
 
   /// Apply a source to output, overwriting any previous connections. Raw pointer edition.
-  /// Unless you have a strong need, prefer the use of apply( Output<T> *output );
+  /// Unless you have a strong need, prefer the use of apply( Output<T> *output ) over this version.
   template<typename T>
-  MotionOptions<T>  apply( T *output )
+  MotionOptions<T> apply( T *output )
   { // Remove any existing motions that affect the same variable.
     // This is a raw pointer, so we don't know about any prior relationships.
     remove( output );
@@ -145,26 +145,30 @@ public:
     return MotionOptions<T>{ motion, sequence };
   }
 
-  /// Add phrases to the end of the Sequence currently connected to \a output.
-  /// Unless you have a strong need, prefer the use of append( Output<T> *output );
+  /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.
+  /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
-  MotionOptions<T>& append( T *output )
+  MotionOptions<T> append( T *output )
   {
-    for( auto &motion : _motions ) {
-      if( motion->getTarget() == output ) {
-        return std::static_pointer_cast<Motion<T>>( motion )->getSequence();
+    for( auto &m : _motions ) {
+      if( m->getTarget() == output ) {
+        auto motion = std::static_pointer_cast<Motion<T>>( m );
+        return MotionOptions<T>{ motion, motion->template getSource<Sequence<T>>() };
       }
     }
     return apply( output );
   }
 
-  //
+  //=================================================
   // Time manipulation.
-  //
+  //=================================================
 
   /// Advance all current motions.
   void step( float dt );
 
+  //=================================================
+  // Timeline element manipulation.
+  //=================================================
 
   /// Remove specific motion.
   void remove( const MotionBaseRef &motion );
@@ -176,15 +180,17 @@ public:
     erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
   }
 
-  /// Removes all motions from this timeline.
+  /// Remove all motions from this timeline.
   void clear() { _motions.clear(); }
 
-  /// Returns true if there are no motions on this timeline.
+  /// Return true iff there are no motions on this timeline.
   bool empty() const { return _motions.empty(); }
 
-  /// Returns the number of motions on this timeline.
+  /// Return the number of motions on this timeline.
   size_t size() const { return _motions.size(); }
+
 private:
+  // True if Motions should be removed from timeline when they reach their endTime.
   bool                        _auto_clear = true;
   std::vector<MotionBaseRef>  _motions;
 };
