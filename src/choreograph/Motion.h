@@ -123,8 +123,7 @@ private:
 };
 
 ///
-/// Motion: a connection between a continuous, independent Sequence and an output.
-/// Moves a playhead along a Sequence and sends its value to a user-defined output.
+/// Motion: Moves a playhead along a Sequence and sends its value to a user-defined output.
 ///
 template<typename T>
 class Motion : public MotionBase
