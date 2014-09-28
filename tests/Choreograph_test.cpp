@@ -114,6 +114,67 @@ TEST_CASE( "Sequence Composition", "[sequence]" ) {
   }
 }
 
+TEST_CASE( "Cues and Callbacks", "[motion]" ) {
+  co::Timeline  timeline;
+  bool          updateCalled = false;
+  bool          startCalled = false;
+  bool          endCalled = false;
+  Output<float> target = 0;
+  int           updateCount = 0;
+  float         updateTarget = 0;
+
+  SECTION( "Timeline Callbacks" )
+  {
+    timeline.apply( &target ).startFn( [&startCalled] { startCalled = true; } )
+      .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
+      .finishFn( [&endCalled] { endCalled = true; } )
+      .then<RampTo>( 10.0f, 1.0f );
+
+    SECTION( "Callbacks from step" )
+    {
+      timeline.step( 0.1f );
+      REQUIRE( startCalled == true );
+      REQUIRE( updateCalled == true );
+      REQUIRE( updateCount == 1 );
+      REQUIRE( updateTarget == (target / 2.0f) );
+      REQUIRE( target == 1.0f );
+
+      for( int i = 0; i < 9; ++i ) {
+        REQUIRE( endCalled == false );
+        timeline.step( 0.1f );
+      }
+
+      REQUIRE( endCalled == true );
+      REQUIRE( updateCount == 10 );
+    }
+
+    SECTION( "Callbacks from jumpTo" )
+    {
+      timeline.jumpTo( 0.1f );
+      REQUIRE( startCalled == true );
+      REQUIRE( updateCalled == true );
+      REQUIRE( updateCount == 1 );
+      REQUIRE( updateTarget == (target / 2.0f) );
+      REQUIRE( target == 1.0f );
+      REQUIRE( endCalled == false );
+
+      timeline.jumpTo( 0.9f );
+      REQUIRE( updateCount == 2 );
+      REQUIRE( endCalled == false );
+
+      timeline.jumpTo( 1.0f );
+      REQUIRE( updateCount == 3 );
+      REQUIRE( endCalled == true );
+    }
+
+  }
+
+  SECTION( "Motion Manipulation from Callbacks" )
+  {
+
+  }
+}
+
 TEST_CASE( "Output Connections", "[output]" ) {
 
   co::Timeline timeline;

@@ -151,18 +151,13 @@ public:
   {}
 
 
-  /// Duration is based on the underlying sequence.
+  /// Returns duration of the underlying sequence.
   float getDuration() const override { return _source->getDuration(); }
 
+  /// Returns ratio of time elapsed, from [0,1] over duration.
   float getProgress() const { return time() / _source->getDuration(); }
 
-/*
-  /// Returns the underlying source of this motion.
-  /// Uses a dynamic cast, so make sure you get back a valid pointer before using.
-  template<typename SourceT>
-  std::shared_ptr<SourceT> getSource() { return std::dynamic_pointer_cast<SourceT>( _source ); }
-*/
-
+  /// Returns the underlying Sequence sampled for this motion.
   SequenceRefT  getSequence() { return _source; }
 
   bool isValid() const override { return _connection.isConnected(); }
