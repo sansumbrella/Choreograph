@@ -38,10 +38,9 @@ private:
 
 TEST_CASE( "Creating Motions" ) {
   co::Timeline test_timeline;
+  test_timeline.setAutoRemove( false );
   float dt = 1.0f / 60.0f;
   const size_t count = 150e3; // 10k
-  SequenceRef<vec2> sequence = make_shared<Sequence<vec2>>( vec2( 1.0f ) );
-  sequence->then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
 
   cout << "Working with " << count << " motions." << endl;
 
@@ -91,6 +90,8 @@ TEST_CASE( "Creating Motions" ) {
 
   {
     ScopedTimer timer( "Creating Motions from shared Sequence" );
+    SequenceRef<vec2> sequence = make_shared<Sequence<vec2>>( vec2( 1.0f ) );
+    sequence->then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
     for( auto &target : targets ) {
       test_timeline.apply( &target, sequence );
     }

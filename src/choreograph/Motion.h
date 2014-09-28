@@ -45,16 +45,16 @@ public:
   MotionBase() = default;
 
   /// Advance motion in time. Affected by Motion's speed.
-  void step( float dt );
+  void step( Time dt );
 
   /// Jump to a point in time. Ignores Motion's speed.
-  void jumpTo( float time );
+  void jumpTo( Time time );
 
   /// Overridden to determine what a time step does.
   virtual void update() = 0;
 
   /// Returns the duration of the motion.
-  virtual float getDuration() const = 0;
+  virtual Time getDuration() const = 0;
 
   /// Returns true if motion is valid.
   virtual bool isValid() const { return true; }
@@ -63,10 +63,10 @@ public:
   virtual const void* getTarget() const { return nullptr; }
 
   /// Returns current animation time in seconds.
-  float time() const { return _time - _start_time; }
+  Time time() const { return _time - _start_time; }
 
   /// Returns previous step's animation time in seconds.
-  float previousTime() const { return _previous_time - _start_time; }
+  Time previousTime() const { return _previous_time - _start_time; }
 
   /// Returns true if animation plays forward with positive time steps.
   bool  forward() const { return _speed >= 0.0f; }
@@ -78,34 +78,34 @@ public:
   bool  isFinished() const;
 
   /// Set playback speed of motion. Use negative numbers to play in reverse.
-  void  setPlaybackSpeed( float s ) { _speed = s; }
+  void  setPlaybackSpeed( Time s ) { _speed = s; }
 
   /// Returns the current playback speed of motion.
-  float getPlaybackSpeed() const { return _speed; }
+  Time getPlaybackSpeed() const { return _speed; }
 
   /// Reset motion to beginning. Accounts for reversed playback.
   void  resetTime();
 
   /// Returns the current end time of this motion.
-  float getEndTime() const { return getStartTime() + getDuration(); }
+  Time getEndTime() const { return getStartTime() + getDuration(); }
 
   /// Set the start time of this motion. Use to delay entire motion.
-  void setStartTime( float t ) { _start_time = t; }
-  float getStartTime() const { return _start_time; }
+  void setStartTime( Time t ) { _start_time = t; }
+  Time getStartTime() const { return _start_time; }
 
 protected:
   // True if the underlying Sequence should play forever.
   bool        _continuous = false;
 private:
   /// Playback speed. Set to negative to go in reverse.
-  float       _speed = 1.0f;
+  Time       _speed = 1.0f;
   /// Current animation time in seconds. Time at which Sequence is evaluated.
-  float       _time = 0.0f;
+  Time       _time = 0.0f;
   /// Previous animation time in seconds.
-  float       _previous_time = 0.0f;
+  Time       _previous_time = 0.0f;
   /// Animation start time in seconds. Time from which Sequence is evaluated.
   /// Use to apply a delay.
-  float       _start_time = 0.0f;
+  Time       _start_time = 0.0f;
 };
 
 class Cue : public MotionBase
@@ -114,13 +114,13 @@ public:
   Cue() = delete;
 
   /// Creates a cue from a function and a delay.
-  Cue( const std::function<void ()> &fn, float delay );
+  Cue( const std::function<void ()> &fn, Time delay );
 
   /// Calls cue function if time threshold has been crossed.
   void update() override;
 
   /// Cues are instantaneous.
-  float getDuration() const override { return 0.0f; }
+  Time getDuration() const override { return 0.0f; }
 private:
   std::function<void ()> _cue;
 };
@@ -152,10 +152,10 @@ public:
 
 
   /// Returns duration of the underlying sequence.
-  float getDuration() const override { return _source->getDuration(); }
+  Time getDuration() const override { return _source->getDuration(); }
 
   /// Returns ratio of time elapsed, from [0,1] over duration.
-  float getProgress() const { return time() / _source->getDuration(); }
+  Time getProgress() const { return time() / _source->getDuration(); }
 
   /// Returns the underlying Sequence sampled for this motion.
   SequenceRefT  getSequence() { return _source; }
@@ -174,7 +174,7 @@ public:
   /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
   MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
 
-  MotionT&  playbackSpeed( float s ) { setPlaybackSpeed( s ); return *this; }
+  MotionT&  playbackSpeed( Time s ) { setPlaybackSpeed( s ); return *this; }
 
   /// Set the connection to play continuously.
   MotionT&  continuous( bool c ) { _continuous = c; return *this; }

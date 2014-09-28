@@ -71,7 +71,7 @@ public:
   {}
 
   /// Returns the Sequence value at \a atTime.
-  T getValue( float atTime ) const override;
+  T getValue( Time atTime ) const override;
 
   /// Set last value of Sequence. An instantaneous hold.
   SequenceT& set( const T &value )
@@ -91,9 +91,9 @@ public:
   /// If additional arguments are passed to then(), those arguments come after the required ones.
   /// sequence.then<RampTo>( targetValue, duration, other phrase parameters ).then<Hold>( holdValue, duration );
   template<template <typename> class PhraseT, typename... Args>
-  SequenceT& then( const T &value, float duration, Args&&... args )
+  SequenceT& then( const T &value, Time duration, Args&&... args )
   {
-    float end_time = this->getEndTime() + duration;
+    Time end_time = this->getEndTime() + duration;
     _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
     this->setEndTime( end_time );
 
@@ -109,8 +109,8 @@ public:
   SequenceT& then( const PhraseT &phrase )
   {
     std::unique_ptr<Source<T>> p( phrase.clone() );
-    float time = this->getEndTime();
-    float end_time = time + p->getDuration();
+    Time time = this->getEndTime();
+    Time end_time = time + p->getDuration();
 
     p->setStartTime( time );
     this->setEndTime( end_time );
@@ -166,7 +166,7 @@ private:
   T                         _initial_value;
 
 private:
-  void startTimeShifted( float delta ) override
+  void startTimeShifted( Time delta ) override
   {
     for( const SourceUniqueRef<T> &phrase : _phrases )
     {
@@ -178,7 +178,7 @@ private:
 /// Returns the value of this sequence for a given point in time.
 // Would be nice to have a constant-time check (without a while loop).
 template<typename T>
-T Sequence<T>::getValue( float atTime ) const
+T Sequence<T>::getValue( Time atTime ) const
 {
   if( atTime < this->getStartTime() )
   {

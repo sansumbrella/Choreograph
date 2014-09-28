@@ -79,10 +79,10 @@ public:
 
   /// Append a phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
-  SelfT& then( const T &value, float duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
+  SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
   /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
-  SelfT& hold( float duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
+  SelfT& hold( Time duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
 
   //=================================================
   // Extra Sugar.
@@ -192,17 +192,17 @@ public:
   //=================================================
 
   /// Add a cue to the timeline. It will be called after \a delay time elapses.
-  void cue( const std::function<void ()> &fn, float delay );
+  void cue( const std::function<void ()> &fn, Time delay );
 
   //=================================================
   // Time manipulation.
   //=================================================
 
   /// Advance all current motions.
-  void step( float dt );
+  void step( Time dt );
 
   /// Set all motions to \a time.
-  void jumpTo( float time );
+  void jumpTo( Time time );
 
   //=================================================
   // Timeline element manipulation.
@@ -228,6 +228,9 @@ public:
   {
     detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
   }
+
+  /// Set whether motions should be removed when finished. Default is true.
+  void setAutoRemove( bool doRemove = true ) { _auto_clear = doRemove; }
 
   /// Remove all motions from this timeline.
   void clear() { _motions.clear(); }

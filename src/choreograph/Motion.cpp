@@ -34,14 +34,14 @@ using namespace std;
 // MotionBase
 //=================================================
 
-void MotionBase::step( float dt )
+void MotionBase::step( Time dt )
 {
   _time += dt * _speed;
   update(); // update properties
   _previous_time = _time;
 }
 
-void MotionBase::jumpTo( float time )
+void MotionBase::jumpTo( Time time )
 {
   _time = time;
   update(); // update properties
@@ -78,7 +78,7 @@ void MotionBase::resetTime()
 // Cue
 //=================================================
 
-Cue::Cue( const function<void ()> &fn, float delay ):
+Cue::Cue( const function<void ()> &fn, Time delay ):
   _cue( fn )
 {
   setStartTime( delay );

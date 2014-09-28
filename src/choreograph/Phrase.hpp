@@ -78,7 +78,7 @@ class RampTo : public Source<T>
 public:
   using LerpFn = std::function<T (const T&, const T&, float)>;
 
-  RampTo( float start_time, float end_time, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone, const LerpFn &lerp_fn = &lerpT<T> ):
+  RampTo( Time start_time, Time end_time, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone, const LerpFn &lerp_fn = &lerpT<T> ):
     Source<T>( start_time, end_time ),
     _start_value( start_value ),
     _end_value( end_value ),
@@ -87,7 +87,7 @@ public:
   {}
 
   /// Returns the interpolated value at the given time.
-  T getValue( float atTime ) const override
+  T getValue( Time atTime ) const override
   {
     return _lerpFn( _start_value, _end_value, _easeFn( this->normalizeTime( atTime ) ) );
   }
@@ -120,7 +120,7 @@ class RampToN : public Source<T>
 public:
 
   template<typename... Args>
-  RampToN( float start_time, float end_time, const T &start_value, const T &end_value, Args&&... args ):
+  RampToN( Time start_time, Time end_time, const T &start_value, const T &end_value, Args&&... args ):
     Source<T>( start_time, end_time ),
     _start_value( start_value ),
     _end_value( end_value )
@@ -135,9 +135,9 @@ public:
   }
 
   /// Returns the interpolated value at the given time.
-  T getValue( float atTime ) const override
+  T getValue( Time atTime ) const override
   {
-    float t = this->normalizeTime( atTime );
+    Time t = this->normalizeTime( atTime );
     T out;
     for( int i = 0; i < SIZE; ++i )
     {
@@ -181,12 +181,12 @@ class Hold : public Source<T>
 {
 public:
 
-  Hold( float start_time, float end_time, const T &start_value, const T &end_value ):
+  Hold( Time start_time, Time end_time, const T &start_value, const T &end_value ):
   Source<T>( start_time, end_time ),
   _value( end_value )
   {}
 
-  T getValue( float atTime ) const override
+  T getValue( Time atTime ) const override
   {
     return _value;
   }
@@ -218,15 +218,7 @@ template<typename T>
 class CombineSource : public Source<T>
 {
 public:
-  /*
-  using InitializerList = std::initializer_list<std::pair<SourceRef<T>, float>>;
-  /// Constructs a Combine from start and end times and a list of { Source<T>, float } pairs.
-  Combine( float start_time, float end_time, const InitializerList &initializer ):
-    Source<T>( start_time, end_time ),
-    _sources( initializer )
-  {}
-*/
-  CombineSource( float duration, const Source<T> &source, float factor=1.0f ):
+  CombineSource( Time duration, const Source<T> &source, float factor=1.0f ):
     Source<T>( 0.0f, duration )
   {
     _sources.emplace_back( std::make_pair( source.clone(), factor ) );
@@ -238,7 +230,7 @@ public:
     return *this;
   }
 
-  T getValue( float atTime ) const override
+  T getValue( Time atTime ) const override
   {
     T value = _sources.front().first->getValue( atTime ) * _sources.front().second;
     for( size_t i = 1; i < _sources.size(); ++i ) {
@@ -263,7 +255,7 @@ class LoopSource : public Source<T>
 {
 public:
   /// Create a Source that loops \a source.
-  LoopSource( const Source<T> &source, float inflectionPoint = 0.0f ):
+  LoopSource( const Source<T> &source, Time inflectionPoint = 0.0f ):
     _source( source.clone() ),
     _inflection_point( inflectionPoint )
   {}
@@ -273,14 +265,14 @@ public:
     _inflection_point( other._inflection_point )
   {}
 
-  T getValue( float atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
+  T getValue( Time atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
   T getStartValue() const override { return _source->getStartValue(); }
   T getEndValue() const override { return _source->getEndValue(); }
 
   SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new LoopSource<T>( *this ) ); }
 private:
   SourceUniqueRef<T>  _source;
-  float               _inflection_point;
+  Time               _inflection_point;
 };
 
 //=================================================
@@ -298,16 +290,16 @@ public:
   /// Analytic Function receives start, end, and normalized time.
   /// Most basic would be mix( a, b, t ) or lerp( a, b, t ).
   /// Intended use is to apply something like cos() or random jitter.
-  using Function = std::function<T (const T& startValue, const T& endValue, float normalizedTime, float duration)>;
+  using Function = std::function<T (const T& startValue, const T& endValue, Time normalizedTime, Time duration)>;
 
-  AnalyticChange( float start_time, float end_time, const T &start_value, const T &end_value, const Function &fn ):
+  AnalyticChange( Time start_time, Time end_time, const T &start_value, const T &end_value, const Function &fn ):
     Source<T>( start_time, end_time ),
     _function( fn ),
     _start_value( start_value ),
     _end_value( end_value )
   {}
 
-  T getValue( float atTime ) const override
+  T getValue( Time atTime ) const override
   {
     return _function( _start_value, _end_value, this->normalizeTime( atTime ), this->getDuration() );
   }

@@ -29,7 +29,7 @@
 
 using namespace choreograph;
 
-void Timeline::step( float dt )
+void Timeline::step( Time dt )
 {
   // Remove any motions that have stale pointers or that have completed playing.
   bool do_clear = _auto_clear;
@@ -41,7 +41,7 @@ void Timeline::step( float dt )
   }
 }
 
-void Timeline::jumpTo( float time )
+void Timeline::jumpTo( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
   bool do_clear = _auto_clear;
@@ -58,7 +58,7 @@ void Timeline::remove( const MotionBaseRef &motion )
   detail::vector_remove( &_motions, motion );
 }
 
-void Timeline::cue( const std::function<void ()> &fn, float delay )
+void Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
   _motions.push_back( std::make_shared<Cue>( fn, delay ) );
 }

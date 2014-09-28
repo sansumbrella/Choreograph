@@ -32,6 +32,11 @@
 namespace choreograph
 {
 
+/// Define our Time type here so it's easier to change out if needed.
+/// Float loses precision pretty quickly, but is fast and doesn't take up much space.
+/// Also, since only Motions keep playheads, we only need enough precision for our longest Motion.
+using Time = float;
+
 template<typename T>
 class Sequence;
 
@@ -45,7 +50,7 @@ class Source
 public:
   Source() = default;
 
-  Source( float startTime, float endTime ):
+  Source( Time startTime, Time endTime ):
     _start_time( startTime ),
     _end_time( endTime )
   {}
@@ -54,7 +59,7 @@ public:
 
   /// Override to provide value at requested time.
   /// Returns the interpolated value at the given time.
-  virtual T getValue( float atTime ) const = 0;
+  virtual T getValue( Time atTime ) const = 0;
 
   /// Override to provide value at start (and before).
   virtual T getStartValue() const = 0;
@@ -67,19 +72,19 @@ public:
 
   /// Returns the Source value at \a time, looping past the end from inflection point to the end.
   /// Relies on the subclass implementation of getValue( t ).
-  T getValueWrapped( float time, float inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
+  T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Returns normalized time if t is in range [start_time, end_time].
-  inline float normalizeTime( float t ) const { return (t - _start_time) / (_end_time - _start_time); }
+  inline Time normalizeTime( Time t ) const { return (t - _start_time) / (_end_time - _start_time); }
   /// Returns the start time of this source.
-  inline float getStartTime() const { return _start_time; }
+  inline Time getStartTime() const { return _start_time; }
   /// Returns the end time of this source.
-  inline float getEndTime() const { return _end_time; }
+  inline Time getEndTime() const { return _end_time; }
   /// Returns the duration of this source.
-  inline float getDuration() const { return _end_time - _start_time; }
+  inline Time getDuration() const { return _end_time - _start_time; }
 
   /// Wrap \a time around \a inflectionPoint in the Sequence.
-  float wrapTime( float time, float inflectionPoint = 0.0f ) const
+  Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
   {
     if( time > getDuration() ) {
       return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
@@ -89,21 +94,21 @@ public:
     }
   }
 private:
-  float _start_time = 0.0f;
-  float _end_time = 0.0f;
+  Time _start_time = 0.0f;
+  Time _end_time = 0.0f;
 
 private:
   /// Offsets start and end times.
-  void shiftTime( float amount ) { _start_time += amount; _end_time += amount; startTimeShifted( amount ); }
+  void shiftTime( Time amount ) { _start_time += amount; _end_time += amount; startTimeShifted( amount ); }
 
   /// Sets end time.
-  void setEndTime( float t ) { _end_time = t; }
+  void setEndTime( Time t ) { _end_time = t; }
   /// Sets start time while preserving duration.
-  void setStartTime( float t ) { float delta = t - _start_time; _start_time += delta; _end_time += delta; startTimeShifted( delta ); }
+  void setStartTime( Time t ) { Time delta = t - _start_time; _start_time += delta; _end_time += delta; startTimeShifted( delta ); }
 
   /// Override to handle special cases when time changes.
   /// Needed by Sequence so it can shift all its child sources.
-  virtual void startTimeShifted( float delta ) {}
+  virtual void startTimeShifted( Time delta ) {}
 
   friend class Sequence<T>;
 };
