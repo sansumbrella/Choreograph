@@ -27,7 +27,7 @@
 
 #pragma once
 
-#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 1
+#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 0
 
 #include "Sequence.hpp"
 #include "Connection.hpp"
@@ -197,14 +197,14 @@ public:
     auto phrase = _source->_phrases.at( _phrase_index ).get();
     _phrase_time += time() - previousTime();
 
-    // If we move backwards in time
+    // If we move backwards in time, potentially back up our index.
     while( _phrase_time < 0 && _phrase_index > 0 )
     {
       _phrase_index -= 1;
       phrase = _source->_phrases.at( _phrase_index ).get();
       _phrase_time += phrase->getDuration();
     }
-    // If we jumped forward in time
+    // If we jumped forward in time, move our index ahead enough.
     while( phrase->getDuration() < _phrase_time && _phrase_index < _source->getPhraseCount() - 1 )
     {
       _phrase_time -= phrase->getDuration();
@@ -215,7 +215,7 @@ public:
       phrase = _source->_phrases.at( _phrase_index ).get();
     }
 
-    if( _phrase_time <= phrase->getDuration() ) {
+    if( _phrase_time < phrase->getDuration() ) {
       _connection.target() = phrase->getValue( _phrase_time );
     }
     else {
