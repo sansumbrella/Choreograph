@@ -74,6 +74,10 @@ public:
   template<template <typename> class PhraseT, typename... Args>
   SelfT& then( const T &value, float duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
+  ///
+  template<template <typename> class PhraseT, typename IT>
+  SelfT& then( float duration, const std::initializer_list<IT> &initializer ) { _sequence->template then<PhraseT>( duration, initializer ); return *this; }
+
   /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
   SelfT& hold( float duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
 
@@ -165,7 +169,7 @@ public:
     auto motion = std::make_shared<Motion<T>>( output, sequence );
     _motions.push_back( motion );
 
-    return MotionOptions<T>{ motion, sequence };
+    return MotionOptions<T>( motion, sequence, *this );
   }
 
   /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.

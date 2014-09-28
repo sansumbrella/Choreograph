@@ -239,7 +239,6 @@ using namespace cinder;
 
 TEST_CASE( "Separate component interpolation", "[sequence]" ) {
 
-
   SECTION( "Compare 2-Component Values" ) {
     // Animate XY from and to same values with different ease curves.
     Sequence<vec2> sequence( vec2( 1 ) );
@@ -289,6 +288,22 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     REQUIRE( sequence->getValue( 0.0f ).x == sequence->getValue( 0.0f ).y );
     REQUIRE( sequence->getValue( 1.5f ).x != sequence->getValue( 1.5f ).y );
     REQUIRE( sequence->getValue( 1.5f ).y != sequence->getValue( 1.5f ).z );
+  }
+
+  SECTION( "Mixing Sequences" ) {
+    Sequence<vec2> sequence( vec2( 0 ) );
+
+    Sequence<vec2> bounce_y( vec2( 0 ) );
+    bounce_y.then<RampTo>( vec2( 0, 10.0f ), 0.5f, EaseOutCubic() ).then<RampTo>( vec2( 0 ), 0.5f, EaseInCubic() );
+
+    Sequence<vec2> slide_x( vec2( 0 ) );
+    slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
+
+    sequence.then<Combine>( 3.0f, Combine<vec2>::InitializerList{{ slide_x.clone(), 0.5f }, { bounce_y.clone(), 1.0f }} );
+    for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
+    {
+      cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
+    }
   }
 }
 

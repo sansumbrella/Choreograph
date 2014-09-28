@@ -31,6 +31,8 @@
 #include <functional>
 #include <vector>
 
+#include "Source.hpp"
+
 namespace choreograph
 {
 // A motion describes a one-dimensional change through time.
@@ -199,6 +201,38 @@ public:
 
 private:
   T       _value;
+};
+
+///
+/// Combine adds together the value of a collection of other Phrases.
+///
+template<typename T>
+class Combine : public Source<T>
+{
+public:
+  using InitializerList = std::initializer_list<std::pair<SourceRef<T>, float>>;
+  /// Constructs a Combine from start and end times and a list of { Source<T>, float } pairs.
+  Combine( float start_time, float end_time, const InitializerList &initializer ):
+    Source<T>( start_time, end_time ),
+    _sources( initializer )
+  {}
+
+  T getValue( float atTime ) const override
+  {
+    T value = _sources.front().first->getValue( atTime ) * _sources.front().second;
+    for( size_t i = 1; i < _sources.size(); ++i ) {
+      value += _sources[i].first->getValue( atTime ) * _sources[i].second;
+    }
+    return value;
+  }
+
+  T getStartValue() const override { return getValue( this->getStartTime() ); }
+  T getEndValue() const override { return getValue( this->getEndTime() ); }
+
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new Combine<T>( *this ) ); }
+
+private:
+  std::vector<std::pair<SourceRef<T>, float>>  _sources;
 };
 
 /**
