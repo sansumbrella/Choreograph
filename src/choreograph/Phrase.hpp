@@ -267,7 +267,7 @@ public:
     _inflection_point( inflectionPoint )
   {}
 
-  /// Copy ctor clones source.
+  /// Copy ctor clones other's source.
   LoopSource( const LoopSource<T> &other ):
     Source<T>( other.getDuration() ),
     _source( other._source->clone() ),
