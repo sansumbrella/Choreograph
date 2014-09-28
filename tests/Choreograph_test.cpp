@@ -220,6 +220,24 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
   }
 }
 
+TEST_CASE( "Motion Speed and Reversal" )
+{
+  SECTION( "Walking Backwards" )
+  {
+
+  }
+
+  SECTION( "Walking Slowly" )
+  {
+
+  }
+
+  SECTION( "Walking In Both Directions" )
+  {
+
+  }
+}
+
 TEST_CASE( "Output Connections", "[output]" ) {
 
   co::Timeline timeline;
