@@ -27,7 +27,7 @@
 
 #pragma once
 
-#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 0
+#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 1
 
 #include "Sequence.hpp"
 #include "Connection.hpp"
@@ -194,8 +194,33 @@ public:
     }
 
 #if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
-    _source->step( time() - previousTime() );
-    _connection.target() = _source->getCurrentValue();
+    auto phrase = _source->_phrases.at( _phrase_index ).get();
+    _phrase_time += time() - previousTime();
+
+    // If we move backwards in time
+    while( _phrase_time < 0 && _phrase_index > 0 )
+    {
+      _phrase_index -= 1;
+      phrase = _source->_phrases.at( _phrase_index ).get();
+      _phrase_time += phrase->getDuration();
+    }
+    // If we jumped forward in time
+    while( phrase->getDuration() < _phrase_time && _phrase_index < _source->getPhraseCount() - 1 )
+    {
+      _phrase_time -= phrase->getDuration();
+      _phrase_index++;
+      if( _phrase_index >= _source->_phrases.size() ) {
+        _phrase_index = _source->_phrases.size() - 1;
+      }
+      phrase = _source->_phrases.at( _phrase_index ).get();
+    }
+
+    if( _phrase_time <= phrase->getDuration() ) {
+      _connection.target() = phrase->getValue( _phrase_time );
+    }
+    else {
+      _connection.target() = phrase->getEndValue();
+    }
 #else
     _connection.target() = _source->getValue( time() );
 #endif
@@ -225,6 +250,12 @@ private:
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
   DataCallback    _updateFn = nullptr;
+
+#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
+  // State for constant-time stepping
+  Time            _phrase_time = 0;
+  size_t          _phrase_index = 0;
+#endif
 };
 
 template<typename T>

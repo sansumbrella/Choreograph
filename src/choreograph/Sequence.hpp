@@ -131,26 +131,13 @@ public:
     return concatenate( concatenate( first, second ), std::forward<Args>( additional )... );
   }
 
-  //
-  // Experimental constant-time stepping.
-  // Might try to break out into a facade or work into Motion somehow.
-  //
-
-  void step( Time t );
-  T getCurrentValue() const { return _current_value; }
-
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
   std::vector<SourceUniqueRef<T>> _phrases;
   T                               _initial_value;
 
-  using Iterator = typename std::vector<SourceUniqueRef<T>>::const_iterator;
-  Time                            _time = 0;
-  size_t                          _index = 0;
-  T                               _current_value;
-
-  // Allow Motions to perform constant-time lookup
+  // Allow Motions to perform constant-time lookup.
   friend class Motion<T>;
 };
 
@@ -202,7 +189,6 @@ Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
   return *this;
 }
 
-// Would be nice to have a constant-time check (without a while loop).
 template<typename T>
 T Sequence<T>::getValue( Time atTime ) const
 {
@@ -227,33 +213,6 @@ T Sequence<T>::getValue( Time atTime ) const
   // past the end, get the final value
   // this should be unreachable, given that we return early if time >= duration
   return getEndValue();
-}
-
-//
-//
-//
-
-template<typename T>
-void Sequence<T>::step( Time t )
-{
-  const auto &phrase = _phrases.at( _index );
-  _time += t;
-
-  if( phrase->getDuration() < _time ) {
-    _time -= phrase->getDuration();
-    _index++;
-    if( _index >= _phrases.size() ) {
-      _index = _phrases.size() - 1;
-    }
-  }
-  const auto &phrase2 = _phrases.at( _index );
-
-  if( _time <= phrase2->getDuration() ) {
-    _current_value = phrase2->getValue( _time );
-  }
-  else {
-    _current_value = phrase2->getEndValue();
-  }
 }
 
 //=================================================
