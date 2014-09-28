@@ -35,11 +35,11 @@
 
 namespace choreograph
 {
-// A motion describes a one-dimensional change through time.
-// These can be ease equations, always return the same value, or sample some data. Whatever you want.
-// For classic motion, EaseFn( 0 ) = 0, EaseFn( 1 ) = 1.
-// set( 0.0f ).move( )
-// then again, might just make a curve struct that is callable and have a way to set its initial and final derivatives.
+/// EaseFn's describes a one-dimensional transformation through time.
+/// Choreograph accepts any function taking and returning a normalized float.
+/// For a large number of ease functions, see Cinder's Easing.h
+/// Generally, it is assumed that the following holds true for an EaseFn:
+/// EaseFn( 0 ) = 0, EaseFn( 1 ) = 1.
 typedef std::function<float (float)> EaseFn;
 
 
@@ -49,12 +49,12 @@ typedef std::function<float (float)> EaseFn;
  A Phrase is a part of a Sequence.
  It describes the motion between two positions.
  This is the essence of a Tween, with all values held internally.
- */
+*/
 
 namespace
 {
-  /// Default ease function for ramps.
-  inline float easeNone( float t ) { return t; }
+/// Default ease function for ramps.
+inline float easeNone( float t ) { return t; }
 
 } // namespace
 
@@ -64,6 +64,10 @@ T lerpT( const T &a, const T &b, float t )
 {
   return a + (b - a) * t;
 }
+
+//=================================================
+// Basic Phrases.
+//=================================================
 
 ///
 /// RampTo is a phrase that interpolates all components with an ease function.
@@ -202,6 +206,10 @@ public:
 private:
   T       _value;
 };
+
+//=================================================
+// Phrase Decorators. Meta Phrases.
+//=================================================
 
 ///
 /// Combine adds together the value of a collection of other Phrases.

@@ -49,11 +49,12 @@ A Source provides a value that can vary over time. It is the base for the variou
 
 A Phrase defines a simple change in value over time. The built-in phrase types include various Ramps and Holds. It is simple to add your own Phrases by implementing the Source<T> interface.
 
-A Sequence is a collection of phrases. Sequences are the main object you will manipulate to build animations. A method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time.
+A Sequence is a collection of phrases. Sequences are the main object you will manipulate to build animations. A method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time. Sequences also happen to be Sources, so you can combine them into new Sequences.
 
 Sequences are conceptually timeless, you can query their value at any point in time and always get a valid response; they are clamped at their endpoints.
 
 ### Motion and Output
+
 A Motion is the application of a choreograph Sequence. It uses a Sequence to move some external variable in time. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they should happen and currently are.
 
 Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop.
