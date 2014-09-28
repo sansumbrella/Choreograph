@@ -27,6 +27,8 @@
 
 #pragma once
 
+#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 0
+
 #include "Sequence.hpp"
 #include "Connection.hpp"
 #include "Output.hpp"
@@ -191,9 +193,12 @@ public:
         _startFn( *this );
     }
 
+#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
     _source->step( time() - previousTime() );
     _connection.target() = _source->getCurrentValue();
-//    _connection.target() = _source->getValue( time() );
+#else
+    _connection.target() = _source->getValue( time() );
+#endif
 
     if( _updateFn ) {
       _updateFn( _connection.target() );

@@ -33,6 +33,9 @@
 namespace choreograph
 {
 
+template<typename T>
+class Motion;
+
 /**
  A Sequence of motions.
  Our essential compositional tool, describing all the transformations to one element.
@@ -146,6 +149,9 @@ private:
   Time                            _time = 0;
   size_t                          _index = 0;
   T                               _current_value;
+
+  // Allow Motions to perform constant-time lookup
+  friend class Motion<T>;
 };
 
 //=================================================
