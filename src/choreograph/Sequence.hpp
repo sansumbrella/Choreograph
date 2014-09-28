@@ -47,13 +47,13 @@ public:
 
   /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
-    Source<T>( 0, 0 ),
+    Source<T>( 0 ),
     _initial_value( value )
   {}
 
   /// Construct a Sequence with and initial \a value.
   explicit Sequence( T &&value ):
-    Source<T>( 0, 0 ),
+    Source<T>( 0 ),
     _initial_value( std::forward<T>( value ) )
   {}
 
@@ -133,9 +133,6 @@ private:
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
   std::vector<SourceUniqueRef<T>> _phrases;
   T                               _initial_value;
-
-private:
-  void startTimeShifted( Time delta ) override;
 };
 
 //=================================================
@@ -158,9 +155,8 @@ template<typename T>
 template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
-  Time end_time = this->getEndTime() + duration;
-  _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
-  this->setEndTime( end_time );
+  _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
+  this->_duration += duration;
 
   return *this;
 }
@@ -170,11 +166,8 @@ template<typename PhraseT>
 Sequence<T>& Sequence<T>::then( const PhraseT &phrase )
 {
   std::unique_ptr<Source<T>> p( phrase.clone() );
-  Time time = this->getEndTime();
-  Time end_time = time + p->getDuration();
+  this->_duration += p->getDuration();
 
-  p->setStartTime( time );
-  this->setEndTime( end_time );
   _phrases.emplace_back( std::move( p ) );
 
   return *this;
@@ -194,35 +187,27 @@ Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
 template<typename T>
 T Sequence<T>::getValue( Time atTime ) const
 {
-  if( atTime < this->getStartTime() )
+  if( atTime < 0.0f )
   {
     return _initial_value;
   }
-  else if ( atTime >= this->getEndTime() )
+  else if ( atTime >= this->getDuration() )
   {
     return getEndValue();
   }
 
-  auto iter = _phrases.begin();
-  while( iter < _phrases.end() ) {
-    if( (*iter)->getEndTime() >= atTime )
-    {
-      return (*iter)->getValue( atTime );
+  for( const auto &phrase : _phrases )
+  {
+    if( phrase->getDuration() < atTime ) {
+      atTime -= phrase->getDuration();
     }
-    ++iter;
+    else {
+      return phrase->getValue( atTime );
+    }
   }
   // past the end, get the final value
   // this should be unreachable, given that we return early if time >= duration
   return getEndValue();
-}
-
-template<typename T>
-void Sequence<T>::startTimeShifted( Time delta )
-{
-  for( const SourceUniqueRef<T> &phrase : _phrases )
-  {
-    phrase->shiftTime( delta );
-  }
 }
 
 //=================================================

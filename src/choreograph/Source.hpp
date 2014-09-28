@@ -50,9 +50,8 @@ class Source
 public:
   Source() = default;
 
-  Source( Time startTime, Time endTime ):
-    _start_time( startTime ),
-    _end_time( endTime )
+  Source( Time duration ):
+    _duration( duration )
   {}
 
   virtual ~Source() = default;
@@ -75,13 +74,9 @@ public:
   T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Returns normalized time if t is in range [start_time, end_time].
-  inline Time normalizeTime( Time t ) const { return (t - _start_time) / (_end_time - _start_time); }
-  /// Returns the start time of this source.
-  inline Time getStartTime() const { return _start_time; }
-  /// Returns the end time of this source.
-  inline Time getEndTime() const { return _end_time; }
+  inline Time normalizeTime( Time t ) const { return t / _duration; }
   /// Returns the duration of this source.
-  inline Time getDuration() const { return _end_time - _start_time; }
+  inline Time getDuration() const { return _duration; }
 
   /// Wrap \a time around \a inflectionPoint in the Sequence.
   Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
@@ -95,21 +90,7 @@ public:
   }
 
 private:
-  Time _start_time = 0.0f;
-  Time _end_time = 0.0f;
-
-private:
-  /// Offsets start and end times.
-  void shiftTime( Time amount ) { _start_time += amount; _end_time += amount; startTimeShifted( amount ); }
-
-  /// Sets end time.
-  void setEndTime( Time t ) { _end_time = t; }
-  /// Sets start time while preserving duration.
-  void setStartTime( Time t ) { Time delta = t - _start_time; _start_time += delta; _end_time += delta; startTimeShifted( delta ); }
-
-  /// Override to handle special cases when time changes.
-  /// Needed by Sequence so it can shift all its child sources.
-  virtual void startTimeShifted( Time delta ) {}
+  Time _duration = 1;
 
   friend class Sequence<T>;
 };

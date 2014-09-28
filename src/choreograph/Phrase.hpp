@@ -78,8 +78,8 @@ class RampTo : public Source<T>
 public:
   using LerpFn = std::function<T (const T&, const T&, float)>;
 
-  RampTo( Time start_time, Time end_time, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone, const LerpFn &lerp_fn = &lerpT<T> ):
-    Source<T>( start_time, end_time ),
+  RampTo( Time duration, const T &start_value, const T &end_value, const EaseFn &ease_fn = &easeNone, const LerpFn &lerp_fn = &lerpT<T> ):
+    Source<T>( duration ),
     _start_value( start_value ),
     _end_value( end_value ),
     _easeFn( ease_fn ),
@@ -120,8 +120,8 @@ class RampToN : public Source<T>
 public:
 
   template<typename... Args>
-  RampToN( Time start_time, Time end_time, const T &start_value, const T &end_value, Args&&... args ):
-    Source<T>( start_time, end_time ),
+  RampToN( Time duration, const T &start_value, const T &end_value, Args&&... args ):
+    Source<T>( duration ),
     _start_value( start_value ),
     _end_value( end_value )
   {
@@ -181,8 +181,8 @@ class Hold : public Source<T>
 {
 public:
 
-  Hold( Time start_time, Time end_time, const T &start_value, const T &end_value ):
-  Source<T>( start_time, end_time ),
+  Hold( Time duration, const T &start_value, const T &end_value ):
+  Source<T>( duration ),
   _value( end_value )
   {}
 
@@ -219,7 +219,7 @@ class CombineSource : public Source<T>
 {
 public:
   CombineSource( Time duration, const Source<T> &source, float factor=1.0f ):
-    Source<T>( 0.0f, duration )
+    Source<T>( duration )
   {
     _sources.emplace_back( std::make_pair( source.clone(), factor ) );
   }
@@ -239,8 +239,8 @@ public:
     return value;
   }
 
-  T getStartValue() const override { return getValue( this->getStartTime() ); }
-  T getEndValue() const override { return getValue( this->getEndTime() ); }
+  T getStartValue() const override { return getValue( 0 ); }
+  T getEndValue() const override { return getValue( this->getDuration() ); }
 
   SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new CombineSource<T>( *this ) ); }
 
@@ -256,6 +256,7 @@ class LoopSource : public Source<T>
 public:
   /// Create a Source that loops \a source.
   LoopSource( const Source<T> &source, Time inflectionPoint = 0.0f ):
+    Source<T>( source.getDuration() ),
     _source( source.clone() ),
     _inflection_point( inflectionPoint )
   {}
@@ -292,8 +293,8 @@ public:
   /// Intended use is to apply something like cos() or random jitter.
   using Function = std::function<T (const T& startValue, const T& endValue, Time normalizedTime, Time duration)>;
 
-  AnalyticChange( Time start_time, Time end_time, const T &start_value, const T &end_value, const Function &fn ):
-    Source<T>( start_time, end_time ),
+  AnalyticChange( Time duration, const T &start_value, const T &end_value, const Function &fn ):
+    Source<T>( duration ),
     _function( fn ),
     _start_value( start_value ),
     _end_value( end_value )
