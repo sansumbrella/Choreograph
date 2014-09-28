@@ -207,7 +207,7 @@ private:
 /// Combine adds together the value of a collection of other Phrases.
 ///
 template<typename T>
-class Combine : public Source<T>
+class CombineSource : public Source<T>
 {
 public:
   /*
@@ -218,11 +218,13 @@ public:
     _sources( initializer )
   {}
 */
-  Combine( float duration ):
+  CombineSource( float duration, const Source<T> &source, float factor=1.0f ):
     Source<T>( 0.0f, duration )
-  {}
+  {
+    _sources.emplace_back( std::make_pair( source.clone(), factor ) );
+  }
 
-  Combine<T>& add( const Source<T> &source, float factor=1.0f )
+  CombineSource<T>& add( const Source<T> &source, float factor=1.0f )
   {
     _sources.emplace_back( std::make_pair( source.clone(), factor ) );
     return *this;
@@ -240,11 +242,42 @@ public:
   T getStartValue() const override { return getValue( this->getStartTime() ); }
   T getEndValue() const override { return getValue( this->getEndTime() ); }
 
-  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new Combine<T>( *this ) ); }
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new CombineSource<T>( *this ) ); }
 
 private:
+  // Collection of shared_ptr, mix pairs.
+  // shared_ptr since unique_ptr made copying/moving std::pair impossible
   std::vector<std::pair<SourceRef<T>, float>>  _sources;
 };
+
+template<typename T>
+class LoopSource : public Source<T>
+{
+public:
+  /// Create a Source that loops \a source.
+  LoopSource( const Source<T> &source, float inflectionPoint = 0.0f ):
+    _source( source.clone() ),
+    _inflection_point( inflectionPoint )
+  {}
+  /// Copy ctor clones source.
+  LoopSource( const LoopSource<T> &other ):
+    _source( other._source->clone() ),
+    _inflection_point( other._inflection_point )
+  {}
+
+  T getValue( float atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
+  T getStartValue() const override { return _source->getStartValue(); }
+  T getEndValue() const override { return _source->getEndValue(); }
+
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new LoopSource<T>( *this ) ); }
+private:
+  SourceUniqueRef<T>  _source;
+  float               _inflection_point;
+};
+
+//=================================================
+// Weirder Phrases.
+//=================================================
 
 /**
  AnalyticChange is a phrase that calls a std::function every step.
