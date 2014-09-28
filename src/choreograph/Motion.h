@@ -182,64 +182,7 @@ public:
   MotionT&  continuous( bool c ) { _continuous = c; return *this; }
 
   /// Update
-  void update() override
-  {
-    assert( this->isValid() );
-
-    if( _startFn ) {
-      if( forward() && time() > 0.0f && previousTime() <= 0.0f )
-        _startFn( *this );
-      else if( backward() && time() < _source->getDuration() && previousTime() >= _source->getDuration() )
-        _startFn( *this );
-    }
-
-#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
-    auto phrase = _source->_phrases.at( _phrase_index ).get();
-    _phrase_time += time() - previousTime();
-
-    // If we move backwards in time, potentially back up our index.
-    while( _phrase_time < 0 && _phrase_index > 0 )
-    {
-      _phrase_index -= 1;
-      phrase = _source->_phrases.at( _phrase_index ).get();
-      _phrase_time += phrase->getDuration();
-    }
-    // If we jumped forward in time, move our index ahead enough.
-    while( phrase->getDuration() < _phrase_time && _phrase_index < _source->getPhraseCount() - 1 )
-    {
-      _phrase_time -= phrase->getDuration();
-      _phrase_index++;
-      if( _phrase_index >= _source->_phrases.size() ) {
-        _phrase_index = _source->_phrases.size() - 1;
-      }
-      phrase = _source->_phrases.at( _phrase_index ).get();
-    }
-
-    if( _phrase_time < phrase->getDuration() ) {
-      _connection.target() = phrase->getValue( _phrase_time );
-    }
-    else {
-      _connection.target() = phrase->getEndValue();
-    }
-#else
-    _connection.target() = _source->getValue( time() );
-#endif
-
-    if( _updateFn ) {
-      _updateFn( _connection.target() );
-    }
-
-    if( _finishFn ){
-      if( forward() && time() >= _source->getDuration() && previousTime() < _source->getDuration() )
-      {
-        _finishFn( *this );
-      }
-      else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
-      {
-        _finishFn( *this );
-      }
-    }
-  }
+  void update() override;
 
 private:
   // shared_ptr to source since many connections could share the same source.
@@ -255,8 +198,91 @@ private:
   // State for constant-time stepping
   Time            _phrase_time = 0;
   size_t          _phrase_index = 0;
+  T               stepCurrentValue( float dt );
 #endif
 };
+
+//=================================================
+// Motion Implementation.
+//=================================================
+
+template<typename T>
+void Motion<T>::update()
+{
+  assert( this->isValid() );
+
+  if( _startFn )
+  {
+    if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
+      _startFn( *this );
+    }
+    else if( backward() && time() < _source->getDuration() && previousTime() >= _source->getDuration() ) {
+      _startFn( *this );
+    }
+  }
+
+#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
+  _connection.target() = stepCurrentValue( time() - previousTime() );
+#else
+  _connection.target() = _source->getValue( time() );
+#endif
+
+  if( _updateFn )
+  {
+    _updateFn( _connection.target() );
+  }
+
+  if( _finishFn )
+  {
+    if( forward() && time() >= _source->getDuration() && previousTime() < _source->getDuration() ) {
+      _finishFn( *this );
+    }
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
+      _finishFn( *this );
+    }
+  }
+}
+
+#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
+
+template<typename T>
+T Motion<T>::stepCurrentValue( float dt )
+{
+  auto phrase = _source->_phrases.at( _phrase_index ).get();
+  _phrase_time += time() - previousTime();
+
+  // If we move backwards in time, potentially back up our index.
+  while( _phrase_time < 0 && _phrase_index > 0 )
+  {
+    _phrase_index -= 1;
+    phrase = _source->_phrases.at( _phrase_index ).get();
+    _phrase_time += phrase->getDuration();
+  }
+  // If we jumped forward in time, move our index ahead enough.
+  while( phrase->getDuration() < _phrase_time && _phrase_index < _source->getPhraseCount() - 1 )
+  {
+    _phrase_time -= phrase->getDuration();
+    _phrase_index++;
+    if( _phrase_index >= _source->_phrases.size() ) {
+      _phrase_index = _source->_phrases.size() - 1;
+    }
+    phrase = _source->_phrases.at( _phrase_index ).get();
+  }
+
+  if( _phrase_time < phrase->getDuration() ) {
+    return phrase->getValue( _phrase_time );
+  }
+  else {
+    return phrase->getEndValue();
+  }
+}
+
+#endif
+
+
+//=================================================
+// Aliases.
+//=================================================
 
 template<typename T>
 using MotionRef = std::shared_ptr<Motion<T>>;
