@@ -2,6 +2,7 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 #include "choreograph/Choreograph.hpp"
+#include <array>
 
 // If true, will test vec2 and vec3 animation and different ease functions.
 #define INCLUDE_CINDER_HEADERS 1
@@ -114,17 +115,19 @@ TEST_CASE( "Sequence Composition", "[sequence]" ) {
   }
 }
 
-TEST_CASE( "Cues and Callbacks", "[motion]" ) {
+TEST_CASE( "Cues and Callbacks", "[motion]" )
+{
   co::Timeline  timeline;
-  bool          updateCalled = false;
-  bool          startCalled = false;
-  bool          endCalled = false;
-  Output<float> target = 0;
-  int           updateCount = 0;
-  float         updateTarget = 0;
 
   SECTION( "Timeline Callbacks" )
   {
+    bool          updateCalled = false;
+    bool          startCalled = false;
+    bool          endCalled = false;
+    Output<float> target = 0;
+    int           updateCount = 0;
+    float         updateTarget = 0;
+
     timeline.apply( &target ).startFn( [&startCalled] { startCalled = true; } )
       .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
       .finishFn( [&endCalled] { endCalled = true; } )
@@ -166,7 +169,41 @@ TEST_CASE( "Cues and Callbacks", "[motion]" ) {
       REQUIRE( updateCount == 3 );
       REQUIRE( endCalled == true );
     }
+  }
 
+  SECTION( "Cues" )
+  {
+    vector<int> call_counts( 3, 0 );
+    std::array<float, 3> delays = { 1.0f, 2.0f, 3.0f };
+    for( size_t i = 0; i < call_counts.size(); ++i )
+    {
+      timeline.cue( [i,&call_counts] { call_counts[i] += 1; } , delays[i] );
+    }
+
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 0 );
+    REQUIRE( call_counts[2] == 0 );
+    timeline.step( 0.1f );
+    REQUIRE( timeline.size() == 2 );
+
+    for( int i = 0; i < 9; ++i ) {
+      timeline.step( 0.1f );
+    }
+
+    REQUIRE( timeline.size() == 1 );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 1 );
+    REQUIRE( call_counts[2] == 0 );
+
+    for( int i = 0; i < 10; ++i ) {
+      timeline.step( 0.11f );
+    }
+
+    REQUIRE( timeline.size() == 0 );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 1 );
+    REQUIRE( call_counts[2] == 1 );
   }
 
   SECTION( "Motion Manipulation from Callbacks" )
