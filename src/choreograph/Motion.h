@@ -27,7 +27,7 @@
 
 #pragma once
 
-#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 1
+#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 0
 
 #include "Sequence.hpp"
 #include "Connection.hpp"

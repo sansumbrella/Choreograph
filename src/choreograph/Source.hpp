@@ -35,7 +35,7 @@ namespace choreograph
 /// Define our Time type here so it's easier to change out if needed.
 /// Float loses precision pretty quickly, but is fast and doesn't take up much space.
 /// Double works nicely when adding together lots of little bits.
-using Time = double;
+using Time = float;
 
 template<typename T>
 class Sequence;

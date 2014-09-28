@@ -201,5 +201,37 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
     }
   }
 
+  SECTION( "Tween many targets many times" ) {
+    cout << "Many Targets, A Few Phrases." << endl;
+    const float total_time = 9.0f;
+    const float dt = total_time / 1000;
+
+    for( int j = 0; j < 2; ++j )
+    {
+      vector<Output<vec2>> targets( tween_count, vec2( 0 ) );
+
+      { // Measure basic performance.
+        ScopedTimer performance( "Choreograph Timeline" );
+        //
+        for( int i = 0; i < tween_count; ++i )
+        {
+          test_timeline.apply( &targets[i] ).then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f )
+            .then<RampTo>( vec2( 10 ), 2.0f )
+            .then<RampTo>( vec2( 20 ), 2.0f )
+            .then<RampTo>( vec2( 10 ), 2.0f )
+            .then<RampTo>( vec2( 10 ), 2.0f )
+            .then<RampTo>( vec2( 10 ), 2.0f )
+            .then<RampTo>( vec2( 10 ), 2.0f )
+            .then<RampTo>( vec2( 10 ), 2.0f );
+        }
+
+        ScopedTimer steps( "Choreograph Steps" );
+        for( float t = 0.0f; t <= total_time; t += dt ) {
+          test_timeline.step( dt );
+        }
+      }
+    }
+  }
+
   cout << endl;
 }
