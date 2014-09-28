@@ -222,6 +222,24 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
 
 TEST_CASE( "Motion Speed and Reversal" )
 {
+  co::Timeline timeline;
+  auto sequence = createSequence( 0.0f );
+  sequence->then<RampTo>( 10.0f, 1.0f ).then<RampTo>( -30.0f, 2.0f );
+
+  SECTION( "Equivalence between motion time and sequence time" )
+  {
+    Output<float> target;
+    timeline.setAutoRemove( false );
+    timeline.apply( &target, sequence );
+
+    vector<Time> times = { 0.5, 0.2, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3, 0.5 };
+    for( auto &t : times )
+    {
+      timeline.jumpTo( t );
+      REQUIRE( target() == sequence->getValue( t ) );
+    }
+  }
+
   SECTION( "Walking Backwards" )
   {
 
@@ -236,6 +254,7 @@ TEST_CASE( "Motion Speed and Reversal" )
   {
 
   }
+
 }
 
 TEST_CASE( "Output Connections", "[output]" ) {
@@ -424,10 +443,10 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
 
     sequence.then( CombineSource<vec2>( 3.0f, slide_x, 0.5f ).add( LoopSource<vec2>( bounce_y ), 1.0f ) );
-    for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
-    {
-      cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
-    }
+//    for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
+//    {
+//      cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
+//    }
   }
 }
 
