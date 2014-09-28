@@ -191,7 +191,9 @@ public:
         _startFn( *this );
     }
 
-    _connection.target() = _source->getValue( time() );
+    _source->step( time() - previousTime() );
+    _connection.target() = _source->getCurrentValue();
+//    _connection.target() = _source->getValue( time() );
 
     if( _updateFn ) {
       _updateFn( _connection.target() );
