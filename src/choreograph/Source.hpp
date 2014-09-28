@@ -34,6 +34,7 @@ namespace choreograph
 
 /// Define our Time type here so it's easier to change out if needed.
 /// Float loses precision pretty quickly, but is fast and doesn't take up much space.
+/// Sub in double if you find yourself needing extra precision for time.
 /// Also, since only Motions keep playheads, we only need enough precision for our longest Motion.
 using Time = float;
 
