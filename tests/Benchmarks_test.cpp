@@ -116,10 +116,11 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
   ci::TimelineRef cinder_timeline = ci::Timeline::create();
 
   const int tween_count = 5000;
-  const float dt = 1.0f / 60.0f;
 
   SECTION( "Tween many targets" ) {
     cout << "Many Targets, One Phrase Each." << endl;
+    const float total_time = 3.0f;
+    const float dt = total_time / 1000;
     for( int j = 0; j < 2; ++j )
     {
       vector<Output<vec2>> targets( tween_count, vec2( 0 ) );
@@ -135,7 +136,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         }
 
         ScopedTimer steps( "Choreograph Steps", &choreograph );
-        for( float t = 0.0f; t <= 3.0f; t += dt ) {
+        for( float t = 0.0f; t <= total_time; t += dt ) {
           test_timeline.step( dt );
         }
       }
@@ -148,7 +149,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         }
 
         ScopedTimer steps( "Cinder Steps", &cinder );
-        for( float t = 0.0f; t <= 3.0f; t += dt ) {
+        for( float t = 0.0f; t <= total_time; t += dt ) {
           cinder_timeline->step( dt );
         }
       }
@@ -160,6 +161,9 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
 
   SECTION( "Tween one target many times" ) {
     cout << "Single Target, Many Phrases." << endl;
+    const float total_time = tween_count * 3.0f;
+    const float dt = total_time / 1000;
+
     for( int j = 0; j < 2; ++j )
     {
       Output<vec2>  target( vec2( 0 ) );
@@ -175,7 +179,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         }
 
         ScopedTimer steps( "Choreograph Steps", &choreograph );
-        for( float t = 0.0f; t <= 3.0f; t += dt ) {
+        for( float t = 0.0f; t <= total_time; t += dt ) {
           test_timeline.step( dt );
         }
       }
@@ -188,7 +192,7 @@ TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
         }
 
         ScopedTimer steps( "Cinder Steps", &cinder );
-        for( float t = 0.0f; t <= 3.0f; t += dt ) {
+        for( float t = 0.0f; t <= total_time; t += dt ) {
           cinder_timeline->step( dt );
         }
       }
