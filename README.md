@@ -13,8 +13,9 @@ v0.2.0 development. API is unstable.
 - Separable easing of vector components.
 - Template specializations support intuitive animation of cinder/glm quaternions.
 - Reversible, time-warpable motions.
-- TODO: Cues (function callback at a given time).
-- Works as a Cinder Block. Clone to Cinder/blocks/Choreograph
+- Cues (function callback at a given time).
+- Works as a Cinder Block.
+	- Clone to Cinder/blocks/Choreograph and include in your project with TinderBox.
 
 ## Basic Usage
 ```c++

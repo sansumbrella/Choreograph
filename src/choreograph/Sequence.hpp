@@ -79,7 +79,6 @@ public:
   /// Add a Phrase to the end of the sequence.
   /// Constructs a new Phrase animating to \a value over \duration from the current end of this Sequence.
   /// Forwards additional arguments to the end of the Phrase constructor.
-  ///
   /// Example calls look like:
   /// sequence.then<RampTo>( targetValue, duration, EaseInOutQuad() ).then<Hold>( holdValue, duration );
   template<template <typename> class PhraseT, typename... Args>

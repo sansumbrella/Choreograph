@@ -77,16 +77,20 @@ public:
   /// Set the current value of the Sequence. Acts as an instantaneous hold.
   SelfT& set( const T &value ) { _sequence->set( value ); return *this; }
 
-  /// Append a phrase to the Sequence.
+  /// Append a new phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
   SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
-  /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
-  SelfT& hold( Time duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
+  /// Clone and append a phrase to the Sequence.
+  template<typename PhraseT>
+  Sequence<T>& then( PhraseT &&phrase ) { _sequence->template then<PhraseT>( std::forward( phrase ) ); return *this; }
 
   //=================================================
   // Extra Sugar.
   //=================================================
+
+  /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
+  SelfT& hold( Time duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
 
   /// Set the start time of this motion to the current end of all motions of \a other.
   SelfT& after( void *other );
