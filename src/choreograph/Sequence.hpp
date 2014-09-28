@@ -100,18 +100,6 @@ public:
     return *this;
   }
 
-  /// Add a phrase to the end of the sequence.
-  /// Will receive start time, end time, and args...
-  template<template <typename> class PhraseT, typename IT>
-  SequenceT& then( float duration, const std::initializer_list<IT> &initializer )
-  {
-    float end_time = this->getEndTime() + duration;
-    _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, initializer ) ) );
-    this->setEndTime( end_time );
-
-    return *this;
-  }
-
   /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
   SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new SequenceT( *this ) ); }
 

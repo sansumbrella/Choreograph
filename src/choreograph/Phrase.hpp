@@ -210,12 +210,23 @@ template<typename T>
 class Combine : public Source<T>
 {
 public:
+  /*
   using InitializerList = std::initializer_list<std::pair<SourceRef<T>, float>>;
   /// Constructs a Combine from start and end times and a list of { Source<T>, float } pairs.
   Combine( float start_time, float end_time, const InitializerList &initializer ):
     Source<T>( start_time, end_time ),
     _sources( initializer )
   {}
+*/
+  Combine( float duration ):
+    Source<T>( 0.0f, duration )
+  {}
+
+  Combine<T>& add( const Source<T> &source, float factor=1.0f )
+  {
+    _sources.emplace_back( std::make_pair( source.clone(), factor ) );
+    return *this;
+  }
 
   T getValue( float atTime ) const override
   {
