@@ -27,8 +27,6 @@
 
 #pragma once
 
-#define USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING 0
-
 #include "Sequence.hpp"
 #include "Connection.hpp"
 #include "Output.hpp"
@@ -152,7 +150,6 @@ public:
     _source( sequence )
   {}
 
-
   /// Returns duration of the underlying sequence.
   Time getDuration() const override { return _source->getDuration(); }
 
@@ -167,15 +164,18 @@ public:
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
+  /// Set a function to be called when we start the sequence. Receives no arguments.
   MotionT&  finishFn( const EmptyCallback &c ) { _finishFn = [c] (MotionT &) { c(); }; return *this; }
 
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
   MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
+  /// Set a function to be called when we start the sequence. Receives no arguments.
   MotionT&  startFn( const EmptyCallback &c ) { _startFn = [c] (MotionT &) { c(); }; return *this; }
 
   /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
   MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
 
+  /// Set the playback speed of this motion. Use negative numbers for reverse.
   MotionT&  playbackSpeed( Time s ) { setPlaybackSpeed( s ); return *this; }
 
   /// Set the connection to play continuously.
@@ -193,13 +193,6 @@ private:
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
   DataCallback    _updateFn = nullptr;
-
-#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
-  // State for constant-time stepping
-  Time            _phrase_time = 0;
-  size_t          _phrase_index = 0;
-  T               stepCurrentValue( float dt );
-#endif
 };
 
 //=================================================
@@ -221,11 +214,7 @@ void Motion<T>::update()
     }
   }
 
-#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
-  _connection.target() = stepCurrentValue( time() - previousTime() );
-#else
   _connection.target() = _source->getValue( time() );
-#endif
 
   if( _updateFn )
   {
@@ -242,43 +231,6 @@ void Motion<T>::update()
     }
   }
 }
-
-#if USE_EXPERIMENTAL_CONSTANT_TIME_STEPPING
-
-template<typename T>
-T Motion<T>::stepCurrentValue( float dt )
-{
-  auto phrase = _source->_phrases.at( _phrase_index ).get();
-  _phrase_time += time() - previousTime();
-
-  // If we move backwards in time, potentially back up our index.
-  while( _phrase_time < 0 && _phrase_index > 0 )
-  {
-    _phrase_index -= 1;
-    phrase = _source->_phrases.at( _phrase_index ).get();
-    _phrase_time += phrase->getDuration();
-  }
-  // If we jumped forward in time, move our index ahead enough.
-  while( phrase->getDuration() < _phrase_time && _phrase_index < _source->getPhraseCount() - 1 )
-  {
-    _phrase_time -= phrase->getDuration();
-    _phrase_index++;
-    if( _phrase_index >= _source->_phrases.size() ) {
-      _phrase_index = _source->_phrases.size() - 1;
-    }
-    phrase = _source->_phrases.at( _phrase_index ).get();
-  }
-
-  if( _phrase_time < phrase->getDuration() ) {
-    return phrase->getValue( _phrase_time );
-  }
-  else {
-    return phrase->getEndValue();
-  }
-}
-
-#endif
-
 
 //=================================================
 // Aliases.
