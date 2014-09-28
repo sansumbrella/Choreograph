@@ -93,6 +93,7 @@ public:
       return time;
     }
   }
+
 private:
   Time _start_time = 0.0f;
   Time _end_time = 0.0f;

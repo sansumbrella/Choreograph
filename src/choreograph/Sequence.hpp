@@ -44,7 +44,6 @@ class Sequence : public Source<T>
 public:
   // Sequences always need to have some valid value.
   Sequence() = delete;
-  using SequenceT = Sequence<T>;
 
   /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
@@ -52,90 +51,56 @@ public:
     _initial_value( value )
   {}
 
+  /// Construct a Sequence with and initial \a value.
   explicit Sequence( T &&value ):
     Source<T>( 0, 0 ),
     _initial_value( std::forward<T>( value ) )
   {}
 
-  Sequence( const Sequence &other ):
+  /// Construct a Sequence by duplicating the phrases in an \a other sequence.
+  Sequence( const Sequence<T> &other ):
     _initial_value( other._initial_value )
   {
     then( other );
   }
 
-  /// Construct a Sequence from an array of Phrases.
-  explicit Sequence( const std::vector<SourceRef<T>> &phrases ):
-    Source<T>( phrases.front()->getStartTime(), phrases.back()->getEndTime() ),
-    _initial_value( phrases.front()->getStartValue() ),
-    _phrases( phrases )
-  {}
+  //
+  // Sequence manipulation and expansion.
+  //
+
+  /// Set the end \a value of Sequence.
+  /// If there are no Phrases, this is the initial value.
+  /// Otherwise, this is and instantaneous hold at \a value.
+  Sequence<T>& set( const T &value );
+
+  /// Add a Phrase to the end of the sequence.
+  /// Constructs a new Phrase animating to \a value over \duration from the current end of this Sequence.
+  /// Forwards additional arguments to the end of the Phrase constructor.
+  ///
+  /// Example calls look like:
+  /// sequence.then<RampTo>( targetValue, duration, EaseInOutQuad() ).then<Hold>( holdValue, duration );
+  template<template <typename> class PhraseT, typename... Args>
+  Sequence<T>& then( const T &value, Time duration, Args&&... args );
+
+  /// Clones and appends a phrase to the end of the sequence.
+  /// Accepts any concrete Source<T>.
+  template<typename PhraseT>
+  Sequence<T>& then( const PhraseT &phrase );
+
+  /// Clones and appends a phrase to the end of the sequence.
+  /// Specialized to handle shared_ptr's correctly.
+  template<typename PhraseT>
+  Sequence<T>& then( const std::shared_ptr<PhraseT> &phrase_ptr ) { return then( *phrase_ptr ); }
+
+  /// Clone and append all Phrases from another Sequence to this Sequence.
+  Sequence<T>& then( const Sequence<T> &next );
+
+  //
+  // Source<T> Overrides.
+  //
 
   /// Returns the Sequence value at \a atTime.
   T getValue( Time atTime ) const override;
-
-  /// Set last value of Sequence. An instantaneous hold.
-  SequenceT& set( const T &value )
-  {
-    if( _phrases.empty() ) {
-      _initial_value = value;
-    }
-    else {
-      then<Hold>( value, 0.0f );
-    }
-    return *this;
-  }
-
-  /// Add a phrase to the end of the sequence.
-  /// All phrases will receive the following arguments to their constructors:
-  /// start time, end time, start value (last sequence value), end value
-  /// If additional arguments are passed to then(), those arguments come after the required ones.
-  /// sequence.then<RampTo>( targetValue, duration, other phrase parameters ).then<Hold>( holdValue, duration );
-  template<template <typename> class PhraseT, typename... Args>
-  SequenceT& then( const T &value, Time duration, Args&&... args )
-  {
-    Time end_time = this->getEndTime() + duration;
-    _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
-    this->setEndTime( end_time );
-
-    return *this;
-  }
-
-  /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
-  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new SequenceT( *this ) ); }
-
-  /// Add a pre-existing phrase to the end of the sequence.
-  /// Any Source<T> is valid.
-  template<typename PhraseT>
-  SequenceT& then( const PhraseT &phrase )
-  {
-    std::unique_ptr<Source<T>> p( phrase.clone() );
-    Time time = this->getEndTime();
-    Time end_time = time + p->getDuration();
-
-    p->setStartTime( time );
-    this->setEndTime( end_time );
-    _phrases.emplace_back( std::move( p ) );
-
-    return *this;
-  }
-
-  /// Accept shared_ptr's as input.
-  template<typename PhraseT>
-  SequenceT& then( const std::shared_ptr<PhraseT> &phrase_ptr )
-  {
-    return then( *phrase_ptr );
-  }
-
-  /// Append all Phrases from another sequence to this sequence.
-  /// Specializes then.
-  SequenceT& then( const SequenceT &next )
-  {
-    for( auto &phrase : next._phrases ) {
-      then( *phrase );
-    }
-
-    return *this;
-  }
 
   /// Returns the value at the end of the Sequence.
   T getEndValue() const override { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
@@ -143,39 +108,88 @@ public:
   /// Returns the value at the beginning of the Sequence.
   T getStartValue() const override { return _initial_value; }
 
+  /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
+  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new Sequence<T>( *this ) ); }
+
+  //
+  //
+  //
+
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
   /// Add two sequences together to form a third sequence.
-  static SequenceT concatenate( SequenceT lhs, const SequenceT &rhs )
-  {
-    return lhs.then( rhs );
-  }
+  static Sequence<T> concatenate( Sequence<T> lhs, const Sequence<T> &rhs ) { return lhs.then( rhs ); }
 
   /// Recursively concatenate any number of sequences.
   template<typename... Args>
-  static SequenceT concatenate( const SequenceT &first, const SequenceT &second, Args... additional )
+  static Sequence<T> concatenate( const Sequence<T> &first, const Sequence<T> &second, Args... additional )
   {
-    return concatenate( concatenate( first, second ), std::forward( additional... ) );
+    return concatenate( concatenate( first, second ), std::forward<Args>( additional )... );
   }
 
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
   std::vector<SourceUniqueRef<T>> _phrases;
-  T                         _initial_value;
+  T                               _initial_value;
 
 private:
-  void startTimeShifted( Time delta ) override
-  {
-    for( const SourceUniqueRef<T> &phrase : _phrases )
-    {
-      phrase->shiftTime( delta );
-    }
-  }
+  void startTimeShifted( Time delta ) override;
 };
 
-/// Returns the value of this sequence for a given point in time.
+//=================================================
+// Sequence Implementation.
+//=================================================
+
+template<typename T>
+Sequence<T>& Sequence<T>::set( const T &value )
+{
+  if( _phrases.empty() ) {
+    _initial_value = value;
+  }
+  else {
+    then<Hold>( value, 0.0f );
+  }
+  return *this;
+}
+
+template<typename T>
+template<template <typename> class PhraseT, typename... Args>
+Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
+{
+  Time end_time = this->getEndTime() + duration;
+  _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( this->getEndTime(), end_time, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
+  this->setEndTime( end_time );
+
+  return *this;
+}
+
+template<typename T>
+template<typename PhraseT>
+Sequence<T>& Sequence<T>::then( const PhraseT &phrase )
+{
+  std::unique_ptr<Source<T>> p( phrase.clone() );
+  Time time = this->getEndTime();
+  Time end_time = time + p->getDuration();
+
+  p->setStartTime( time );
+  this->setEndTime( end_time );
+  _phrases.emplace_back( std::move( p ) );
+
+  return *this;
+}
+
+template<typename T>
+Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
+{
+  for( auto &phrase : next._phrases ) {
+    then( *phrase );
+  }
+
+  return *this;
+}
+
 // Would be nice to have a constant-time check (without a while loop).
 template<typename T>
 T Sequence<T>::getValue( Time atTime ) const
@@ -201,6 +215,19 @@ T Sequence<T>::getValue( Time atTime ) const
   // this should be unreachable, given that we return early if time >= duration
   return getEndValue();
 }
+
+template<typename T>
+void Sequence<T>::startTimeShifted( Time delta )
+{
+  for( const SourceUniqueRef<T> &phrase : _phrases )
+  {
+    phrase->shiftTime( delta );
+  }
+}
+
+//=================================================
+// Typedefs and convenience functions.
+//=================================================
 
 template<typename T>
 using SequenceRef = std::shared_ptr<Sequence<T>>;
