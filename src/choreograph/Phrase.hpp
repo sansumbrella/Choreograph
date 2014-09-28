@@ -256,12 +256,20 @@ class LoopSource : public Source<T>
 public:
   /// Create a Source that loops \a source.
   LoopSource( const Source<T> &source, Time inflectionPoint = 0.0f ):
-    Source<T>( source.getDuration() ),
+    Source<T>( 0 ),
     _source( source.clone() ),
     _inflection_point( inflectionPoint )
   {}
+
+  LoopSource( const Source<T> &source, size_t numLoops, Time inflectionPoint = 0.0f ):
+    Source<T>( source.getDuration() * numLoops ),
+    _source( source.clone() ),
+    _inflection_point( inflectionPoint )
+  {}
+
   /// Copy ctor clones source.
   LoopSource( const LoopSource<T> &other ):
+    Source<T>( other.getDuration() ),
     _source( other._source->clone() ),
     _inflection_point( other._inflection_point )
   {}
@@ -273,7 +281,7 @@ public:
   SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new LoopSource<T>( *this ) ); }
 private:
   SourceUniqueRef<T>  _source;
-  Time               _inflection_point;
+  Time                _inflection_point;
 };
 
 //=================================================

@@ -91,7 +91,7 @@ public:
   }
 
 private:
-  Time _duration = 1;
+  Time _duration = 0;
 
   friend class Sequence<T>;
 };
