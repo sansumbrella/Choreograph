@@ -173,37 +173,45 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
 
   SECTION( "Cues" )
   {
-    vector<int> call_counts( 3, 0 );
-    std::array<float, 3> delays = { 1.0f, 2.0f, 3.0f };
+    vector<int> call_counts( 4, 0 );
+    std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
     for( size_t i = 0; i < call_counts.size(); ++i )
     {
-      timeline.cue( [i,&call_counts] { call_counts[i] += 1; } , delays[i] );
+      timeline.cue( [i,&call_counts] { call_counts[i] += 1; }, delays[i] );
     }
 
-    timeline.jumpTo( 1.0f );
+    timeline.step( 0.1f );
     REQUIRE( call_counts[0] == 1 );
     REQUIRE( call_counts[1] == 0 );
     REQUIRE( call_counts[2] == 0 );
-    timeline.step( 0.1f );
-    REQUIRE( timeline.size() == 2 );
 
     for( int i = 0; i < 9; ++i ) {
       timeline.step( 0.1f );
     }
 
-    REQUIRE( timeline.size() == 1 );
     REQUIRE( call_counts[0] == 1 );
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 0 );
 
     for( int i = 0; i < 10; ++i ) {
-      timeline.step( 0.11f );
+      timeline.step( 0.1f );
     }
 
-    REQUIRE( timeline.size() == 0 );
+//    REQUIRE( timeline.size() == 1 );
     REQUIRE( call_counts[0] == 1 );
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 1 );
+    REQUIRE( call_counts[3] == 0 );
+
+    for( int i = 0; i < 10; ++i ) {
+      timeline.step( 0.1f );
+    }
+
+//    REQUIRE( timeline.size() == 0 );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 1 );
+    REQUIRE( call_counts[2] == 1 );
+    REQUIRE( call_counts[3] == 1 );
   }
 
   SECTION( "Motion Manipulation from Callbacks" )
