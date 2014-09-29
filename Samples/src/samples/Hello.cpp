@@ -33,7 +33,7 @@ using namespace cinder;
 
 void Hello::setup()
 {
-  const int count = 32;
+  const int count = 64;
   Sequence<quat> spin{ quat() };
   // would be easier as a floating point angle
   spin.then<RampTo>( glm::angleAxis<float>( M_PI / 2, vec3( 0, 1, 0 ) ), 0.5f )
@@ -71,9 +71,12 @@ void Hello::connect( app::WindowRef window )
   storeConnection( window->getSignalMouseDown().connect( [this] ( const app::MouseEvent &event ) {
     vec3 center( event.getPos(), 0.0f );
     vec3 bounds( 100 );
+    float delay = 0.0f;
     for( auto &thing : mThings ) {
       vec3 pos = randVec3f() * bounds + center;
-      timeline().append( &thing.position ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
+      timeline().apply( &thing.position ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() ).delay( delay );
+
+      delay += 0.005f;
     }
   } ) );
 }
