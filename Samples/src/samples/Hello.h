@@ -31,6 +31,8 @@
 
 struct Thing
 {
+  ci::Color             color;
+  co::Output<float>     alpha = 0.0f;
   co::Output<ci::vec3>  position;
   co::Output<ci::quat>  orientation;
 };
@@ -42,6 +44,8 @@ public:
   void setup() override;
 
   void update( double dt ) override;
+
+  void connect( ci::app::WindowRef window ) override;
 
   void draw() override;
 

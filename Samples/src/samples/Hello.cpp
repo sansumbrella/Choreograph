@@ -26,13 +26,14 @@
  */
 
 #include "Hello.h"
+#include "cinder/Rand.h"
 
 using namespace choreograph;
 using namespace cinder;
 
 void Hello::setup()
 {
-  const int count = 24;
+  const int count = 32;
   Sequence<quat> spin{ quat() };
   // would be easier as a floating point angle
   spin.then<RampTo>( glm::angleAxis<float>( M_PI / 2, vec3( 0, 1, 0 ) ), 0.5f )
@@ -48,17 +49,33 @@ void Hello::setup()
     pos.x = lmap<float>( i, 0, count - 1, 50, app::getWindowWidth() - 50 );
     pos.y = app::getWindowHeight() / 2 + sin( pos.x * 0.01f ) * 80.0f;
 
-    thing.position().x = pos.x - 300.0f;
-    thing.position().y = app::getWindowHeight() + 20.0f;
+    thing.position().x = pos.x - 150.0f;
+    thing.position().y = pos.y + 150.0f;
 
-    quat back = glm::angleAxis<float>( M_PI / 2.0f, vec3( 1, 0, 0 ) );
+    thing.color = Color( CM_HSV, mix( 0.3f, 0.7f, randFloat() ), 1.0f, 0.95f );
+
+    quat back = normalize( glm::angleAxis<float>( M_PI / 2.0f, vec3( 1, 0, 0 ) ) * glm::angleAxis<float>( M_PI / 4.0f, vec3( 0, 1, 0 ) ) );
     quat front;
 
-    timeline().apply( &thing.position ).then<RampTo3>( pos, 0.44f, EaseOutCubic(), EaseOutQuad() ).delay( i * 0.1f );
-    timeline().apply( &thing.orientation ).set( back ).then<RampTo>( front, 0.44f, EaseInOutAtan() ).delay( i * 0.1f );
+    float delay = (i * 0.05f);
+    timeline().apply( &thing.position ).then<RampTo3>( pos, 0.44f, EaseOutCubic(), EaseOutQuad() ).delay( delay );
+    timeline().apply( &thing.orientation ).set( back ).then<RampTo>( front, 0.44f, EaseInOutAtan() ).delay( delay );
+    timeline().apply( &thing.alpha ).delay( delay ).then<RampTo>( 1.0f, 0.16f );
 
     mThings.push_back( thing );
   }
+}
+
+void Hello::connect( app::WindowRef window )
+{
+  storeConnection( window->getSignalMouseDown().connect( [this] ( const app::MouseEvent &event ) {
+    vec3 center( event.getPos(), 0.0f );
+    vec3 bounds( 100 );
+    for( auto &thing : mThings ) {
+      vec3 pos = randVec3f() * bounds + center;
+      timeline().append( &thing.position ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
+    }
+  } ) );
 }
 
 void Hello::update( double dt )
@@ -71,7 +88,7 @@ void Hello::draw()
   gl::ScopedMatrices matrices;
   gl::setMatricesWindowPersp( app::getWindowSize(), 60.0f, 1.0f, 2000.0f );
 
-  gl::color( Color::white() );
+  gl::enableAlphaBlending();
 
   for( auto &thing : mThings )
   {
@@ -79,6 +96,7 @@ void Hello::draw()
     gl::translate( thing.position );
     gl::rotate( thing.orientation );
 
+    gl::color( ColorA( thing.color, thing.alpha ) );
     gl::drawSolidCircle( vec2( 0 ), 20.0f );
   }
 }

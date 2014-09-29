@@ -85,7 +85,7 @@ Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to 
 
 Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of [Cinder's glNext branch](https://github.com/cinder/cinder/tree/glNext) should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 
-Samples are run from the projects inside the Samples directory. There aren't any right now.
+Samples are run from the projects inside the Samples directory. These are a work in progress.
 
 ### Using the lerp specializations
 If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.

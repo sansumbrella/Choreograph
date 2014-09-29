@@ -57,6 +57,7 @@ void SamplesApp::loadSample( int index )
   mCurrentScene = SampleList[mSceneIndex].second();
 
   mCurrentScene->setup();
+  mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
 }
 
