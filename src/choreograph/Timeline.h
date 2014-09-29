@@ -27,7 +27,6 @@
 
 #pragma once
 #include "Motion.h"
-#include "detail/VectorManipulation.hpp"
 
 namespace choreograph
 {
@@ -120,40 +119,15 @@ public:
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> apply( Output<T> *output )
-  {
-    auto sequence = std::make_shared<Sequence<T>>( *output );
-    auto motion = std::make_shared<Motion<T>>( output, sequence );
-
-    _motions.push_back( motion );
-
-    return MotionOptions<T>( motion, sequence, *this );
-  }
+  MotionOptions<T> apply( Output<T> *output );
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> apply( Output<T> *output, const SequenceRef<T> &sequence )
-  {
-    auto motion = std::make_shared<Motion<T>>( output, sequence );
-
-    _motions.push_back( motion );
-
-    return MotionOptions<T>( motion, sequence, *this );
-  }
+  MotionOptions<T> apply( Output<T> *output, const SequenceRef<T> &sequence );
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
-  MotionOptions<T> append( Output<T> *output )
-  {
-    if( output->isConnected() )
-    {
-      auto motion = find( output->valuePtr() );
-      if( motion ) {
-        return MotionOptions<T>( motion, motion->getSequence(), *this );
-      }
-    }
-    return apply( output );
-  }
+  MotionOptions<T> append( Output<T> *output );
 
   //=================================================
   // Creating Motions. T* Versions.
@@ -162,41 +136,16 @@ public:
   /// Apply a source to output, overwriting any previous connections. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of apply( Output<T> *output ) over this version.
   template<typename T>
-  MotionOptions<T> apply( T *output )
-  { // Remove any existing motions that affect the same variable.
-    // This is a raw pointer, so we don't know about any prior relationships.
-    remove( output );
-
-    auto sequence = std::make_shared<Sequence<T>>( *output );
-    auto motion = std::make_shared<Motion<T>>( output, sequence );
-
-    _motions.push_back( motion );
-
-    return MotionOptions<T>( motion, sequence, *this );
-  }
+  MotionOptions<T> apply( T *output );
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> apply( T *output, const SequenceRef<T> &sequence )
-  { // Remove any existing motions that affect the same variable.
-    remove( output );
-    auto motion = std::make_shared<Motion<T>>( output, sequence );
-    _motions.push_back( motion );
-
-    return MotionOptions<T>( motion, sequence, *this );
-  }
+  MotionOptions<T> apply( T *output, const SequenceRef<T> &sequence );
 
   /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
-  MotionOptions<T> append( T *output )
-  {
-    auto motion = find( output );
-    if( motion ) {
-      return MotionOptions<T>( motion, motion->getSequence(), *this );
-    }
-    return apply( output );
-  }
+  MotionOptions<T> append( T *output );
 
   //=================================================
   // Creating Cues.
@@ -220,25 +169,13 @@ public:
   //=================================================
 
   template<typename T>
-  MotionRef<T> find( T *output ) const
-  {
-    for( auto &m : _motions ) {
-      if( m->getTarget() == output ) {
-        return std::static_pointer_cast<Motion<T>>( m );
-      }
-    }
-    return nullptr;
-  }
+  MotionRef<T> find( T *output ) const;
 
   /// Remove specific motion.
   void remove( const MotionBaseRef &motion );
 
   /// Remove motion associated with specific output.
-  template<typename T>
-  void remove( T *output )
-  {
-    detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
-  }
+  void remove( void *output );
 
   /// Set whether motions should be removed when finished. Default is true.
   void setAutoRemove( bool doRemove = true ) { _auto_clear = doRemove; }
@@ -264,6 +201,84 @@ private:
 // Timeline Template Function Implementation.
 //=================================================
 
+template<typename T>
+MotionOptions<T> Timeline::apply( Output<T> *output )
+{
+  auto sequence = std::make_shared<Sequence<T>>( *output );
+  auto motion = std::make_shared<Motion<T>>( output, sequence );
+
+  _motions.push_back( motion );
+
+  return MotionOptions<T>( motion, sequence, *this );
+}
+
+template<typename T>
+MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
+{
+  auto motion = std::make_shared<Motion<T>>( output, sequence );
+
+  _motions.push_back( motion );
+
+  return MotionOptions<T>( motion, sequence, *this );
+}
+
+template<typename T>
+MotionOptions<T> Timeline::append( Output<T> *output )
+{
+  if( output->isConnected() )
+  {
+    auto motion = find( output->valuePtr() );
+    if( motion ) {
+      return MotionOptions<T>( motion, motion->getSequence(), *this );
+    }
+  }
+  return apply( output );
+}
+
+template<typename T>
+MotionOptions<T> Timeline::apply( T *output )
+{ // Remove any existing motions that affect the same variable.
+  // This is a raw pointer, so we don't know about any prior relationships.
+  remove( output );
+
+  auto sequence = std::make_shared<Sequence<T>>( *output );
+  auto motion = std::make_shared<Motion<T>>( output, sequence );
+
+  _motions.push_back( motion );
+
+  return MotionOptions<T>( motion, sequence, *this );
+}
+
+template<typename T>
+MotionOptions<T> Timeline::apply( T *output, const SequenceRef<T> &sequence )
+{ // Remove any existing motions that affect the same variable.
+  remove( output );
+  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  _motions.push_back( motion );
+
+  return MotionOptions<T>( motion, sequence, *this );
+}
+
+template<typename T>
+MotionOptions<T> Timeline::append( T *output )
+{
+  auto motion = find( output );
+  if( motion ) {
+    return MotionOptions<T>( motion, motion->getSequence(), *this );
+  }
+  return apply( output );
+}
+
+template<typename T>
+MotionRef<T> Timeline::find( T *output ) const
+{
+  for( auto &m : _motions ) {
+    if( m->getTarget() == output ) {
+      return std::static_pointer_cast<Motion<T>>( m );
+    }
+  }
+  return nullptr;
+}
 
 //=================================================
 // Additional MotionOptions Implementation.

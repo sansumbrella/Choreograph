@@ -26,6 +26,7 @@
  */
 
 #include "Timeline.h"
+#include "detail/VectorManipulation.hpp"
 
 using namespace choreograph;
 
@@ -69,6 +70,11 @@ void Timeline::jumpTo( Time time )
 void Timeline::remove( const MotionBaseRef &motion )
 {
   detail::vector_remove( &_motions, motion );
+}
+
+void Timeline::remove( void *output )
+{
+  detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
 }
 
 void Timeline::cue( const std::function<void ()> &fn, Time delay )
