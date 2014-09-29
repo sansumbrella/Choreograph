@@ -28,14 +28,15 @@
 #pragma once
 
 #include "Hello.h"
+#include "Wings.h"
 
 using SampleRef = std::shared_ptr<pk::Scene>;
 using SampleFn = std::function<SampleRef ()>;
 
 const std::vector<std::pair<std::string, SampleFn>> SampleList =
 {
-  { "Hello", std::make_shared<Hello> },
-  { "Hola", std::make_shared<Hello> }
+  { "Hola", std::make_shared<Hello> },
+  { "Wings", std::make_shared<Wings> }
 };
 
 const std::vector<std::string> SampleNames = ([]

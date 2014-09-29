@@ -27,10 +27,30 @@
 
 #pragma once
 
-class Wings
+#include "Scene.h"
+
+struct Wing
+{
+  ci::Color             color;
+  co::Output<float>     alpha = 0.0f;
+  co::Output<ci::vec3>  position;
+  co::Output<ci::quat>  orientation;
+};
+
+class Wings : public pk::Scene
 {
 public:
-  Wings();
-  ~Wings();
+
+  void setup() override;
+
+  void connect( ci::app::WindowRef window ) override;
+
+  void update( double dt ) override;
+
+  void draw() override;
+
 private:
+
+  co::Output<ci::vec2> position;
+  bool mMouseDown = false;
 };

@@ -27,9 +27,46 @@
 
 #include "Wings.h"
 
-Wings::Wings()
-{}
+using namespace choreograph;
+using namespace cinder;
 
-Wings::~Wings()
-{}
+void Wings::setup()
+{
 
+  timeline().setAutoRemove( false );
+
+  timeline().apply( &position ).set( vec2( 0, app::getWindowHeight() / 2 ) )
+    .then<RampTo>( vec2( app::getWindowWidth(), app::getWindowHeight() ), 1.0f, EaseInOutQuad() );
+}
+
+void Wings::connect( ci::app::WindowRef window )
+{
+  storeConnection( window->getSignalMouseDown().connect( [this] ( const app::MouseEvent &event ) {
+    mMouseDown = true;
+    float t = timeline().getDuration() * (event.getPos().x / (float) app::getWindowWidth());
+    timeline().jumpTo( t );
+  } ) );
+  storeConnection( window->getSignalMouseUp().connect( [this] ( const app::MouseEvent &event ) { mMouseDown = false; } ) );
+
+  storeConnection( window->getSignalMouseDrag().connect( [this] ( const app::MouseEvent &event ) {
+    float t = timeline().getDuration() * (event.getPos().x / (float) app::getWindowWidth());
+    timeline().jumpTo( t );
+  }) );
+
+  storeConnection( window->getSignalKeyDown().connect( [this] ( const app::KeyEvent &event ) {
+    position.disconnect();
+  }  ) );
+}
+
+void Wings::update( double dt )
+{
+  if( ! mMouseDown )
+  {
+    timeline().step( dt );
+  }
+}
+
+void Wings::draw()
+{
+  gl::drawSolidCircle( position, 10.0f );
+}

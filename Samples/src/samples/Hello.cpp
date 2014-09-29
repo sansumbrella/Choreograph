@@ -57,6 +57,8 @@ void Hello::setup()
     quat back = normalize( glm::angleAxis<float>( M_PI / 2.0f, vec3( 1, 0, 0 ) ) * glm::angleAxis<float>( M_PI / 4.0f, vec3( 0, 1, 0 ) ) );
     quat front;
 
+    // We could delay a subset of motions by prepending a Hold.
+    // Maybe add a method to timeline that is like append, but actually builds a Cue to apply the Sequence.
     float delay = (i * 0.05f);
     timeline().apply( &thing.position ).then<RampTo3>( pos, 0.44f, EaseOutCubic(), EaseOutQuad() ).delay( delay );
     timeline().apply( &thing.orientation ).set( back ).then<RampTo>( front, 0.44f, EaseInOutAtan() ).delay( delay );
