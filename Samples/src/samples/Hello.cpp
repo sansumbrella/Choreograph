@@ -76,7 +76,7 @@ void Hello::connect( app::WindowRef window )
     float delay = 0.0f;
     for( auto &thing : mThings ) {
       vec3 pos = randVec3f() * bounds + center;
-      timeline().apply( &thing.position ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() ).delay( delay );
+      timeline().append( &thing.position ).hold( delay ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
 
       delay += 0.005f;
     }
