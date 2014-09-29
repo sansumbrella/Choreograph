@@ -70,6 +70,10 @@ public:
   /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
   SelfT& continuous( bool isContinuous ) { _motion->continuous( isContinuous ); return *this; }
 
+  SelfT& setStartTime( Time t ) { _motion->setStartTime( t ); return *this; }
+
+  SelfT& playbackSpeed( Time speed ) { _motion->setPlaybackSpeed( speed ); return *this; }
+
   //=================================================
   // Sequence Interface Mirroring.
   //=================================================
@@ -83,7 +87,7 @@ public:
 
   /// Clone and append a phrase to the Sequence.
   template<typename PhraseT>
-  Sequence<T>& then( PhraseT &&phrase ) { _sequence->template then<PhraseT>( std::forward( phrase ) ); return *this; }
+  SelfT& then( const PhraseT &phrase ) { _sequence->template then<PhraseT>( phrase ); return *this; }
 
   //=================================================
   // Extra Sugar.
@@ -93,7 +97,10 @@ public:
   SelfT& hold( Time duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
 
   /// Set the start time of this motion to the current end of all motions of \a other.
-  SelfT& after( void *other );
+  template<typename U>
+  SelfT& after( U *other );
+
+  SelfT& delay( Time t ) { _motion->setStartTime( _motion->getStartTime() + t ); return *this; }
 
 private:
   MotionRef<T>    _motion;
@@ -213,7 +220,7 @@ public:
   //=================================================
 
   template<typename T>
-  MotionRef<T> find( T *output )
+  MotionRef<T> find( T *output ) const
   {
     for( auto &m : _motions ) {
       if( m->getTarget() == output ) {
@@ -256,7 +263,8 @@ private:
 //=================================================
 
 template<typename T>
-MotionOptions<T>& MotionOptions<T>::after( void *other )
+template<typename U>
+MotionOptions<T>& MotionOptions<T>::after( U *other )
 {
   auto ptr = _timeline.find( other );
   if( ptr ) {
