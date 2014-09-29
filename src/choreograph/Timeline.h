@@ -252,11 +252,18 @@ public:
   /// Return the number of motions on this timeline.
   size_t size() const { return _motions.size(); }
 
+  Time getDuration() const;
+
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                        _auto_clear = true;
   std::vector<MotionBaseRef>  _motions;
 };
+
+//=================================================
+// Timeline Template Function Implementation.
+//=================================================
+
 
 //=================================================
 // Additional MotionOptions Implementation.

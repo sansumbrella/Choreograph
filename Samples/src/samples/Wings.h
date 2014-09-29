@@ -25,53 +25,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Timeline.h"
+#pragma once
 
-using namespace choreograph;
-
-Time Timeline::getDuration() const
+class Wings
 {
-  if( empty() ) { return 0.0f; }
-
-  float duration = _motions.front()->getDuration();
-  for( auto &motion : _motions )
-  {
-    duration = std::max( motion->getDuration(), duration );
-  }
-
-  return duration;
-}
-
-void Timeline::step( Time dt )
-{
-  // Remove any motions that have stale pointers or that have completed playing.
-  bool do_clear = _auto_clear;
-  detail::erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
-
-  // Update all animation outputs.
-  for( auto &c : _motions ) {
-    c->step( dt );
-  }
-}
-
-void Timeline::jumpTo( Time time )
-{
-  // Remove any motions that have stale pointers or that have completed playing.
-  bool do_clear = _auto_clear;
-  detail::erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
-
-  // Update all animation outputs.
-  for( auto &c : _motions ) {
-    c->jumpTo( time );
-  }
-}
-
-void Timeline::remove( const MotionBaseRef &motion )
-{
-  detail::vector_remove( &_motions, motion );
-}
-
-void Timeline::cue( const std::function<void ()> &fn, Time delay )
-{
-  _motions.push_back( std::make_shared<Cue>( fn, delay ) );
-}
+public:
+  Wings();
+  ~Wings();
+private:
+};
