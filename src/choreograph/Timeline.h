@@ -129,12 +129,15 @@ public:
   template<typename T>
   MotionOptions<T> append( Output<T> *output );
 
+/*
   /// Build a Motion Sequence for \a output to be started on a Cue.
   /// Will create and invalid Motion, then make it valid with a Cue.
   /// Either allow Outputs multiple Connections (with one active at a time), or this will be dangerous.
-  /// Not yet implemented.
+  /// Not yet implemented. May never be implemented.
+  /// Generally, we don't want anything to be on the timeline that the timeline doesn't know about. Believe.
   template<typename T>
   MotionOptions<T> later( Output<T> *output );
+*/
 
   //=================================================
   // Creating Motions. T* Versions.
