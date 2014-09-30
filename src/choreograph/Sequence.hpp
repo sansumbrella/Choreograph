@@ -86,13 +86,11 @@ public:
 
   /// Clones and appends a phrase to the end of the sequence.
   /// Accepts any concrete Source<T>.
-  template<typename PhraseT>
-  Sequence<T>& then( const PhraseT &phrase );
+  Sequence<T>& then( const Source<T> &phrase );
 
   /// Clones and appends a phrase to the end of the sequence.
   /// Specialized to handle shared_ptr's correctly.
-  template<typename PhraseT>
-  Sequence<T>& then( const std::shared_ptr<PhraseT> &phrase_ptr ) { return then( *phrase_ptr ); }
+  Sequence<T>& then( const std::shared_ptr<Source<T>> &phrase_ptr ) { return then( *phrase_ptr ); }
 
   /// Clone and append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
@@ -167,8 +165,7 @@ Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 }
 
 template<typename T>
-template<typename PhraseT>
-Sequence<T>& Sequence<T>::then( const PhraseT &phrase )
+Sequence<T>& Sequence<T>::then( const Source<T> &phrase )
 {
   std::unique_ptr<Source<T>> p( phrase.clone() );
   this->_duration += p->getDuration();
