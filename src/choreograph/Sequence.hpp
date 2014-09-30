@@ -131,6 +131,8 @@ public:
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
+  // Since we are now storing only duration in phrases (rather than start + end times), it's probably fine to
+  // use shared_ptr here and allow sharing/external manipulation if desired.
   std::vector<SourceUniqueRef<T>> _phrases;
   T                               _initial_value;
 
