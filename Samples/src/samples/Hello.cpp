@@ -101,7 +101,7 @@ void Hello::draw()
     gl::translate( thing.position );
     gl::rotate( thing.orientation );
 
-    gl::color( ColorA( thing.color, thing.alpha ) );
+    gl::ScopedColor color( ColorA( thing.color, thing.alpha ) );
     gl::drawSolidCircle( vec2( 0 ), 20.0f );
   }
 }

@@ -68,6 +68,6 @@ void Wings::update( double dt )
 
 void Wings::draw()
 {
-
+  gl::ScopedColor color( Color::white() );
   gl::drawSolidCircle( position, 100.0f );
 }
