@@ -135,9 +135,6 @@ private:
   // use shared_ptr here and allow sharing/external manipulation if desired.
   std::vector<SourceUniqueRef<T>> _phrases;
   T                               _initial_value;
-
-  // Allow Motions to perform constant-time lookup.
-  friend class Motion<T>;
 };
 
 //=================================================
@@ -161,7 +158,7 @@ template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
   _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
-  this->_duration += duration;
+  this->setDuration( this->getDuration() + duration );
 
   return *this;
 }
@@ -170,7 +167,7 @@ template<typename T>
 Sequence<T>& Sequence<T>::then( const Source<T> &phrase )
 {
   std::unique_ptr<Source<T>> p( phrase.clone() );
-  this->_duration += p->getDuration();
+  this->setDuration( this->getDuration() + p->getDuration() );
 
   _phrases.emplace_back( std::move( p ) );
 
