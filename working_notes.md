@@ -1,76 +1,12 @@
-Virtual method cost is paid whenever we have a pointer to an object.
-Copying the whole sequence into our motion generally gives a performance gain, though the shared sequence stuff doesn't run as fast any more.
 
-## Most Performant
+Since Sources now only have a duration, nothing really surprising will happen if they are shared between multiple
+sequences. You might be surprised to have a change to the duration of a phrase propagate throughout all your sequences,
+but the effect of sharing should be obvious. You can always make a need shared_ptr copy to avoid the sharing.
 
-No virtual dispatch, ever.
-Templatize each variation (Sequence<T, PhraseT>).
-Always stack-allocate.
+The atomic increment cost of shared_ptr probably isn’t any higher than copying an entire object, especially when adding
+Sequences to Sequences.
 
-Performance is approximately as follows:
-Working with 150000 motions.
-[Creating Motions]                                70.905ms  
-[Stepping Motions 1x]                             10.843ms  
-[Stepping Motions 60x]                            667.836ms  
-[Creating Motions from shared Sequence]           62ms  
-[Stepping Motions with shared Sequence 1x]        11.651ms  
-[Stepping Motions with shared Sequence 60x]       715.132ms
-
-Issues:
-Sometimes separating components and sometimes not requires two Sequences, can't be added at the same time.
-Everything depends on the PhraseT.
-Pseudo-instancing is gone, since we copy the Sequence to the Motion.
-Makes mixing signals difficult.
-
-## Most Flexible
-
-Source<T> (virtual T getValue(time), non-virtual start and end times)
-- Phrase inherits
-	- Phrase2, Phrase3, etc. inherit (template on number of components?)
-- Sequence inherits
-	- list of sequential SourceRef<T>
-- Mix inherits
-	- list of concurrent SourceRef<T> with contribution factors
-- safe and fast since we're calculating based on our internal states
-
-TimelineItem (steppable)
-	Motion (Maybe rename to Connection)
-		SourceRef<T>
-		OutputRef<T>
-		playhead position
-		begin/end/update callbacks
-	Cue
-		simple callback at time
-
-TimeLine
-	list of TimelineItemRefs
-
-Issues:
-Will have about a 15-20% performance hit relative to fastest path.
-Granted, it can still drive 150k motions in under 16ms.
-Also, having a shared_ptr to Sequence in Motion allows for pseudo-instancing,
-which results in a nice performance boost when everyone does the same thing.
-
-Performance is approximately as follows (measured with virtual Sequence type, most flexi not yet implemented):
-Working with 150000 motions.
-[Creating Motions]                                71.751ms  
-[Stepping Motions 1x]                             13.117ms  
-[Stepping Motions 60x]                            776.125ms		// virtual method dispatch slows us down a bit  
-[Creating Motions from shared Sequence]           23.696ms		// copying only a pointer, hence speed here  
-[Stepping Motions with shared Sequence 1x]        9.40001ms		// less memory traversal due to pseudo-instancing  
-[Stepping Motions with shared Sequence 60x]       556.052ms
-
-Measured below with very flexible Choreograph Sequence setup:
-Working with 150000 motions.
-[Creating Motions]                                75.445ms
-[Stepping Motions 1x]                             14.291ms
-[Stepping Motions 60x]                            819.195ms
-[Clearing Motions]                                0.501037ms
-[Stepping Empty Timeline 60x]                     0.00101328ms
-[Creating Motions from shared Sequence]           29.138ms
-[Stepping Motions with shared Sequence 1x]        9.709ms
-[Stepping Motions with shared Sequence 60x]       544.271ms
-
-
-TODO:
-Implement `Most Flexible` approach.
+Next step:
+Sequences to hold shared_ptr’s to their underlying Phrases.
+Remove the clone() method from Phrase.
+Rename Source<T> to Phrase<T> (probably).
