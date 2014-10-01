@@ -34,7 +34,16 @@ namespace choreograph
 {
 
 template<typename T>
-class Motion;
+class SequencePhrase;
+
+template<typename T>
+using SequencePhraseRef = std::shared_ptr<SequencePhrase<T>>;
+
+template<typename T>
+class Sequence;
+
+template<typename T>
+using SequenceRef = std::shared_ptr<Sequence<T>>;
 
 /**
  A Sequence of motions.
@@ -82,11 +91,7 @@ public:
   template<template <typename> class PhraseT, typename... Args>
   Sequence<T>& then( const T &value, Time duration, Args&&... args );
 
-  /// Clones and appends a phrase to the end of the sequence.
-  /// Accepts any concrete Phrase<T>.
-  Sequence<T>& then( const Phrase<T> &phrase );
-
-  /// Clones and appends a phrase to the end of the sequence.
+  /// Appends a phrase to the end of the sequence.
   Sequence<T>& then( const std::shared_ptr<Phrase<T>> &phrase_ptr );
 
   /// Append all Phrases from another Sequence to this Sequence.
@@ -96,6 +101,8 @@ public:
   /// Specialized to handle shared_ptr's correctly.
   Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { return then( *next ); }
 
+  /// Returns a Phrase that encapsulates this Sequence.
+  SequencePhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( std::make_shared<Sequence<T>>( *this ) ); }
   //
   // Phrase<T> Equivalents.
   //
@@ -112,9 +119,6 @@ public:
   /// Returns the value at the beginning of the Sequence.
   T getStartValue() const { return _initial_value; }
 
-  /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
-  PhraseUniqueRef<T> clone() const { return PhraseUniqueRef<T>( new Sequence<T>( *this ) ); }
-
   /// Wrap \a time around \a inflectionPoint in the Sequence.
   Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const;
 
@@ -129,7 +133,7 @@ public:
   size_t getPhraseCount() const { return _phrases.size(); }
 
   /// Recalculate Sequence duration. Might never be used...
-  void calcDuration();
+  Time calcDuration() const;
 
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
@@ -163,18 +167,6 @@ Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
   _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
   _duration += duration;
-
-  return *this;
-}
-
-template<typename T>
-Sequence<T>& Sequence<T>::then( const Phrase<T> &phrase )
-{
-  std::unique_ptr<Phrase<T>> p( phrase.clone() );
-  _duration += phrase.getDuration();
-
-  _phrases.emplace_back( std::move( p ) );
-  _duration += p->getDuration();
 
   return *this;
 }
@@ -225,13 +217,13 @@ T Sequence<T>::getValue( Time atTime ) const
 }
 
 template<typename T>
-void Sequence<T>::calcDuration()
+Time Sequence<T>::calcDuration() const
 {
   Time sum = 0;
   for( const auto &phrase : _phrases ) {
     sum += phrase->getDuration();
   }
-  _duration = sum;
+  return sum;
 }
 
 template<typename T>
@@ -246,11 +238,8 @@ Time Sequence<T>::wrapTime( Time time, Time inflectionPoint ) const
 }
 
 //=================================================
-// Typedefs and convenience functions.
+// Convenience functions.
 //=================================================
-
-template<typename T>
-using SequenceRef = std::shared_ptr<Sequence<T>>;
 
 template<typename T>
 SequenceRef<T> createSequence( T &&initialValue )
@@ -263,5 +252,32 @@ SequenceRef<T> createSequence( const T &initialValue )
 {
   return std::make_shared<Sequence<T>>( initialValue );
 }
+
+//=================================================
+// Sequence Decorator Phrase.
+//=================================================
+
+/// A Phrase that wraps up a Sequence.
+/// Note that the Sequence should not change after it has been wrapped.
+/// Currently the immutability of the underlying Sequence is not enforced.
+template<typename T>
+class SequencePhrase: public Phrase<T>
+{
+public:
+  /// Construct a Phrase that wraps a Sequence, allowing it to be passed into meta-Phrases.
+  SequencePhrase( const SequenceRef<T> &sequence ):
+    Phrase<T>( sequence->getDuration() ),
+    _sequence( sequence )
+  {}
+
+  /// Returns the interpolated value at the given time.
+  T getValue( Time atTime ) const override { return _sequence->getValue( atTime ); }
+
+  T getStartValue() const override { return _sequence->getStartValue(); }
+
+  T getEndValue() const override { return _sequence->getEndValue(); }
+private:
+  SequenceRef<T>  _sequence;
+};
 
 } // namespace choreograph

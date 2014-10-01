@@ -92,8 +92,6 @@ public:
 
   T getEndValue() const override { return _end_value; }
 
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new RampTo<T>( *this ) ); }
-
 private:
   T       _start_value;
   T       _end_value;
@@ -145,8 +143,6 @@ public:
   T getStartValue() const override { return _start_value; }
   T getEndValue() const override { return _end_value; }
 
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new RampToN<SIZE, T>( *this ) ); }
-
 private:
   using ComponentT = decltype( T().x ); // get the type of the x component. decltype( T()[0] ) doesn't compile with glm's vecN unions.
   using ComponentLerpFn = std::function<ComponentT (const ComponentT&, const ComponentT&, float)>;
@@ -197,8 +193,6 @@ public:
     return _value;
   }
 
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new Hold<T>( *this ) ); }
-
 private:
   T       _value;
 };
@@ -214,15 +208,15 @@ template<typename T>
 class CombinePhrase : public Phrase<T>
 {
 public:
-  CombinePhrase( Time duration, const Phrase<T> &source, float factor=1.0f ):
+  CombinePhrase( Time duration, const PhraseRef<T> &source, float factor=1.0f ):
     Phrase<T>( duration )
   {
-    _sources.emplace_back( std::make_pair( source.clone(), factor ) );
+    _sources.emplace_back( std::make_pair( source, factor ) );
   }
 
-  CombinePhrase<T>& add( const Phrase<T> &source, float factor=1.0f )
+  CombinePhrase<T>& add( const PhraseRef<T> &source, float factor=1.0f )
   {
-    _sources.emplace_back( std::make_pair( source.clone(), factor ) );
+    _sources.emplace_back( std::make_pair( source, factor ) );
     return *this;
   }
 
@@ -238,8 +232,6 @@ public:
   T getStartValue() const override { return getValue( 0 ); }
   T getEndValue() const override { return getValue( this->getDuration() ); }
 
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new CombinePhrase<T>( *this ) ); }
-
 private:
   // Collection of shared_ptr, mix pairs.
   // shared_ptr since unique_ptr made copying/moving std::pair impossible
@@ -250,34 +242,19 @@ template<typename T>
 class LoopPhrase : public Phrase<T>
 {
 public:
-  /// Create a Phrase that loops \a source.
-  LoopPhrase( const Phrase<T> &source, Time inflectionPoint = 0.0f ):
-    Phrase<T>( 0 ),
-    _source( source.clone() ),
+  /// Create a Phrase that loops \a source \a numLoops times.
+  LoopPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f ):
+    Phrase<T>( source->getDuration() * numLoops ),
+    _source( source ),
     _inflection_point( inflectionPoint )
-  {}
-
-  LoopPhrase( const Phrase<T> &source, size_t numLoops, Time inflectionPoint = 0.0f ):
-    Phrase<T>( source.getDuration() * numLoops ),
-    _source( source.clone() ),
-    _inflection_point( inflectionPoint )
-  {}
-
-  /// Copy ctor clones other's source.
-  LoopPhrase( const LoopPhrase<T> &other ):
-    Phrase<T>( other.getDuration() ),
-    _source( other._source->clone() ),
-    _inflection_point( other._inflection_point )
   {}
 
   T getValue( Time atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
   T getStartValue() const override { return _source->getStartValue(); }
   T getEndValue() const override { return _source->getEndValue(); }
-
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new LoopPhrase<T>( *this ) ); }
 private:
-  PhraseUniqueRef<T>  _source;
-  Time                _inflection_point;
+  PhraseRef<T>  _source;
+  Time          _inflection_point;
 };
 
 //=================================================
@@ -311,8 +288,6 @@ public:
 
   T getStartValue() const override { return _start_value; }
   T getEndValue() const override { return _end_value; }
-
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new AnalyticChange<T>( *this ) ); }
 
 private:
   Function  _function;

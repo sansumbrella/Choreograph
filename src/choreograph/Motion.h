@@ -33,7 +33,19 @@
 
 namespace choreograph
 {
+
+//=================================================
+// Aliases.
+//=================================================
+
 using MotionBaseRef = std::shared_ptr<class MotionBase>;
+
+template<typename T>
+class Motion;
+
+template<typename T>
+using MotionRef = std::shared_ptr<Motion<T>>;
+
 
 ///
 /// MotionBase: non-templated base for polymorphic Motions.
@@ -231,12 +243,5 @@ void Motion<T>::update()
     }
   }
 }
-
-//=================================================
-// Aliases.
-//=================================================
-
-template<typename T>
-using MotionRef = std::shared_ptr<Motion<T>>;
 
 } // namespace choreograph

@@ -42,7 +42,13 @@ namespace choreograph
 using Time = float;
 
 template<typename T>
-class Sequence;
+class Phrase;
+
+template<typename T>
+using PhraseRef = std::shared_ptr<Phrase<T>>;
+
+template<typename T>
+using PhraseUniqueRef = std::unique_ptr<Phrase<T>>;
 
 ///
 /// A Phrase of motion.
@@ -68,9 +74,6 @@ public:
   /// Override to provide value at end (and beyond).
   virtual T getEndValue() const = 0;
 
-  /// Override to provide a copy of the derived Phrase. Needed for phrases to be copy-composable.
-  virtual std::unique_ptr<Phrase<T>> clone() const = 0;
-
   /// Returns the Phrase value at \a time, looping past the end from inflection point to the end.
   /// Relies on the subclass implementation of getValue( t ).
   T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
@@ -94,11 +97,5 @@ public:
 private:
   const Time _duration = 0;
 };
-
-template<typename T>
-using PhraseRef = std::shared_ptr<Phrase<T>>;
-
-template<typename T>
-using PhraseUniqueRef = std::unique_ptr<Phrase<T>>;
 
 } // namespace choreograph
