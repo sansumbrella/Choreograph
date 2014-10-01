@@ -40,8 +40,8 @@
 /// Choreograph is an animation and timing library.
 /// Choreograph provides a few core concepts for this.
 /// Underlying all motion are Sequences.
-/// Sequences are composed of (and are themselves) Sources.
-/// Sources provide a value of a certain type that can vary over time.
+/// Sequences are composed of (and are themselves) Phrases.
+/// Phrases provide a value of a certain type that can vary over time.
 /// For more information on usage see README.md and peruse the samples/ directory.
 ///
 namespace choreograph {} // namespace choreograph

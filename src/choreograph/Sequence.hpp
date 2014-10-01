@@ -27,8 +27,8 @@
 
 #pragma once
 
-#include "Source.hpp"
 #include "Phrase.hpp"
+#include "Phrases.hpp"
 
 namespace choreograph
 {
@@ -42,7 +42,7 @@ class Motion;
  A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
 */
 template<typename T>
-class Sequence : public Source<T>
+class Sequence : public Phrase<T>
 {
 public:
   // Sequences always need to have some valid value.
@@ -50,13 +50,13 @@ public:
 
   /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
-    Source<T>( 0 ),
+    Phrase<T>( 0 ),
     _initial_value( value )
   {}
 
   /// Construct a Sequence with and initial \a value.
   explicit Sequence( T &&value ):
-    Source<T>( 0 ),
+    Phrase<T>( 0 ),
     _initial_value( std::forward<T>( value ) )
   {}
 
@@ -85,21 +85,21 @@ public:
   Sequence<T>& then( const T &value, Time duration, Args&&... args );
 
   /// Clones and appends a phrase to the end of the sequence.
-  /// Accepts any concrete Source<T>.
-  Sequence<T>& then( const Source<T> &phrase );
+  /// Accepts any concrete Phrase<T>.
+  Sequence<T>& then( const Phrase<T> &phrase );
 
   /// Clones and appends a phrase to the end of the sequence.
-  Sequence<T>& then( const std::shared_ptr<Source<T>> &phrase_ptr );
+  Sequence<T>& then( const std::shared_ptr<Phrase<T>> &phrase_ptr );
 
   /// Append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
 
   /// Append all Phrases from another Sequence to this Sequence.
   /// Specialized to handle shared_ptr's correctly.
-  Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { then( *next ); }
+  Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { return then( *next ); }
 
   //
-  // Source<T> Overrides.
+  // Phrase<T> Overrides.
   //
 
   /// Returns the Sequence value at \a atTime.
@@ -112,7 +112,7 @@ public:
   T getStartValue() const override { return _initial_value; }
 
   /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
-  SourceUniqueRef<T> clone() const override { return SourceUniqueRef<T>( new Sequence<T>( *this ) ); }
+  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new Sequence<T>( *this ) ); }
 
   //
   //
@@ -126,7 +126,7 @@ private:
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
   // Since we are now storing only duration in phrases (rather than start + end times), it's probably fine to
   // use shared_ptr here and allow sharing/external manipulation if desired.
-  std::vector<SourceRef<T>> _phrases;
+  std::vector<PhraseRef<T>> _phrases;
   T                         _initial_value;
 };
 
@@ -157,9 +157,9 @@ Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 }
 
 template<typename T>
-Sequence<T>& Sequence<T>::then( const Source<T> &phrase )
+Sequence<T>& Sequence<T>::then( const Phrase<T> &phrase )
 {
-  std::unique_ptr<Source<T>> p( phrase.clone() );
+  std::unique_ptr<Phrase<T>> p( phrase.clone() );
   this->setDuration( this->getDuration() + p->getDuration() );
 
   _phrases.emplace_back( std::move( p ) );
@@ -168,7 +168,7 @@ Sequence<T>& Sequence<T>::then( const Source<T> &phrase )
 }
 
 template<typename T>
-Sequence<T>& Sequence<T>::then( const std::shared_ptr<Source<T>> &phrase )
+Sequence<T>& Sequence<T>::then( const std::shared_ptr<Phrase<T>> &phrase )
 {
   this->setDuration( this->getDuration() + phrase->getDuration() );
   _phrases.push_back( phrase );

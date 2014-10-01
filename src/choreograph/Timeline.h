@@ -85,8 +85,8 @@ public:
   SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
   /// Clone and append a phrase to the Sequence.
-  SelfT& then( const Source<T> &phrase ) { _sequence->then( phrase ); return *this; }
-  SelfT& then( Source<T> &&phrase ) { _sequence->then( std::forward( phrase ) ); return *this; }
+  SelfT& then( const Phrase<T> &phrase ) { _sequence->then( phrase ); return *this; }
+  SelfT& then( Phrase<T> &&phrase ) { _sequence->then( std::forward( phrase ) ); return *this; }
 
   //=================================================
   // Extra Sugar.

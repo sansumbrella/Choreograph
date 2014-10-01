@@ -85,12 +85,12 @@
 		153607D519D46195001ECD25 /* Motion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Motion.cpp; sourceTree = "<group>"; };
 		153607D619D46195001ECD25 /* Motion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Motion.h; sourceTree = "<group>"; };
 		153607D819D46195001ECD25 /* Output.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Output.hpp; sourceTree = "<group>"; };
-		153607D919D46195001ECD25 /* Phrase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrase.hpp; sourceTree = "<group>"; };
+		153607D919D46195001ECD25 /* Phrases.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrases.hpp; sourceTree = "<group>"; };
 		153607DA19D46195001ECD25 /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sequence.hpp; sourceTree = "<group>"; };
 		153607DB19D46195001ECD25 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
 		153607DC19D46195001ECD25 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
 		153607DE19D46195001ECD25 /* CinderSpecialization.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CinderSpecialization.hpp; sourceTree = "<group>"; };
-		153607E919D4622D001ECD25 /* Source.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Source.hpp; sourceTree = "<group>"; };
+		153607E919D4622D001ECD25 /* Phrase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrase.hpp; sourceTree = "<group>"; };
 		1560075D19D72C5000247022 /* VectorManipulation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = VectorManipulation.hpp; path = detail/VectorManipulation.hpp; sourceTree = "<group>"; };
 		1597E20819D7061E00A049D4 /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -221,11 +221,11 @@
 				153607D519D46195001ECD25 /* Motion.cpp */,
 				153607D619D46195001ECD25 /* Motion.h */,
 				153607D819D46195001ECD25 /* Output.hpp */,
-				153607D919D46195001ECD25 /* Phrase.hpp */,
+				153607D919D46195001ECD25 /* Phrases.hpp */,
 				153607DA19D46195001ECD25 /* Sequence.hpp */,
 				153607DB19D46195001ECD25 /* Timeline.cpp */,
 				153607DC19D46195001ECD25 /* Timeline.h */,
-				153607E919D4622D001ECD25 /* Source.hpp */,
+				153607E919D4622D001ECD25 /* Phrase.hpp */,
 				1597E20819D7061E00A049D4 /* Connection.hpp */,
 			);
 			path = choreograph;
