@@ -42,7 +42,7 @@ class Motion;
  A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
 */
 template<typename T>
-class Sequence : public Phrase<T>
+class Sequence
 {
 public:
   // Sequences always need to have some valid value.
@@ -50,13 +50,11 @@ public:
 
   /// Construct a Sequence with an initial \a value.
   explicit Sequence( const T &value ):
-    Phrase<T>( 0 ),
     _initial_value( value )
   {}
 
   /// Construct a Sequence with and initial \a value.
   explicit Sequence( T &&value ):
-    Phrase<T>( 0 ),
     _initial_value( std::forward<T>( value ) )
   {}
 
@@ -103,16 +101,16 @@ public:
   //
 
   /// Returns the Sequence value at \a atTime.
-  T getValue( Time atTime ) const override;
+  T getValue( Time atTime ) const;
 
   /// Returns the value at the end of the Sequence.
-  T getEndValue() const override { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
+  T getEndValue() const { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
 
   /// Returns the value at the beginning of the Sequence.
-  T getStartValue() const override { return _initial_value; }
+  T getStartValue() const { return _initial_value; }
 
   /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
-  PhraseUniqueRef<T> clone() const override { return PhraseUniqueRef<T>( new Sequence<T>( *this ) ); }
+  PhraseUniqueRef<T> clone() const { return PhraseUniqueRef<T>( new Sequence<T>( *this ) ); }
 
   //
   //
@@ -121,6 +119,8 @@ public:
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
+  Time getDuration() const { return _duration; }
+
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
@@ -128,6 +128,9 @@ private:
   // use shared_ptr here and allow sharing/external manipulation if desired.
   std::vector<PhraseRef<T>> _phrases;
   T                         _initial_value;
+  Time                      _duration = 0;
+
+  void setDuration( Time t ) { _duration = t; }
 };
 
 //=================================================
