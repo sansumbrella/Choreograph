@@ -20,11 +20,8 @@ What if Sequences were not Phrases?
 - no need for friend declaration.
 - CombinePhrase couldn't wrap Sequences if it's wrapping Phrases
 - Phrase decorator could compose a Sequence (it might need a note not to change the Sequence, or it could copy the Sequence)
+	- allowing us to then put the sequence into a CombinePhrase.
 - Sequence::makePhrase() wraps Sequence in the above-mentioned Phrase decorator.
-- CombinePhrase variant could wrap Sequences
-- Sequence->getDuration() can always calculate the duration from the collection at hand.
-	- Similar to getValue()
-	- Could cache result in Motion if calc is slow.
 
 Phrases are primarily immutable motions.
 Certain phrases, like Mix and Combine, have a small mutable interface.
