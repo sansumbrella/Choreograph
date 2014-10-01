@@ -44,26 +44,28 @@ v0.2.0 development. API is unstable.
 
 ## Concepts
 
-### Source, Phrase, Sequence
+### Phrase, Sequence
 
-A Source provides a value that can vary over time. It is the base for the various Phrase types and Sequence.
+A Phrase defines a simple change in value over time. The built-in phrase types include various Ramps and Holds. It is simple to add your own Phrases by extending Phrase<T>.
 
-A Phrase defines a simple change in value over time. The built-in phrase types include various Ramps and Holds. It is simple to add your own Phrases by implementing the Source<T> interface.
+A Sequence is a collection of phrases. Sequences are the main object you will manipulate to build animations. A method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time. Sequences can also be added to each other, either by wrapping them in a Phrase or by duplicating the Phrases from another Sequence.
 
-A Sequence is a collection of phrases. Sequences are the main object you will manipulate to build animations. A method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time. Sequences also happen to be Sources, so you can combine them into new Sequences.
-
-Sequences are conceptually timeless, you can query their value at any point in time and always get a valid response; they are clamped at their endpoints.
+Sequences and Phrases have a duration but no concept of what time it is or playing. They interpolate values within their duration and clamp values below zero and past their duration.
 
 ### Motion and Output
 
-A Motion is the application of a choreograph Sequence. It uses a Sequence to move some external variable in time. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they should happen and currently are.
+A Motion connects a Sequence to an Output. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they currently are.
 
-Motions apply the values from a Sequence to an Output. Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop.
+Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop.
 
-You can use a raw pointer to any type as an output, as well, but you need to be very careful about object lifetime and memory management since there will be no smart communication between your non-Output<T> pointer and the Motion.
+Motions can also be connected to raw pointers. If you go this route, you need to be very careful about object lifetime and memory management. The Motion will have no way to know if the raw pointer becomes invalid, and the raw pointer won’t know anything about the Motion.
+
+A Connection object handles the actual lifetime management between the Sequence and the Output. It is composed into the Motion, so you don’t need to worry about its details.
 
 ### Timeline
 Timelines manage a collection of Motions. They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in place.
+
+When you create a Motion with a Timeline, you receive a MotionOptions object that can manipulate the underlying Sequence as well as the Motion.
 
 ## Building and running
 
@@ -81,7 +83,7 @@ Choreograph’s tests use the Catch framework, which is included in the tests/ d
 
 Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This will enable a handful of additional tests.
 
-Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph's performance vs ci::Timeline.
+Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph’s performance against ci::Timeline.
 
 Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of [Cinder's glNext branch](https://github.com/cinder/cinder/tree/glNext) should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 
