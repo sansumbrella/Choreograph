@@ -62,6 +62,8 @@ Motions can also be connected to raw pointers. If you go this route, you need to
 
 A Connection object handles the actual lifetime management between the Sequence and the Output. It is composed into the Motion, so you don’t need to worry about its details.
 
+Generally, you will not create any of the above objects directly, but will receive an interface to them by creating a motion with a Timeline.
+
 ### Timeline
 Timelines manage a collection of Motions. They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in place.
 
