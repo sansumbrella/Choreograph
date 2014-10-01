@@ -46,9 +46,9 @@ TEST_CASE( "Creating Motions" ) {
 
   vector<Output<vec2>> targets( count, vec2( 0 ) );
   {
-    ScopedTimer timer( "Creating Motions" );
+    ScopedTimer timer( "Creating Motions with Callbacks" );
     for( auto &target : targets ) {
-      test_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).finishFn( [] {} );
+      test_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).startFn( [] {} ).updateFn( [] ( const vec2 &value ) { value + vec2(1); } ).finishFn( [] {} );
     }
   }
 
