@@ -79,6 +79,7 @@ public:
   inline Time normalizeTime( Time t ) const { return t / _duration; }
   /// Returns the duration of this source.
   inline Time getDuration() const { return _duration; }
+  void setDuration( Time t ) { _duration = t; }
 
   /// Wrap \a time around \a inflectionPoint in the Sequence.
   Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
@@ -92,8 +93,7 @@ public:
   }
 
 private:
-  // To change the duration, create a new phrase and insert it in your sequence.
-  const Time _duration = 0;
+  Time _duration = 0;
 };
 
 template<typename T>

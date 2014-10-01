@@ -103,6 +103,8 @@ public:
   /// Returns the Sequence value at \a atTime.
   T getValue( Time atTime ) const;
 
+  T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
+
   /// Returns the value at the end of the Sequence.
   T getEndValue() const { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
 
@@ -119,7 +121,18 @@ public:
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
-  Time getDuration() const { return _duration; }
+  Time getDuration() const;
+
+  /// Wrap \a time around \a inflectionPoint in the Sequence.
+  Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
+  {
+    if( time > getDuration() ) {
+      return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
+    }
+    else {
+      return time;
+    }
+  }
 
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
@@ -128,9 +141,6 @@ private:
   // use shared_ptr here and allow sharing/external manipulation if desired.
   std::vector<PhraseRef<T>> _phrases;
   T                         _initial_value;
-  Time                      _duration = 0;
-
-  void setDuration( Time t ) { _duration = t; }
 };
 
 //=================================================
@@ -154,7 +164,6 @@ template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
   _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
-  this->setDuration( this->getDuration() + duration );
 
   return *this;
 }
@@ -163,7 +172,6 @@ template<typename T>
 Sequence<T>& Sequence<T>::then( const Phrase<T> &phrase )
 {
   std::unique_ptr<Phrase<T>> p( phrase.clone() );
-  this->setDuration( this->getDuration() + p->getDuration() );
 
   _phrases.emplace_back( std::move( p ) );
 
@@ -173,7 +181,6 @@ Sequence<T>& Sequence<T>::then( const Phrase<T> &phrase )
 template<typename T>
 Sequence<T>& Sequence<T>::then( const std::shared_ptr<Phrase<T>> &phrase )
 {
-  this->setDuration( this->getDuration() + phrase->getDuration() );
   _phrases.push_back( phrase );
 
   return *this;
@@ -213,6 +220,16 @@ T Sequence<T>::getValue( Time atTime ) const
   // past the end, get the final value
   // this should be unreachable, given that we return early if time >= duration
   return getEndValue();
+}
+
+template<typename T>
+Time Sequence<T>::getDuration() const
+{
+  Time sum = 0;
+  for( const auto &phrase : _phrases ) {
+    sum += phrase->getDuration();
+  }
+  return sum;
 }
 
 //=================================================
