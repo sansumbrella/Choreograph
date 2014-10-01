@@ -12,5 +12,16 @@ Remove the clone() method from Phrase.
 Rename Source<T> to Phrase<T> (probably).
 Don't let people change duration.
 Instead, easier insert/remove phrases from sequence. Just create a new one with the duration you want.
-Copy phrases from Sequence when doing continuations.
+Copy Phrases from Sequence when doing continuations.
 Generally immutable data (for parts the sequence cares about).
+
+What if Sequences were not Phrases?
+- immutable Phrase duration becomes consistent rule.
+- no need for friend declaration.
+- CombinePhrase couldn't wrap Sequences if it's wrapping Phrases
+- Phrase decorator could compose a Sequence (it might need a note not to change the Sequence, or it could copy the Sequence)
+- Sequence::makePhrase() wraps Sequence in that Phrase decorator.
+- CombinePhrase variant could wrap Sequences
+
+Phrases are primarily immutable motions.
+Certain phrases, like Mix and Combine, have a small mutable interface.
