@@ -89,11 +89,14 @@ public:
   Sequence<T>& then( const Source<T> &phrase );
 
   /// Clones and appends a phrase to the end of the sequence.
-  /// Specialized to handle shared_ptr's correctly.
-  Sequence<T>& then( const std::shared_ptr<Source<T>> &phrase_ptr ) { return then( *phrase_ptr ); }
+  Sequence<T>& then( const std::shared_ptr<Source<T>> &phrase_ptr );
 
-  /// Clone and append all Phrases from another Sequence to this Sequence.
+  /// Append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
+
+  /// Append all Phrases from another Sequence to this Sequence.
+  /// Specialized to handle shared_ptr's correctly.
+  Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { then( *next ); }
 
   //
   // Source<T> Overrides.
@@ -118,23 +121,13 @@ public:
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
-  /// Add two sequences together to form a third sequence.
-  static Sequence<T> concatenate( Sequence<T> lhs, const Sequence<T> &rhs ) { return lhs.then( rhs ); }
-
-  /// Recursively concatenate any number of sequences.
-  template<typename... Args>
-  static Sequence<T> concatenate( const Sequence<T> &first, const Sequence<T> &second, Args... additional )
-  {
-    return concatenate( concatenate( first, second ), std::forward<Args>( additional )... );
-  }
-
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
   // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
   // Since we are now storing only duration in phrases (rather than start + end times), it's probably fine to
   // use shared_ptr here and allow sharing/external manipulation if desired.
-  std::vector<SourceUniqueRef<T>> _phrases;
-  T                               _initial_value;
+  std::vector<SourceRef<T>> _phrases;
+  T                         _initial_value;
 };
 
 //=================================================
@@ -175,10 +168,19 @@ Sequence<T>& Sequence<T>::then( const Source<T> &phrase )
 }
 
 template<typename T>
+Sequence<T>& Sequence<T>::then( const std::shared_ptr<Source<T>> &phrase )
+{
+  this->setDuration( this->getDuration() + phrase->getDuration() );
+  _phrases.push_back( phrase );
+
+  return *this;
+}
+
+template<typename T>
 Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
 {
-  for( auto &phrase : next._phrases ) {
-    then( *phrase );
+  for( const auto &phrase : next._phrases ) {
+    then( phrase );
   }
 
   return *this;
