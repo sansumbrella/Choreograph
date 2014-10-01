@@ -94,12 +94,16 @@ public:
   }
 
 private:
+  // Duration is a generally immutable property of Phrases.
+  // To change the duration, create a new phrase and insert it in your sequence.
+  // This eliminates event-routing, memory allocation, and lifetime management issues.
   Time _duration = 0;
 
   /// Sets the duration of this source.
   /// Generally, create a new source with the duration you want and use that.
   inline void setDuration( Time duration ) { _duration = duration; }
 
+  // Sequences can change duration, and can update their component Phrases
   friend class Sequence<T>;
 };
 
