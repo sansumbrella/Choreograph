@@ -10,3 +10,7 @@ Next step:
 Sequences to hold shared_ptr’s to their underlying Phrases.
 Remove the clone() method from Phrase.
 Rename Source<T> to Phrase<T> (probably).
+Don't let people change duration.
+Instead, easier insert/remove phrases from sequence. Just create a new one with the duration you want.
+Copy phrases from Sequence when doing continuations.
+Generally immutable data (for parts the sequence cares about).

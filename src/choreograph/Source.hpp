@@ -77,8 +77,6 @@ public:
   inline Time normalizeTime( Time t ) const { return t / _duration; }
   /// Returns the duration of this source.
   inline Time getDuration() const { return _duration; }
-  /// Sets the duration of this source.
-  inline void setDuration( Time duration ) { _duration = duration; }
 
   /// Wrap \a time around \a inflectionPoint in the Sequence.
   Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
@@ -93,6 +91,12 @@ public:
 
 private:
   Time _duration = 0;
+
+  /// Sets the duration of this source.
+  /// Generally, create a new source with the duration you want and use that.
+  inline void setDuration( Time duration ) { _duration = duration; }
+
+  friend class Sequence<T>;
 };
 
 template<typename T>
