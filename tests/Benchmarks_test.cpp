@@ -48,7 +48,7 @@ TEST_CASE( "Creating Motions" ) {
   {
     ScopedTimer timer( "Creating Motions" );
     for( auto &target : targets ) {
-      test_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f );
+      test_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).finishFn( [] {} );
     }
   }
 

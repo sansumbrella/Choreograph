@@ -97,12 +97,13 @@ public:
   Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { return then( *next ); }
 
   //
-  // Phrase<T> Overrides.
+  // Phrase<T> Equivalents.
   //
 
   /// Returns the Sequence value at \a atTime.
   T getValue( Time atTime ) const;
 
+  /// Returns the Sequence value at \a atTime, wrapped past the end of .
   T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
 
   /// Returns the value at the end of the Sequence.
@@ -114,6 +115,12 @@ public:
   /// Returns a SequenceUniqueRef<T> with copies of all the phrases in this Sequence.
   PhraseUniqueRef<T> clone() const { return PhraseUniqueRef<T>( new Sequence<T>( *this ) ); }
 
+  /// Wrap \a time around \a inflectionPoint in the Sequence.
+  Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const;
+
+  /// Returns the Sequence duration.
+  Time getDuration() const { return _duration; }
+
   //
   //
   //
@@ -121,18 +128,8 @@ public:
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
-  Time getDuration() const;
-
-  /// Wrap \a time around \a inflectionPoint in the Sequence.
-  Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
-  {
-    if( time > getDuration() ) {
-      return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
-    }
-    else {
-      return time;
-    }
-  }
+  /// Recalculate Sequence duration. Might never be used...
+  void calcDuration();
 
 private:
   // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
@@ -141,10 +138,11 @@ private:
   // use shared_ptr here and allow sharing/external manipulation if desired.
   std::vector<PhraseRef<T>> _phrases;
   T                         _initial_value;
+  Time                      _duration = 0;
 };
 
 //=================================================
-// Sequence Implementation.
+// Sequence Template Implementation.
 //=================================================
 
 template<typename T>
@@ -164,6 +162,7 @@ template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
   _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
+  _duration += duration;
 
   return *this;
 }
@@ -172,8 +171,10 @@ template<typename T>
 Sequence<T>& Sequence<T>::then( const Phrase<T> &phrase )
 {
   std::unique_ptr<Phrase<T>> p( phrase.clone() );
+  _duration += phrase.getDuration();
 
   _phrases.emplace_back( std::move( p ) );
+  _duration += p->getDuration();
 
   return *this;
 }
@@ -182,6 +183,7 @@ template<typename T>
 Sequence<T>& Sequence<T>::then( const std::shared_ptr<Phrase<T>> &phrase )
 {
   _phrases.push_back( phrase );
+  _duration += phrase->getDuration();
 
   return *this;
 }
@@ -223,13 +225,24 @@ T Sequence<T>::getValue( Time atTime ) const
 }
 
 template<typename T>
-Time Sequence<T>::getDuration() const
+void Sequence<T>::calcDuration()
 {
   Time sum = 0;
   for( const auto &phrase : _phrases ) {
     sum += phrase->getDuration();
   }
-  return sum;
+  _duration = sum;
+}
+
+template<typename T>
+Time Sequence<T>::wrapTime( Time time, Time inflectionPoint ) const
+{
+  if( time > getDuration() ) {
+    return inflectionPoint + std::fmod( time, getDuration() - inflectionPoint );
+  }
+  else {
+    return time;
+  }
 }
 
 //=================================================
