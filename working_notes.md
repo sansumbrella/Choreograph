@@ -20,7 +20,7 @@ What if Sequences were not Phrases?
 - no need for friend declaration.
 - CombinePhrase couldn't wrap Sequences if it's wrapping Phrases
 - Phrase decorator could compose a Sequence (it might need a note not to change the Sequence, or it could copy the Sequence)
-- Sequence::makePhrase() wraps Sequence in that Phrase decorator.
+- Sequence::makePhrase() wraps Sequence in the above-mentioned Phrase decorator.
 - CombinePhrase variant could wrap Sequences
 
 Phrases are primarily immutable motions.
