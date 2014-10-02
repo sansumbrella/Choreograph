@@ -442,7 +442,9 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     Sequence<vec2> slide_x( vec2( 0 ) );
     slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
 
-    auto combine = CombinePhrase<vec2>::create( 3.0f, slide_x.asPhrase(), 0.5f, LoopPhrase<vec2>::create( bounce_y.asPhrase(), 3 ), 1.0f );
+    auto combine = CombinePhrase<vec2>::create( 3.0f, slide_x.asPhrase(), 0.5f,
+                                                      LoopPhrase<vec2>::create( bounce_y.asPhrase(), 3 ), 1.0f,
+                                                      bounce_y.asPhrase(), 1.0f );
     sequence.then( combine );
     for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
     {
