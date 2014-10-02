@@ -450,6 +450,10 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     {
       cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
     }
+
+    REQUIRE( sequence.getValue( 0.5 ).y == 20.0 ); // both bounces up
+    REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only looping bounce up
+    REQUIRE( sequence.getEndValue().x == 50.0 ); // slide only 50%
   }
 }
 
