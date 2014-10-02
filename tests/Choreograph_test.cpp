@@ -442,11 +442,12 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     Sequence<vec2> slide_x( vec2( 0 ) );
     slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
 
-//    sequence.then( CombinePhrase<vec2>( 3.0f, slide_x, 0.5f ).add( LoopPhrase<vec2>( bounce_y ), 1.0f ) );
-//    for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
-//    {
-//      cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
-//    }
+    auto combine = CombinePhrase<vec2>::create( 3.0f, slide_x.asPhrase(), 0.5f, LoopPhrase<vec2>::create( bounce_y.asPhrase(), 3 ), 1.0f );
+    sequence.then( combine );
+    for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
+    {
+      cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
+    }
   }
 }
 

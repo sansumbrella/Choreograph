@@ -45,6 +45,9 @@ class Sequence;
 template<typename T>
 using SequenceRef = std::shared_ptr<Sequence<T>>;
 
+template<typename T>
+using SequenceUniqueRef = std::unique_ptr<Sequence<T>>;
+
 /**
  A Sequence of motions.
  Our essential compositional tool, describing all the transformations to one element.
@@ -69,10 +72,10 @@ public:
 
   /// Construct a Sequence by duplicating the phrases in an \a other sequence.
   Sequence( const Sequence<T> &other ):
-    _initial_value( other._initial_value )
-  {
-    then( other );
-  }
+    _initial_value( other._initial_value ),
+    _phrases( other._phrases ),
+    _duration( calcDuration() )
+  {}
 
   //
   // Sequence manipulation and expansion.
@@ -102,7 +105,9 @@ public:
   Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { return then( *next ); }
 
   /// Returns a Phrase that encapsulates this Sequence.
-  SequencePhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( std::make_shared<Sequence<T>>( *this ) ); }
+  /// Duplicates the Sequence, so future changes to this do not affect the Phrase.
+  SequencePhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( std::unique_ptr<Sequence<T>>( new Sequence<T>( *this ) ) ); }
+
   //
   // Phrase<T> Equivalents.
   //
@@ -258,16 +263,15 @@ SequenceRef<T> createSequence( const T &initialValue )
 //=================================================
 
 /// A Phrase that wraps up a Sequence.
-/// Note that the Sequence should not change after it has been wrapped.
-/// Currently the immutability of the underlying Sequence is not enforced.
+/// Note that the Sequence becomes immutable, as it is inaccessible outside of the phrase.
 template<typename T>
 class SequencePhrase: public Phrase<T>
 {
 public:
   /// Construct a Phrase that wraps a Sequence, allowing it to be passed into meta-Phrases.
-  SequencePhrase( const SequenceRef<T> &sequence ):
+  SequencePhrase( SequenceUniqueRef<T> &&sequence ):
     Phrase<T>( sequence->getDuration() ),
-    _sequence( sequence )
+    _sequence( std::move( sequence ) )
   {}
 
   /// Returns the interpolated value at the given time.
@@ -277,7 +281,7 @@ public:
 
   T getEndValue() const override { return _sequence->getEndValue(); }
 private:
-  SequenceRef<T>  _sequence;
+  SequenceUniqueRef<T>  _sequence;
 };
 
 } // namespace choreograph

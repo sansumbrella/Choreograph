@@ -220,6 +220,21 @@ public:
     return *this;
   }
 
+  template<typename... Args>
+  void add( const PhraseRef<T> &source, float factor, Args&&... args )
+  {
+    add( source, factor );
+    add( std::forward<Args>( args )... );
+  }
+
+  template<typename... Args>
+  static std::shared_ptr<CombinePhrase<T>> create( Time duration, Args&&... args )
+  {
+    auto phrase = std::shared_ptr<CombinePhrase<T>>( new CombinePhrase<T>( duration ) );
+    phrase->add( std::forward<Args>( args )... );
+    return phrase;
+  }
+
   T getValue( Time atTime ) const override
   {
     T value = _sources.front().first->getValue( atTime ) * _sources.front().second;
@@ -233,6 +248,9 @@ public:
   T getEndValue() const override { return getValue( this->getDuration() ); }
 
 private:
+  CombinePhrase( Time duration ):
+    Phrase<T>( duration )
+  {}
   // Collection of shared_ptr, mix pairs.
   // shared_ptr since unique_ptr made copying/moving std::pair impossible
   std::vector<std::pair<PhraseRef<T>, float>>  _sources;
@@ -248,6 +266,11 @@ public:
     _source( source ),
     _inflection_point( inflectionPoint )
   {}
+
+  static std::shared_ptr<LoopPhrase<T>> create( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+  {
+    return std::make_shared<LoopPhrase<T>>( source, numLoops, inflectionPoint );
+  }
 
   T getValue( Time atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
   T getStartValue() const override { return _source->getStartValue(); }
