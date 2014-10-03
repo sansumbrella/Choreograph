@@ -232,7 +232,7 @@ TEST_CASE( "Motion Speed and Reversal" )
     timeline.setAutoRemove( false );
     timeline.apply( &target, sequence );
 
-    vector<Time> times = { 0.5, 0.2, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3, 0.5 };
+    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
     for( auto &t : times )
     {
       timeline.jumpTo( t );
