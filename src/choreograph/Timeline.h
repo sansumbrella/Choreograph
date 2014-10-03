@@ -54,17 +54,13 @@ public:
   //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
-  SelfT& startMotionFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
-  /// Set function to be called when Motion starts. Receives no arguments.
-  SelfT& startFn( const typename Motion<T>::EmptyCallback &fn ) { _motion->startFn( fn ); return *this; }
+  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
 
   /// Set function to be called when Motion updates. Receives current target value.
   SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->updateFn( fn ); return *this; }
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
-  SelfT& finishMotionFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
-  /// Set function to be called when Motion finishes. Receives no arguments.
-  SelfT& finishFn( const typename Motion<T>::EmptyCallback &fn ) { _motion->finishFn( fn ); return *this; }
+  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
 
   /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
   SelfT& continuous( bool isContinuous ) { _motion->continuous( isContinuous ); return *this; }

@@ -148,7 +148,6 @@ public:
   using SequenceRefT  = SequenceRef<T>;
   using DataCallback  = std::function<void (T&)>;
   using Callback      = std::function<void (MotionT&)>;
-  using EmptyCallback = std::function<void ()>;
 
   Motion() = delete;
 
@@ -176,13 +175,9 @@ public:
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
-  /// Set a function to be called when we start the sequence. Receives no arguments.
-  MotionT&  finishFn( const EmptyCallback &c ) { _finishFn = [c] (MotionT &) { c(); }; return *this; }
 
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
   MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
-  /// Set a function to be called when we start the sequence. Receives no arguments.
-  MotionT&  startFn( const EmptyCallback &c ) { _startFn = [c] (MotionT &) { c(); }; return *this; }
 
   /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
   MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
