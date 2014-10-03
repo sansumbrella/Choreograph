@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -49,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\\include";"..\..\..\..\\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\src\choreograph;..\src;..\include;..\..\..\..\\include;..\..\..\..\\boost</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\\include";"..\..\..\..\\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\src\choreograph;..\src;..\include;..\..\..\..\\include;..\..\..\..\\boost</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -106,15 +107,21 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\choreograph\Motion.cpp" />
+    <ClCompile Include="..\..\src\choreograph\Timeline.cpp" />
     <ClCompile Include="..\src\ChoreographDevApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\..\src\choreograph\Choreograph.hpp" />
-    <ClInclude Include="..\..\src\choreograph\Motion.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Connection.hpp" />
+    <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Motion.h" />
     <ClInclude Include="..\..\src\choreograph\Output.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Phrase.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Phrases.hpp" />
     <ClInclude Include="..\..\src\choreograph\Sequence.hpp" />
-    <ClInclude Include="..\..\src\choreograph\Timeline.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Timeline.h" />
+    <ClInclude Include="..\include\Resources.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

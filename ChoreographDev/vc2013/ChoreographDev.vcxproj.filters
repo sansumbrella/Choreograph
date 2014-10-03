@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -22,7 +23,7 @@
       <UniqueIdentifier>{6DEEAE35-B313-462C-BBAC-D272EA4707E6}</UniqueIdentifier>
     </Filter>
     <Filter Include="Blocks\Choreograph\src\choreograph">
-      <UniqueIdentifier>{AC34E116-982E-4E64-B6E1-567E26BF6AB5}</UniqueIdentifier>
+      <UniqueIdentifier>{6ff8e53b-ddaf-41ce-abef-2dcf0f883a39}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -35,25 +36,43 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Choreograph.hpp">
       <Filter>Blocks\Choreograph\src\choreograph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Motion.hpp">
+    <ClInclude Include="..\..\src\choreograph\Connection.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Motion.h">
       <Filter>Blocks\Choreograph\src\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Output.hpp">
       <Filter>Blocks\Choreograph\src\choreograph</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Phrase.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Phrases.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Sequence.hpp">
       <Filter>Blocks\Choreograph\src\choreograph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Timeline.hpp">
+    <ClInclude Include="..\..\src\choreograph\Timeline.h">
       <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\Resources.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
