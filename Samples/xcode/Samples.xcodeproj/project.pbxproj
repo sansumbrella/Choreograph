@@ -59,7 +59,7 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		2F3A6B0BE73D4A6984B10405 /* Samples_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Samples_Prefix.pch; sourceTree = "<group>"; };
-		3839DB7C4CB047F2BC061C67 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../ChoreographDev/resources/CinderApp.icns; sourceTree = "<group>"; };
+		3839DB7C4CB047F2BC061C67 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
 		389812C7005E449883D09C34 /* Timeline.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Timeline.h; path = ../../src/choreograph/Timeline.h; sourceTree = "<group>"; };
 		4187A9085E6748BDBEF76A2C /* Phrase.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Phrase.hpp; path = ../../src/choreograph/Phrase.hpp; sourceTree = "<group>"; };
 		4DA9E18E36634313A4718D00 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };

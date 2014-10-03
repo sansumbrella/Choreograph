@@ -70,8 +70,8 @@ void Hello::setup()
 
 void Hello::connect( app::WindowRef window )
 {
-  storeConnection( window->getSignalMouseDown().connect( [this] ( const app::MouseEvent &event ) {
-    vec3 center( event.getPos(), 0.0f );
+  auto seekPoint = [this] ( const ivec2 &point ) {
+    vec3 center( point, 0.0f );
     vec3 bounds( 100 );
     float delay = 0.0f;
     for( auto &thing : mThings ) {
@@ -79,6 +79,16 @@ void Hello::connect( app::WindowRef window )
       timeline().append( &thing.position ).hold( delay ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
 
       delay += 0.005f;
+    }
+  };
+
+  storeConnection( window->getSignalMouseDown().connect( [seekPoint] ( const app::MouseEvent &event ) {
+    seekPoint( event.getPos() );
+  } ) );
+
+  storeConnection( window->getSignalTouchesBegan().connect( [seekPoint] ( const app::TouchEvent &event ) {
+    for( auto &touch : event.getTouches() ) {
+      seekPoint( touch.getPos() );
     }
   } ) );
 }

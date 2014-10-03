@@ -27,10 +27,13 @@ private:
 void SamplesApp::prepareSettings( Settings *settings )
 {
   settings->setWindowSize( 1280, 720 );
+  settings->enableMultiTouch();
+  settings->disableFrameRate();
 }
 
 void SamplesApp::setup()
 {
+#ifndef CINDER_COCOA_TOUCH
 ///*
   mParams = params::InterfaceGl::create( "Choreograph Samples", ivec2( 200, 200 ) );
   mParams->addParam( "Sample", SampleNames, &mSceneIndex );
@@ -38,10 +41,13 @@ void SamplesApp::setup()
   mParams->addButton( "Prev", [this] { loadSample( mSceneIndex - 1 ); } );
   mParams->addButton( "Reload", [this] { loadSample( mSceneIndex ); } );
 // */
+#endif
   // Draw our app first, so samples show up over top.
   getWindow()->getSignalDraw().connect( 0, [this] {
     gl::clear( Color::black() );
+#ifndef CINDER_COCOA_TOUCH
     mParams->draw();
+#endif
   } );
 
   loadSample( 0 );
@@ -69,4 +75,4 @@ void SamplesApp::update()
   }
 }
 
-CINDER_APP_NATIVE( SamplesApp, RendererGl )
+CINDER_APP_NATIVE( SamplesApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
