@@ -95,7 +95,7 @@ public:
   template<typename U>
   SelfT& after( U *other );
 
-  SelfT& delay( Time t ) { _motion->setStartTime( _motion->getStartTime() + t ); return *this; }
+  SelfT& shiftStartTime( Time t ) { _motion->setStartTime( _motion->getStartTime() + t ); return *this; }
 
 private:
   MotionRef<T>    _motion;
@@ -157,7 +157,7 @@ public:
   // Creating Cues.
   //=================================================
 
-  /// Add a cue to the timeline. It will be called after \a delay time elapses.
+  /// Add a cue to the timeline. It will be called after \a delay time elapses on this Timeline.
   void cue( const std::function<void ()> &fn, Time delay );
 
   //=================================================
