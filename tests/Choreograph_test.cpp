@@ -128,9 +128,9 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     int           updateCount = 0;
     float         updateTarget = 0;
 
-    timeline.apply( &target ).startFn( [&startCalled] { startCalled = true; } )
+    timeline.apply( &target ).startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
       .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
-      .finishFn( [&endCalled] { endCalled = true; } )
+      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } )
       .then<RampTo>( 10.0f, 1.0f );
 
     SECTION( "Callbacks from step" )
