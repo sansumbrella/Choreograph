@@ -60,7 +60,7 @@ TEST_CASE( "Raw Pointers" ) {
     motion.jumpTo( 1.5f );
     REQUIRE( target == 10.0f );
 
-    timeline.apply( &target, sequence );
+    timeline.applyRaw( &target, sequence );
     REQUIRE( motion.isValid() == true ); // Working with raw pointer, no management will have happened.
 
     timeline.jumpTo( 0.0f );

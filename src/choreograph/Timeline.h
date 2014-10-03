@@ -142,16 +142,16 @@ public:
   /// Apply a source to output, overwriting any previous connections. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of apply( Output<T> *output ) over this version.
   template<typename T>
-  MotionOptions<T> apply( T *output );
+  MotionOptions<T> applyRaw( T *output );
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> apply( T *output, const SequenceRef<T> &sequence );
+  MotionOptions<T> applyRaw( T *output, const SequenceRef<T> &sequence );
 
   /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
-  MotionOptions<T> append( T *output );
+  MotionOptions<T> appendRaw( T *output );
 
   //=================================================
   // Creating Cues.
@@ -242,7 +242,7 @@ MotionOptions<T> Timeline::append( Output<T> *output )
 }
 
 template<typename T>
-MotionOptions<T> Timeline::apply( T *output )
+MotionOptions<T> Timeline::applyRaw( T *output )
 { // Remove any existing motions that affect the same variable.
   // This is a raw pointer, so we don't know about any prior relationships.
   remove( output );
@@ -256,7 +256,7 @@ MotionOptions<T> Timeline::apply( T *output )
 }
 
 template<typename T>
-MotionOptions<T> Timeline::apply( T *output, const SequenceRef<T> &sequence )
+MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
@@ -266,7 +266,7 @@ MotionOptions<T> Timeline::apply( T *output, const SequenceRef<T> &sequence )
 }
 
 template<typename T>
-MotionOptions<T> Timeline::append( T *output )
+MotionOptions<T> Timeline::appendRaw( T *output )
 {
   auto motion = find( output );
   if( motion ) {

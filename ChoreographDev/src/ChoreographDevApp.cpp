@@ -38,12 +38,12 @@ private:
 void ChoreographDevApp::setup()
 {
 
-  auto redMotion = _timeline.apply( &_ball_y );
+  auto redMotion = _timeline.applyRaw( &_ball_y );
   redMotion.startFn( []( Motion<float> &m ) { app::console() << "Start red" << endl; } ).startFn( [] ( Motion<float> &m ) { app::console() << "Empty whateva" << endl; } );
 
   redMotion.set( 5.0f ).then<RampTo>( 500.0f, 1.0f, EaseInOutQuad() ).then<Hold>( 500.0f, 2.0f ).then<RampTo>( 700.0f, 1.0f, EaseNone() ).then<RampTo>( 200.0f, 1.0f );
 
-  auto blueMotion = _timeline.apply( &_ball_2 );
+  auto blueMotion = _timeline.applyRaw( &_ball_2 );
   blueMotion.startFn( [] (Motion<vec2> &c) { app::console() << "Start blue" << endl; } )
   .finishFn( [] (Motion<vec2> &c) { c.playbackSpeed( c.getPlaybackSpeed() * -1.0f ); } )
   .continuous( true )
