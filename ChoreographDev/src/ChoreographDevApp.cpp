@@ -47,12 +47,13 @@ void ChoreographDevApp::setup()
   blueMotion.startMotionFn( [] (Motion<vec2> &c) { app::console() << "Start blue" << endl; } )
   .finishMotionFn( [] (Motion<vec2> &c) { c.playbackSpeed( c.getPlaybackSpeed() * -1.0f ); } )
   .continuous( true )
-  .updateFn( [&] (const vec2 &v) {
+  .updateFn( [&] (vec2 &v) {
     vec2 size = app::getWindowSize();
     float shortest = std::min( v.x, size.x - v.x );
     shortest = std::min( shortest, size.y - v.y );
     shortest = std::min( shortest, v.y );
     _ball_radius = 12.0f + shortest / 2;
+	// v *= 0.5f;
   } );
 
   blueMotion.then<RampTo>( vec2( getWindowSize() ) / 2.0f, 1.0f )
