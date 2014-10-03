@@ -96,19 +96,18 @@ void Sink::draw()
   gl::disableDepthRead();
   gl::disableDepthWrite();
 
-  gl::clear( Color( 0, 0, 0 ) );
-  gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+  gl::ScopedColor red( Color( 1.0f, 0.0f, 0.0f ) );
   gl::drawSolidCircle( vec2( 200.0f, mBallY() ), 120.0f );
-  gl::color( 0.0f, 0.0f, 1.0f );
+  gl::ScopedColor blue( Color( 0.0f, 0.0f, 1.0f ) );
   gl::drawSolidCircle( mBall2, mBallRadius );
 
-  gl::color( 0.0f, 1.0f, 0.0f );
+  gl::ScopedColor green( Color( 0.0f, 1.0f, 0.0f ) );
   gl::drawSolidCircle( mMouseAppend, 40.0f );
 
-  gl::color( Color( "steelblue" ) );
+  gl::ScopedColor steelblue( Color( "steelblue" ) );
   gl::drawSolidCircle( mMouseApply, 30.0f );
 
-  gl::color( Color( "magenta" ) );
+  gl::ScopedColor magenta( Color( "magenta" ) );
   gl::drawSolidCircle( mArced, 30.0f );
 
   gl::enableDepthRead();
