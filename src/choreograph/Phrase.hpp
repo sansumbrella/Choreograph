@@ -30,6 +30,7 @@
 // Includes needed for tests to build (since they don't include the pch).
 #include <functional>
 #include <vector>
+#include <array>
 #include <cmath>
 #include <memory>
 

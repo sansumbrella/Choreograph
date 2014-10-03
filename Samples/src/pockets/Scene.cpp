@@ -7,7 +7,6 @@
 //
 
 #include "Scene.h"
-#include "cinder/app/App.h"
 
 using namespace pockets;
 using namespace cinder;

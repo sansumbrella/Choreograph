@@ -11,6 +11,8 @@
 #include "ConnectionManager.h"
 #include "cinder/app/Window.h"
 #include "cinder/Timer.h"
+#include "cinder/app/App.h"
+#include "cinder/gl/gl.h"
 
 #include "choreograph/Choreograph.hpp"
 #include "cinder/Easing.h"

@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "Scene.h"
+#include "pockets/Scene.h"
 
 struct Thing
 {

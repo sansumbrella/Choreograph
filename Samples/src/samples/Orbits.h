@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include "Scene.h"
+#include "pockets/Scene.h"
 
 class Orbits : public pk::Scene
 {

@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -49,7 +50,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\\include";"..\..\..\..\\boost";..\..\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\include;..\..\..\..\\include;..\..\..\..\\boost;..\..\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -75,7 +76,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"..\..\..\..\\include";"..\..\..\..\\boost";..\..\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src;..\include;..\..\..\..\\include;..\..\..\..\\boost;..\..\src</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -106,9 +107,14 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\pockets\ConnectionManager.cpp" />
+    <ClCompile Include="..\src\pockets\Scene.cpp" />
     <ClCompile Include="..\src\SamplesApp.cpp" />
     <ClCompile Include="..\..\src\choreograph\Motion.cpp" />
     <ClCompile Include="..\..\src\choreograph\Timeline.cpp" />
+    <ClCompile Include="..\src\samples\Hello.cpp" />
+    <ClCompile Include="..\src\samples\Orbits.cpp" />
+    <ClCompile Include="..\src\samples\Wings.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
@@ -121,6 +127,13 @@
     <ClInclude Include="..\..\src\choreograph\Motion.h" />
     <ClInclude Include="..\..\src\choreograph\Timeline.h" />
     <ClInclude Include="..\..\src\specialization\CinderSpecialization.hpp" />
+    <ClInclude Include="..\src\pockets\ConnectionManager.h" />
+    <ClInclude Include="..\src\pockets\Pockets.h" />
+    <ClInclude Include="..\src\pockets\Scene.h" />
+    <ClInclude Include="..\src\samples\Hello.h" />
+    <ClInclude Include="..\src\samples\Orbits.h" />
+    <ClInclude Include="..\src\samples\Samples.h" />
+    <ClInclude Include="..\src\samples\Wings.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

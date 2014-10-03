@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -26,6 +27,12 @@
     </Filter>
     <Filter Include="Blocks\Choreograph\src\specialization">
       <UniqueIdentifier>{ACB0FC4E-68CD-4C40-9D10-B1859B934E5F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\pockets">
+      <UniqueIdentifier>{4ff77185-5e0d-4fdf-bdd4-88eccea43ba1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\samples">
+      <UniqueIdentifier>{44289b45-3777-43bf-bd14-153bee590cc1}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -71,10 +78,46 @@
     <ClInclude Include="..\..\src\specialization\CinderSpecialization.hpp">
       <Filter>Blocks\Choreograph\src\specialization</Filter>
     </ClInclude>
+    <ClCompile Include="..\src\pockets\ConnectionManager.cpp">
+      <Filter>Source Files\pockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\Scene.cpp">
+      <Filter>Source Files\pockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\samples\Hello.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\samples\Orbits.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\samples\Wings.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\ConnectionManager.h">
+      <Filter>Source Files\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\Pockets.h">
+      <Filter>Source Files\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\Scene.h">
+      <Filter>Source Files\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\Hello.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\Orbits.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\Samples.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\Wings.h">
+      <Filter>Source Files\samples</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
