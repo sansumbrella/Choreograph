@@ -1,7 +1,7 @@
 # Choreograph
 
 A simple C++11 animation and timing library.  
-v0.2.0 development. API is unstable.
+v0.2.0 development. API is stabilizing.
 
 ## Features
 - Timeline-based animation of generic properties.
@@ -34,7 +34,7 @@ v0.2.0 development. API is unstable.
 					.finishFn( [] (Motion<float> &m) { cout << "Finished animating value B." << endl; } );
 
 	// Use a pre-defined sequence
-	auto sequence = make_shared<Sequence<float>>();
+	auto sequence = createSequence( 0.0f ); // create a SequenceRef<float> with starting value of 0.0f
 	sequence->set( 100.0f )
 		.then<RampTo>( 50.0f, 1.0f )
 		.then<Hold>( 50.0f, 1.0f )
@@ -60,9 +60,22 @@ A Motion connects a Sequence to an Output. Motions have a sense of starting, fin
 
 Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop.
 
-```
-// Can safely be animated by a choreograph::Timeline
+```c++
+// Outputs can safely be animated by a choreograph::Timeline
 choreograph::Output<vec3>	output;
+choreograph::Timeline timeline;
+timeline.apply( &output ).then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
+timeline.step( 1.0 / 60.0 );
+
+// If you can't wrap your animation target in an Output template for some reason,
+// you can still animate it with a choreograph::Timeline, but you need to synchronize
+// the lifetime of both objects.
+// Instead, consider creating a choreograph::Sequence and assigning values to rawOutput manually.
+// That way you aren't passing raw pointers around.
+vec3 rawOutput;
+Sequence<vec3> sequence( vec3(1.0) ); // create Sequence with initial value.
+sequence.then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
+rawOutput = sequence.getValue( animationTime );
 ```
 
 Motions can also be connected to raw pointers. If you go this route, you need to be very careful about object lifetime and memory management. The Motion will have no way to know if the raw pointer becomes invalid, and the raw pointer won’t know anything about the Motion.
@@ -78,11 +91,9 @@ When you create a Motion with a Timeline, you receive a MotionOptions object tha
 
 ## Building and running
 
-Initial v0.2.0 development is being done with Xcode 6 on Mac OS 10.9 and Visual Studio 2013 on Windows 7. You should be able to use Choreograph with either platform. No support for earlier compilers is planned.
-
 Include the headers in your search path and add the .cpp files to your project (drag them in) and everything should just work. If you are working with Cinder, you can create a new project with Tinderbox and include Choreograph as a block.
 
-Development, including running tests, is done with the ChoreographDev project. The dev app is a dumping ground for various thoughts on the library. Code likely won’t live there for long, but may find new life in the tests or as a sample.
+Development, including running tests, is done with the ChoreographDev project. The dev app is a dumping ground for various thoughts on the library. Code likely won’t live there for long, but may find new life in the tests or as a sample. The dev project is set up to work with Xcode 6 on Mac OS 10.9 and Visual Studio 2013 on Windows 7.
 
 ### Dependencies
 
