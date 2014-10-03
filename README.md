@@ -103,13 +103,11 @@ You will need a modern C++ compiler. Choreograph is known to work with Apple LLV
 
 Choreograph’s tests use the Catch framework, which is included in the tests/ directory.
 
-Tests are built and run with the ChoreographDev project. The dev project is set up to work with Xcode 6 on Mac OS 10.9 and Visual Studio 2013 on Windows 7.
+Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013.
 
 Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This will enable a handful of additional tests.
 
 Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph’s performance against ci::Timeline.
-
-The dev app target is a dumping ground for various thoughts on the library. Code likely won’t live there for long, but may find new life in the tests or as a sample.
 
 ### Building the Samples
 
