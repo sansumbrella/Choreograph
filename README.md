@@ -93,8 +93,6 @@ When you create a Motion with a Timeline, you receive a MotionOptions object tha
 
 Include the headers in your search path and add the .cpp files to your project (drag them in) and everything should just work. If you are working with Cinder, you can create a new project with Tinderbox and include Choreograph as a block.
 
-Development, including running tests, is done with the ChoreographDev project. The dev app is a dumping ground for various thoughts on the library. Code likely won’t live there for long, but may find new life in the tests or as a sample. The dev project is set up to work with Xcode 6 on Mac OS 10.9 and Visual Studio 2013 on Windows 7.
-
 ### Dependencies
 
 Choreograph itself has no third-party dependencies.
@@ -103,11 +101,15 @@ You will need a modern C++ compiler. Choreograph is known to work with Apple LLV
 
 ### Building the Tests
 
-Choreograph’s tests use the Catch framework, which is included in the tests/ directory. 
+Choreograph’s tests use the Catch framework, which is included in the tests/ directory.
+
+Tests are built and run with the ChoreographDev project. The dev project is set up to work with Xcode 6 on Mac OS 10.9 and Visual Studio 2013 on Windows 7.
 
 Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This will enable a handful of additional tests.
 
 Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph’s performance against ci::Timeline.
+
+The dev app target is a dumping ground for various thoughts on the library. Code likely won’t live there for long, but may find new life in the tests or as a sample.
 
 ### Building the Samples
 
