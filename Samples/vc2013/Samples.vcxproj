@@ -114,6 +114,7 @@
     <ClCompile Include="..\..\src\choreograph\Timeline.cpp" />
     <ClCompile Include="..\src\samples\Hello.cpp" />
     <ClCompile Include="..\src\samples\Orbits.cpp" />
+    <ClCompile Include="..\src\samples\Sink.cpp" />
     <ClCompile Include="..\src\samples\Wings.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +134,7 @@
     <ClInclude Include="..\src\samples\Hello.h" />
     <ClInclude Include="..\src\samples\Orbits.h" />
     <ClInclude Include="..\src\samples\Samples.h" />
+    <ClInclude Include="..\src\samples\Sink.h" />
     <ClInclude Include="..\src\samples\Wings.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

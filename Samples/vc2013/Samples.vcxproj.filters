@@ -93,6 +93,9 @@
     <ClCompile Include="..\src\samples\Wings.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\samples\Sink.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -117,6 +120,9 @@
       <Filter>Source Files\samples</Filter>
     </ClInclude>
     <ClInclude Include="..\src\samples\Wings.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\Sink.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
   </ItemGroup>
