@@ -15,6 +15,6 @@
 	<headerPattern>src/choreograph/*.h</headerPattern>
 	<sourcePattern>src/choreograph/*.cpp</sourcePattern>
 	<!-- Specialization for quaternion slerping. -->
-	<headerPattern>src/specialization/CinderSpecialization.hpp</headerPattern>
+	<headerPattern>src/choreograph/specialization/CinderSpecialization.hpp</headerPattern>
 </block>
 </cinder>

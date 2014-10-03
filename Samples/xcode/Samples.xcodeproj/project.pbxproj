@@ -50,9 +50,9 @@
 		15362C6019D8DA6C006BFAF1 /* Hello.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hello.h; sourceTree = "<group>"; };
 		1587D87A19DA322900943242 /* Orbits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orbits.cpp; sourceTree = "<group>"; };
 		1587D87B19DA322900943242 /* Orbits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orbits.h; sourceTree = "<group>"; };
+		15BA7BB919DF252B003E13A5 /* Phrases.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Phrases.hpp; path = ../../src/choreograph/Phrases.hpp; sourceTree = "<group>"; };
 		15C8EC6919D907B0005432F0 /* Wings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wings.cpp; sourceTree = "<group>"; };
 		15C8EC6A19D907B0005432F0 /* Wings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wings.h; sourceTree = "<group>"; };
-		1674CB9CE2294DFAAC9B25E3 /* Source.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Source.hpp; path = ../../src/choreograph/Source.hpp; sourceTree = "<group>"; };
 		1E1BF70DF69C49048CC3A4D3 /* Motion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Motion.cpp; path = ../../src/choreograph/Motion.cpp; sourceTree = "<group>"; };
 		2716547846CC4CFE927C75EE /* Timeline.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Timeline.cpp; path = ../../src/choreograph/Timeline.cpp; sourceTree = "<group>"; };
 		29A3EFF9476646AFA8055336 /* Sequence.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Sequence.hpp; path = ../../src/choreograph/Sequence.hpp; sourceTree = "<group>"; };
@@ -69,7 +69,6 @@
 		8D1107320486CEB800E47090 /* Samples.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Samples.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97D5B20D41E04ADB9573CB6A /* SamplesApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = SamplesApp.cpp; path = ../src/SamplesApp.cpp; sourceTree = "<group>"; };
 		B25A393591A6406DA425F06F /* Output.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Output.hpp; path = ../../src/choreograph/Output.hpp; sourceTree = "<group>"; };
-		B4A555ECB8B74DB9ADF6F806 /* CinderSpecialization.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = CinderSpecialization.hpp; path = ../../src/specialization/CinderSpecialization.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,14 +215,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		619B4AADD51C45E0A64C600C /* specialization */ = {
-			isa = PBXGroup;
-			children = (
-				B4A555ECB8B74DB9ADF6F806 /* CinderSpecialization.hpp */,
-			);
-			name = specialization;
-			sourceTree = "<group>";
-		};
 		88FAA7F837504B59BA2DD4CB /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
@@ -231,8 +222,8 @@
 				03560CF4A84E47EB989E5635 /* Connection.hpp */,
 				B25A393591A6406DA425F06F /* Output.hpp */,
 				4187A9085E6748BDBEF76A2C /* Phrase.hpp */,
+				15BA7BB919DF252B003E13A5 /* Phrases.hpp */,
 				29A3EFF9476646AFA8055336 /* Sequence.hpp */,
-				1674CB9CE2294DFAAC9B25E3 /* Source.hpp */,
 				821E728BE5C745D5903B5492 /* Motion.h */,
 				389812C7005E449883D09C34 /* Timeline.h */,
 				1E1BF70DF69C49048CC3A4D3 /* Motion.cpp */,
@@ -253,7 +244,6 @@
 			isa = PBXGroup;
 			children = (
 				88FAA7F837504B59BA2DD4CB /* choreograph */,
-				619B4AADD51C45E0A64C600C /* specialization */,
 			);
 			name = src;
 			sourceTree = "<group>";
