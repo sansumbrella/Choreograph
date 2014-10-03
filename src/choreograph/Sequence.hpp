@@ -106,7 +106,7 @@ public:
 
   /// Returns a Phrase that encapsulates this Sequence.
   /// Duplicates the Sequence, so future changes to this do not affect the Phrase.
-  SequencePhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( std::unique_ptr<Sequence<T>>( new Sequence<T>( *this ) ) ); }
+  PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( std::unique_ptr<Sequence<T>>( new Sequence<T>( *this ) ) ); }
 
   //
   // Phrase<T> Equivalents.

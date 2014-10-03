@@ -256,6 +256,13 @@ private:
   std::vector<std::pair<PhraseRef<T>, float>>  _sources;
 };
 
+/// Free function to make combining phrases easier in client code.
+template<typename T, typename... Args>
+std::shared_ptr<CombinePhrase<T>> combinePhrases( Time duration, const PhraseRef<T> &phrase_a, float mix_a, const PhraseRef<T> &phrase_b, float mix_b, Args&&... args )
+{
+  return CombinePhrase<T>::create( duration, phrase_a, mix_a, phrase_b, mix_b, std::forward<Args>( args )... );
+}
+
 template<typename T>
 class LoopPhrase : public Phrase<T>
 {
@@ -279,6 +286,13 @@ private:
   PhraseRef<T>  _source;
   Time          _inflection_point;
 };
+
+/// Free function to make creating looped phrases easier in client code.
+template<typename T>
+PhraseRef<T> loopPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+{
+  return LoopPhrase<T>::create( source, numLoops, inflectionPoint );
+}
 
 //=================================================
 // Weirder Phrases.
