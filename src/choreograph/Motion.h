@@ -146,7 +146,7 @@ class Motion : public MotionBase
 public:
   using MotionT       = Motion<T>;
   using SequenceRefT  = SequenceRef<T>;
-  using DataCallback  = std::function<void (const T&)>;
+  using DataCallback  = std::function<void (T&)>;
   using Callback      = std::function<void (MotionT&)>;
   using EmptyCallback = std::function<void ()>;
 
