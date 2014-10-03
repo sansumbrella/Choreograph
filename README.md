@@ -101,11 +101,9 @@ You will need a modern C++ compiler. Choreograph is known to work with Apple LLV
 
 ### Building the Tests
 
-Choreograph’s tests use the Catch framework, which is included in the tests/ directory.
+Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013. Choreograph’s tests use the [Catch](https://github.com/philsquared/Catch) framework, which is included in the tests/ directory.
 
-Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013.
-
-Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This will enable a handful of additional tests.
+Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This will enable a handful of additional tests, notably covering the separable component easing of RampToN.
 
 Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph’s performance against ci::Timeline.
 
@@ -113,7 +111,7 @@ Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to 
 
 Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of [Cinder's glNext branch](https://github.com/cinder/cinder/tree/glNext) should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
 
-Samples are run from the projects inside the Samples directory. These are more of a work in progress than the rest of the library.
+Samples are run from the projects inside the Samples directory. Projects to build the samples exist for iOS and OSX using Xcode and for Windows Desktop using Visual Studio 2013. These are more of a work in progress than the rest of the library.
 
 ### Using the lerp specializations
 If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
