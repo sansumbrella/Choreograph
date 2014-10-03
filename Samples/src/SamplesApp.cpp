@@ -43,7 +43,7 @@ void SamplesApp::setup()
     mParams->draw();
   } );
 
-  loadSample( SampleList.size() - 1 );
+  loadSample( 0 );
 }
 
 void SamplesApp::loadSample( int index )
