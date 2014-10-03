@@ -19,6 +19,7 @@
 		15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5F19D8DA6C006BFAF1 /* Hello.cpp */; };
 		15362C6519D8EB5D006BFAF1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3839DB7C4CB047F2BC061C67 /* CinderApp.icns */; };
 		1587D87C19DA322900943242 /* Orbits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1587D87A19DA322900943242 /* Orbits.cpp */; };
+		15BA7BBC19DF2799003E13A5 /* Sink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BBA19DF2799003E13A5 /* Sink.cpp */; };
 		15C8EC6B19D907B0005432F0 /* Wings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15C8EC6919D907B0005432F0 /* Wings.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -51,6 +52,8 @@
 		1587D87A19DA322900943242 /* Orbits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orbits.cpp; sourceTree = "<group>"; };
 		1587D87B19DA322900943242 /* Orbits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orbits.h; sourceTree = "<group>"; };
 		15BA7BB919DF252B003E13A5 /* Phrases.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Phrases.hpp; path = ../../src/choreograph/Phrases.hpp; sourceTree = "<group>"; };
+		15BA7BBA19DF2799003E13A5 /* Sink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sink.cpp; sourceTree = "<group>"; };
+		15BA7BBB19DF2799003E13A5 /* Sink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sink.h; sourceTree = "<group>"; };
 		15C8EC6919D907B0005432F0 /* Wings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wings.cpp; sourceTree = "<group>"; };
 		15C8EC6A19D907B0005432F0 /* Wings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wings.h; sourceTree = "<group>"; };
 		1E1BF70DF69C49048CC3A4D3 /* Motion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = Motion.cpp; path = ../../src/choreograph/Motion.cpp; sourceTree = "<group>"; };
@@ -159,6 +162,8 @@
 				15C8EC6A19D907B0005432F0 /* Wings.h */,
 				1587D87A19DA322900943242 /* Orbits.cpp */,
 				1587D87B19DA322900943242 /* Orbits.h */,
+				15BA7BBA19DF2799003E13A5 /* Sink.cpp */,
+				15BA7BBB19DF2799003E13A5 /* Sink.h */,
 			);
 			name = samples;
 			path = ../src/samples;
@@ -312,6 +317,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15BA7BBC19DF2799003E13A5 /* Sink.cpp in Sources */,
 				15C8EC6B19D907B0005432F0 /* Wings.cpp in Sources */,
 				15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */,
 				734B27ABC09048BA95ABD6C6 /* SamplesApp.cpp in Sources */,

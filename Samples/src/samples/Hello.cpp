@@ -86,11 +86,13 @@ void Hello::connect( app::WindowRef window )
     seekPoint( event.getPos() );
   } ) );
 
+#if defined( CINDER_COCOA_TOUCH )
   storeConnection( window->getSignalTouchesBegan().connect( [seekPoint] ( const app::TouchEvent &event ) {
     for( auto &touch : event.getTouches() ) {
       seekPoint( touch.getPos() );
     }
   } ) );
+#endif
 }
 
 void Hello::update( double dt )

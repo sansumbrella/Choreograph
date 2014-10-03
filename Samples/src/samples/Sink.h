@@ -27,26 +27,27 @@
 
 #pragma once
 
-#include "Hello.h"
-#include "Sink.h"
-#include "Wings.h"
+#include "pockets/Scene.h"
 
-using SampleRef = std::shared_ptr<pk::Scene>;
-using SampleFn = std::function<SampleRef ()>;
-
-const std::vector<std::pair<std::string, SampleFn>> SampleList =
+class Sink : public pockets::Scene
 {
-  { "Hola", std::make_shared<Hello> },
-  { "Dev Junk", std::make_shared<Sink> },
-  { "Wings", std::make_shared<Wings> }
+public:
+  void setup() override;
+
+  void connect( ci::app::WindowRef window ) override;
+
+  void update( double dt ) override;
+
+  void draw() override;
+
+private:
+  co::Output<float>     mBallY = 0.0f;
+  co::Output<ci::vec2>  mBall2;
+  float                 mBallRadius = 50.0f;
+
+  co::Output<ci::vec2>  mMouseAppend;
+  co::Output<ci::vec2>  mMouseApply;
+  co::Output<ci::vec2>  mArced;
+  co::Output<ci::quat>  mOrientation;
+  co::Output<ci::quat>  mCircularOrientation;
 };
-
-const std::vector<std::string> SampleNames = ([]
-{
-  std::vector<std::string> names;
-  for( auto &pair : SampleList )
-  {
-    names.push_back( pair.first );
-  }
-  return names;
-})();

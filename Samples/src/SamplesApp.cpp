@@ -75,4 +75,4 @@ void SamplesApp::update()
   }
 }
 
-CINDER_APP_NATIVE( SamplesApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
+CINDER_APP_NATIVE( SamplesApp, RendererGl )
