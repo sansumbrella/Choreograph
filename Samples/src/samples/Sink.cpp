@@ -129,4 +129,7 @@ void Sink::draw()
     gl::rotate( mCircularOrientation );
     gl::drawColorCube( vec3( 0 ), vec3( 50.0f ) );
   }
+
+  gl::disableDepthRead();
+  gl::disableDepthWrite();
 }
