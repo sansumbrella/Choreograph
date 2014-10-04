@@ -31,6 +31,7 @@
 #include "Motion.h"
 #include "Output.hpp"
 #include "Timeline.h"
+#include "Easing.h"
 
 #if defined( CINDER_CINDER )
   #include "specialization/CinderSpecialization.hpp"
@@ -46,4 +47,4 @@
 ///
 namespace choreograph {} // namespace choreograph
 
-namespace co = choreograph;
+namespace ch = choreograph;
