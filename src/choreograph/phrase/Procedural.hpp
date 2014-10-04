@@ -27,29 +27,43 @@
 
 #pragma once
 
-#include "Sequence.hpp"
-#include "Motion.h"
-#include "Easing.hpp"
-#include "Output.hpp"
-#include "Timeline.h"
-#include "phrase/Ramp.hpp"
-#include "phrase/Hold.hpp"
-#include "phrase/Retime.hpp"
-#include "phrase/Combine.hpp"
-#include "phrase/Procedural.hpp"
+#include "choreograph/Phrase.hpp"
 
-#if defined( CINDER_CINDER )
-  #include "specialization/CinderSpecialization.hpp"
-#endif
+namespace choreograph
+{
 
 ///
-/// Choreograph is an animation and timing library.
-/// Choreograph provides a few core concepts for this.
-/// Underlying all motion are Sequences.
-/// Sequences are composed of (and are themselves) Phrases.
-/// Phrases provide a value of a certain type that can vary over time.
-/// For more information on usage see README.md and peruse the samples/ directory.
+/// AnalyticChange is a phrase that calls a std::function every step.
+/// You could do similar things with a Motion's updateFn, but this is composable within Sequences.
 ///
-namespace choreograph {} // namespace choreograph
+template<typename T>
+class AnalyticChange : public Phrase<T>
+{
+public:
+  /// Analytic Function receives start, end, and normalized time.
+  /// Most basic would be mix( a, b, t ) or lerp( a, b, t ).
+  /// Intended use is to apply something like cos() or random jitter.
+  using Function = std::function<T (const T& startValue, const T& endValue, Time normalizedTime, Time duration)>;
 
-namespace ch = choreograph;
+  AnalyticChange( Time duration, const T &start_value, const T &end_value, const Function &fn ):
+    Phrase<T>( duration ),
+    _function( fn ),
+    _start_value( start_value ),
+    _end_value( end_value )
+  {}
+
+  T getValue( Time atTime ) const override
+  {
+    return _function( _start_value, _end_value, this->normalizeTime( atTime ), this->getDuration() );
+  }
+
+  T getStartValue() const override { return _start_value; }
+  T getEndValue() const override { return _end_value; }
+
+private:
+  Function  _function;
+  T         _start_value;
+  T         _end_value;
+};
+
+} // namespace choreograph

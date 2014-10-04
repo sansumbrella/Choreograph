@@ -28,7 +28,7 @@
 #pragma once
 
 #include "Phrase.hpp"
-#include "Phrases.hpp"
+#include "phrase/Hold.hpp"
 
 namespace choreograph
 {

@@ -2,7 +2,7 @@
  * Copyright (c) 2014 David Wicks, sansumbrella.com
  * All rights reserved.
  *
- * Modified from cinder/Easing.h to use <cmath> instead of CinderMath.
+ * Modified from cinder/Easing.h to use <cmath>.
  *
  * Redistribution and use in source and binary forms, with or
  * without modification, are permitted provided that the following

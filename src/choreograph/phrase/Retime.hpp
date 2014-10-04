@@ -27,29 +27,40 @@
 
 #pragma once
 
-#include "Sequence.hpp"
-#include "Motion.h"
-#include "Easing.hpp"
-#include "Output.hpp"
-#include "Timeline.h"
-#include "phrase/Ramp.hpp"
-#include "phrase/Hold.hpp"
-#include "phrase/Retime.hpp"
-#include "phrase/Combine.hpp"
-#include "phrase/Procedural.hpp"
+#include "choreograph/Phrase.hpp"
 
-#if defined( CINDER_CINDER )
-  #include "specialization/CinderSpecialization.hpp"
-#endif
+namespace choreograph
+{
 
-///
-/// Choreograph is an animation and timing library.
-/// Choreograph provides a few core concepts for this.
-/// Underlying all motion are Sequences.
-/// Sequences are composed of (and are themselves) Phrases.
-/// Phrases provide a value of a certain type that can vary over time.
-/// For more information on usage see README.md and peruse the samples/ directory.
-///
-namespace choreograph {} // namespace choreograph
+template<typename T>
+class LoopPhrase : public Phrase<T>
+{
+public:
+  /// Create a Phrase that loops \a source \a numLoops times.
+  LoopPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f ):
+    Phrase<T>( source->getDuration() * numLoops ),
+    _source( source ),
+    _inflection_point( inflectionPoint )
+  {}
 
-namespace ch = choreograph;
+  static std::shared_ptr<LoopPhrase<T>> create( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+  {
+    return std::make_shared<LoopPhrase<T>>( source, numLoops, inflectionPoint );
+  }
+
+  T getValue( Time atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
+  T getStartValue() const override { return _source->getStartValue(); }
+  T getEndValue() const override { return _source->getEndValue(); }
+private:
+  PhraseRef<T>  _source;
+  Time          _inflection_point;
+};
+
+/// Free function to make creating looped phrases easier in client code.
+template<typename T>
+PhraseRef<T> loopPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+{
+  return LoopPhrase<T>::create( source, numLoops, inflectionPoint );
+}
+
+} // namespace choreograph

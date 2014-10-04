@@ -27,29 +27,41 @@
 
 #pragma once
 
-#include "Sequence.hpp"
-#include "Motion.h"
-#include "Easing.hpp"
-#include "Output.hpp"
-#include "Timeline.h"
-#include "phrase/Ramp.hpp"
-#include "phrase/Hold.hpp"
-#include "phrase/Retime.hpp"
-#include "phrase/Combine.hpp"
-#include "phrase/Procedural.hpp"
+#include "choreograph/Phrase.hpp"
 
-#if defined( CINDER_CINDER )
-  #include "specialization/CinderSpecialization.hpp"
-#endif
+namespace choreograph
+{
 
 ///
-/// Choreograph is an animation and timing library.
-/// Choreograph provides a few core concepts for this.
-/// Underlying all motion are Sequences.
-/// Sequences are composed of (and are themselves) Phrases.
-/// Phrases provide a value of a certain type that can vary over time.
-/// For more information on usage see README.md and peruse the samples/ directory.
+/// Hold is a phrase that hangs in there, never changing.
 ///
-namespace choreograph {} // namespace choreograph
+template<typename T>
+class Hold : public Phrase<T>
+{
+public:
 
-namespace ch = choreograph;
+  Hold( Time duration, const T &start_value, const T &end_value ):
+  Phrase<T>( duration ),
+  _value( end_value )
+  {}
+
+  T getValue( Time atTime ) const override
+  {
+    return _value;
+  }
+
+  T getStartValue() const override
+  {
+    return _value;
+  }
+
+  T getEndValue() const override
+  {
+    return _value;
+  }
+
+private:
+  T       _value;
+};
+
+} // namespace choreograph
