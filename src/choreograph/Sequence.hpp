@@ -48,11 +48,11 @@ using SequenceRef = std::shared_ptr<Sequence<T>>;
 template<typename T>
 using SequenceUniqueRef = std::unique_ptr<Sequence<T>>;
 
-/**
- A Sequence of motions.
- Our essential compositional tool, describing all the transformations to one element.
- A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
-*/
+///
+/// A Sequence of motions.
+/// Our essential compositional tool, describing all the transformations to one element.
+/// A kind of platonic idea of an animation sequence; this describes a motion without giving it an output.
+///
 template<typename T>
 class Sequence
 {
@@ -83,7 +83,7 @@ public:
 
   /// Set the end \a value of Sequence.
   /// If there are no Phrases, this is the initial value.
-  /// Otherwise, this is and instantaneous hold at \a value.
+  /// Otherwise, this is an instantaneous hold at \a value.
   Sequence<T>& set( const T &value );
 
   /// Add a Phrase to the end of the sequence.
@@ -141,10 +141,7 @@ public:
   Time calcDuration() const;
 
 private:
-  // We store unique pointers to phrases to prevent insanity when copying one sequence into another.
-  // We would stack allocate these phrases, but we need pointers to enable polymorphic types.
-  // Since we are now storing only duration in phrases (rather than start + end times), it's probably fine to
-  // use shared_ptr here and allow sharing/external manipulation if desired.
+  // Storing shared_ptr's to Phrases requires their duration to be immutable.
   std::vector<PhraseRef<T>> _phrases;
   T                         _initial_value;
   Time                      _duration = 0;

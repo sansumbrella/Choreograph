@@ -42,6 +42,9 @@ namespace choreograph
 /// Double works nicely when adding together lots of little bits or if you need long sequences.
 using Time = float;
 
+/// Return the value for infinity.
+inline Time infinity() { return std::numeric_limits<Time>::infinity(); }
+
 template<typename T>
 class Phrase;
 
