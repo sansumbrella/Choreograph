@@ -3,56 +3,39 @@
 A simple C++11 animation and timing library.  
 v0.2.0 development. API is stabilizing.
 
-## Features
-- Timeline-based animation of generic properties.
-- Composable animation Phrases to mix and loop other Phrases.
-- Chainable animation Sequence-building syntax.
-- Separable easing of vector components with RampToN Phrases.
-- Motion event callbacks (start, update, finish).
-- Pseudo-instancing of Sequences to animate multiple targets.
-- Support for custom ease functions.
-- Support for custom interpolation methods.
-- Specialization of default interpolation slerps cinder/glm quaternions.
-- Reversible, time-warpable Motions.
-- Cues call function after time elapses.
-- Unit-tested.
-- Works as a Cinder Block.
-	- Clone to Cinder/blocks/Choreograph and include in your project with TinderBox.
+Choreograph is designed to help with the description of motion. With it, you compose motion Phrases into Sequences that can be used to animate arbitrary properties on a Timeline.
 
 ## Basic Usage
 ```c++
-	using namespace choreograph;
-	Timeline timeline;
-	Output<float> value_a;
-	Output<float> value_b;
+  using namespace choreograph;
+  Timeline timeline;
+  Output<float> value = 10.0f;
 
-	// Define Sequence in-place
-	timeline.apply( &value_b )
-					.then<RampTo>( 10.0f, 0.3f )
-					.then<Hold>( 10.0f, 0.2f )
-					.then<RampTo>( 100.0f, 0.5f )
-					.finishFn( [] (Motion<float> &m) { cout << "Finished animating value B." << endl; } );
+  // Build a Sequence from a series of Phrases.
+  Sequence<float> continuation( 0.0f );
+  continuation.then<RampTo>( 100.0f, 1.0f )
+              .then<Hold>( 50.0f, 0.5f );
 
-	// Use a pre-defined sequence
-	auto sequence = createSequence( 0.0f ); // create a SequenceRef<float> with starting value of 0.0f
-	sequence->set( 100.0f )
-		.then<RampTo>( 50.0f, 1.0f )
-		.then<Hold>( 50.0f, 1.0f )
-		.then<RampTo>( 100.0f, 0.5f )
-		.set( 50.0f );
-	timeline.apply( &value_a, sequence )
-					.finishFn( [] { cout << "Finished animating value A." << endl } );
+  // Create a Sequence in-place on the Timeline.
+  // Use that Sequence to update value when the timeline advances.
+  timeline.apply( &value )
+          .then<RampTo>( float( 50.0f, 10.0f ), 0.3f )
+          .then<Hold>( float( 50.0f, 50.0f ), 0.2f )
+          .then( loopPhrase( continuation.asPhrase(), 3 ) )
+          .finishFn( [] (Motion<float> &m) { cout << "Finished animating value." << endl; } );
+
+  timeline.step( 1.0 / 60.0 );
 ```
 
 ## Concepts
 
 ### Phrase, Sequence
 
-A Phrase defines a simple change in value over time. The built-in phrase types include various Ramps and Hold. It is simple to add your own Phrases by extending Phrase<T>.
+A Phrase defines a the behavior of a value over time. The built-in phrase types include various Ramps and Hold. It is simple to add your own Phrases by extending Phrase<T>.
 
-A Sequence is a collection of Phrases. Sequences are the main object you will manipulate to build animations. A method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time. Sequences can also be added to each other, either by wrapping them in a Phrase or by duplicating the Phrases from another Sequence.
+A Sequence is a collection of Phrases. Sequences are the main object you will manipulate to build animations. Choreograph’s method-chaining syntax allows you to build up sophisticated Sequences one Phrase at a time. Sequences can compose other Sequences, too, by either wrapping them in a Phrase or duplicating the Phrases from another Sequence.
 
-Sequences and Phrases have a duration but no concept of playback or the current time. They interpolate values within their duration and clamp values below zero and past their duration.
+Sequences and Phrases have a duration but no concept of playback or the current time. They interpolate values within their duration and clamp values before zero and after their duration.
 
 ### Motion and Output
 
@@ -60,34 +43,46 @@ A Motion connects a Sequence to an Output. Motions have a sense of starting, fin
 
 Outputs (Output<T>) wrap a type so that it can communicate with the Motion that is applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that pointer will stop.
 
-```c++
-// Outputs can safely be animated by a choreograph::Timeline
-choreograph::Output<vec3>	output;
-choreograph::Timeline timeline;
-timeline.apply( &output ).then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
-timeline.step( 1.0 / 60.0 );
-
-// If you can't wrap your animation target in an Output template for some reason,
-// you can still animate it with a choreograph::Timeline, but you need to synchronize
-// the lifetime of both objects.
-// Instead, consider creating a choreograph::Sequence and assigning values to rawOutput manually.
-// That way you aren't passing raw pointers around.
-vec3 rawOutput;
-Sequence<vec3> sequence( vec3(1.0) ); // create Sequence with initial value.
-sequence.then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
-rawOutput = sequence.getValue( animationTime );
-```
-
 Motions can also be connected to raw pointers. If you go this route, you need to be very careful about object lifetime and memory management. The Motion will have no way to know if the raw pointer becomes invalid, and the raw pointer won’t know anything about the Motion.
 
 A Connection object handles the actual lifetime management between the Sequence and the Output. Every Motion object composes a Connection to its Output. When the Connection is broken, the Motion is considered invalid and will be discarded by its parent Timeline.
 
-Generally, you will not create any of the above objects directly, but will receive an interface to them by creating a motion with a Timeline.
+Generally, you will not create any of the above objects directly, but will receive an interface to them by creating a Motion with a Timeline.
+
+```c++
+// Outputs can safely be animated by a choreograph::Timeline
+choreograph::Output<vec3> target;
+choreograph::Timeline timeline;
+// Create a Motion with a Connection to target and modify
+// the Motion’s underlying Sequence.
+timeline.apply( &target ).then<Hold>( vec3( 1.0 ), 1.0 )
+                        .then<RampTo>( vec3( 100 ), 3.0 );
+timeline.step( 1.0 / 60.0 );
+```
+
+If you cannot wrap your animation target in an Output template, you should avoid animating it with a timeline. There are some tricky object lifetime issues that you will need to manage yourself in that case. Instead of the headache, consider creating a choreograph::Sequence and assigning its value to your target manually. That way you aren't passing raw pointers around.
+
+```c++
+// Recommended approach to animating non-Output types
+vec3 target;
+// Create a Sequence with initial value from target.
+Sequence<vec3> sequence( target );
+sequence.then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
+target = sequence.getValue( animationTime );
+
+// Risky route.
+// Avoid this where possible by wrapping target’s type in an Output.
+timeline.applyRaw( &target );
+```
 
 ### Timeline
 Timelines manage a collection of Motions. They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in place.
 
 When you create a Motion with a Timeline, you receive a MotionOptions object that provides an interface to manipulate the underlying Sequence as well as the Motion.
+
+Since Motions know where they are in time, the Timeline controlling them doesn’t need to. While that may seem strange, this allows us to keep timelines running in perpetuity without worrying about running out of numerical precision. The largest number we will ever need to keep precise is the duration of our longest Sequence and its corresponding Motion.
+
+When you add something to the Timeline, zero is now.
 
 ## Building and running
 
