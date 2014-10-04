@@ -10,7 +10,8 @@
 using namespace std;
 using namespace choreograph;
 
-TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
+TEST_CASE( "Sequence Interpolation", "[sequence]" )
+{
   // Since the precision of floats decreases as they get larger,
   // we need an epsilon larger than the delta from 1.0 to the next float.
   const float epsilon = std::numeric_limits<float>::epsilon() * 20;
@@ -40,7 +41,23 @@ TEST_CASE( "Sequence Interpolation", "[sequence]" ) {
   }
 }
 
-TEST_CASE( "Raw Pointers" ) {
+TEST_CASE( "Time and Infinity" )
+{
+  Sequence<float> sequence( 0.0f );
+  sequence.then<RampTo>( 1.0f, 1.0f, EaseInOutQuad() ).then<RampTo>( 2.0f, ch::infinity() );
+
+  PhraseRef<float> ramp = make_shared<RampTo<float>>( 2.0f, 0.0f, 10.0f );
+  auto looped = loopPhrase( ramp, ch::infinity() );
+
+  REQUIRE( looped->getValue( 1.0f ) == looped->getValue( 2001.0f ) );
+  REQUIRE( sequence.getValue( 1.0f ) == 1.0f );
+  REQUIRE( sequence.getValue( 2.0f ) == 1.0f );
+  REQUIRE( sequence.getDuration() == ch::infinity() );
+  REQUIRE( (1000.0f / ch::infinity()) == 0.0f );
+} // Time and Infinity
+
+TEST_CASE( "Raw Pointers" )
+{
   float target = 0.0f;
   Timeline timeline;
 
@@ -78,7 +95,8 @@ TEST_CASE( "Raw Pointers" ) {
 
 }
 
-TEST_CASE( "Sequence Composition", "[sequence]" ) {
+TEST_CASE( "Sequence Composition", "[sequence]" )
+{
   Output<float> target = 0.0f;
   Timeline timeline;
 
@@ -255,9 +273,10 @@ TEST_CASE( "Motion Speed and Reversal" )
 
   }
 
-}
+} // Motion Speed and Reversal
 
-TEST_CASE( "Output Connections", "[output]" ) {
+TEST_CASE( "Output Connections", "[output]" )
+{
 
   ch::Timeline timeline;
   auto sequence = make_shared<Sequence<float>>( 0.0f );
@@ -371,7 +390,7 @@ TEST_CASE( "Output Connections", "[output]" ) {
     motion.jumpTo( 2.0f );
     REQUIRE( copy.value() == 10.0f );
   }
-}
+} // Output Connections
 
 #if INCLUDE_CINDER_HEADERS
 
@@ -379,7 +398,8 @@ TEST_CASE( "Output Connections", "[output]" ) {
 #include <array>
 using namespace cinder;
 
-TEST_CASE( "Separate component interpolation", "[sequence]" ) {
+TEST_CASE( "Separate component interpolation", "[sequence]" )
+{
 
   SECTION( "Compare 2-Component Values" ) {
     // Animate XY from and to same values with different ease curves.
@@ -454,6 +474,6 @@ TEST_CASE( "Separate component interpolation", "[sequence]" ) {
     REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only looping bounce up
     REQUIRE( sequence.getEndValue().x == 50.0 ); // slide only 50%
   }
-}
+} // Separate Component Easing
 
 #endif
