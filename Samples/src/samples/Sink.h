@@ -41,13 +41,13 @@ public:
   void draw() override;
 
 private:
-  co::Output<float>     mBallY = 0.0f;
-  co::Output<ci::vec2>  mBall2;
+  ch::Output<float>     mBallY = 0.0f;
+  ch::Output<ci::vec2>  mBall2;
   float                 mBallRadius = 50.0f;
 
-  co::Output<ci::vec2>  mMouseAppend;
-  co::Output<ci::vec2>  mMouseApply;
-  co::Output<ci::vec2>  mArced;
-  co::Output<ci::quat>  mOrientation;
-  co::Output<ci::quat>  mCircularOrientation;
+  ch::Output<ci::vec2>  mMouseAppend;
+  ch::Output<ci::vec2>  mMouseApply;
+  ch::Output<ci::vec2>  mArced;
+  ch::Output<ci::quat>  mOrientation;
+  ch::Output<ci::quat>  mCircularOrientation;
 };

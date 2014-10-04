@@ -37,7 +37,7 @@ private:
 };
 
 TEST_CASE( "Creating Motions" ) {
-  co::Timeline test_timeline;
+  ch::Timeline test_timeline;
   test_timeline.setAutoRemove( false );
   float dt = 1.0f / 60.0f;
   const size_t count = 150e3; // 10k
@@ -112,7 +112,7 @@ TEST_CASE( "Creating Motions" ) {
 }
 
 TEST_CASE( "Comparative Performance with ci::Timeline", "[library]" ) {
-  co::Timeline test_timeline;
+  ch::Timeline test_timeline;
   ci::TimelineRef cinder_timeline = ci::Timeline::create();
 
   const int tween_count = 5000;

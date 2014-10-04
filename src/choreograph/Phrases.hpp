@@ -28,6 +28,7 @@
 #pragma once
 
 #include "Phrase.hpp"
+#include "Easing.h"
 
 namespace choreograph
 {
@@ -46,13 +47,6 @@ typedef std::function<float (float)> EaseFn;
  It describes the motion between two positions.
  This is the essence of a Tween, with all values held internally.
 */
-
-namespace
-{
-/// Default ease function for ramps.
-inline float easeNone( float t ) { return t; }
-
-} // namespace
 
 /// The default templated lerp function.
 template<typename T>

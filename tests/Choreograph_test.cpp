@@ -117,7 +117,7 @@ TEST_CASE( "Sequence Composition", "[sequence]" ) {
 
 TEST_CASE( "Cues and Callbacks", "[motion]" )
 {
-  co::Timeline  timeline;
+  ch::Timeline  timeline;
 
   SECTION( "Timeline Callbacks" )
   {
@@ -222,7 +222,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
 
 TEST_CASE( "Motion Speed and Reversal" )
 {
-  co::Timeline timeline;
+  ch::Timeline timeline;
   auto sequence = createSequence( 0.0f );
   sequence->then<RampTo>( 10.0f, 1.0f ).then<RampTo>( -30.0f, 2.0f );
 
@@ -259,7 +259,7 @@ TEST_CASE( "Motion Speed and Reversal" )
 
 TEST_CASE( "Output Connections", "[output]" ) {
 
-  co::Timeline timeline;
+  ch::Timeline timeline;
   auto sequence = make_shared<Sequence<float>>( 0.0f );
   sequence->then<RampTo>( 10.0f, 2.0f );
 
@@ -376,7 +376,6 @@ TEST_CASE( "Output Connections", "[output]" ) {
 #if INCLUDE_CINDER_HEADERS
 
 #include "cinder/Vector.h"
-#include "cinder/Easing.h"
 #include <array>
 using namespace cinder;
 

@@ -32,9 +32,9 @@
 struct Thing
 {
   ci::Color             color;
-  co::Output<float>     alpha = 0.0f;
-  co::Output<ci::vec3>  position;
-  co::Output<ci::quat>  orientation;
+  ch::Output<float>     alpha = 0.0f;
+  ch::Output<ci::vec3>  position;
+  ch::Output<ci::quat>  orientation;
 };
 
 class Hello : public pk::Scene
