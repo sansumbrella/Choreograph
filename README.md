@@ -60,7 +60,7 @@ timeline.apply( &target ).then<Hold>( vec3( 1.0 ), 1.0 )
 timeline.step( 1.0 / 60.0 );
 ```
 
-If you cannot wrap your animation target in an Output template, consider creating a choreograph::Sequence and assigning its value to your target manually. That way you aren't passing raw pointers into a timeline.
+If you cannot wrap your animation target in an Output template, consider creating a Sequence and assigning its value to your target manually. That way you aren't passing raw pointers into a timeline.
 
 ```c++
 // Recommended approach to animating non-Output types
@@ -90,21 +90,22 @@ You do need a modern C++ compiler. Choreograph is known to work with Apple LLVM 
 
 ### Building the Tests
 
-Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013. Choreograph’s tests use the [Catch](https://github.com/philsquared/Catch) framework, which is included in the tests/ directory.
+Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013. Choreograph’s tests use the [Catch](https://github.com/philsquared/Catch) framework, a single-header library that is included in the tests/ directory.
 
-Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. This enables a handful of additional tests, notably covering the separable component easing of RampToN.
+Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. Including the Cinder headers enables a handful of additional tests, notably those covering the separable component easing of RampToN.
 
-Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. It also runs a rough comparison of Choreograph’s performance against ci::Timeline.
+Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. Benchmarks_test also runs a rough performance comparison between choreograph::Timeline and cinder::Timeline.
 
 ### Building the Samples
 
-Choreograph’s samples and dev application use Cinder for system interaction and graphics display. Any recent version of [Cinder's glNext branch](https://github.com/cinder/cinder/tree/glNext) should work. Clone Choreograph to your blocks directory to have the dev and sample projects work out of the box.
+Choreograph’s samples use Cinder for system interaction and graphics display. Any recent version of [Cinder's glNext branch](https://github.com/cinder/cinder/tree/glNext) should work. Clone Choreograph to your blocks directory to have the sample project work out of the box.
 
 Samples are run from the projects inside the Samples directory. Projects to build the samples exist for iOS and OSX using Xcode and for Windows Desktop using Visual Studio 2013. These are more of a work in progress than the rest of the library.
 
-### Using the lerp specializations
-If you are using Cinder, the relevant specialization header should be included by Choreograph.hpp automatically.
+### Lerp Specializations
+If you are using Cinder, Choreograph will include a specialization header to slerp quaternions.
 
 ## History/Tweening alternatives:
-Cinder's Timeline is an excellent, production-ready tweening option. It has a stable and proven API. It is based on the previous version of Choreograph.  
+Cinder's Timeline is an excellent, production-ready tweening option. It has a stable and proven API. It is based on the previous version of Choreograph.
+
 Choreograph itself was originally inspired by Flash tweening libraries like Greensock’s TweenMax. While they aren’t for C++, you might draw your own inspiration from them.
