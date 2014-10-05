@@ -49,6 +49,9 @@ using PhraseUniqueRef = std::unique_ptr<Phrase<T>>;
 /// A Phrase of motion.
 /// Virtual base class with concept of value and implementation of time.
 ///
+/// A concrete Phrase is a part of a Sequence.
+/// It describes a value over time.
+///
 template<typename T>
 class Phrase
 {

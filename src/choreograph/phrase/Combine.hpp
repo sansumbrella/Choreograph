@@ -93,4 +93,98 @@ std::shared_ptr<CombinePhrase<T>> sumPhrases( Time duration, const PhraseRef<T> 
   return CombinePhrase<T>::create( duration, phrase_a, mix_a, phrase_b, mix_b, std::forward<Args>( args )... );
 }
 
+///
+/// Mix interpolates between the value of two input Phrases.
+/// Untested.
+///
+template<typename T>
+class MixPhrase : public Phrase<T>
+{
+public:
+  MixPhrase( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f ):
+    Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
+    _a( a ),
+    _b( b ),
+    _mix( mix )
+  {}
+
+  /// Returns a blend of the values of a and b at \a atTime.
+  T getValue( Time atTime ) const override {
+    return _a->getValue( atTime ) * mixA() + _b->getValue( atTime ) * mixB();
+  }
+
+  T getStartValue() const override {
+    return _a->getStartValue() * mixA() + _b->getStartValue() * mixB();
+  }
+
+  T getEndValue() const override {
+    return _a->getEndValue() * mixA() + _b->getEndValue() * mixB();
+  }
+
+  /// Sets the balance of the Phrase mix. Values should be in the range [0, 1].
+  void setMix( float amount ) { _mix = amount; }
+
+  /// Returns the current balance of the Phrase mix.
+  float getMix() const { return _mix; }
+
+  /// Returns a pointer to the mix output for animation with a choreograph::Motion.
+  Output<float>* getMixOutput() { return &_mix; }
+
+private:
+  Output<float> _mix = 0.5f;
+  PhraseRef<T>  _a;
+  PhraseRef<T>  _b;
+
+  inline float mixA() const { return 1 - _mix; }
+  inline float mixB() const { return _mix; }
+};
+
+///
+/// Raise combines one-dimensional phrases into a higher-dimensional phrase.
+/// This allows you to use two float Phrases as the x and y channels of a vec2 phrase, for example.
+/// Untested.
+///
+template<typename T>
+class RaisePhrase : public Phrase<T>
+{
+  using ComponentT = decltype( T().x ); // get the type of the x component. decltype( T()[0] ) doesn't compile with glm's vecN unions.
+
+  template<typename... Args>
+  RaisePhrase( Time duration, Args&&... args ):
+    Phrase<T>( duration ),
+    _sources( std::forward<Args>( args )... )
+  {}
+
+  T getStartValue() const override
+  {
+    T out;
+    for( size_t i = 0; i < _sources.size(); ++i ) {
+      out[i] = _sources[i]->getStartValue();
+    }
+    return out;
+  }
+
+  T getValue( float atTime ) const override
+  {
+    T out;
+    for( size_t i = 0; i < _sources.size(); ++i ) {
+      out[i] = _sources[i]->getValue( atTime );
+    }
+    return out;
+  }
+
+  T getEndValue() const override
+  {
+    T out;
+    for( size_t i = 0; i < _sources.size(); ++i ) {
+      out[i] = _sources[i]->getEndValue();
+    }
+    return out;
+  }
+
+private:
+  std::vector<PhraseRef<ComponentT>> _sources;
+};
+
+
 } // namespace choreograph

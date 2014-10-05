@@ -32,19 +32,13 @@
 
 namespace choreograph
 {
+
 /// EaseFn's describes a one-dimensional transformation through time.
 /// Choreograph accepts any function taking and returning a normalized float.
 /// For a large number of ease functions, see Cinder's Easing.h
 /// Generally, it is assumed that the following holds true for an EaseFn:
 /// EaseFn( 0 ) = 0, EaseFn( 1 ) = 1.
 typedef std::function<float (float)> EaseFn;
-
-
-/// \file
-/// Phrases for use in Choreograph.
-/// A Phrase is a part of a Sequence.
-/// It describes the motion between two positions.
-/// This is the essence of a Tween, with all values held internally.
 
 /// The default templated lerp function.
 template<typename T>
@@ -93,7 +87,7 @@ private:
 
 
 ///
-/// RampToN is a phrase template with N separately-interpolated components.
+/// RampToN is a phrase template with N separately-interpolated components of the same type.
 /// Allows for the use of separate ease functions per component.
 /// All components must be of the same type.
 /// If fewer than N ease functions are provided, the last ease function will be used to fill out remaining components.

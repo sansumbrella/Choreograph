@@ -78,6 +78,11 @@
 		153607E919D4622D001ECD25 /* Phrase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrase.hpp; sourceTree = "<group>"; };
 		1560075D19D72C5000247022 /* VectorManipulation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = VectorManipulation.hpp; path = detail/VectorManipulation.hpp; sourceTree = "<group>"; };
 		15609E0819E187AD0053395A /* TimeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeType.h; sourceTree = "<group>"; };
+		15609E0B19E190EC0053395A /* Combine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Combine.hpp; sourceTree = "<group>"; };
+		15609E0C19E190EC0053395A /* Hold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hold.hpp; sourceTree = "<group>"; };
+		15609E0D19E190EC0053395A /* Procedural.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Procedural.hpp; sourceTree = "<group>"; };
+		15609E0E19E190EC0053395A /* Ramp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ramp.hpp; sourceTree = "<group>"; };
+		15609E0F19E190EC0053395A /* Retime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Retime.hpp; sourceTree = "<group>"; };
 		1597E20819D7061E00A049D4 /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch.hpp; path = ../catch.hpp; sourceTree = "<group>"; };
@@ -179,6 +184,7 @@
 		153607D319D46195001ECD25 /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
+				15609E0A19E190EC0053395A /* phrase */,
 				1560075C19D72C4A00247022 /* detail */,
 				153607D419D46195001ECD25 /* Choreograph.h */,
 				153607D519D46195001ECD25 /* Motion.cpp */,
@@ -208,6 +214,18 @@
 				1560075D19D72C5000247022 /* VectorManipulation.hpp */,
 			);
 			name = detail;
+			sourceTree = "<group>";
+		};
+		15609E0A19E190EC0053395A /* phrase */ = {
+			isa = PBXGroup;
+			children = (
+				15609E0B19E190EC0053395A /* Combine.hpp */,
+				15609E0C19E190EC0053395A /* Hold.hpp */,
+				15609E0D19E190EC0053395A /* Procedural.hpp */,
+				15609E0E19E190EC0053395A /* Ramp.hpp */,
+				15609E0F19E190EC0053395A /* Retime.hpp */,
+			);
+			path = phrase;
 			sourceTree = "<group>";
 		};
 		15F4B42C19BD325E00A411C1 /* src */ = {
