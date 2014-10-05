@@ -128,7 +128,7 @@ public:
   T getEndValue() const { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
 
   /// Returns the value at the beginning of the Sequence.
-  T getStartValue() const { return _initial_value; }
+  T getStartValue() const { return _phrases.empty() ? _initial_value : _phrases.front()->getStartValue(); }
 
   /// Returns the Sequence duration.
   Time getDuration() const { return _duration; }
