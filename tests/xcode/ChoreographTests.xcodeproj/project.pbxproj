@@ -67,17 +67,17 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Benchmarks_test.cpp; path = ../Benchmarks_test.cpp; sourceTree = "<group>"; };
 		1515D28519C5D774002CB6A6 /* BenchmarkTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BenchmarkTests; sourceTree = BUILT_PRODUCTS_DIR; };
-		153607D419D46195001ECD25 /* Choreograph.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Choreograph.hpp; sourceTree = "<group>"; };
+		153607D419D46195001ECD25 /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
 		153607D519D46195001ECD25 /* Motion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Motion.cpp; sourceTree = "<group>"; };
 		153607D619D46195001ECD25 /* Motion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Motion.h; sourceTree = "<group>"; };
 		153607D819D46195001ECD25 /* Output.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Output.hpp; sourceTree = "<group>"; };
-		153607D919D46195001ECD25 /* Phrases.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrases.hpp; sourceTree = "<group>"; };
 		153607DA19D46195001ECD25 /* Sequence.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sequence.hpp; sourceTree = "<group>"; };
 		153607DB19D46195001ECD25 /* Timeline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timeline.cpp; sourceTree = "<group>"; };
 		153607DC19D46195001ECD25 /* Timeline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timeline.h; sourceTree = "<group>"; };
 		153607DE19D46195001ECD25 /* CinderSpecialization.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CinderSpecialization.hpp; sourceTree = "<group>"; };
 		153607E919D4622D001ECD25 /* Phrase.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Phrase.hpp; sourceTree = "<group>"; };
 		1560075D19D72C5000247022 /* VectorManipulation.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = VectorManipulation.hpp; path = detail/VectorManipulation.hpp; sourceTree = "<group>"; };
+		15609E0819E187AD0053395A /* TimeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeType.h; sourceTree = "<group>"; };
 		1597E20819D7061E00A049D4 /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch.hpp; path = ../catch.hpp; sourceTree = "<group>"; };
@@ -180,16 +180,16 @@
 			isa = PBXGroup;
 			children = (
 				1560075C19D72C4A00247022 /* detail */,
-				153607D419D46195001ECD25 /* Choreograph.hpp */,
+				153607D419D46195001ECD25 /* Choreograph.h */,
 				153607D519D46195001ECD25 /* Motion.cpp */,
 				153607D619D46195001ECD25 /* Motion.h */,
 				153607D819D46195001ECD25 /* Output.hpp */,
-				153607D919D46195001ECD25 /* Phrases.hpp */,
 				153607DA19D46195001ECD25 /* Sequence.hpp */,
 				153607DB19D46195001ECD25 /* Timeline.cpp */,
 				153607DC19D46195001ECD25 /* Timeline.h */,
 				153607E919D4622D001ECD25 /* Phrase.hpp */,
 				1597E20819D7061E00A049D4 /* Connection.hpp */,
+				15609E0819E187AD0053395A /* TimeType.h */,
 			);
 			path = choreograph;
 			sourceTree = "<group>";

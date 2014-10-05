@@ -14,7 +14,7 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 
-#include "choreograph/Choreograph.hpp"
+#include "choreograph/Choreograph.h"
 
 namespace pockets
 {

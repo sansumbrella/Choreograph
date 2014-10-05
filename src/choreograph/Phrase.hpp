@@ -27,7 +27,7 @@
 
 #pragma once
 
-// Includes needed for tests to build (since they don't include the pch).
+#include "TimeType.h"
 #include <functional>
 #include <vector>
 #include <array>
@@ -36,14 +36,6 @@
 
 namespace choreograph
 {
-
-/// Define our Time type here so it's easier to change out if needed.
-/// Float loses precision pretty quickly, but is fast and doesn't take up much space.
-/// Double works nicely when adding together lots of little bits or if you need long sequences.
-using Time = float;
-
-/// Return the value for infinity.
-inline Time infinity() { return std::numeric_limits<Time>::infinity(); }
 
 template<typename T>
 class Phrase;

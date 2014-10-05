@@ -1,7 +1,7 @@
 
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
-#include "choreograph/Choreograph.hpp"
+#include "choreograph/Choreograph.h"
 #include <array>
 
 // If true, will test vec2 and vec3 animation and different ease functions.
@@ -43,17 +43,20 @@ TEST_CASE( "Sequence Interpolation", "[sequence]" )
 
 TEST_CASE( "Time and Infinity" )
 {
+  const Time infinity = std::numeric_limits<Time>::infinity();
+
   Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 1.0f, 1.0f, EaseInOutQuad() ).then<RampTo>( 2.0f, ch::infinity() );
+  sequence.then<RampTo>( 1.0f, 1.0f, EaseInOutQuad() ).then<RampTo>( 2.0f, infinity );
 
   PhraseRef<float> ramp = make_shared<RampTo<float>>( 2.0f, 0.0f, 10.0f );
-  auto looped = loopPhrase( ramp, ch::infinity() );
+  auto looped = loopPhrase( ramp, infinity );
 
   REQUIRE( looped->getValue( 1.0f ) == looped->getValue( 2001.0f ) );
   REQUIRE( sequence.getValue( 1.0f ) == 1.0f );
   REQUIRE( sequence.getValue( 2.0f ) == 1.0f );
-  REQUIRE( sequence.getDuration() == ch::infinity() );
-  REQUIRE( (1000.0f / ch::infinity()) == 0.0f );
+  REQUIRE( sequence.getDuration() == infinity );
+  REQUIRE( sequence.getValue( infinity ) == 2.0f );
+  REQUIRE( (1000.0f / infinity) == 0.0f );
 } // Time and Infinity
 
 TEST_CASE( "Raw Pointers" )

@@ -2,7 +2,8 @@
 #define CATCH_CONFIG_MAIN
 #include "catch.hpp"
 
-#include "choreograph/Choreograph.hpp"
+#include "choreograph/Choreograph.h"
+
 #include "cinder/Timer.h"
 #include "cinder/Vector.h"
 #include "cinder/Timeline.h"
