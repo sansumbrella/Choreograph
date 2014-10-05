@@ -224,7 +224,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     REQUIRE( call_counts[2] == 1 );
     REQUIRE( call_counts[3] == 0 );
 
-    for( int i = 0; i < 10; ++i ) {
+    for( int i = 0; i < 11; ++i ) {
       timeline.step( 0.1f );
     }
 
@@ -232,7 +232,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     REQUIRE( call_counts[0] == 1 );
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 1 );
-//    REQUIRE( call_counts[3] == 1 );
+    REQUIRE( call_counts[3] == 1 );
   }
 
   SECTION( "Motion Manipulation from Callbacks" )

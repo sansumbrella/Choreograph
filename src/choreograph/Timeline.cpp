@@ -46,8 +46,7 @@ Time Timeline::getDuration() const
 void Timeline::step( Time dt )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  bool do_clear = _auto_clear;
-  detail::erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished() || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -58,12 +57,22 @@ void Timeline::step( Time dt )
 void Timeline::jumpTo( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  bool do_clear = _auto_clear;
-  detail::erase_if( &_motions, [do_clear] ( const MotionBaseRef &motion ) { return (do_clear && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished() || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
     c->jumpTo( time );
+  }
+}
+
+void Timeline::setTime( Time time )
+{
+  // Remove any motions that have stale pointers or that have completed playing.
+  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished() || (! motion->isValid()); } );
+
+  // Update all animation outputs.
+  for( auto &c : _motions ) {
+    c->setTime( time );
   }
 }
 
@@ -77,7 +86,10 @@ void Timeline::remove( void *output )
   detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
 }
 
-void Timeline::cue( const std::function<void ()> &fn, Time delay )
+CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
-  _motions.push_back( std::make_shared<Cue>( fn, delay ) );
+  auto cue = std::make_shared<Cue>( fn, delay );
+  _motions.push_back( cue );
+
+  return CueOptions( cue );
 }

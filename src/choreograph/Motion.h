@@ -40,6 +40,8 @@ namespace choreograph
 
 using MotionBaseRef = std::shared_ptr<class MotionBase>;
 
+using CueRef = std::shared_ptr<class Cue>;
+
 template<typename T>
 class Motion;
 
@@ -107,6 +109,9 @@ public:
   /// Set the start time of this motion. Use to delay entire motion.
   void setStartTime( Time t ) { _start_time = t; }
   Time getStartTime() const { return _start_time; }
+
+  /// Set the connection to play continuously.
+  void continuous( bool c ) { _continuous = c; }
 
 protected:
   // True if the underlying Sequence should play forever.
@@ -188,9 +193,6 @@ public:
   /// Set the playback speed of this motion. Use negative numbers for reverse.
   MotionT&  playbackSpeed( Time s ) { setPlaybackSpeed( s ); return *this; }
 
-  /// Set the connection to play continuously.
-  MotionT&  continuous( bool c ) { _continuous = c; return *this; }
-
   /// Update
   void update() override;
 
@@ -219,7 +221,7 @@ void Motion<T>::update()
     if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
       _startFn( *this );
     }
-    else if( backward() && time() < _source->getDuration() && previousTime() >= _source->getDuration() ) {
+    else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
       _startFn( *this );
     }
   }
@@ -233,7 +235,7 @@ void Motion<T>::update()
 
   if( _finishFn )
   {
-    if( forward() && time() >= _source->getDuration() && previousTime() < _source->getDuration() ) {
+    if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
       _finishFn( *this );
     }
     else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {

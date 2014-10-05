@@ -102,6 +102,26 @@ private:
   const Timeline  &_timeline;
 };
 
+///
+/// CueOptions provide a facade for manipulating a timeline Cue.
+/// All methods return a reference back to the CueOptions object for chaining.
+///
+class CueOptions
+{
+public:
+  explicit CueOptions( const CueRef &cue ):
+    _cue( cue )
+  {}
+  /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
+  CueOptions& continuous( bool isContinuous ) { _cue->continuous( isContinuous ); return *this; }
+
+  CueOptions& setStartTime( Time t ) { _cue->setStartTime( t ); return *this; }
+
+  CueOptions& playbackSpeed( Time speed ) { _cue->setPlaybackSpeed( speed ); return *this; }
+private:
+  CueRef  _cue;
+};
+
 /**
  Holds a collection of Motions and updates them through time.
  */
@@ -160,7 +180,7 @@ public:
   //=================================================
 
   /// Add a cue to the timeline. It will be called after \a delay time elapses on this Timeline.
-  void cue( const std::function<void ()> &fn, Time delay );
+  CueOptions cue( const std::function<void ()> &fn, Time delay );
 
   //=================================================
   // Time manipulation.
@@ -171,6 +191,9 @@ public:
 
   /// Set all motions to \a time.
   void jumpTo( Time time );
+
+  /// Set all motions to \a time. Safe to call from Motion callbacks.
+  void setTime( Time time );
 
   //=================================================
   // Timeline element manipulation.
@@ -214,6 +237,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
 {
   auto sequence = std::make_shared<Sequence<T>>( *output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
+  motion->continuous( ! _auto_clear );
 
   _motions.push_back( motion );
 
@@ -225,6 +249,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
 {
   auto sequence = std::make_shared<Sequence<T>>( phrase );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
+  motion->continuous( ! _auto_clear );
 
   _motions.push_back( motion );
 
@@ -235,6 +260,7 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
 {
   auto motion = std::make_shared<Motion<T>>( output, sequence );
+  motion->continuous( ! _auto_clear );
 
   _motions.push_back( motion );
 
@@ -262,6 +288,7 @@ MotionOptions<T> Timeline::applyRaw( T *output )
 
   auto sequence = std::make_shared<Sequence<T>>( *output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
+  motion->continuous( ! _auto_clear );
 
   _motions.push_back( motion );
 
@@ -273,6 +300,8 @@ MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
+  motion->continuous( ! _auto_clear );
+
   _motions.push_back( motion );
 
   return MotionOptions<T>( motion, sequence, *this );

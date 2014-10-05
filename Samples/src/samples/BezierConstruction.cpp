@@ -32,33 +32,43 @@ using namespace cinder;
 
 void BezierConstruction::setup()
 {
-  Output<vec2>  a;
-  Output<vec2>  b;
-  Output<vec2>  curvePoint;
+  mCurvePoints = {
+    vec2( 100, 600 ),
+    vec2( 100, 100 ),
+    vec2( 1180, 100 ),
+    vec2( 1180, 600 )
+  };
 
-  const float duration = 2.0f;
+  const float duration = 1.5f;
 
   // Ramp from anchor point to control point.
-  auto ramp_a = RampTo<vec2>::create( vec2( 100, 100 ), vec2( 100, 600 ), duration );
+  auto ramp_a = RampTo<vec2>::create( mCurvePoints[0], mCurvePoints[1], duration );
   // Ramp from control point to anchor point.
-  auto ramp_b = RampTo<vec2>::create( vec2( 1180, 600 ), vec2( 1180, 100 ), duration );
+  auto ramp_b = RampTo<vec2>::create( mCurvePoints[2], mCurvePoints[3], duration );
 
   // Lerp between control ramps.
   auto bezier_point = MixPhrase<vec2>::create( ramp_a, ramp_b, 0.0f );
 
-  timeline().apply( &a, ramp_a );
-  timeline().apply( &b, ramp_b );
+  timeline().setAutoRemove( false );
+
+  timeline().apply( &mControlA, ramp_a );
+  timeline().apply( &mControlB, ramp_b );
   timeline().apply( bezier_point->getMixOutput() ).then<RampTo>( 1.0f, duration );
-  timeline().apply( &curvePoint, (PhraseRef<vec2>)bezier_point )
+  timeline().apply( &mCurvePoint, (PhraseRef<vec2>)bezier_point )
+    .startFn( [this] ( Motion<vec2> &m ) {
+      mSegments.clear();
+    } )
     .updateFn( [this] ( vec2 &pos ) {
       mSegments.push_back( pos );
+    } )
+    .finishFn( [this] ( Motion<vec2> &m ) {
+      timeline().cue( [this] {
+        timeline().setTime( 0.0f );
+      }, 0.5f ).continuous( false );
     } );
 
   Color first( 1.0f, 0.1f, 0.05f );
   Color curve( 1.0f, 0.0f, 1.0f );
-  mTargets.push_back( { a, first } );
-  mTargets.push_back( { b, first } );
-  mTargets.push_back( { curvePoint, curve } );
 }
 
 void BezierConstruction::update( double dt )
@@ -68,14 +78,39 @@ void BezierConstruction::update( double dt )
 
 void BezierConstruction::draw()
 {
+  gl::ScopedColor color( Color::white() );
+  Color curveColor( 1.0f, 1.0f, 0.0f );
+  Color controlColor( 1.0f, 0.0f, 1.0f );
+  Color lineColor( 0.0f, 1.0f, 1.0f );
+  Color futureColor( 1.0f, 1.0f, 1.0f );
+
+  // Draw our curve.
+  gl::color( lineColor );
   gl::begin( GL_LINE_STRIP );
   for( auto &segment : mSegments ) {
     gl::vertex( segment );
   }
   gl::end();
 
-  for( auto &target : mTargets ) {
-    gl::ScopedColor color( target._color );
-    gl::drawSolidCircle( target._position, 10.0f );
+  // Draw our curve's static control points.
+  for( auto &point : mCurvePoints ) {
+    gl::drawSolidCircle( point, 6.0f );
   }
+
+  // Draw the paths traveled by our animating control points.
+  gl::drawLine( mCurvePoints[0], mCurvePoints[1] );
+  gl::drawLine( mCurvePoints[2], mCurvePoints[3] );
+
+  // Draw our animating control points.
+  gl::color( controlColor );
+  gl::drawStrokedCircle( mControlA, 10.0f );
+  gl::drawStrokedCircle( mControlB, 10.0f );
+
+  // Draw our curve point's tangent line.
+  gl::color( futureColor );
+  gl::drawLine( mCurvePoint, mControlB );
+  gl::color( curveColor );
+  gl::drawLine( mControlA, mCurvePoint );
+  // And our leading curve point.
+  gl::drawStrokedCircle( mCurvePoint, 12.0f );
 }

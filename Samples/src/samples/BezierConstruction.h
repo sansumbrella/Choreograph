@@ -43,6 +43,11 @@ private:
     ci::Color             _color;
   };
 
-  std::vector<Point>    mTargets;
   std::vector<ci::vec2> mSegments;
+
+  std::array<ci::vec2, 4> mCurvePoints;
+
+  ch::Output<ci::vec2>  mControlA;
+  ch::Output<ci::vec2>  mControlB;
+  ch::Output<ci::vec2>  mCurvePoint;
 };
