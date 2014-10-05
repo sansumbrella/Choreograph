@@ -37,5 +37,10 @@ public:
   void update( double dt ) override;
   void draw() override;
 private:
-  std::vector<ch::Output<ci::vec2>> mTargets;
+  struct Point {
+    ch::Output<ci::vec2>  _position;
+    ci::Color         _color;
+  };
+
+  std::vector<Point> mTargets;
 };

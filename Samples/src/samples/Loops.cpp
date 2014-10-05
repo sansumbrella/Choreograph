@@ -58,6 +58,22 @@ void Loops::setup()
     } )
     .continuous( true );  // Motion should play forever.
 
+  Output<vec2>  pingPongSlowerTarget;
+  timeline().apply( &pingPongSlowerTarget, leftToRight )
+  .finishFn( [] ( Motion<vec2> &m ) {
+    // Reverse and slow Motion on finish.
+    m.setPlaybackSpeed( m.getPlaybackSpeed() * -0.9f );
+    // If we're unbearably slow, stop looping.
+    if( std::abs( m.getPlaybackSpeed() ) < 0.2f ) {
+      m.continuous( false );
+      m.finishFn( [] ( Motion<vec2> &m ) {} );
+    }
+    else {
+      m.resetTime();
+    }
+  } )
+  .continuous( true );  // Motion should play forever.
+
   //=====================================================
   // Looping Phrases. Use for a finite number of loops.
   //=====================================================
@@ -68,10 +84,11 @@ void Loops::setup()
   Output<vec2> pingPongPhraseTarget;
   timeline().apply( &pingPongPhraseTarget ).then( PingPongPhrase<vec2>::create( leftToRight, 7.5f ) );
 
-  mTargets.push_back( loopTarget );
-  mTargets.push_back( pingPongTarget );
-  mTargets.push_back( loopPhraseTarget );
-  mTargets.push_back( pingPongPhraseTarget );
+  mTargets.push_back( { loopTarget, Color( 1, 0, 1 ) } );
+  mTargets.push_back( { pingPongTarget, Color( 1, 0, 1 ) } );
+  mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ) } );
+  mTargets.push_back( { loopPhraseTarget, Color( 1, 1, 0 ) } );
+  mTargets.push_back( { pingPongPhraseTarget, Color( 1, 1, 0 ) } );
 }
 
 void Loops::update( double dt )
@@ -86,7 +103,8 @@ void Loops::draw()
   gl::translate( vec2( 0, (app::getWindowHeight() - y_step * mTargets.size()) / 2 ) );
 
   for( auto &target : mTargets ) {
-    gl::drawSolidCircle( target(), 25.0f );
+    gl::ScopedColor color( target._color );
+    gl::drawSolidCircle( target._position, 25.0f );
     gl::translate( vec2( 0, y_step ) );
   }
 }
