@@ -18,6 +18,7 @@
 		15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5719D8D97C006BFAF1 /* Scene.cpp */; };
 		15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5F19D8DA6C006BFAF1 /* Hello.cpp */; };
 		15362C6519D8EB5D006BFAF1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3839DB7C4CB047F2BC061C67 /* CinderApp.icns */; };
+		15609E1219E1B81C0053395A /* Loops.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1019E1B81C0053395A /* Loops.cpp */; };
 		1587D87C19DA322900943242 /* Orbits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1587D87A19DA322900943242 /* Orbits.cpp */; };
 		15BA7BBC19DF2799003E13A5 /* Sink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BBA19DF2799003E13A5 /* Sink.cpp */; };
 		15C8EC6B19D907B0005432F0 /* Wings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15C8EC6919D907B0005432F0 /* Wings.cpp */; };
@@ -40,7 +41,6 @@
 		03560CF4A84E47EB989E5635 /* Connection.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Connection.hpp; path = ../../src/choreograph/Connection.hpp; sourceTree = "<group>"; };
 		0F0179DA2AB04C6B81DB7D50 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		11FDACF8C7F74B84BBDCEC2D /* Choreograph.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Choreograph.hpp; path = ../../src/choreograph/Choreograph.hpp; sourceTree = "<group>"; };
 		15362C5419D8D97C006BFAF1 /* ConnectionManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionManager.cpp; sourceTree = "<group>"; };
 		15362C5519D8D97C006BFAF1 /* ConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionManager.h; sourceTree = "<group>"; };
 		15362C5619D8D97C006BFAF1 /* Pockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pockets.h; sourceTree = "<group>"; };
@@ -49,9 +49,10 @@
 		15362C5D19D8DA5B006BFAF1 /* Samples.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Samples.h; sourceTree = "<group>"; };
 		15362C5F19D8DA6C006BFAF1 /* Hello.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hello.cpp; sourceTree = "<group>"; };
 		15362C6019D8DA6C006BFAF1 /* Hello.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hello.h; sourceTree = "<group>"; };
+		15609E1019E1B81C0053395A /* Loops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Loops.cpp; sourceTree = "<group>"; };
+		15609E1119E1B81C0053395A /* Loops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Loops.h; sourceTree = "<group>"; };
 		1587D87A19DA322900943242 /* Orbits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orbits.cpp; sourceTree = "<group>"; };
 		1587D87B19DA322900943242 /* Orbits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orbits.h; sourceTree = "<group>"; };
-		15BA7BB919DF252B003E13A5 /* Phrases.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = Phrases.hpp; path = ../../src/choreograph/Phrases.hpp; sourceTree = "<group>"; };
 		15BA7BBA19DF2799003E13A5 /* Sink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sink.cpp; sourceTree = "<group>"; };
 		15BA7BBB19DF2799003E13A5 /* Sink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sink.h; sourceTree = "<group>"; };
 		15C8EC6919D907B0005432F0 /* Wings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wings.cpp; sourceTree = "<group>"; };
@@ -164,6 +165,8 @@
 				1587D87B19DA322900943242 /* Orbits.h */,
 				15BA7BBA19DF2799003E13A5 /* Sink.cpp */,
 				15BA7BBB19DF2799003E13A5 /* Sink.h */,
+				15609E1019E1B81C0053395A /* Loops.cpp */,
+				15609E1119E1B81C0053395A /* Loops.h */,
 			);
 			name = samples;
 			path = ../src/samples;
@@ -223,11 +226,9 @@
 		88FAA7F837504B59BA2DD4CB /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
-				11FDACF8C7F74B84BBDCEC2D /* Choreograph.hpp */,
 				03560CF4A84E47EB989E5635 /* Connection.hpp */,
 				B25A393591A6406DA425F06F /* Output.hpp */,
 				4187A9085E6748BDBEF76A2C /* Phrase.hpp */,
-				15BA7BB919DF252B003E13A5 /* Phrases.hpp */,
 				29A3EFF9476646AFA8055336 /* Sequence.hpp */,
 				821E728BE5C745D5903B5492 /* Motion.h */,
 				389812C7005E449883D09C34 /* Timeline.h */,
@@ -318,6 +319,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				15BA7BBC19DF2799003E13A5 /* Sink.cpp in Sources */,
+				15609E1219E1B81C0053395A /* Loops.cpp in Sources */,
 				15C8EC6B19D907B0005432F0 /* Wings.cpp in Sources */,
 				15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */,
 				734B27ABC09048BA95ABD6C6 /* SamplesApp.cpp in Sources */,

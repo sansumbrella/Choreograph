@@ -27,27 +27,21 @@
 
 #pragma once
 
-#include "Hello.h"
-#include "Sink.h"
-#include "Wings.h"
-#include "Loops.h"
+#include "pockets/Scene.h"
 
-using SampleRef = std::shared_ptr<pk::Scene>;
-using SampleFn = std::function<SampleRef ()>;
-
-const std::vector<std::pair<std::string, SampleFn>> SampleList =
+/// Demonstrates different kinds of looping effects.
+class Loops : public pk::Scene
 {
-  { "Looping", std::make_shared<Loops> },
-  { "Hola", std::make_shared<Hello> },
-  { "Dev Junk", std::make_shared<Sink> }
+public:
+  void setup() override;
+  void update( double dt ) override;
+  void draw() override;
+private:
+  std::vector<ch::Output<ci::vec2>> mTargets;
+  ch::Output<ci::vec2>  mLoopTarget;
+  ch::Output<ci::vec2>  mPingPongTarget;
+
+  ch::Output<ci::vec2>  mLoopPhraseTarget;
+  ch::Output<ci::vec2>  mPingPongPhraseTarget;
+  ch::Output<ci::vec2>  mReversePhraseTarget;
 };
-
-const std::vector<std::string> SampleNames = ([]
-{
-  std::vector<std::string> names;
-  for( auto &pair : SampleList )
-  {
-    names.push_back( pair.first );
-  }
-  return names;
-})();

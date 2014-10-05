@@ -81,8 +81,7 @@ public:
   SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
   /// Clone and append a phrase to the Sequence.
-  SelfT& then( const Phrase<T> &phrase ) { _sequence->then( phrase ); return *this; }
-  SelfT& then( Phrase<T> &&phrase ) { _sequence->then( std::forward( phrase ) ); return *this; }
+  SelfT& then( const PhraseRef<T> &phrase ) { _sequence->then( phrase ); return *this; }
 
   //=================================================
   // Extra Sugar.
@@ -120,6 +119,9 @@ public:
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
   MotionOptions<T> apply( Output<T> *output, const SequenceRef<T> &sequence );
+
+  template<typename T>
+  MotionOptions<T> apply( Output<T> *output, const PhraseRef<T> &phrase );
 
   /// Add phrases to the end of the Sequence currently connected to \a output.
   template<typename T>
@@ -211,6 +213,17 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output )
 {
   auto sequence = std::make_shared<Sequence<T>>( *output );
+  auto motion = std::make_shared<Motion<T>>( output, sequence );
+
+  _motions.push_back( motion );
+
+  return MotionOptions<T>( motion, sequence, *this );
+}
+
+template<typename T>
+MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase )
+{
+  auto sequence = std::make_shared<Sequence<T>>( phrase );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
 
   _motions.push_back( motion );

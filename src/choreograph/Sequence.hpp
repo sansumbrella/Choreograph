@@ -77,6 +77,12 @@ public:
     _duration( calcDuration() )
   {}
 
+  explicit Sequence( const PhraseRef<T> &phrase ):
+    _initial_value( phrase->getStartValue() ),
+    _duration( phrase->getDuration() ),
+    _phrases( 1, phrase )
+  {}
+
   //
   // Sequence manipulation and expansion.
   //
@@ -95,7 +101,7 @@ public:
   Sequence<T>& then( const T &value, Time duration, Args&&... args );
 
   /// Appends a phrase to the end of the sequence.
-  Sequence<T>& then( const std::shared_ptr<Phrase<T>> &phrase_ptr );
+  Sequence<T>& then( const PhraseRef<T> &phrase_ptr );
 
   /// Append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
@@ -106,7 +112,7 @@ public:
 
   /// Returns a Phrase that encapsulates this Sequence.
   /// Duplicates the Sequence, so future changes to this do not affect the Phrase.
-  PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( std::unique_ptr<Sequence<T>>( new Sequence<T>( *this ) ) ); }
+  PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( SequenceUniqueRef<T>( new Sequence<T>( *this ) ) ); }
 
   //
   // Phrase<T> Equivalents.
@@ -171,7 +177,7 @@ Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 }
 
 template<typename T>
-Sequence<T>& Sequence<T>::then( const std::shared_ptr<Phrase<T>> &phrase )
+Sequence<T>& Sequence<T>::then( const PhraseRef<T> &phrase )
 {
   _phrases.push_back( phrase );
   _duration += phrase->getDuration();

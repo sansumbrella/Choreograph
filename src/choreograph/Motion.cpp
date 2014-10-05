@@ -70,7 +70,7 @@ void MotionBase::resetTime()
   }
   else
   {
-    _time = _previous_time = getDuration();
+    _time = _previous_time = getEndTime();
   }
 }
 

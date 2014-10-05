@@ -53,7 +53,7 @@ public:
 
   T getValue( Time atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
   T getStartValue() const override { return _source->getStartValue(); }
-  T getEndValue() const override { return _source->getEndValue(); }
+  T getEndValue() const override { return _source->getValueWrapped( this->getDuration() ); }
 private:
   PhraseRef<T>  _source;
   Time          _inflection_point;
@@ -98,7 +98,7 @@ public:
     }
   }
   T getStartValue() const override { return _source->getStartValue(); }
-  T getEndValue() const override { return _source->getEndValue(); }
+  T getEndValue() const override { return getValue( this->getDuration() ); }
 private:
   PhraseRef<T>  _source;
   Time          _inflection_point;

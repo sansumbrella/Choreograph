@@ -68,6 +68,11 @@ public:
     _lerpFn( lerp_fn )
   {}
 
+  static PhraseRef<T> create( const T &start_value, const T &end_value, Time duration, const EaseFn &ease_fn = &easeNone, const LerpFn &lerp_fn = &lerpT<T> )
+  {
+    return std::make_shared<RampTo<T>>( duration, start_value, end_value, ease_fn, lerp_fn );
+  }
+
   /// Returns the interpolated value at the given time.
   T getValue( Time atTime ) const override
   {
@@ -84,7 +89,6 @@ private:
   EaseFn  _easeFn;
   LerpFn  _lerpFn;
 };
-
 
 ///
 /// RampToN is a phrase template with N separately-interpolated components of the same type.

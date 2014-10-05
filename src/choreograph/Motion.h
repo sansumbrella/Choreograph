@@ -56,11 +56,14 @@ class MotionBase
 public:
   MotionBase() = default;
 
-  /// Advance motion in time. Affected by Motion's speed.
+  /// Advance motion in time. Affected by Motion's speed. Do not use from callbacks (it will fire them).
   void step( Time dt );
 
-  /// Jump to a point in time. Ignores Motion's speed.
+  /// Jump to a point in time. Ignores Motion's speed. Do not use from callbacks (it will fire them).
   void jumpTo( Time time );
+
+  /// Set time. Ignores speed. Safe to use from callbacks.
+  void setTime( Time time ) { _time = _previous_time = time; }
 
   /// Overridden to determine what a time step does.
   virtual void update() = 0;
@@ -96,7 +99,7 @@ public:
   Time getPlaybackSpeed() const { return _speed; }
 
   /// Reset motion to beginning. Accounts for reversed playback.
-  void  resetTime();
+  void resetTime();
 
   /// Returns the current end time of this motion.
   Time getEndTime() const { return getStartTime() + getDuration(); }
