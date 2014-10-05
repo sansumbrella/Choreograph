@@ -32,6 +32,9 @@
 namespace choreograph
 {
 
+///
+/// LoopPhrase repeats an existing Phrase N times.
+///
 template<typename T>
 class LoopPhrase : public Phrase<T>
 {
@@ -62,5 +65,63 @@ PhraseRef<T> loopPhrase( const PhraseRef<T> &source, float numLoops, Time inflec
 {
   return LoopPhrase<T>::create( source, numLoops, inflectionPoint );
 }
+
+///
+/// PingPongPhrase repeats an existing Phrase N times,
+/// playing forward from start to end, then playing
+/// in reverse from end to start.
+///
+template<typename T>
+class PingPongPhrase : public Phrase<T>
+{
+public:
+  /// Create a Phrase that loops \a source \a numLoops times.
+  PingPongPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f ):
+    Phrase<T>( source->getDuration() * numLoops ),
+    _source( source ),
+    _inflection_point( inflectionPoint )
+  {}
+
+  static std::shared_ptr<PingPongPhrase<T>> create( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+  {
+    return std::make_shared<PingPongPhrase<T>>( source, numLoops, inflectionPoint );
+  }
+
+  T getValue( Time atTime ) const override {
+    bool forward = (int)(atTime / _source->getDuration()) % 2 == 0;
+    Time insetTime = std::fmod( atTime, _source->getDuration() );
+    if( forward ) {
+      return _source->getValue( insetTime );
+    }
+    else {
+      return _source->getValue( _source->getDuration() - insetTime );
+    }
+  }
+  T getStartValue() const override { return _source->getStartValue(); }
+  T getEndValue() const override { return _source->getEndValue(); }
+private:
+  PhraseRef<T>  _source;
+  Time          _inflection_point;
+};
+
+///
+/// ReversePhrase plays an existing Phrase in reverse.
+///
+template<typename T>
+class ReversePhrase : public Phrase<T>
+{
+public:
+  /// Create a Phrase that loops \a source \a numLoops times.
+  ReversePhrase( const PhraseRef<T> &source ):
+  Phrase<T>( source->getDuration() ),
+  _source( source )
+  {}
+
+  T getValue( Time atTime ) const override { return _source->getValue( _source->getDuration() - atTime ); }
+  T getStartValue() const override { return _source->getEndValue(); }
+  T getEndValue() const override { return _source->getStartValue(); }
+private:
+  PhraseRef<T>  _source;
+};
 
 } // namespace choreograph

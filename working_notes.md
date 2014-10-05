@@ -1,9 +1,6 @@
 
 TODO:
 
-Ph: Ping-pong retimer.
-Ph: Reverse retimer.
-
 Sa: Bezier curve drawing sample to show off mix phrase (aka, crazy way to animate along a curve).
     Create a motion from each sub-phrase.
 Sa: Loop Motion. Set time to zero on finish.
