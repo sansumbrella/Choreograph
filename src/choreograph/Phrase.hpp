@@ -31,7 +31,6 @@
 #include <functional>
 #include <vector>
 #include <array>
-#include <cmath>
 #include <memory>
 
 namespace choreograph
@@ -60,6 +59,10 @@ public:
 
   virtual ~Phrase() = default;
 
+  //=================================================
+  // Virtual Interface.
+  //=================================================
+
   /// Override to provide value at requested time.
   /// Returns the interpolated value at the given time.
   virtual T getValue( Time atTime ) const = 0;
@@ -70,25 +73,19 @@ public:
   /// Override to provide value at end (and beyond).
   virtual T getEndValue() const = 0;
 
-  /// Returns the Phrase value at \a time, looping past the end from inflection point to the end.
-  /// Relies on the subclass implementation of getValue( t ).
-  T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
+  //=================================================
+  // Time querying.
+  //=================================================
 
   /// Returns normalized time if t is in range [start_time, end_time].
   inline Time normalizeTime( Time t ) const { return t / _duration; }
+
   /// Returns the duration of this source.
   inline Time getDuration() const { return _duration; }
 
-  /// Wrap \a time around \a inflectionPoint in the Sequence.
-  Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const
-  {
-    if( time > getDuration() ) {
-      return inflectionPoint + std::fmodf( time, getDuration() - inflectionPoint );
-    }
-    else {
-      return time;
-    }
-  }
+  /// Returns the Phrase value at \a time, looping past the end from inflection point to the end.
+  /// Relies on the subclass implementation of getValue( t ).
+  T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, getDuration(), inflectionPoint ) ); }
 
 private:
   const Time _duration = 0;

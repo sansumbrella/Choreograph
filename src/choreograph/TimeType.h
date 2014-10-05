@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <cmath>
+
 namespace choreograph
 {
 
@@ -42,5 +44,16 @@ namespace choreograph
 #else
   using Time = float;
 #endif
+
+/// Wrap \a time past \a duration around \a inflectionPoint.
+inline Time wrapTime( Time time, Time duration, Time inflectionPoint=0.0f )
+{
+  if( time > duration ) {
+    return inflectionPoint + std::fmod( time, duration - inflectionPoint );
+  }
+  else {
+    return time;
+  }
+}
 
 } // namespace choreograph

@@ -116,16 +116,13 @@ public:
   T getValue( Time atTime ) const;
 
   /// Returns the Sequence value at \a atTime, wrapped past the end of .
-  T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, inflectionPoint ) ); }
+  T getValueWrapped( Time time, Time inflectionPoint = 0.0f ) const { return getValue( wrapTime( time, getDuration(), inflectionPoint ) ); }
 
   /// Returns the value at the end of the Sequence.
   T getEndValue() const { return _phrases.empty() ? _initial_value : _phrases.back()->getEndValue(); }
 
   /// Returns the value at the beginning of the Sequence.
   T getStartValue() const { return _initial_value; }
-
-  /// Wrap \a time around \a inflectionPoint in the Sequence.
-  Time wrapTime( Time time, Time inflectionPoint = 0.0f ) const;
 
   /// Returns the Sequence duration.
   Time getDuration() const { return _duration; }
@@ -226,17 +223,6 @@ Time Sequence<T>::calcDuration() const
     sum += phrase->getDuration();
   }
   return sum;
-}
-
-template<typename T>
-Time Sequence<T>::wrapTime( Time time, Time inflectionPoint ) const
-{
-  if( time > getDuration() ) {
-    return inflectionPoint + std::fmod( time, getDuration() - inflectionPoint );
-  }
-  else {
-    return time;
-  }
 }
 
 //=================================================
