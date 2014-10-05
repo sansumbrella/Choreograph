@@ -38,10 +38,4 @@ public:
   void draw() override;
 private:
   std::vector<ch::Output<ci::vec2>> mTargets;
-  ch::Output<ci::vec2>  mLoopTarget;
-  ch::Output<ci::vec2>  mPingPongTarget;
-
-  ch::Output<ci::vec2>  mLoopPhraseTarget;
-  ch::Output<ci::vec2>  mPingPongPhraseTarget;
-  ch::Output<ci::vec2>  mReversePhraseTarget;
 };

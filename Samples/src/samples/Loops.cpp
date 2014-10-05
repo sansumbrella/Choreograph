@@ -62,7 +62,6 @@ void Loops::setup()
   // Looping Phrases. Use for a finite number of loops.
   //=====================================================
 
-
   Output<vec2> loopPhraseTarget;
   timeline().apply( &loopPhraseTarget ).then( LoopPhrase<vec2>::create( leftToRight, 7.5f ) );
 
