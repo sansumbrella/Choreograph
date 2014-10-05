@@ -108,6 +108,10 @@ public:
     _mix( mix )
   {}
 
+  static std::shared_ptr<MixPhrase<T>> create( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f ) {
+    return std::make_shared<MixPhrase<T>>( a, b, mix );
+  }
+
   /// Returns a blend of the values of a and b at \a atTime.
   T getValue( Time atTime ) const override {
     return _a->getValue( atTime ) * mixA() + _b->getValue( atTime ) * mixB();
@@ -135,8 +139,8 @@ private:
   PhraseRef<T>  _a;
   PhraseRef<T>  _b;
 
-  inline float mixA() const { return 1 - _mix; }
-  inline float mixB() const { return _mix; }
+  inline float mixA() const { return 1 - _mix(); }
+  inline float mixB() const { return _mix(); }
 };
 
 ///

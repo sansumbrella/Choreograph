@@ -29,8 +29,9 @@
 
 #include "pockets/Scene.h"
 
-/// Demonstrates different kinds of looping effects.
-class Loops : public pk::Scene
+/// Demonstrates how a Bezier curve is formed using Mix Phrases.
+/// Constructs a Cubic Bezier.
+class BezierConstruction : public pk::Scene
 {
 public:
   void setup() override;
@@ -42,5 +43,6 @@ private:
     ci::Color             _color;
   };
 
-  std::vector<Point> mTargets;
+  std::vector<Point>    mTargets;
+  std::vector<ci::vec2> mSegments;
 };

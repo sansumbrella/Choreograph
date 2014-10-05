@@ -25,31 +25,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include "Hello.h"
-#include "Sink.h"
-#include "Wings.h"
-#include "Loops.h"
 #include "BezierConstruction.h"
 
-using SampleRef = std::shared_ptr<pk::Scene>;
-using SampleFn = std::function<SampleRef ()>;
+using namespace choreograph;
+using namespace cinder;
 
-const std::vector<std::pair<std::string, SampleFn>> SampleList =
+void BezierConstruction::setup()
 {
-  { "Bezier Construction", std::make_shared<BezierConstruction> },
-  { "Looping", std::make_shared<Loops> },
-  { "Hola", std::make_shared<Hello> },
-  { "Dev Junk", std::make_shared<Sink> }
-};
+  Output<vec2>  a;
+  Output<vec2>  b;
+  Output<vec2>  curvePoint;
 
-const std::vector<std::string> SampleNames = ([]
+  const float duration = 2.0f;
+
+  // Ramp from anchor point to control point.
+  auto ramp_a = RampTo<vec2>::create( vec2( 100, 100 ), vec2( 100, 600 ), duration );
+  // Ramp from control point to anchor point.
+  auto ramp_b = RampTo<vec2>::create( vec2( 1180, 600 ), vec2( 1180, 100 ), duration );
+
+  // Lerp between control ramps.
+  auto bezier_point = MixPhrase<vec2>::create( ramp_a, ramp_b, 0.0f );
+
+  timeline().apply( &a, ramp_a );
+  timeline().apply( &b, ramp_b );
+  timeline().apply( bezier_point->getMixOutput() ).then<RampTo>( 1.0f, duration );
+  timeline().apply( &curvePoint, (PhraseRef<vec2>)bezier_point )
+    .updateFn( [this] ( vec2 &pos ) {
+      mSegments.push_back( pos );
+    } );
+
+  Color first( 1.0f, 0.1f, 0.05f );
+  Color curve( 1.0f, 0.0f, 1.0f );
+  mTargets.push_back( { a, first } );
+  mTargets.push_back( { b, first } );
+  mTargets.push_back( { curvePoint, curve } );
+}
+
+void BezierConstruction::update( double dt )
 {
-  std::vector<std::string> names;
-  for( auto &pair : SampleList )
-  {
-    names.push_back( pair.first );
+  timeline().step( dt );
+}
+
+void BezierConstruction::draw()
+{
+  gl::begin( GL_LINE_STRIP );
+  for( auto &segment : mSegments ) {
+    gl::vertex( segment );
   }
-  return names;
-})();
+  gl::end();
+
+  for( auto &target : mTargets ) {
+    gl::ScopedColor color( target._color );
+    gl::drawSolidCircle( target._position, 10.0f );
+  }
+}

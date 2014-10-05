@@ -19,6 +19,7 @@
 		15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5F19D8DA6C006BFAF1 /* Hello.cpp */; };
 		15362C6519D8EB5D006BFAF1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3839DB7C4CB047F2BC061C67 /* CinderApp.icns */; };
 		15609E1219E1B81C0053395A /* Loops.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1019E1B81C0053395A /* Loops.cpp */; };
+		15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1319E1CCA20053395A /* BezierConstruction.cpp */; };
 		1587D87C19DA322900943242 /* Orbits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1587D87A19DA322900943242 /* Orbits.cpp */; };
 		15BA7BBC19DF2799003E13A5 /* Sink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BBA19DF2799003E13A5 /* Sink.cpp */; };
 		15C8EC6B19D907B0005432F0 /* Wings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15C8EC6919D907B0005432F0 /* Wings.cpp */; };
@@ -51,6 +52,8 @@
 		15362C6019D8DA6C006BFAF1 /* Hello.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hello.h; sourceTree = "<group>"; };
 		15609E1019E1B81C0053395A /* Loops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Loops.cpp; sourceTree = "<group>"; };
 		15609E1119E1B81C0053395A /* Loops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Loops.h; sourceTree = "<group>"; };
+		15609E1319E1CCA20053395A /* BezierConstruction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierConstruction.cpp; sourceTree = "<group>"; };
+		15609E1419E1CCA20053395A /* BezierConstruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierConstruction.h; sourceTree = "<group>"; };
 		1587D87A19DA322900943242 /* Orbits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orbits.cpp; sourceTree = "<group>"; };
 		1587D87B19DA322900943242 /* Orbits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orbits.h; sourceTree = "<group>"; };
 		15BA7BBA19DF2799003E13A5 /* Sink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sink.cpp; sourceTree = "<group>"; };
@@ -167,6 +170,8 @@
 				15BA7BBB19DF2799003E13A5 /* Sink.h */,
 				15609E1019E1B81C0053395A /* Loops.cpp */,
 				15609E1119E1B81C0053395A /* Loops.h */,
+				15609E1319E1CCA20053395A /* BezierConstruction.cpp */,
+				15609E1419E1CCA20053395A /* BezierConstruction.h */,
 			);
 			name = samples;
 			path = ../src/samples;
@@ -323,6 +328,7 @@
 				15C8EC6B19D907B0005432F0 /* Wings.cpp in Sources */,
 				15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */,
 				734B27ABC09048BA95ABD6C6 /* SamplesApp.cpp in Sources */,
+				15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */,
 				15362C5919D8D97C006BFAF1 /* ConnectionManager.cpp in Sources */,
 				8E48C4EAEF9E4B1A99CAF321 /* Motion.cpp in Sources */,
 				15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */,
