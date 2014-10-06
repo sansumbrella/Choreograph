@@ -92,23 +92,20 @@ public:
   /// Otherwise, this is an instantaneous hold at \a value.
   Sequence<T>& set( const T &value );
 
-  /// Add a Phrase to the end of the sequence.
-  /// Constructs a new Phrase animating to \a value over \duration from the current end of this Sequence.
+  /// Append a Phrase to the sequence.
+  /// Constructs a new Phrase starting with Sequence's end value and
+  /// ending with \a value after \a duration.
   /// Forwards additional arguments to the end of the Phrase constructor.
   /// Example calls look like:
   /// sequence.then<RampTo>( targetValue, duration, EaseInOutQuad() ).then<Hold>( holdValue, duration );
   template<template <typename> class PhraseT, typename... Args>
   Sequence<T>& then( const T &value, Time duration, Args&&... args );
 
-  /// Appends a phrase to the end of the sequence.
+  /// Append an existing phrase to the Sequence.
   Sequence<T>& then( const PhraseRef<T> &phrase_ptr );
 
   /// Append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
-
-  /// Append all Phrases from another Sequence to this Sequence.
-  /// Specialized to handle shared_ptr's correctly.
-  Sequence<T>& then( const std::shared_ptr<Sequence<T>> &next ) { return then( *next ); }
 
   /// Returns a Phrase that encapsulates this Sequence.
   /// Duplicates the Sequence, so future changes to this do not affect the Phrase.

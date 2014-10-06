@@ -21,7 +21,7 @@ Choreograph is designed to describe motion. With it, you compose motion Phrases 
   timeline.apply( &target )
           .then<RampTo>( float( 50.0f, 10.0f ), 0.3f )
           .then<Hold>( float( 50.0f, 50.0f ), 0.2f )
-          .then( loopPhrase( continuation.asPhrase(), 3 ) )
+          .then( LoopPhrase<float>::create( continuation.asPhrase(), 3 ) )
           .finishFn( [] (Motion<float> &m) { cout << "Finished animating target." << endl; } );
 
   timeline.step( 1.0 / 60.0 );

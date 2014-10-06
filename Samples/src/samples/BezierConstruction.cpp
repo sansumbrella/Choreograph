@@ -54,7 +54,7 @@ void BezierConstruction::setup()
   timeline().apply( &mControlA, ramp_a );
   timeline().apply( &mControlB, ramp_b );
   timeline().apply( bezier_point->getMixOutput() ).then<RampTo>( 1.0f, duration );
-  timeline().apply( &mCurvePoint, (PhraseRef<vec2>)bezier_point )
+  timeline().apply<vec2>( &mCurvePoint, bezier_point )
     .startFn( [this] ( Motion<vec2> &m ) {
       mSegments.clear();
     } )

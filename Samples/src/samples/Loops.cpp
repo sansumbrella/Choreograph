@@ -44,8 +44,7 @@ void Loops::setup()
   timeline().apply( &loopTarget, leftToRight )
     .finishFn( [] ( Motion<vec2> &m ) {
       m.resetTime();
-    } )
-    .continuous( true );  // Motion should play forever.
+    } );  // Motion should play forever.
 
 
   Output<vec2>  pingPongTarget;
@@ -55,24 +54,21 @@ void Loops::setup()
       m.setPlaybackSpeed( m.getPlaybackSpeed() * -1 );
       // Start each cycle from "zero" to keep in sync with loopTarget timing.
       m.resetTime();
-    } )
-    .continuous( true );  // Motion should play forever.
+    } );
 
   Output<vec2>  pingPongSlowerTarget;
   timeline().apply( &pingPongSlowerTarget, leftToRight )
-  .finishFn( [] ( Motion<vec2> &m ) {
-    // Reverse and slow Motion on finish.
-    m.setPlaybackSpeed( m.getPlaybackSpeed() * -0.9f );
-    // If we're unbearably slow, stop looping.
-    if( std::abs( m.getPlaybackSpeed() ) < 0.2f ) {
-      m.continuous( false );
-      m.finishFn( [] ( Motion<vec2> &m ) {} );
-    }
-    else {
-      m.resetTime();
-    }
-  } )
-  .continuous( true );  // Motion should play forever.
+    .finishFn( [] ( Motion<vec2> &m ) {
+      // Reverse and slow Motion on finish.
+      m.setPlaybackSpeed( m.getPlaybackSpeed() * -0.9f );
+      // If we're unbearably slow, stop looping.
+      if( std::abs( m.getPlaybackSpeed() ) < 0.2f ) {
+        m.finishFn( [] ( Motion<vec2> &m ) {} );
+      }
+      else {
+        m.resetTime();
+      }
+    } );
 
   //=====================================================
   // Looping Phrases. Use for a finite number of loops.

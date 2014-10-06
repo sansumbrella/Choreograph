@@ -38,18 +38,15 @@ template<typename T>
 class CombinePhrase : public Phrase<T>
 {
 public:
-  CombinePhrase( Time duration, const PhraseRef<T> &source, float factor=1.0f ):
-    Phrase<T>( duration )
-  {
-    _sources.emplace_back( std::make_pair( source, factor ) );
-  }
 
+  /// Add additional Phrase to be summed.
   CombinePhrase<T>& add( const PhraseRef<T> &source, float factor=1.0f )
   {
     _sources.emplace_back( std::make_pair( source, factor ) );
     return *this;
   }
 
+  /// Add additional Phrases to be summed.
   template<typename... Args>
   void add( const PhraseRef<T> &source, float factor, Args&&... args )
   {
@@ -57,6 +54,8 @@ public:
     add( std::forward<Args>( args )... );
   }
 
+  /// Creates a CombinePhrase that sums alls sources passed in.
+  /// Sources should come in pairs of PhraseRef, float.
   template<typename... Args>
   static std::shared_ptr<CombinePhrase<T>> create( Time duration, Args&&... args )
   {
@@ -86,16 +85,8 @@ private:
   std::vector<std::pair<PhraseRef<T>, float>>  _sources;
 };
 
-/// Free function to make combining phrases easier in client code.
-template<typename T, typename... Args>
-std::shared_ptr<CombinePhrase<T>> sumPhrases( Time duration, const PhraseRef<T> &phrase_a, float mix_a, const PhraseRef<T> &phrase_b, float mix_b, Args&&... args )
-{
-  return CombinePhrase<T>::create( duration, phrase_a, mix_a, phrase_b, mix_b, std::forward<Args>( args )... );
-}
-
 ///
 /// Mix interpolates between the value of two input Phrases.
-/// Untested.
 ///
 template<typename T>
 class MixPhrase : public Phrase<T>

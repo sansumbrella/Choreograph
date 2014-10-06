@@ -59,13 +59,6 @@ private:
   Time          _inflection_point;
 };
 
-/// Free function to make creating looped phrases easier in client code.
-template<typename T>
-PhraseRef<T> loopPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
-{
-  return LoopPhrase<T>::create( source, numLoops, inflectionPoint );
-}
-
 ///
 /// PingPongPhrase repeats an existing Phrase N times,
 /// playing forward from start to end, then playing
@@ -116,6 +109,11 @@ public:
   Phrase<T>( source->getDuration() ),
   _source( source )
   {}
+
+  static std::shared_ptr<ReversePhrase<T>> create( const PhraseRef<T> &source )
+  {
+    return std::make_shared<ReversePhrase<T>>( source );
+  }
 
   T getValue( Time atTime ) const override { return _source->getValue( _source->getDuration() - atTime ); }
   T getStartValue() const override { return _source->getEndValue(); }
