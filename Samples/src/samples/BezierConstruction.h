@@ -30,7 +30,7 @@
 #include "pockets/Scene.h"
 
 /// Demonstrates how a Bezier curve is formed using Mix Phrases.
-/// Constructs a Cubic Bezier.
+/// Constructs a Quadratic Bezier.
 class BezierConstruction : public pk::Scene
 {
 public:
