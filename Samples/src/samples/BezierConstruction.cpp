@@ -47,7 +47,7 @@ void BezierConstruction::setup()
   auto ramp_b = RampTo<vec2>::create( mCurvePoints[2], mCurvePoints[3], duration );
 
   // Lerp between control ramps.
-  auto bezier_point = makeMix( ramp_a, ramp_b, 0.0f );
+  auto bezier_point = makeBlend( ramp_a, ramp_b, 0.0f );
 
   timeline().setAutoRemove( false );
 

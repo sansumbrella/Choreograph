@@ -65,7 +65,7 @@ inline PhraseRef<T> makeReverse( const PhraseRef<T> &source )
 
 /// Create a MixPhrase that blends the value of Phrases \a a and \a b.
 template<typename T>
-inline std::shared_ptr<MixPhrase<T>> makeMix( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f )
+inline std::shared_ptr<MixPhrase<T>> makeBlend( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f )
 {
   return std::make_shared<MixPhrase<T>>( a, b, mix );
 }
