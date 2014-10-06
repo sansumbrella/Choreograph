@@ -42,17 +42,17 @@ void BezierConstruction::setup()
   const float duration = 1.5f;
 
   // Ramp from anchor point to control point.
-  auto ramp_a = RampTo<vec2>::create( mCurvePoints[0], mCurvePoints[1], duration );
+  auto ramp_a = makeRamp( mCurvePoints[0], mCurvePoints[1], duration );
   // Ramp from control point to anchor point.
-  auto ramp_b = RampTo<vec2>::create( mCurvePoints[2], mCurvePoints[3], duration );
+  auto ramp_b = makeRamp( mCurvePoints[2], mCurvePoints[3], duration );
 
   // Lerp between control ramps.
-  auto bezier_point = makeBlend( ramp_a, ramp_b, 0.0f );
+  auto bezier_point = makeBlend<vec2>( ramp_a, ramp_b, 0.0f );
 
   timeline().setAutoRemove( false );
 
-  timeline().apply( &mControlA, ramp_a );
-  timeline().apply( &mControlB, ramp_b );
+  timeline().apply<vec2>( &mControlA, ramp_a );
+  timeline().apply<vec2>( &mControlB, ramp_b );
   timeline().apply( bezier_point->getMixOutput() ).then<RampTo>( 1.0f, duration );
   timeline().apply<vec2>( &mCurvePoint, bezier_point )
     .startFn( [this] ( Motion<vec2> &m ) {

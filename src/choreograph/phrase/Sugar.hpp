@@ -70,6 +70,13 @@ inline std::shared_ptr<MixPhrase<T>> makeBlend( const PhraseRef<T> &a, const Phr
   return std::make_shared<MixPhrase<T>>( a, b, mix );
 }
 
+/// Create a RampTo that animates from \a a to \a b.
+template<typename T>
+inline std::shared_ptr<RampTo<T>> makeRamp( const T &a, const T &b, Time duration, const EaseFn &ease_fn = &easeNone, const typename RampTo<T>::LerpFn &lerp_fn = &lerpT<T> )
+{
+  return std::make_shared<RampTo<T>>( duration, a, b, ease_fn, lerp_fn );
+}
+
 /// Create an AccumulatePhrase that combines the values of input Phrases via a left fold.
 /// The default operator is sum.
 template<typename T>

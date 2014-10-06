@@ -34,7 +34,7 @@ void Loops::setup()
 {
   float left = 100.0f;
   float right = app::getWindowWidth() - left;
-  PhraseRef<vec2> leftToRight = RampTo<vec2>::create( vec2( left, 0.0f ), vec2( right, 0.0f ), 1.0f, EaseInOutQuad() );
+  PhraseRef<vec2> leftToRight = makeRamp( vec2( left, 0.0f ), vec2( right, 0.0f ), 1.0f, EaseInOutQuad() );
 
   //=====================================================
   // Looping Motions. Use for things that loop "forever."
