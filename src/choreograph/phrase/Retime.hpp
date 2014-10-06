@@ -29,6 +29,12 @@
 
 #include "choreograph/Phrase.hpp"
 
+///
+/// \file
+/// Retime Phrases take another Phrase and reinterpret the time at which
+/// that Phrase's value is computed.
+///
+
 namespace choreograph
 {
 
@@ -45,11 +51,6 @@ public:
     _source( source ),
     _inflection_point( inflectionPoint )
   {}
-
-  static std::shared_ptr<LoopPhrase<T>> create( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
-  {
-    return std::make_shared<LoopPhrase<T>>( source, numLoops, inflectionPoint );
-  }
 
   T getValue( Time atTime ) const override { return _source->getValueWrapped( atTime, _inflection_point ); }
   T getStartValue() const override { return _source->getStartValue(); }
@@ -74,11 +75,6 @@ public:
     _source( source ),
     _inflection_point( inflectionPoint )
   {}
-
-  static std::shared_ptr<PingPongPhrase<T>> create( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
-  {
-    return std::make_shared<PingPongPhrase<T>>( source, numLoops, inflectionPoint );
-  }
 
   T getValue( Time atTime ) const override {
     bool forward = (int)(atTime / _source->getDuration()) % 2 == 0;
@@ -109,11 +105,6 @@ public:
   Phrase<T>( source->getDuration() ),
   _source( source )
   {}
-
-  static std::shared_ptr<ReversePhrase<T>> create( const PhraseRef<T> &source )
-  {
-    return std::make_shared<ReversePhrase<T>>( source );
-  }
 
   T getValue( Time atTime ) const override { return _source->getValue( _source->getDuration() - atTime ); }
   T getStartValue() const override { return _source->getEndValue(); }

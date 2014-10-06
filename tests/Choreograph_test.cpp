@@ -49,7 +49,7 @@ TEST_CASE( "Time and Infinity" )
   sequence.then<RampTo>( 1.0f, 1.0f, EaseInOutQuad() ).then<RampTo>( 2.0f, infinity );
 
   PhraseRef<float> ramp = make_shared<RampTo<float>>( 2.0f, 0.0f, 10.0f );
-  auto looped = LoopPhrase<float>::create( ramp, infinity );
+  auto looped = makeRepeat<float>( ramp, infinity );
 
   REQUIRE( looped->getValue( 1.0f ) == looped->getValue( 2001.0f ) );
   REQUIRE( sequence.getValue( 1.0f ) == 1.0f );
@@ -464,9 +464,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     Sequence<vec2> slide_x( vec2( 0 ) );
     slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
 
-    auto combine = CombinePhrase<vec2>::create( 3.0f, slide_x.asPhrase(), 0.5f,
-                                               LoopPhrase<vec2>::create( bounce_y.asPhrase(), 3 ), 1.0f,
-                                               bounce_y.asPhrase(), 1.0f );
+    auto combine = makeAccumulator( vec2( 0 ), slide_x.asPhrase(), makeRepeat<vec2>( bounce_y.asPhrase(), 3 ) );
+    combine->add( bounce_y.asPhrase() );
 
     sequence.then( combine );
 
@@ -476,8 +475,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     }
 
     REQUIRE( sequence.getValue( 0.5 ).y == 20.0 ); // both bounces up
-    REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only looping bounce up
-    REQUIRE( sequence.getEndValue().x == 50.0 ); // slide only 50%
+    REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only the repeated bounce up remains
+    REQUIRE( sequence.getEndValue().x == 100.0 );
   }
 } // Separate Component Easing
 

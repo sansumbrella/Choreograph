@@ -75,10 +75,10 @@ void Loops::setup()
   //=====================================================
 
   Output<vec2> loopPhraseTarget;
-  timeline().apply( &loopPhraseTarget ).then( LoopPhrase<vec2>::create( leftToRight, 7.5f ) );
+  timeline().apply( &loopPhraseTarget ).then( makeRepeat( leftToRight, 7.5f ) );
 
   Output<vec2> pingPongPhraseTarget;
-  timeline().apply( &pingPongPhraseTarget ).then( PingPongPhrase<vec2>::create( leftToRight, 7.5f ) );
+  timeline().apply( &pingPongPhraseTarget ).then( makePingPong( leftToRight, 7.5f ) );
 
   mTargets.push_back( { loopTarget, Color( 1, 0, 1 ) } );
   mTargets.push_back( { pingPongTarget, Color( 1, 0, 1 ) } );

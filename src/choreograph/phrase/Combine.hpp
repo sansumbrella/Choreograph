@@ -29,62 +29,15 @@
 
 #include "choreograph/Phrase.hpp"
 
+///
+/// \file
+/// Combine Phrases take multiple other Phrases and combine them into
+/// a single output value. Unlike Sequences, Combine Phrases consider
+/// their input Phrases as coincident in time.
+///
+
 namespace choreograph
 {
-///
-/// Combine adds together the value of a collection of other Phrases.
-///
-template<typename T>
-class CombinePhrase : public Phrase<T>
-{
-public:
-
-  /// Add additional Phrase to be summed.
-  CombinePhrase<T>& add( const PhraseRef<T> &source, float factor=1.0f )
-  {
-    _sources.emplace_back( std::make_pair( source, factor ) );
-    return *this;
-  }
-
-  /// Add additional Phrases to be summed.
-  template<typename... Args>
-  void add( const PhraseRef<T> &source, float factor, Args&&... args )
-  {
-    add( source, factor );
-    add( std::forward<Args>( args )... );
-  }
-
-  /// Creates a CombinePhrase that sums alls sources passed in.
-  /// Sources should come in pairs of PhraseRef, float.
-  template<typename... Args>
-  static std::shared_ptr<CombinePhrase<T>> create( Time duration, Args&&... args )
-  {
-    auto phrase = std::shared_ptr<CombinePhrase<T>>( new CombinePhrase<T>( duration ) );
-    phrase->add( std::forward<Args>( args )... );
-    return phrase;
-  }
-
-  T getValue( Time atTime ) const override
-  {
-    T value = _sources.front().first->getValue( atTime ) * _sources.front().second;
-    for( size_t i = 1; i < _sources.size(); ++i ) {
-      value += _sources[i].first->getValue( atTime ) * _sources[i].second;
-    }
-    return value;
-  }
-
-  T getStartValue() const override { return getValue( 0 ); }
-  T getEndValue() const override { return getValue( this->getDuration() ); }
-
-private:
-  CombinePhrase( Time duration ):
-    Phrase<T>( duration )
-  {}
-  // Collection of shared_ptr, mix pairs.
-  // shared_ptr since unique_ptr made copying/moving std::pair impossible
-  std::vector<std::pair<PhraseRef<T>, float>>  _sources;
-};
-
 ///
 /// Mix interpolates between the value of two input Phrases.
 ///
@@ -98,10 +51,6 @@ public:
     _b( b ),
     _mix( mix )
   {}
-
-  static std::shared_ptr<MixPhrase<T>> create( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f ) {
-    return std::make_shared<MixPhrase<T>>( a, b, mix );
-  }
 
   /// Returns a blend of the values of a and b at \a atTime.
   T getValue( Time atTime ) const override {
@@ -132,6 +81,72 @@ private:
 
   inline float mixA() const { return 1 - _mix(); }
   inline float mixB() const { return _mix(); }
+};
+
+///
+/// AccumulatePhrase adds together the value of a collection of other Phrases.
+/// Performs the functional operation reduce or foldl over the Phrases in question.
+/// By default, sums the value of all Phrases.
+///
+template<typename T>
+class AccumulatePhrase : public Phrase<T>
+{
+public:
+  using ReduceFunction = std::function<T (const T&, const T&)>;
+
+  AccumulatePhrase( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const ReduceFunction &fn ):
+    Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
+    _reduceFn( fn ),
+    _initial_value( initial_value )
+  {
+    add( a, b );
+  }
+
+  AccumulatePhrase( const T &initial_value, Time duration, const PhraseRef<T> &a, const PhraseRef<T> &b, const ReduceFunction &fn ):
+    Phrase<T>( duration ),
+    _reduceFn( fn ),
+    _initial_value( initial_value )
+  {
+    add( a, b );
+  }
+
+  /// Add additional Phrase to be summed.
+  void add( const PhraseRef<T> &source )
+  {
+    _sources.push_back( source );
+  }
+
+  /// Add additional Phrases to be summed.
+  template<typename... Args>
+  void add( const PhraseRef<T> &source, Args&&... args )
+  {
+    add( source );
+    add( std::forward<Args>( args )... );
+  }
+
+  T getValue( Time atTime ) const override
+  {
+    T value = _initial_value;
+    for( const auto &source : _sources ) {
+      value = _reduceFn( value, source->getValue( atTime ) );
+    }
+    return value;
+  }
+
+  T getStartValue() const override { return getValue( 0 ); }
+  T getEndValue() const override { return getValue( this->getDuration() ); }
+
+  /// Default reduce function sums all inputs.
+  static T sum( const T &a, const T &b ) {
+    return a + b;
+  }
+
+private:
+  // Reduce function to apply.
+  ReduceFunction            _reduceFn;
+  // Phrases to reduce.
+  std::vector<PhraseRef<T>> _sources;
+  T                         _initial_value;
 };
 
 ///

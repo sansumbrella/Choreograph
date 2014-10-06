@@ -27,32 +27,58 @@
 
 #pragma once
 
+#include "Retime.hpp"
+#include "Combine.hpp"
+
 ///
 /// \file
 /// Free functions to make creating certain meta-phrases easier.
 ///
-/// These are in a separate file, not included by default, since I'm not
-/// sold on their utility.
-///
 /// Note that the compiler can't deduce the type of T for PhraseRef<T> from DerivedRef<T>
 /// so you may need to help it out. e.g. `loopPhrase<vec3>( DerivedRef<vec3>, 2 );`
+/// If you have a PhraseRef<T>, you won't need to specify the type at the call-site.
 ///
 
 namespace choreograph
 {
 
-/// Create a LoopPhrase that loops \a source Phrase \a numLoops times.
-/// \see LoopPhrase<T>::create()
+/// Create a Phrase that repeats \a source Phrase \a numLoops times.
 template<typename T>
-PhraseRef<T> loopPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+inline PhraseRef<T> makeRepeat( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
 {
-  return LoopPhrase<T>::create( source, numLoops, inflectionPoint );
+  return std::make_shared<LoopPhrase<T>>( source, numLoops, inflectionPoint );
 }
 
+/// Create a Phrase that loops \a source Phrase \a numLoops times.
 template<typename T>
-PhraseRef<T> pingPongPhrase( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
+inline PhraseRef<T> makePingPong( const PhraseRef<T> &source, float numLoops, Time inflectionPoint = 0.0f )
 {
-  return PingPongPhrase<T>::create( source, numLoops, inflectionPoint );
+  return std::make_shared<PingPongPhrase<T>>( source, numLoops, inflectionPoint );
+}
+
+/// Create a Phrase that plays \a source Phrase in reverse.
+template<typename T>
+inline PhraseRef<T> makeReverse( const PhraseRef<T> &source )
+{
+  return std::make_shared<PingPongPhrase<T>>( source );
+}
+
+/// Create a MixPhrase that blends the value of Phrases \a a and \a b.
+template<typename T>
+inline std::shared_ptr<MixPhrase<T>> makeMix( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f )
+{
+  return std::make_shared<MixPhrase<T>>( a, b, mix );
+}
+
+/// Create an AccumulatePhrase that combines the values of input Phrases via a left fold.
+/// The default operator is sum.
+template<typename T>
+inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const typename AccumulatePhrase<T>::ReduceFunction &fn = &AccumulatePhrase<T>::sum, Time duration=0 )
+{
+  if( duration > 0 )
+    return std::make_shared<AccumulatePhrase<T>>( initial_value, duration, a, b, fn );
+  else
+    return std::make_shared<AccumulatePhrase<T>>( initial_value, a, b, fn );
 }
 
 } // namespace choreograph

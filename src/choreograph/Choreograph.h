@@ -35,6 +35,7 @@
 #include "phrase/Retime.hpp"
 #include "phrase/Combine.hpp"
 #include "phrase/Procedural.hpp"
+#include "phrase/Sugar.hpp"
 
 #if defined( CINDER_CINDER )
   #include "specialization/CinderSpecialization.hpp"

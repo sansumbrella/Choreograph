@@ -30,6 +30,12 @@
 #include "choreograph/Phrase.hpp"
 #include "choreograph/Easing.hpp"
 
+///
+/// \file
+/// Ramp Phrases interpolate between two values over time.
+/// They are analogous to a Tween.
+///
+
 namespace choreograph
 {
 
