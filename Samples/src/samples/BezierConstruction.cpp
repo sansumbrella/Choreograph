@@ -57,6 +57,7 @@ void BezierConstruction::setup()
   timeline().apply<vec2>( &mCurvePoint, bezier_point )
     .startFn( [this] ( Motion<vec2> &m ) {
       mSegments.clear();
+      mSegments.push_back( mCurvePoints[0] );
     } )
     .updateFn( [this] ( vec2 &pos ) {
       mSegments.push_back( pos );
