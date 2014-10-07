@@ -250,7 +250,7 @@ TEST_CASE( "Motion Speed and Reversal" )
   SECTION( "Equivalence between motion time and sequence time" )
   {
     Output<float> target;
-    timeline.setAutoRemove( false );
+    timeline.setDefaultRemoveOnFinish( false );
     timeline.apply( &target, sequence );
 
     vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };

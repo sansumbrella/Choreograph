@@ -8,6 +8,8 @@ MotionGroup for start/finish functions over a collection of Motions.
  - Consider using for Bezier Construction sample, since they are all related.
  - duration = reduce( motions, max( m.endTime ) )
 
+Consistent naming for auto-removal of Motions. Continuous -> RemoveOnFinish?
+
 Sequence editing: no removal once added, but can get slices of an existing sequence.
   Only thing that could mess up an existing motion (badly) would be to shorten the sequence while playing.
 

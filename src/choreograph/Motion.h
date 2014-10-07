@@ -110,13 +110,15 @@ public:
   void setStartTime( Time t ) { _start_time = t; }
   Time getStartTime() const { return _start_time; }
 
-  /// Set the connection to play continuously.
-  void continuous( bool c ) { _continuous = c; }
+  /// Set whether the Motion should be removed from parent Timeline on finish.
+  void setRemoveOnFinish( bool doRemove ) { _remove_on_finish = doRemove; }
 
-protected:
-  // True if the underlying Sequence should play forever.
-  bool        _continuous = false;
+  /// Returns true if the Motion should be removed from parent Timeline on finish.
+  bool getRemoveOnFinish() const { return _remove_on_finish; }
+
 private:
+  /// True if this motion should be removed from Timeline on finish.
+  bool        _remove_on_finish = true;
   /// Playback speed. Set to negative to go in reverse.
   Time       _speed = 1.0f;
   /// Current animation time in seconds. Time at which Sequence is evaluated.

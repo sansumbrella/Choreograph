@@ -49,7 +49,7 @@ void BezierConstruction::setup()
   // Lerp between control ramps.
   auto bezier_point = makeBlend<vec2>( ramp_a, ramp_b, 0.0f );
 
-  timeline().setAutoRemove( false );
+  timeline().setDefaultRemoveOnFinish( false );
 
   timeline().apply<vec2>( &mControlA, ramp_a );
   timeline().apply<vec2>( &mControlB, ramp_b );
@@ -65,7 +65,7 @@ void BezierConstruction::setup()
     .finishFn( [this] ( Motion<vec2> &m ) {
       timeline().cue( [this] {
         timeline().setTime( 0.0f );
-      }, 0.5f ).continuous( false );
+      }, 0.5f ).removeOnFinish( true );
     } );
 
   Color first( 1.0f, 0.1f, 0.05f );

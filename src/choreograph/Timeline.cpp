@@ -30,23 +30,10 @@
 
 using namespace choreograph;
 
-Time Timeline::getDuration() const
-{
-  if( empty() ) { return 0.0f; }
-
-  float duration = _motions.front()->getDuration();
-  for( auto &motion : _motions )
-  {
-    duration = std::max( motion->getDuration(), duration );
-  }
-
-  return duration;
-}
-
 void Timeline::step( Time dt )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished() || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -57,7 +44,7 @@ void Timeline::step( Time dt )
 void Timeline::jumpTo( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished() || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -68,7 +55,7 @@ void Timeline::jumpTo( Time time )
 void Timeline::setTime( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return motion->isFinished() || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {

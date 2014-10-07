@@ -62,11 +62,13 @@ public:
   /// Set function to be called when Motion finishes. Receives reference to motion.
   SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
 
-  /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
-  SelfT& continuous( bool isContinuous ) { _motion->continuous( isContinuous ); return *this; }
+  /// Set whether the motion should be removed from the timeline on finish.
+  SelfT& removeOnFinish( bool doRemove ) { _motion->setRemoveOnFinish( doRemove ); return *this; }
 
+  /// Set the Motion's start time. Only useful after an apply() call.
   SelfT& setStartTime( Time t ) { _motion->setStartTime( t ); return *this; }
 
+  /// Set the rate at which time advances for Motion.
   SelfT& playbackSpeed( Time speed ) { _motion->setPlaybackSpeed( speed ); return *this; }
 
   //=================================================
@@ -94,6 +96,7 @@ public:
   template<typename U>
   SelfT& after( U *other );
 
+  /// Offset the Motion's start time.
   SelfT& shiftStartTime( Time t ) { _motion->setStartTime( _motion->getStartTime() + t ); return *this; }
 
 private:
@@ -112,11 +115,13 @@ public:
   explicit CueOptions( const CueRef &cue ):
     _cue( cue )
   {}
-  /// Set the motion to be continuous, preventing it from being auto-removed from the timeline.
-  CueOptions& continuous( bool isContinuous ) { _cue->continuous( isContinuous ); return *this; }
+  /// Set the Cue to be removed from the timeline when finished.
+  CueOptions& removeOnFinish( bool doRemove ) { _cue->setRemoveOnFinish( doRemove ); return *this; }
 
+  /// Change the time (from now) at which the Cue will be called.
   CueOptions& setStartTime( Time t ) { _cue->setStartTime( t ); return *this; }
 
+  /// Change the rate at which time flows toward the Cue's execution.
   CueOptions& playbackSpeed( Time speed ) { _cue->setPlaybackSpeed( speed ); return *this; }
 private:
   CueRef  _cue;
@@ -209,7 +214,8 @@ public:
   void remove( void *output );
 
   /// Set whether motions should be removed when finished. Default is true.
-  void setAutoRemove( bool doRemove = true ) { _auto_clear = doRemove; }
+  /// This value will be passed to all future Motions created by the timeline.
+  void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
 
   /// Remove all motions from this timeline.
   void clear() { _motions.clear(); }
@@ -220,11 +226,9 @@ public:
   /// Return the number of motions on this timeline.
   size_t size() const { return _motions.size(); }
 
-  Time getDuration() const;
-
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
-  bool                        _auto_clear = true;
+  bool                        _default_remove_on_finish = true;
   std::vector<MotionBaseRef>  _motions;
 };
 
@@ -237,7 +241,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
 {
   auto sequence = std::make_shared<Sequence<T>>( *output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
-  motion->continuous( ! _auto_clear );
+  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   _motions.push_back( motion );
 
@@ -249,7 +253,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
 {
   auto sequence = std::make_shared<Sequence<T>>( phrase );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
-  motion->continuous( ! _auto_clear );
+  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   _motions.push_back( motion );
 
@@ -260,7 +264,7 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
 {
   auto motion = std::make_shared<Motion<T>>( output, sequence );
-  motion->continuous( ! _auto_clear );
+  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   _motions.push_back( motion );
 
@@ -288,7 +292,7 @@ MotionOptions<T> Timeline::applyRaw( T *output )
 
   auto sequence = std::make_shared<Sequence<T>>( *output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
-  motion->continuous( ! _auto_clear );
+  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   _motions.push_back( motion );
 
@@ -300,7 +304,7 @@ MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
   auto motion = std::make_shared<Motion<T>>( output, sequence );
-  motion->continuous( ! _auto_clear );
+  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   _motions.push_back( motion );
 

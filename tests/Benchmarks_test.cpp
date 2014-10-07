@@ -39,7 +39,7 @@ private:
 
 TEST_CASE( "Creating Motions" ) {
   ch::Timeline test_timeline;
-  test_timeline.setAutoRemove( false );
+  test_timeline.setDefaultRemoveOnFinish( false );
   float dt = 1.0f / 60.0f;
   const size_t count = 150e3; // 10k
 

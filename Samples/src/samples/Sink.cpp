@@ -45,7 +45,6 @@ void Sink::setup()
   auto blueMotion = timeline().apply( &mBall2 );
   blueMotion.startFn( [] ( Motion<vec2> &m ) { app::console() << "Start Blue Ball" << endl; } )
             .finishFn( [] ( Motion<vec2> &m ) { m.setPlaybackSpeed( m.getPlaybackSpeed() * -1.0f ); } )
-            .continuous( true )
             .updateFn( [this] (vec2 &v) {
               vec2 size = app::getWindowSize();
               float shortest = std::min( v.x, size.x - v.x );

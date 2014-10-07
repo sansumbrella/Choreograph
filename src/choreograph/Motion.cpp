@@ -50,16 +50,12 @@ void MotionBase::jumpTo( Time time )
 
 bool MotionBase::isFinished() const
 {
-  if( ! _continuous )
-  {
-    if( backward() ) {
-      return time() <= 0.0f;
-    }
-    else {
-      return time() >= getDuration();
-    }
+  if( backward() ) {
+    return time() <= 0.0f;
   }
-  return false;
+  else {
+    return time() >= getDuration();
+  }
 }
 
 void MotionBase::resetTime()
