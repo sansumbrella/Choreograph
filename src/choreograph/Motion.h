@@ -161,7 +161,9 @@ struct MotionGroupOptions
 class MotionGroup : public MotionBase
 {
 public:
-  using Callback = std::function<void (MotionBase&)>;
+  using Callback = std::function<void (MotionGroup&)>;
+
+  MotionGroup() = default;
 
   /// Create and add a Motion to the group.
   /// The Motion will apply \a sequence to \a output.
@@ -281,7 +283,7 @@ MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T
   auto motion = std::make_shared<Motion<T>>( output, sequence );
   _motions.push_back( motion );
 
-  // motion can't have a different start time.
+  // motion can't have a different start time, since it's created here.
   _duration = std::max( _duration, motion->getDuration() );
 
   return MotionGroupOptions<T>( motion );

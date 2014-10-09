@@ -73,6 +73,11 @@ void Timeline::remove( void *output )
   detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
 }
 
+void Timeline::add( const MotionBaseRef &motion )
+{
+  _motions.push_back( motion );
+}
+
 CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
   auto cue = std::make_shared<Cue>( fn, delay );

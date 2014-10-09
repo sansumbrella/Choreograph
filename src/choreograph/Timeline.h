@@ -188,6 +188,13 @@ public:
   CueOptions cue( const std::function<void ()> &fn, Time delay );
 
   //=================================================
+  // Adding other things.
+  //=================================================
+
+  /// Add Motion to timeline.
+  void add( const MotionBaseRef &motion );
+
+  //=================================================
   // Time manipulation.
   //=================================================
 
