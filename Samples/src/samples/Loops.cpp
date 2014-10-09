@@ -84,7 +84,8 @@ void Loops::setup()
   auto group = std::make_shared<MotionGroup>();
   group->add( positionSequence, &_position );
   group->add( rotationSequence, &_rotation );
-  group->setStartTime( 0.5f ); // start all motions after a 0.5 second hold on their start values.
+  // start grouped motions after a 0.5 second hold on their start values.
+  group->setStartTime( 0.5f );
   group->setFinishFn( [] ( MotionGroup &group ) {
     group.setPlaybackSpeed( group.getPlaybackSpeed() * -1 );
     group.resetTime();
@@ -127,7 +128,7 @@ void Loops::draw()
 
     for( auto &target : mTargets ) {
       gl::ScopedColor color( target._color );
-      gl::drawSolidCircle( target._position, 25.0f );
+      gl::drawSolidCircle( target._position, 24.0f );
       gl::translate( vec2( 0, y_step ) );
     }
   }
@@ -135,5 +136,5 @@ void Loops::draw()
   gl::ScopedColor color( Color( CM_HSV, 0.575f, 1.0f, 1.0f ) );
   gl::translate( _position );
   gl::multModelMatrix( glm::eulerAngleYXZ( _rotation().y, _rotation().x, _rotation().z ) );
-  gl::drawSolidCircle( vec2( 0 ), 30.0f );
+  gl::drawSolidCircle( vec2( 0 ), 36.0f );
 }
