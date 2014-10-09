@@ -150,13 +150,13 @@ struct MotionGroupOptions
   {}
 
   /// Set a function to be called when we start the motion. Receives Motion as an argument.
-  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
+  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion->setStartFn( fn ); return *this; }
 
   /// Set a function to be called on Motion update. Receives target as an argument.
-  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->updateFn( fn ); return *this; }
+  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->setUpdateFn( fn ); return *this; }
 
   /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
-  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
+  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion->setFinishFn( fn ); return *this; }
 
 private:
   MotionRef<T> _motion;
@@ -257,18 +257,16 @@ public:
   const void* getTarget() const override { return _connection.targetPtr(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
-  MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
+  void setFinishFn( const Callback &c ) { _finishFn = c; }
 
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
-  MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
+  void setStartFn( const Callback &c ) { _startFn = c; }
 
   /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
-  MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
+  void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
 
-  /// Set the playback speed of this motion. Use negative numbers for reverse.
-  MotionT&  playbackSpeed( Time s ) { setPlaybackSpeed( s ); return *this; }
-
-  /// Update
+  /// Update the connected target with the current sequence value.
+  /// Calls start/update/finish functions as appropriate if assigned.
   void update() override;
 
 private:

@@ -63,7 +63,7 @@ void Loops::setup()
       m.setPlaybackSpeed( m.getPlaybackSpeed() * -0.9f );
       // If we're unbearably slow, stop looping.
       if( std::abs( m.getPlaybackSpeed() ) < 0.2f ) {
-        m.finishFn( [] ( Motion<vec2> &m ) {} );
+        m.setFinishFn( [] ( Motion<vec2> &m ) {} );
       }
       else {
         m.resetTime();
