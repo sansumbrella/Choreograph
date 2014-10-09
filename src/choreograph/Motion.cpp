@@ -71,6 +71,49 @@ void MotionBase::resetTime()
 }
 
 //=================================================
+// MotionGroup
+//=================================================
+
+void MotionGroup::update()
+{
+  if( _start_fn )
+  {
+    if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
+      _start_fn( *this );
+    }
+    else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
+      _start_fn( *this );
+    }
+  }
+
+  // Advance motions to current time.
+  for( auto &motion : _motions ) {
+    motion->jumpTo( time() );
+  }
+
+  if( _finish_fn )
+  {
+    if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
+      _finish_fn( *this );
+    }
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
+      _finish_fn( *this );
+    }
+  }
+}
+
+bool MotionGroup::isValid() const
+{
+  for( auto &motion : _motions ) {
+    if( ! motion->isValid() ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+//=================================================
 // Cue
 //=================================================
 

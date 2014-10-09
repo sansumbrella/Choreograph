@@ -278,6 +278,20 @@ TEST_CASE( "Motion Speed and Reversal" )
 
 } // Motion Speed and Reversal
 
+TEST_CASE( "Storage Possibilities" )
+{
+  struct Type
+  {
+    ~Type() {
+      cout << "Type Destructed" << endl;
+    }
+  };
+
+  shared_ptr<void> void_ptr = std::make_shared<Type>();
+  shared_ptr<void> void_two( new Type );
+
+} // Storage Possibilities
+
 TEST_CASE( "Output Connections", "[output]" )
 {
 
@@ -468,11 +482,6 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     combine->add( bounce_y.asPhrase() );
 
     sequence.then( combine );
-
-    for( float t = 0.0f; t < sequence.getDuration(); t += 0.125f )
-    {
-      cout << "Mixed sequence, t: " << t << ", value: " << sequence.getValue( t ) << endl;
-    }
 
     REQUIRE( sequence.getValue( 0.5 ).y == 20.0 ); // both bounces up
     REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only the repeated bounce up remains

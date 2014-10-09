@@ -54,13 +54,13 @@ public:
   //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
-  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
+  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion->setStartFn( fn ); return *this; }
 
   /// Set function to be called when Motion updates. Receives current target value.
-  SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->updateFn( fn ); return *this; }
+  SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->setUpdateFn( fn ); return *this; }
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
-  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
+  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion->setFinishFn( fn ); return *this; }
 
   /// Set whether the motion should be removed from the timeline on finish.
   SelfT& removeOnFinish( bool doRemove ) { _motion->setRemoveOnFinish( doRemove ); return *this; }
@@ -186,6 +186,13 @@ public:
 
   /// Add a cue to the timeline. It will be called after \a delay time elapses on this Timeline.
   CueOptions cue( const std::function<void ()> &fn, Time delay );
+
+  //=================================================
+  // Adding other things.
+  //=================================================
+
+  /// Add Motion to timeline.
+  void add( const MotionBaseRef &motion );
 
   //=================================================
   // Time manipulation.

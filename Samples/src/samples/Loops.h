@@ -43,4 +43,8 @@ private:
   };
 
   std::vector<Point> mTargets;
+
+  // For grouped motion, we'll use these two properties.
+  ch::Output<ci::vec2>  _position;
+  ch::Output<ci::vec3>  _rotation;
 };

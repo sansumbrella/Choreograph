@@ -63,12 +63,35 @@ void Loops::setup()
       m.setPlaybackSpeed( m.getPlaybackSpeed() * -0.9f );
       // If we're unbearably slow, stop looping.
       if( std::abs( m.getPlaybackSpeed() ) < 0.2f ) {
-        m.finishFn( [] ( Motion<vec2> &m ) {} );
+        m.setFinishFn( [] ( Motion<vec2> &m ) {} );
       }
       else {
         m.resetTime();
       }
     } );
+
+  //==========================================================
+  // Looping Motion Group. Use for separate motions that loop
+  // with each other, but have different durations.
+  //==========================================================
+
+  SequenceRef<vec2> positionSequence = createSequence( vec2( app::getWindowSize() ) * vec2( 0.66, 1 ) + vec2( 0, 50 ) );
+  SequenceRef<vec3> rotationSequence = createSequence( vec3( M_PI / 2, 0, 0 ) );
+
+  rotationSequence->then<RampTo>( vec3( 4 * M_PI, 2 * M_PI, 0 ), 1.0f, EaseOutQuint() );
+  positionSequence->then<RampTo>( vec2( app::getWindowSize() ) * vec2( 0.66, 0.5 ), 0.5f, EaseOutAtan() );
+
+  auto group = std::make_shared<MotionGroup>();
+  group->add( positionSequence, &_position );
+  group->add( rotationSequence, &_rotation );
+  // start grouped motions after a 0.5 second hold on their start values.
+  group->setStartTime( 0.5f );
+  group->setFinishFn( [] ( MotionGroup &group ) {
+    group.setPlaybackSpeed( group.getPlaybackSpeed() * -1 );
+    group.resetTime();
+  } );
+
+  timeline().add( group );
 
   //=====================================================
   // Looping Phrases. Use for a finite number of loops.
@@ -95,12 +118,23 @@ void Loops::update( double dt )
 void Loops::draw()
 {
   gl::ScopedModelMatrix matrix;
-  const float y_step = 100.0f;
-  gl::translate( vec2( 0, (app::getWindowHeight() - y_step * mTargets.size()) / 2 ) );
+  gl::setMatricesWindowPersp( app::getWindowSize() );
 
-  for( auto &target : mTargets ) {
-    gl::ScopedColor color( target._color );
-    gl::drawSolidCircle( target._position, 25.0f );
-    gl::translate( vec2( 0, y_step ) );
+  {
+    gl::ScopedModelMatrix singleDotMatrix;
+
+    const float y_step = 100.0f;
+    gl::translate( vec2( 0, (app::getWindowHeight() - y_step * mTargets.size()) / 2 ) );
+
+    for( auto &target : mTargets ) {
+      gl::ScopedColor color( target._color );
+      gl::drawSolidCircle( target._position, 24.0f );
+      gl::translate( vec2( 0, y_step ) );
+    }
   }
+
+  gl::ScopedColor color( Color( CM_HSV, 0.575f, 1.0f, 1.0f ) );
+  gl::translate( _position );
+  gl::multModelMatrix( glm::eulerAngleYXZ( _rotation().y, _rotation().x, _rotation().z ) );
+  gl::drawSolidCircle( vec2( 0 ), 36.0f );
 }

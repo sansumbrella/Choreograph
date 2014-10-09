@@ -51,12 +51,16 @@ using MotionRef = std::shared_ptr<Motion<T>>;
 
 ///
 /// MotionBase: non-templated base for polymorphic Motions.
-/// Connects a Sequence and an Output.
+/// Base class for anything that can go on a Timeline.
 ///
 class MotionBase
 {
 public:
   MotionBase() = default;
+
+  //=================================================
+  // Common public interface.
+  //=================================================
 
   /// Advance motion in time. Affected by Motion's speed. Do not use from callbacks (it will fire them).
   void step( Time dt );
@@ -66,6 +70,10 @@ public:
 
   /// Set time. Ignores speed. Safe to use from callbacks.
   void setTime( Time time ) { _time = _previous_time = time; }
+
+  //=================================================
+  // Virtual Interface.
+  //=================================================
 
   /// Overridden to determine what a time step does.
   virtual void update() = 0;
@@ -78,6 +86,10 @@ public:
 
   /// Returns target if motion has one.
   virtual const void* getTarget() const { return nullptr; }
+
+  //=================================================
+  // Time manipulation and querying.
+  //=================================================
 
   /// Returns current animation time in seconds.
   Time time() const { return _time - _start_time; }
@@ -118,18 +130,78 @@ public:
 
 private:
   /// True if this motion should be removed from Timeline on finish.
-  bool        _remove_on_finish = true;
+  bool       _remove_on_finish = true;
   /// Playback speed. Set to negative to go in reverse.
-  Time       _speed = 1.0f;
+  Time       _speed = 1;
   /// Current animation time in seconds. Time at which Sequence is evaluated.
-  Time       _time = 0.0f;
+  Time       _time = 0;
   /// Previous animation time in seconds.
-  Time       _previous_time = 0.0f;
+  Time       _previous_time = 0;
   /// Animation start time in seconds. Time from which Sequence is evaluated.
   /// Use to apply a delay.
-  Time       _start_time = 0.0f;
+  Time       _start_time = 0;
 };
 
+template<typename T>
+struct MotionGroupOptions
+{
+  explicit MotionGroupOptions( const MotionRef<T> &motion ):
+    _motion( motion )
+  {}
+
+  /// Set a function to be called when we start the motion. Receives Motion as an argument.
+  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion->setStartFn( fn ); return *this; }
+
+  /// Set a function to be called on Motion update. Receives target as an argument.
+  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->setUpdateFn( fn ); return *this; }
+
+  /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
+  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion->setFinishFn( fn ); return *this; }
+
+private:
+  MotionRef<T> _motion;
+};
+///
+/// Groups together a number of Motions so they can be repeated
+/// and moved around together.
+/// Note that grouped Motions all share the group's speed and time.
+/// Assumes that the underlying Sequences won't change after adding.
+///
+class MotionGroup : public MotionBase
+{
+public:
+  using Callback = std::function<void (MotionGroup&)>;
+
+  MotionGroup() = default;
+
+  /// Create and add a Motion to the group.
+  /// The Motion will apply \a sequence to \a output.
+  template<typename T>
+  MotionGroupOptions<T> add( const SequenceRef<T> &sequence, Output<T> *output );
+
+  /// Update all grouped motions.
+  void update() override;
+
+  /// Returns true iff all grouped motions are valid.
+  bool isValid() const override;
+
+  /// Returns the duration of the motion group (end time of last motion).
+  Time getDuration() const override { return _duration; }
+
+  void setFinishFn( const Callback &fn ) { _finish_fn = fn; }
+  void setStartFn( const Callback &fn ) { _start_fn = fn; }
+
+private:
+  Time                        _duration = 0;
+  std::vector<MotionBaseRef>  _motions;
+
+  Callback                    _start_fn = nullptr;
+  Callback                    _finish_fn = nullptr;
+};
+
+///
+/// Calls a function after time has elapsed.
+///
 class Cue : public MotionBase
 {
 public:
@@ -149,6 +221,7 @@ private:
 
 ///
 /// Motion: Moves a playhead along a Sequence and sends its value to a user-defined output.
+/// Connects a Sequence and an Output.
 ///
 template<typename T>
 class Motion : public MotionBase
@@ -184,18 +257,17 @@ public:
   const void* getTarget() const override { return _connection.targetPtr(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
-  MotionT&  finishFn( const Callback &c ) { _finishFn = c; return *this; }
+  void setFinishFn( const Callback &c ) { _finishFn = c; }
 
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
-  MotionT&  startFn( const Callback &c ) { _startFn = c; return *this; }
+  void setStartFn( const Callback &c ) { _startFn = c; }
 
-  /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
-  MotionT&  updateFn( const DataCallback &c ) { _updateFn = c; return *this; }
+  /// Set a function to be called at each update step of the sequence.
+  /// Function will be called immediately after setting the target value.
+  void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
 
-  /// Set the playback speed of this motion. Use negative numbers for reverse.
-  MotionT&  playbackSpeed( Time s ) { setPlaybackSpeed( s ); return *this; }
-
-  /// Update
+  /// Update the connected target with the current sequence value.
+  /// Calls start/update/finish functions as appropriate if assigned.
   void update() override;
 
 private:
@@ -210,7 +282,23 @@ private:
 };
 
 //=================================================
-// Motion Implementation.
+// MotionGroup Template Implementation.
+//=================================================
+
+template<typename T>
+MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T> *output )
+{
+  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  _motions.push_back( motion );
+
+  // motion can't have a different start time, since it's created here.
+  _duration = std::max( _duration, motion->getDuration() );
+
+  return MotionGroupOptions<T>( motion );
+}
+
+//=================================================
+// Motion Template Implementation.
 //=================================================
 
 template<typename T>
