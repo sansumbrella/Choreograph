@@ -148,8 +148,17 @@ struct MotionGroupOptions
   explicit MotionGroupOptions( const MotionRef<T> &motion ):
     _motion( motion )
   {}
- // TODO: enable finish fn, start fn, update fn. Make motion private.
 
+  /// Set a function to be called when we start the motion. Receives Motion as an argument.
+  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion->startFn( fn ); return *this; }
+
+  /// Set a function to be called on Motion update. Receives target as an argument.
+  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->updateFn( fn ); return *this; }
+
+  /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
+  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion->finishFn( fn ); return *this; }
+
+private:
   MotionRef<T> _motion;
 };
 ///
