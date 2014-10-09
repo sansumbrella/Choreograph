@@ -262,7 +262,8 @@ public:
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
   void setStartFn( const Callback &c ) { _startFn = c; }
 
-  /// Set a function to be called at each update step of the sequence. Called immediately after setting the target value.
+  /// Set a function to be called at each update step of the sequence.
+  /// Function will be called immediately after setting the target value.
   void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
 
   /// Update the connected target with the current sequence value.
