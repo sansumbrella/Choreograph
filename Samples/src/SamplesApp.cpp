@@ -19,6 +19,8 @@ public:
   void loadSample( int index );
 private:
   pk::SceneRef            mCurrentScene;
+  ch::Timeline            mTimeline;
+  ci::Timer               mTimer;
   int                     mSceneIndex = 0;
   string                  mSceneName;
   params::InterfaceGlRef  mParams;
@@ -50,6 +52,7 @@ void SamplesApp::setup()
   } );
 
   loadSample( 0 );
+  mTimer.start();
 }
 
 void SamplesApp::loadSample( int index )
@@ -66,6 +69,11 @@ void SamplesApp::loadSample( int index )
   mCurrentScene->setup();
   mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
+
+  // Load Next Sample in 10 seconds.
+  mTimeline.cue( [this] {
+    loadSample( mSceneIndex + 1 );
+  }, 6.0f );
 }
 
 void SamplesApp::update()
@@ -73,6 +81,10 @@ void SamplesApp::update()
   if( mSceneName != SampleNames[mSceneIndex] ) {
     loadSample( mSceneIndex );
   }
+
+  ch::Time dt = mTimer.getSeconds();
+  mTimer.start();
+  mTimeline.step( dt );
 }
 
 CINDER_APP_NATIVE( SamplesApp, RendererGl )
