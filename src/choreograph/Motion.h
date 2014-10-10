@@ -62,8 +62,6 @@ public:
 
   virtual ~TimelineItem() = default;
 
-  virtual ~MotionBase() = default;
-
   //=================================================
   // Common public interface.
   //=================================================
