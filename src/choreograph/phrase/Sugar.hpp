@@ -80,10 +80,10 @@ inline std::shared_ptr<RampTo<T>> makeRamp( const T &a, const T &b, Time duratio
 /// Create an AccumulatePhrase that combines the values of input Phrases via a left fold.
 /// The default operator is sum.
 template<typename T>
-inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const typename AccumulatePhrase<T>::ReduceFunction &fn = &AccumulatePhrase<T>::sum, Time duration=0 )
+inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const typename AccumulatePhrase<T>::CombineFunction &fn = &AccumulatePhrase<T>::sum, Time duration=0 )
 {
   if( duration > 0 )
-    return std::make_shared<AccumulatePhrase<T>>( initial_value, duration, a, b, fn );
+    return std::make_shared<AccumulatePhrase<T>>( duration, initial_value, a, b, fn );
   else
     return std::make_shared<AccumulatePhrase<T>>( initial_value, a, b, fn );
 }

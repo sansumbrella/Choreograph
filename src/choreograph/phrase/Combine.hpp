@@ -84,17 +84,17 @@ private:
 };
 
 ///
-/// AccumulatePhrase adds together the value of a collection of other Phrases.
-/// Performs the functional operation reduce or foldl over the Phrases in question.
-/// By default, sums the value of all Phrases.
+/// AccumulatePhrase performs the functional operation reduce over a collection of Phrases.
+/// Folds left http://en.wikipedia.org/wiki/Fold_(higher-order_function) with an initial value.
+/// By default, the combining function sums the value of all Phrases.
 ///
 template<typename T>
 class AccumulatePhrase : public Phrase<T>
 {
 public:
-  using ReduceFunction = std::function<T (const T&, const T&)>;
+  using CombineFunction = std::function<T (const T&, const T&)>;
 
-  AccumulatePhrase( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const ReduceFunction &fn ):
+  AccumulatePhrase( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const CombineFunction &fn ):
     Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
     _reduceFn( fn ),
     _initial_value( initial_value )
@@ -102,7 +102,7 @@ public:
     add( a, b );
   }
 
-  AccumulatePhrase( const T &initial_value, Time duration, const PhraseRef<T> &a, const PhraseRef<T> &b, const ReduceFunction &fn ):
+  AccumulatePhrase( Time duration, const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const CombineFunction &fn ):
     Phrase<T>( duration ),
     _reduceFn( fn ),
     _initial_value( initial_value )
@@ -110,13 +110,13 @@ public:
     add( a, b );
   }
 
-  /// Add additional Phrase to be summed.
+  /// Add additional Phrase to be combined.
   void add( const PhraseRef<T> &source )
   {
     _sources.push_back( source );
   }
 
-  /// Add additional Phrases to be summed.
+  /// Add additional Phrases to be combined.
   template<typename... Args>
   void add( const PhraseRef<T> &source, Args&&... args )
   {
@@ -142,8 +142,8 @@ public:
   }
 
 private:
-  // Reduce function to apply.
-  ReduceFunction            _reduceFn;
+  // Function to apply to values.
+  CombineFunction           _reduceFn;
   // Phrases to reduce.
   std::vector<PhraseRef<T>> _sources;
   T                         _initial_value;

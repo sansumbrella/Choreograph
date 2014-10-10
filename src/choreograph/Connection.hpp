@@ -94,7 +94,9 @@ Connection<T>::Connection( Output<T> *base ):
   _output_base( base ),
   _raw_target( base->valuePtr() )
 {
+  // disconnect output from any previous connection.
   _output_base->disconnect();
+  // set this as output's input.
   _output_base->_input = this;
 }
 
