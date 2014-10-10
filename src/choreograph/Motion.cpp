@@ -31,24 +31,24 @@ using namespace choreograph;
 using namespace std;
 
 //=================================================
-// MotionBase
+// TimelineItem
 //=================================================
 
-void MotionBase::step( Time dt )
+void TimelineItem::step( Time dt )
 {
   _time += dt * _speed;
   update(); // update properties
   _previous_time = _time;
 }
 
-void MotionBase::jumpTo( Time time )
+void TimelineItem::jumpTo( Time time )
 {
   _time = time;
   update(); // update properties
   _previous_time = _time;
 }
 
-bool MotionBase::isFinished() const
+bool TimelineItem::isFinished() const
 {
   if( backward() ) {
     return time() <= 0.0f;
@@ -58,7 +58,7 @@ bool MotionBase::isFinished() const
   }
 }
 
-void MotionBase::resetTime()
+void TimelineItem::resetTime()
 {
   if( forward() )
   {

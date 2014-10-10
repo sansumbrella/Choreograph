@@ -81,7 +81,7 @@ void Loops::setup()
   rotationSequence->then<RampTo>( vec3( 4 * M_PI, 2 * M_PI, 0 ), 1.0f, EaseOutQuint() );
   positionSequence->then<RampTo>( vec2( app::getWindowSize() ) * vec2( 0.66, 0.5 ), 0.5f, EaseOutAtan() );
 
-  auto group = std::make_shared<MotionGroup>();
+  auto group = MotionGroup::create();
   group->add( positionSequence, &_position );
   group->add( rotationSequence, &_rotation );
   // start grouped motions after a 0.5 second hold on their start values.
@@ -91,7 +91,7 @@ void Loops::setup()
     group.resetTime();
   } );
 
-  timeline().add( group );
+  timeline().add( std::move( group ) );
 
   //=====================================================
   // Looping Phrases. Use for a finite number of loops.

@@ -38,7 +38,9 @@ namespace choreograph
 // Aliases.
 //=================================================
 
-using MotionBaseRef = std::shared_ptr<class MotionBase>;
+using TimelineItemRef = std::shared_ptr<class TimelineItem>;
+
+using TimelineItemUniqueRef = std::unique_ptr<class TimelineItem>;
 
 using CueRef = std::shared_ptr<class Cue>;
 
@@ -50,13 +52,15 @@ using MotionRef = std::shared_ptr<Motion<T>>;
 
 
 ///
-/// MotionBase: non-templated base for polymorphic Motions.
+/// TimelineItem: non-templated base for polymorphic Motions.
 /// Base class for anything that can go on a Timeline.
 ///
-class MotionBase
+class TimelineItem
 {
 public:
-  MotionBase() = default;
+  TimelineItem() = default;
+
+  virtual ~TimelineItem() = default;
 
   virtual ~MotionBase() = default;
 
@@ -147,21 +151,21 @@ private:
 template<typename T>
 struct MotionGroupOptions
 {
-  explicit MotionGroupOptions( const MotionRef<T> &motion ):
+  explicit MotionGroupOptions( Motion<T> &motion ):
     _motion( motion )
   {}
 
   /// Set a function to be called when we start the motion. Receives Motion as an argument.
-  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion->setStartFn( fn ); return *this; }
+  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
 
   /// Set a function to be called on Motion update. Receives target as an argument.
-  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->setUpdateFn( fn ); return *this; }
+  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
 
   /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
-  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion->setFinishFn( fn ); return *this; }
+  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
 
 private:
-  MotionRef<T> _motion;
+  Motion<T> &_motion;
 };
 ///
 /// Groups together a number of Motions so they can be repeated
@@ -169,12 +173,12 @@ private:
 /// Note that grouped Motions all share the group's speed and time.
 /// Assumes that the underlying Sequences won't change after adding.
 ///
-class MotionGroup : public MotionBase
+class MotionGroup : public TimelineItem
 {
 public:
   using Callback = std::function<void (MotionGroup&)>;
 
-  MotionGroup() = default;
+  static std::unique_ptr<MotionGroup> create() { return std::unique_ptr<MotionGroup>( new MotionGroup ); }
 
   /// Create and add a Motion to the group.
   /// The Motion will apply \a sequence to \a output.
@@ -194,17 +198,18 @@ public:
   void setStartFn( const Callback &fn ) { _start_fn = fn; }
 
 private:
-  Time                        _duration = 0;
-  std::vector<MotionBaseRef>  _motions;
+  MotionGroup() = default;
+  Time                                _duration = 0;
+  std::vector<TimelineItemUniqueRef>  _motions;
 
-  Callback                    _start_fn = nullptr;
-  Callback                    _finish_fn = nullptr;
+  Callback                            _start_fn = nullptr;
+  Callback                            _finish_fn = nullptr;
 };
 
 ///
 /// Calls a function after time has elapsed.
 ///
-class Cue : public MotionBase
+class Cue : public TimelineItem
 {
 public:
   Cue() = delete;
@@ -226,7 +231,7 @@ private:
 /// Connects a Sequence and an Output.
 ///
 template<typename T>
-class Motion : public MotionBase
+class Motion : public TimelineItem
 {
 public:
   using MotionT       = Motion<T>;
@@ -290,13 +295,15 @@ private:
 template<typename T>
 MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T> *output )
 {
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
-  _motions.push_back( motion );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion_ptr = motion.get();
 
-  // motion can't have a different start time, since it's created here.
-  _duration = std::max( _duration, motion->getDuration() );
 
-  return MotionGroupOptions<T>( motion );
+  _motions.emplace_back( std::move( motion ) );
+
+  _duration = std::max( _duration, motion_ptr->getDuration() );
+
+  return MotionGroupOptions<T>( *motion_ptr );
 }
 
 //=================================================

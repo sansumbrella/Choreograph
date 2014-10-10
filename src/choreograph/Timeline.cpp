@@ -33,7 +33,7 @@ using namespace choreograph;
 void Timeline::step( Time dt )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -44,7 +44,7 @@ void Timeline::step( Time dt )
 void Timeline::jumpTo( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -55,7 +55,7 @@ void Timeline::jumpTo( Time time )
 void Timeline::setTime( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -63,25 +63,21 @@ void Timeline::setTime( Time time )
   }
 }
 
-void Timeline::remove( const MotionBaseRef &motion )
-{
-  detail::vector_remove( &_motions, motion );
-}
-
 void Timeline::remove( void *output )
 {
-  detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
+  detail::erase_if( &_motions, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
 }
 
-void Timeline::add( const MotionBaseRef &motion )
+void Timeline::add( TimelineItemUniqueRef motion )
 {
-  _motions.push_back( motion );
+  _motions.emplace_back( std::move( motion ) );
 }
 
 CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
-  auto cue = std::make_shared<Cue>( fn, delay );
-  _motions.push_back( cue );
+  auto cue = std::unique_ptr<Cue>( new Cue( fn, delay ) );
+  CueOptions options( *cue );
+  _motions.emplace_back( std::move( cue ) );
 
-  return CueOptions( cue );
+  return options;
 }

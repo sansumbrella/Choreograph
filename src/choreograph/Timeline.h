@@ -43,7 +43,7 @@ class MotionOptions
 public:
   using SelfT = MotionOptions<T>;
 
-  MotionOptions( const MotionRef<T> &motion, const SequenceRef<T> &sequence, const Timeline &timeline ):
+  MotionOptions( Motion<T> *motion, Sequence<T> *sequence, const Timeline &timeline ):
     _motion( motion ),
     _sequence( sequence ),
     _timeline( timeline )
@@ -100,8 +100,8 @@ public:
   SelfT& shiftStartTime( Time t ) { _motion->setStartTime( _motion->getStartTime() + t ); return *this; }
 
 private:
-  MotionRef<T>    _motion;
-  SequenceRef<T>  _sequence;
+  Motion<T>       *_motion;
+  Sequence<T>     *_sequence;
   const Timeline  &_timeline;
 };
 
@@ -112,19 +112,19 @@ private:
 class CueOptions
 {
 public:
-  explicit CueOptions( const CueRef &cue ):
+  explicit CueOptions( Cue &cue ):
     _cue( cue )
   {}
   /// Set the Cue to be removed from the timeline when finished.
-  CueOptions& removeOnFinish( bool doRemove ) { _cue->setRemoveOnFinish( doRemove ); return *this; }
+  CueOptions& removeOnFinish( bool doRemove ) { _cue.setRemoveOnFinish( doRemove ); return *this; }
 
   /// Change the time (from now) at which the Cue will be called.
-  CueOptions& setStartTime( Time t ) { _cue->setStartTime( t ); return *this; }
+  CueOptions& setStartTime( Time t ) { _cue.setStartTime( t ); return *this; }
 
   /// Change the rate at which time flows toward the Cue's execution.
-  CueOptions& playbackSpeed( Time speed ) { _cue->setPlaybackSpeed( speed ); return *this; }
+  CueOptions& playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
 private:
-  CueRef  _cue;
+  Cue  &_cue;
 };
 
 /**
@@ -192,7 +192,7 @@ public:
   //=================================================
 
   /// Add Motion to timeline.
-  void add( const MotionBaseRef &motion );
+  void add( TimelineItemUniqueRef motion );
 
   //=================================================
   // Time manipulation.
@@ -211,11 +211,10 @@ public:
   // Timeline element manipulation.
   //=================================================
 
+  /// Returns a non-owning raw pointer to the Motion applied to \a output, if any.
+  /// If there is no Motion applied, returns nullptr.
   template<typename T>
-  MotionRef<T> find( T *output ) const;
-
-  /// Remove specific motion.
-  void remove( const MotionBaseRef &motion );
+  Motion<T>* find( T *output ) const;
 
   /// Remove motion associated with specific output.
   void remove( void *output );
@@ -235,8 +234,8 @@ public:
 
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
-  bool                        _default_remove_on_finish = true;
-  std::vector<MotionBaseRef>  _motions;
+  bool                                _default_remove_on_finish = true;
+  std::vector<TimelineItemUniqueRef>  _motions;
 };
 
 //=================================================
@@ -247,35 +246,38 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output )
 {
   auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
-  _motions.push_back( motion );
+  auto motion_ptr = motion.get();
+  _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion, sequence, *this );
+  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
 }
 
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase )
 {
   auto sequence = std::make_shared<Sequence<T>>( phrase );
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
-  _motions.push_back( motion );
+  auto motion_ptr = motion.get();
+  _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion, sequence, *this );
+  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
 }
 
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
 {
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
-  _motions.push_back( motion );
+  auto motion_ptr = motion.get();
+  _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion, sequence, *this );
+  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
 }
 
 template<typename T>
@@ -285,7 +287,7 @@ MotionOptions<T> Timeline::append( Output<T> *output )
   {
     auto motion = find( output->valuePtr() );
     if( motion ) {
-      return MotionOptions<T>( motion, motion->getSequence(), *this );
+      return MotionOptions<T>( motion, motion->getSequence().get(), *this );
     }
   }
   return apply( output );
@@ -298,24 +300,26 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   remove( output );
 
   auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
-  _motions.push_back( motion );
+  auto motion_ptr = motion.get();
+  _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion, sequence, *this );
+  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
 }
 
 template<typename T>
 MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
-  _motions.push_back( motion );
+  auto motion_ptr = motion.get();
+  _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion, sequence, *this );
+  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
 }
 
 template<typename T>
@@ -323,17 +327,17 @@ MotionOptions<T> Timeline::appendRaw( T *output )
 {
   auto motion = find( output );
   if( motion ) {
-    return MotionOptions<T>( motion, motion->getSequence(), *this );
+    return MotionOptions<T>( motion.get(), motion->getSequence().get(), *this );
   }
   return apply( output );
 }
 
 template<typename T>
-MotionRef<T> Timeline::find( T *output ) const
+Motion<T>* Timeline::find( T *output ) const
 {
   for( auto &m : _motions ) {
     if( m->getTarget() == output ) {
-      return std::static_pointer_cast<Motion<T>>( m );
+      return static_cast<Motion<T>*>( m.get() );
     }
   }
   return nullptr;
