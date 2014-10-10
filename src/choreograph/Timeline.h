@@ -192,7 +192,7 @@ public:
   //=================================================
 
   /// Add Motion to timeline.
-  void add( TimelineItemUniqueRef &&motion );
+  void add( TimelineItemUniqueRef motion );
 
   //=================================================
   // Time manipulation.

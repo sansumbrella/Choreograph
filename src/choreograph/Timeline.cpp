@@ -68,7 +68,7 @@ void Timeline::remove( void *output )
   detail::erase_if( &_motions, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
 }
 
-void Timeline::add( TimelineItemUniqueRef &&motion )
+void Timeline::add( TimelineItemUniqueRef motion )
 {
   _motions.emplace_back( std::move( motion ) );
 }
