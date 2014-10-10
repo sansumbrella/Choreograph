@@ -147,21 +147,21 @@ private:
 template<typename T>
 struct MotionGroupOptions
 {
-  explicit MotionGroupOptions( const MotionRef<T> &motion ):
+  explicit MotionGroupOptions( Motion<T> &motion ):
     _motion( motion )
   {}
 
   /// Set a function to be called when we start the motion. Receives Motion as an argument.
-  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion->setStartFn( fn ); return *this; }
+  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
 
   /// Set a function to be called on Motion update. Receives target as an argument.
-  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->setUpdateFn( fn ); return *this; }
+  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
 
   /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
-  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion->setFinishFn( fn ); return *this; }
+  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
 
 private:
-  MotionRef<T> _motion;
+  Motion<T> &_motion;
 };
 ///
 /// Groups together a number of Motions so they can be repeated
@@ -174,7 +174,7 @@ class MotionGroup : public TimelineItem
 public:
   using Callback = std::function<void (MotionGroup&)>;
 
-  MotionGroup() = default;
+  static std::unique_ptr<MotionGroup> create() { return std::unique_ptr<MotionGroup>( new MotionGroup ); }
 
   /// Create and add a Motion to the group.
   /// The Motion will apply \a sequence to \a output.
@@ -194,8 +194,9 @@ public:
   void setStartFn( const Callback &fn ) { _start_fn = fn; }
 
 private:
+  MotionGroup() = default;
   Time                                _duration = 0;
-  std::vector<TimelineItemRef>  _motions;
+  std::vector<TimelineItemUniqueRef>  _motions;
 
   Callback                            _start_fn = nullptr;
   Callback                            _finish_fn = nullptr;
@@ -290,13 +291,15 @@ private:
 template<typename T>
 MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T> *output )
 {
-  auto motion = std::make_shared<Motion<T>>( output, sequence );
-  _motions.push_back( motion );
+  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion_ptr = motion.get();
 
-  // motion can't have a different start time, since it's created here.
-  _duration = std::max( _duration, motion->getDuration() );
 
-  return MotionGroupOptions<T>( motion );
+  _motions.emplace_back( std::move( motion ) );
+
+  _duration = std::max( _duration, motion_ptr->getDuration() );
+
+  return MotionGroupOptions<T>( *motion_ptr );
 }
 
 //=================================================
