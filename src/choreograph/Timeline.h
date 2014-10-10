@@ -238,6 +238,10 @@ private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
   std::vector<TimelineItemUniqueRef>  _motions;
+  // queue to make adding cues from callbacks safe
+  // TODO: Decide whether to keep this. Is there a nicer way to add things safely?
+  // Is there a way to add all things safely without copying everything through a queue?
+  std::vector<TimelineItemUniqueRef>  _cue_queue;
 };
 
 //=================================================
