@@ -38,7 +38,9 @@ namespace choreograph
 // Aliases.
 //=================================================
 
-using MotionBaseRef = std::shared_ptr<class MotionBase>;
+using TimelineItemRef = std::shared_ptr<class TimelineItem>;
+
+using TimelineItemUniqueRef = std::unique_ptr<class TimelineItem>;
 
 using CueRef = std::shared_ptr<class Cue>;
 
@@ -50,13 +52,13 @@ using MotionRef = std::shared_ptr<Motion<T>>;
 
 
 ///
-/// MotionBase: non-templated base for polymorphic Motions.
+/// TimelineItem: non-templated base for polymorphic Motions.
 /// Base class for anything that can go on a Timeline.
 ///
-class MotionBase
+class TimelineItem
 {
 public:
-  MotionBase() = default;
+  TimelineItem() = default;
 
   //=================================================
   // Common public interface.
@@ -167,7 +169,7 @@ private:
 /// Note that grouped Motions all share the group's speed and time.
 /// Assumes that the underlying Sequences won't change after adding.
 ///
-class MotionGroup : public MotionBase
+class MotionGroup : public TimelineItem
 {
 public:
   using Callback = std::function<void (MotionGroup&)>;
@@ -192,17 +194,17 @@ public:
   void setStartFn( const Callback &fn ) { _start_fn = fn; }
 
 private:
-  Time                        _duration = 0;
-  std::vector<MotionBaseRef>  _motions;
+  Time                                _duration = 0;
+  std::vector<TimelineItemRef>  _motions;
 
-  Callback                    _start_fn = nullptr;
-  Callback                    _finish_fn = nullptr;
+  Callback                            _start_fn = nullptr;
+  Callback                            _finish_fn = nullptr;
 };
 
 ///
 /// Calls a function after time has elapsed.
 ///
-class Cue : public MotionBase
+class Cue : public TimelineItem
 {
 public:
   Cue() = delete;
@@ -224,7 +226,7 @@ private:
 /// Connects a Sequence and an Output.
 ///
 template<typename T>
-class Motion : public MotionBase
+class Motion : public TimelineItem
 {
 public:
   using MotionT       = Motion<T>;

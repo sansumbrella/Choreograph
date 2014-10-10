@@ -192,7 +192,7 @@ public:
   //=================================================
 
   /// Add Motion to timeline.
-  void add( const MotionBaseRef &motion );
+  void add( const TimelineItemRef &motion );
 
   //=================================================
   // Time manipulation.
@@ -215,7 +215,7 @@ public:
   MotionRef<T> find( T *output ) const;
 
   /// Remove specific motion.
-  void remove( const MotionBaseRef &motion );
+  void remove( const TimelineItemRef &motion );
 
   /// Remove motion associated with specific output.
   void remove( void *output );
@@ -236,7 +236,7 @@ public:
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                        _default_remove_on_finish = true;
-  std::vector<MotionBaseRef>  _motions;
+  std::vector<TimelineItemRef>  _motions;
 };
 
 //=================================================

@@ -99,7 +99,7 @@ private:
 	T               mValue;
   Connection<T>  *_input = nullptr;
 
-  /// Replaces \a rhs in its relationship to a MotionBase input.
+  /// Replaces \a rhs in its relationship to a TimelineItem input.
   void supplant( const Output<T> &rhs );
   /// Connects this output to a new Connection.
   void connect( Connection<T> *input );

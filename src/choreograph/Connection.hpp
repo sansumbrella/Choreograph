@@ -69,7 +69,7 @@ public:
   T& target() { return *_raw_target; }
 
 private:
-  // void pointer to target, used for comparison with other MotionBase's.
+  // void pointer to target, used for comparison with other TimelineItem's.
   T          *_raw_target = nullptr;
   // Pointer to safe handle type. Exists iff created with an OutputBase target.
   Output<T>  *_output_base = nullptr;

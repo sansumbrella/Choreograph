@@ -33,7 +33,7 @@ using namespace choreograph;
 void Timeline::step( Time dt )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const TimelineItemRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -44,7 +44,7 @@ void Timeline::step( Time dt )
 void Timeline::jumpTo( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const TimelineItemRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -55,7 +55,7 @@ void Timeline::jumpTo( Time time )
 void Timeline::setTime( Time time )
 {
   // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const MotionBaseRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  detail::erase_if( &_motions, [] ( const TimelineItemRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -63,17 +63,17 @@ void Timeline::setTime( Time time )
   }
 }
 
-void Timeline::remove( const MotionBaseRef &motion )
+void Timeline::remove( const TimelineItemRef &motion )
 {
   detail::vector_remove( &_motions, motion );
 }
 
 void Timeline::remove( void *output )
 {
-  detail::erase_if( &_motions, [=] (const MotionBaseRef &m) { return m->getTarget() == output; } );
+  detail::erase_if( &_motions, [=] (const TimelineItemRef &m) { return m->getTarget() == output; } );
 }
 
-void Timeline::add( const MotionBaseRef &motion )
+void Timeline::add( const TimelineItemRef &motion )
 {
   _motions.push_back( motion );
 }
