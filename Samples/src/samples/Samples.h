@@ -39,9 +39,9 @@ using SampleFn = std::function<SampleRef ()>;
 
 const std::vector<std::pair<std::string, SampleFn>> SampleList =
 {
+  { "Procedural Oscillator", std::make_shared<Oscillator> },
   { "Hola (Interactive)", std::make_shared<Hello> },
   { "Bezier Construction", std::make_shared<BezierConstruction> },
-  { "Procedural Oscillator", std::make_shared<Oscillator> },
   { "Looping", std::make_shared<Loops> },
   { "Dev Junk", std::make_shared<Sink> }
 };

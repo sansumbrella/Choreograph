@@ -53,8 +53,9 @@ void SamplesApp::setup()
 
 void SamplesApp::loadSample( int index )
 {
-  index %= SampleList.size();
   if( index < 0 ) { index = SampleList.size() - 1; }
+  index %= SampleList.size();
+
   mSceneIndex = index;
   mSceneName = SampleNames[mSceneIndex];
 

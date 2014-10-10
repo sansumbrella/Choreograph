@@ -34,17 +34,28 @@ using namespace std;
 void Oscillator::setup()
 {
 
+  // Create a procedural phrase that moves on a sine wave.
   PhraseRef<vec2> bounce = makeProcedure<vec2>( 2.0, [] ( Time t, Time duration ) {
     return vec2( 0, sin( easeInOutQuad(t) * 6 * M_PI ) * 100.0f );
   } );
 
-  float y = app::getWindowHeight() / 2;
+  // Create a ramp phrase from the left to the right side of the window.
   float w = app::getWindowWidth();
-  PhraseRef<vec2> slide = makeRamp( vec2( 0, y ), vec2( w, y ), 2.0f );
+  PhraseRef<vec2> slide = makeRamp( vec2( 0, 0 ), vec2( w, 0 ), 2.0f, EaseInOutCubic() );
 
-  PhraseRef<vec2> combined = makeAccumulator( vec2( 0 ), bounce, slide );
+  // Combine the slide and bounce phrases with an AccumulatePhrase.
+  // By default, the accumulation operation sums all the phrase values with an initial value.
+  float center_y = app::getWindowHeight() / 2;
+  PhraseRef<vec2> combined = makeAccumulator( vec2( 0, center_y ), bounce, slide );
 
-  timeline().apply( &_position, combined );
+  // Provide an explicit combine function.
+  // In this case, we subtract each value from the initial value.
+  PhraseRef<vec2> combined_explicit = makeAccumulator( vec2( w, center_y ), bounce, slide, [] (const vec2 &a, const vec2 &b) {
+    return a - b;
+  } );
+
+  timeline().apply( &_position_a, combined );
+  timeline().apply( &_position_b, combined_explicit );
 }
 
 void Oscillator::update( double dt )
@@ -54,5 +65,9 @@ void Oscillator::update( double dt )
 
 void Oscillator::draw()
 {
-  gl::drawSolidCircle( _position, 30.0f );
+  gl::ScopedColor color( Color( 1.0f, 1.0f, 0.0f ) );
+  gl::drawSolidCircle( _position_a, 30.0f );
+
+  gl::color( Color( 0.0f, 1.0f, 1.0f ) );
+  gl::drawSolidCircle( _position_b, 30.0f );
 }

@@ -43,5 +43,6 @@ public:
 
 private:
 
-  ch::Output<ci::vec2> _position;
+  ch::Output<ci::vec2> _position_a;
+  ch::Output<ci::vec2> _position_b;
 };
