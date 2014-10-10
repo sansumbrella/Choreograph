@@ -42,7 +42,7 @@ void Oscillator::setup()
 
   // Create a ramp phrase from the left to the right side of the window.
   float w = app::getWindowWidth();
-  PhraseRef<vec2> slide = makeRamp( vec2( 0, 0 ), vec2( w, 0 ), 2.0f, EaseInOutCubic() );
+  PhraseRef<vec2> slide = makeRamp( vec2( 100, 0 ), vec2( w - 100, 0 ), 2.0f, EaseInOutCubic() );
 
   // Combine the slide and bounce phrases using an AccumulatePhrase.
   // By default, the accumulation operation sums all the phrase values with an initial value.
@@ -68,17 +68,16 @@ void Oscillator::update( double dt )
 
 void Oscillator::draw()
 {
-  gl::ScopedColor color( Color( 0.0f, 1.0f, 1.0f ) );
+  gl::ScopedColor color( Color( CM_HSV, 0.72f, 1.0f, 1.0f ) );
   gl::drawSolidCircle( _position_a, 30.0f );
 
-  gl::color( Color( 1.0f, 1.0f, 0.0f ) );
+  gl::color( Color( CM_HSV, 0.96f, 1.0f, 1.0f ) );
   gl::drawSolidCircle( _position_b, 30.0f );
 
   // References are translated for visibility.
-  vec2 offset( 0, app::getWindowHeight() / 2 );
-  gl::color( Color( 0.0f, 1.0f, 0.0f ) );
-  gl::drawStrokedCircle( _reference_bounce() + offset, 32.0f );
+  float y = app::getWindowHeight() * 0.2f;
+  gl::color( Color( CM_HSV, 0.15f, 1.0f, 1.0f ) );
 
-  gl::color( Color( 0.0f, 0.0f, 1.0f ) );
-  gl::drawStrokedCircle( _reference_slide() + offset, 32.0f );
+  gl::drawStrokedCircle( _reference_bounce() + vec2( 100.0f, y ), 4.0f );
+  gl::drawStrokedCircle( _reference_slide() + vec2( 0, y ), 4.0f );
 }

@@ -34,11 +34,12 @@ void SamplesApp::prepareSettings( Settings *settings )
 void SamplesApp::setup()
 {
 #ifndef CINDER_COCOA_TOUCH
-  mParams = params::InterfaceGl::create( "Choreograph Samples", ivec2( 200, 200 ) );
+  mParams = params::InterfaceGl::create( "Choreograph Samples", ivec2( 240, 100 ) );
+  mParams->setPosition( ivec2( getWindowWidth() - 250, 10 ) );
   mParams->addParam( "Sample", SampleNames, &mSceneIndex );
   mParams->addButton( "Next", [this] { loadSample( mSceneIndex + 1 ); } );
   mParams->addButton( "Prev", [this] { loadSample( mSceneIndex - 1 ); } );
-  mParams->addButton( "Reload", [this] { loadSample( mSceneIndex ); } );
+  mParams->addButton( "Restart Current", [this] { loadSample( mSceneIndex ); } );
 #endif
   // Draw our app first, so samples show up over top.
   getWindow()->getSignalDraw().connect( 0, [this] {

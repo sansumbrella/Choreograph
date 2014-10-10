@@ -39,11 +39,11 @@ using SampleFn = std::function<SampleRef ()>;
 
 const std::vector<std::pair<std::string, SampleFn>> SampleList =
 {
-  { "Hello (Procedural + Ramp + Accumulate)", std::make_shared<Oscillator> },
-  { "Bezier Construction (Ramp + Mix)", std::make_shared<BezierConstruction> },
-  { "Repetition (Many ways to repeat yourself)", std::make_shared<Loops> },
-  { "Hola (Interactive)", std::make_shared<Hello> },
-  { "Dev Junk (Interactive)", std::make_shared<Sink> }
+  { "Slide", std::make_shared<Oscillator> },
+  { "Bezier", std::make_shared<BezierConstruction> },
+  { "Repetition", std::make_shared<Loops> },
+  { "Worm Bunch", std::make_shared<Hello> },
+  { "Dev Junk", std::make_shared<Sink> }
 };
 
 const std::vector<std::string> SampleNames = ([]
