@@ -58,6 +58,8 @@ class MotionBase
 public:
   MotionBase() = default;
 
+  virtual ~MotionBase() = default;
+
   //=================================================
   // Common public interface.
   //=================================================
