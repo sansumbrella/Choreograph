@@ -57,6 +57,8 @@ void Oscillator::setup()
 
   timeline().apply( &_position_a, combined );
   timeline().apply( &_position_b, combined_explicit );
+  timeline().apply( &_reference_bounce, bounce );
+  timeline().apply( &_reference_slide, slide );
 }
 
 void Oscillator::update( double dt )
@@ -66,9 +68,17 @@ void Oscillator::update( double dt )
 
 void Oscillator::draw()
 {
-  gl::ScopedColor color( Color( 1.0f, 1.0f, 0.0f ) );
+  gl::ScopedColor color( Color( 0.0f, 1.0f, 1.0f ) );
   gl::drawSolidCircle( _position_a, 30.0f );
 
-  gl::color( Color( 0.0f, 1.0f, 1.0f ) );
+  gl::color( Color( 1.0f, 1.0f, 0.0f ) );
   gl::drawSolidCircle( _position_b, 30.0f );
+
+  // References are translated for visibility.
+  vec2 offset( 0, app::getWindowHeight() / 2 );
+  gl::color( Color( 0.0f, 1.0f, 0.0f ) );
+  gl::drawStrokedCircle( _reference_bounce() + offset, 32.0f );
+
+  gl::color( Color( 0.0f, 0.0f, 1.0f ) );
+  gl::drawStrokedCircle( _reference_slide() + offset, 32.0f );
 }

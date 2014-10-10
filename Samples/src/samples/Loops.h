@@ -43,6 +43,7 @@ private:
   struct Point {
     ch::Output<ci::vec2>  _position;
     ci::Color             _color;
+    std::string           _description;
   };
 
   std::vector<Point> mTargets;

@@ -111,11 +111,11 @@ void Loops::setup()
   // when we copy the targets into our array, we steal the Connection
   // from the locally-scoped target. The Motion connection is
   // moved to connect to the copied object.
-  mTargets.push_back( { loopTarget, Color( 1, 0, 1 ) } );
-  mTargets.push_back( { pingPongTarget, Color( 1, 0, 1 ) } );
-  mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ) } );
-  mTargets.push_back( { loopPhraseTarget, Color( 1, 1, 0 ) } );
-  mTargets.push_back( { pingPongPhraseTarget, Color( 1, 1, 0 ) } );
+  mTargets.push_back( { loopTarget, Color( 1, 0, 1 ), "Reset Time on Motion Finish" } );
+  mTargets.push_back( { pingPongTarget, Color( 1, 0, 1 ), "Reverse Speed and Reset Time on Motion Finish" } );
+  mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ), "Reverse and Reduce Speed and Reset Time on Motion Finish" } );
+  mTargets.push_back( { loopPhraseTarget, Color( 1, 1, 0 ), "LoopPhrase 7.5 times composed with makeRepeat" } );
+  mTargets.push_back( { pingPongPhraseTarget, Color( 1, 1, 0 ), "PingPongPhrase 7.5 times composed with makePingPong" } );
 }
 
 void Loops::update( double dt )
@@ -127,6 +127,7 @@ void Loops::draw()
 {
   gl::ScopedModelMatrix matrix;
   gl::setMatricesWindowPersp( app::getWindowSize() );
+  gl::ScopedAlphaBlend blend( false );
 
   {
     gl::ScopedModelMatrix singleDotMatrix;
@@ -137,12 +138,19 @@ void Loops::draw()
     for( auto &target : mTargets ) {
       gl::ScopedColor color( target._color );
       gl::drawSolidCircle( target._position, 24.0f );
+
+      gl::color( 1, 1, 1 );
+      gl::drawString( target._description, vec2( 10, 0 ) );
+
       gl::translate( vec2( 0, y_step ) );
     }
   }
 
-  gl::ScopedColor color( Color( CM_HSV, 0.575f, 1.0f, 1.0f ) );
-  gl::translate( _position );
-  gl::multModelMatrix( glm::eulerAngleYXZ( _rotation().y, _rotation().x, _rotation().z ) );
-  gl::drawSolidCircle( vec2( 0 ), 36.0f );
+  {
+    gl::ScopedColor color( Color( CM_HSV, 0.575f, 1.0f, 1.0f ) );
+    gl::translate( _position );
+    gl::drawString( "Reverse and Reset Time on MotionGroup Finish.", vec2( 0, -50 ) );
+    gl::multModelMatrix( glm::eulerAngleYXZ( _rotation().y, _rotation().x, _rotation().z ) );
+    gl::drawSolidCircle( vec2( 0 ), 36.0f );
+  }
 }
