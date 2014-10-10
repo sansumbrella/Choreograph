@@ -35,6 +35,7 @@ void Oscillator::setup()
 {
 
   // Create a procedural phrase that moves on a sine wave.
+  // Procedural phrases can run any function you like.
   PhraseRef<vec2> bounce = makeProcedure<vec2>( 2.0, [] ( Time t, Time duration ) {
     return vec2( 0, sin( easeInOutQuad(t) * 6 * M_PI ) * 100.0f );
   } );
