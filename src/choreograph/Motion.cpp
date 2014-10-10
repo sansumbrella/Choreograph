@@ -127,6 +127,6 @@ void Cue::update()
 {
   if( forward() && time() >= 0.0f && previousTime() < 0.0f )
     _cue();
-  else if( forward() && time() <= 0.0f && previousTime() > 0.0f )
+  else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
     _cue();
 }
