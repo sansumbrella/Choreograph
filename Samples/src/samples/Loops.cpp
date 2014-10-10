@@ -38,6 +38,7 @@ void Loops::setup()
 
   //=====================================================
   // Looping Motions. Use for things that loop "forever."
+  // Reset time when the Motion finishes.
   //=====================================================
 
   Output<vec2>  loopTarget;
@@ -72,7 +73,8 @@ void Loops::setup()
 
   //==========================================================
   // Looping Motion Group. Use for separate motions that loop
-  // with each other, but have different durations.
+  // with each other, but may have different durations.
+  // Reset time when the MotionGroup finishes.
   //==========================================================
 
   SequenceRef<vec2> positionSequence = createSequence( vec2( app::getWindowSize() ) * vec2( 0.66, 1 ) + vec2( 0, 50 ) );
@@ -95,6 +97,7 @@ void Loops::setup()
 
   //=====================================================
   // Looping Phrases. Use for a finite number of loops.
+  // Compose Phrases in Loop/PingPongPhrases.
   //=====================================================
 
   Output<vec2> loopPhraseTarget;
@@ -103,6 +106,11 @@ void Loops::setup()
   Output<vec2> pingPongPhraseTarget;
   timeline().apply( &pingPongPhraseTarget ).then( makePingPong( leftToRight, 7.5f ) );
 
+  // Keep track of our animating things.
+  // Intermediate Note:
+  // when we copy the targets into our array, we steal the Connection
+  // from the locally-scoped target. The Motion connection is
+  // moved to connect to the copied object.
   mTargets.push_back( { loopTarget, Color( 1, 0, 1 ) } );
   mTargets.push_back( { pingPongTarget, Color( 1, 0, 1 ) } );
   mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ) } );

@@ -43,7 +43,7 @@ void Oscillator::setup()
   float w = app::getWindowWidth();
   PhraseRef<vec2> slide = makeRamp( vec2( 0, 0 ), vec2( w, 0 ), 2.0f, EaseInOutCubic() );
 
-  // Combine the slide and bounce phrases with an AccumulatePhrase.
+  // Combine the slide and bounce phrases using an AccumulatePhrase.
   // By default, the accumulation operation sums all the phrase values with an initial value.
   float center_y = app::getWindowHeight() / 2;
   PhraseRef<vec2> combined = makeAccumulator( vec2( 0, center_y ), bounce, slide );

@@ -29,7 +29,10 @@
 
 #include "pockets/Scene.h"
 
-/// Demonstrates different kinds of looping effects.
+///
+/// Demonstrates different kinds of looping effects:
+/// Motion looping, Group looping, and Loop Phrases.
+///
 class Loops : public pk::Scene
 {
 public:
