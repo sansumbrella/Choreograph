@@ -60,6 +60,8 @@ class TimelineItem
 public:
   TimelineItem() = default;
 
+  virtual ~TimelineItem() = default;
+
   //=================================================
   // Common public interface.
   //=================================================
