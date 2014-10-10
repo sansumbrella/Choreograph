@@ -241,7 +241,8 @@ private:
   // queue to make adding cues from callbacks safe
   // TODO: Decide whether to keep this. Is there a nicer way to add things safely?
   // Is there a way to add all things safely without copying everything through a queue?
-  std::vector<TimelineItemUniqueRef>  _cue_queue;
+  std::vector<TimelineItemUniqueRef>  _queue;
+  bool                                _updating = false;
 };
 
 //=================================================
@@ -256,7 +257,10 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -269,7 +273,10 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -281,7 +288,10 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &seque
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -310,7 +320,10 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -323,7 +336,10 @@ MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
