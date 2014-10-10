@@ -60,7 +60,7 @@ timeline.apply( &target ).then<Hold>( vec3( 1.0 ), 1.0 )
 timeline.step( 1.0 / 60.0 );
 ```
 
-If you cannot wrap your animation target in an Output template, consider creating a Sequence and assigning its value to your target manually. That way you aren't passing raw pointers into a timeline.
+If you cannot wrap your animation target in an Output template, consider creating a Sequence and assigning its value to your target manually. That way you aren’t storing raw pointers in a timeline.
 
 ```c++
 // Recommended approach to animating non-Output types

@@ -34,8 +34,9 @@ namespace choreograph
 class Timeline;
 
 ///
-/// MotionOptions provide a facade for manipulating a timeline Motion and its underlying Sequence.
+/// MotionOptions provide a temporary facade for manipulating a timeline Motion and its underlying Sequence.
 /// All methods return a reference back to the MotionOptions object for chaining.
+/// Do not store the MotionOptions object, as it contains non-owning references.
 ///
 template<typename T>
 class MotionOptions
@@ -43,7 +44,7 @@ class MotionOptions
 public:
   using SelfT = MotionOptions<T>;
 
-  MotionOptions( Motion<T> *motion, Sequence<T> *sequence, const Timeline &timeline ):
+  MotionOptions( Motion<T> &motion, Sequence<T> &sequence, const Timeline &timeline ):
     _motion( motion ),
     _sequence( sequence ),
     _timeline( timeline )
@@ -54,60 +55,61 @@ public:
   //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
-  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion->setStartFn( fn ); return *this; }
+  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
 
   /// Set function to be called when Motion updates. Receives current target value.
-  SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion->setUpdateFn( fn ); return *this; }
+  SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
-  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion->setFinishFn( fn ); return *this; }
+  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
 
   /// Set whether the motion should be removed from the timeline on finish.
-  SelfT& removeOnFinish( bool doRemove ) { _motion->setRemoveOnFinish( doRemove ); return *this; }
+  SelfT& removeOnFinish( bool doRemove ) { _motion.setRemoveOnFinish( doRemove ); return *this; }
 
   /// Set the Motion's start time. Only useful after an apply() call.
-  SelfT& setStartTime( Time t ) { _motion->setStartTime( t ); return *this; }
+  SelfT& setStartTime( Time t ) { _motion.setStartTime( t ); return *this; }
 
   /// Set the rate at which time advances for Motion.
-  SelfT& playbackSpeed( Time speed ) { _motion->setPlaybackSpeed( speed ); return *this; }
+  SelfT& playbackSpeed( Time speed ) { _motion.setPlaybackSpeed( speed ); return *this; }
 
   //=================================================
   // Sequence Interface Mirroring.
   //=================================================
 
   /// Set the current value of the Sequence. Acts as an instantaneous hold.
-  SelfT& set( const T &value ) { _sequence->set( value ); return *this; }
+  SelfT& set( const T &value ) { _sequence.set( value ); return *this; }
 
   /// Append a new phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
-  SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence->template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
+  SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence.template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
   /// Clone and append a phrase to the Sequence.
-  SelfT& then( const PhraseRef<T> &phrase ) { _sequence->then( phrase ); return *this; }
+  SelfT& then( const PhraseRef<T> &phrase ) { _sequence.then( phrase ); return *this; }
 
   //=================================================
   // Extra Sugar.
   //=================================================
 
   /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
-  SelfT& hold( Time duration ) { _sequence->template then<Hold>( _sequence->getEndValue(), duration ); return *this; }
+  SelfT& hold( Time duration ) { _sequence.template then<Hold>( _sequence.getEndValue(), duration ); return *this; }
 
   /// Set the start time of this motion to the current end of all motions of \a other.
   template<typename U>
   SelfT& after( U *other );
 
   /// Offset the Motion's start time.
-  SelfT& shiftStartTime( Time t ) { _motion->setStartTime( _motion->getStartTime() + t ); return *this; }
+  SelfT& shiftStartTime( Time t ) { _motion.setStartTime( _motion.getStartTime() + t ); return *this; }
 
 private:
-  Motion<T>       *_motion;
-  Sequence<T>     *_sequence;
+  Motion<T>       &_motion;
+  Sequence<T>     &_sequence;
   const Timeline  &_timeline;
 };
 
 ///
 /// CueOptions provide a facade for manipulating a timeline Cue.
 /// All methods return a reference back to the CueOptions object for chaining.
+/// Do not store the CueOptions object, as it contains a non-owning reference.
 ///
 class CueOptions
 {
@@ -127,9 +129,9 @@ private:
   Cue  &_cue;
 };
 
-/**
- Holds a collection of Motions and updates them through time.
- */
+///
+/// Holds a collection of Motions and updates them through time.
+///
 class Timeline
 {
 public:
@@ -252,7 +254,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
   auto motion_ptr = motion.get();
   _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
+  return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
 
 template<typename T>
@@ -265,7 +267,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
   auto motion_ptr = motion.get();
   _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
+  return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
 
 template<typename T>
@@ -277,7 +279,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &seque
   auto motion_ptr = motion.get();
   _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
+  return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
 
 template<typename T>
@@ -287,7 +289,7 @@ MotionOptions<T> Timeline::append( Output<T> *output )
   {
     auto motion = find( output->valuePtr() );
     if( motion ) {
-      return MotionOptions<T>( motion, motion->getSequence().get(), *this );
+      return MotionOptions<T>( *motion, *motion->getSequence(), *this );
     }
   }
   return apply( output );
@@ -306,7 +308,7 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   auto motion_ptr = motion.get();
   _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
+  return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
 
 template<typename T>
@@ -319,7 +321,7 @@ MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
   auto motion_ptr = motion.get();
   _motions.emplace_back( std::move( motion ) );
 
-  return MotionOptions<T>( motion_ptr, sequence.get(), *this );
+  return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
 
 template<typename T>
@@ -327,7 +329,7 @@ MotionOptions<T> Timeline::appendRaw( T *output )
 {
   auto motion = find( output );
   if( motion ) {
-    return MotionOptions<T>( motion.get(), motion->getSequence().get(), *this );
+    return MotionOptions<T>( *motion, *motion->getSequence(), *this );
   }
   return apply( output );
 }
