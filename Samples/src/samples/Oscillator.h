@@ -27,39 +27,21 @@
 
 #pragma once
 
-#include "choreograph/Phrase.hpp"
-
-namespace choreograph
-{
+#include "pockets/Scene.h"
 
 ///
-/// AnalyticChange is a phrase that calls a std::function every step.
-/// You could do similar things with a Motion's updateFn, but this is composable within Sequences.
+/// Oscillator demonstrates the ProceduralPhrase.
+/// Sometimes key positions aren't the easiest way to describe a motion.
 ///
-template<typename T>
-class ProceduralPhrase : public Phrase<T>
+class Oscillator : public pockets::Scene
 {
 public:
-  /// Analytic Function receives start, end, and normalized time.
-  /// Most basic would be mix( a, b, t ) or lerp( a, b, t ).
-  /// Intended use is to apply something like cos() or random jitter.
-  using Function = std::function<T (Time normalizedTime, Time duration)>;
 
-  ProceduralPhrase( Time duration, const Function &fn ):
-    Phrase<T>( duration ),
-    _function( fn )
-  {}
-
-  T getValue( Time atTime ) const override
-  {
-    return _function( this->normalizeTime( atTime ), this->getDuration() );
-  }
-
-  T getStartValue() const override { return _function( 0, this->getDuration() ); }
-  T getEndValue() const override { return _function( 1, this->getDuration() ); }
+  void setup() override;
+  void update( double dt ) override;
+  void draw() override;
 
 private:
-  Function  _function;
-};
 
-} // namespace choreograph
+  ch::Output<ci::vec2> _position;
+};

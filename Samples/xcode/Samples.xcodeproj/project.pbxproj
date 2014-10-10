@@ -14,6 +14,7 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		150037FD19E82B4E00960760 /* Oscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 150037FB19E82B4E00960760 /* Oscillator.cpp */; };
 		15362C5919D8D97C006BFAF1 /* ConnectionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5419D8D97C006BFAF1 /* ConnectionManager.cpp */; };
 		15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5719D8D97C006BFAF1 /* Scene.cpp */; };
 		15362C6119D8DA6C006BFAF1 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5F19D8DA6C006BFAF1 /* Hello.cpp */; };
@@ -42,6 +43,14 @@
 		03560CF4A84E47EB989E5635 /* Connection.hpp */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = Connection.hpp; path = ../../src/choreograph/Connection.hpp; sourceTree = "<group>"; };
 		0F0179DA2AB04C6B81DB7D50 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		150037FB19E82B4E00960760 /* Oscillator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Oscillator.cpp; sourceTree = "<group>"; };
+		150037FC19E82B4E00960760 /* Oscillator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Oscillator.h; sourceTree = "<group>"; };
+		150037FF19E82D1B00960760 /* Combine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Combine.hpp; sourceTree = "<group>"; };
+		1500380019E82D1B00960760 /* Hold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hold.hpp; sourceTree = "<group>"; };
+		1500380119E82D1B00960760 /* Procedural.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Procedural.hpp; sourceTree = "<group>"; };
+		1500380219E82D1B00960760 /* Ramp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ramp.hpp; sourceTree = "<group>"; };
+		1500380319E82D1B00960760 /* Retime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Retime.hpp; sourceTree = "<group>"; };
+		1500380419E82D1B00960760 /* Sugar.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sugar.hpp; sourceTree = "<group>"; };
 		15362C5419D8D97C006BFAF1 /* ConnectionManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionManager.cpp; sourceTree = "<group>"; };
 		15362C5519D8D97C006BFAF1 /* ConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionManager.h; sourceTree = "<group>"; };
 		15362C5619D8D97C006BFAF1 /* Pockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pockets.h; sourceTree = "<group>"; };
@@ -143,6 +152,20 @@
 			name = "Other Frameworks";
 			sourceTree = "<group>";
 		};
+		150037FE19E82D1B00960760 /* phrase */ = {
+			isa = PBXGroup;
+			children = (
+				150037FF19E82D1B00960760 /* Combine.hpp */,
+				1500380019E82D1B00960760 /* Hold.hpp */,
+				1500380119E82D1B00960760 /* Procedural.hpp */,
+				1500380219E82D1B00960760 /* Ramp.hpp */,
+				1500380319E82D1B00960760 /* Retime.hpp */,
+				1500380419E82D1B00960760 /* Sugar.hpp */,
+			);
+			name = phrase;
+			path = ../../src/choreograph/phrase;
+			sourceTree = "<group>";
+		};
 		15362C5319D8D97C006BFAF1 /* pockets */ = {
 			isa = PBXGroup;
 			children = (
@@ -172,6 +195,8 @@
 				15609E1119E1B81C0053395A /* Loops.h */,
 				15609E1319E1CCA20053395A /* BezierConstruction.cpp */,
 				15609E1419E1CCA20053395A /* BezierConstruction.h */,
+				150037FB19E82B4E00960760 /* Oscillator.cpp */,
+				150037FC19E82B4E00960760 /* Oscillator.h */,
 			);
 			name = samples;
 			path = ../src/samples;
@@ -231,6 +256,7 @@
 		88FAA7F837504B59BA2DD4CB /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
+				150037FE19E82D1B00960760 /* phrase */,
 				03560CF4A84E47EB989E5635 /* Connection.hpp */,
 				B25A393591A6406DA425F06F /* Output.hpp */,
 				4187A9085E6748BDBEF76A2C /* Phrase.hpp */,
@@ -334,6 +360,7 @@
 				15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */,
 				1587D87C19DA322900943242 /* Orbits.cpp in Sources */,
 				726B5A07D4B24416939FD801 /* Timeline.cpp in Sources */,
+				150037FD19E82B4E00960760 /* Oscillator.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

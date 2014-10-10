@@ -80,7 +80,7 @@ public:
   // Time querying.
   //=================================================
 
-  /// Returns normalized time if t is in range [start_time, end_time].
+  /// Returns normalized time if t is in range [start_time, end_time]. Does not clamp output range.
   inline Time normalizeTime( Time t ) const { return t / _duration; }
 
   /// Returns the duration of this source.

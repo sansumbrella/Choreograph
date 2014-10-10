@@ -32,15 +32,17 @@
 #include "Wings.h"
 #include "Loops.h"
 #include "BezierConstruction.h"
+#include "Oscillator.h"
 
 using SampleRef = std::shared_ptr<pk::Scene>;
 using SampleFn = std::function<SampleRef ()>;
 
 const std::vector<std::pair<std::string, SampleFn>> SampleList =
 {
-  { "Looping", std::make_shared<Loops> },
+  { "Hola (Interactive)", std::make_shared<Hello> },
   { "Bezier Construction", std::make_shared<BezierConstruction> },
-  { "Hola", std::make_shared<Hello> },
+  { "Procedural Oscillator", std::make_shared<Oscillator> },
+  { "Looping", std::make_shared<Loops> },
   { "Dev Junk", std::make_shared<Sink> }
 };
 

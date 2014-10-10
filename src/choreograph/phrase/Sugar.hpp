@@ -88,4 +88,14 @@ inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_va
     return std::make_shared<AccumulatePhrase<T>>( initial_value, a, b, fn );
 }
 
+///
+/// Create a ProceduralPhrase that evaluates \a fn over \a duration.
+///
+template<typename T>
+inline PhraseRef<T> makeProcedure( Time duration, const typename ProceduralPhrase<T>::Function &fn )
+{
+  return std::make_shared<ProceduralPhrase<T>>( duration, fn );
+}
+
+
 } // namespace choreograph

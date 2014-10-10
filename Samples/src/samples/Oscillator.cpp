@@ -25,41 +25,34 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "Oscillator.h"
 
-#include "choreograph/Phrase.hpp"
+using namespace choreograph;
+using namespace cinder;
+using namespace std;
 
-namespace choreograph
+void Oscillator::setup()
 {
 
-///
-/// AnalyticChange is a phrase that calls a std::function every step.
-/// You could do similar things with a Motion's updateFn, but this is composable within Sequences.
-///
-template<typename T>
-class ProceduralPhrase : public Phrase<T>
+  PhraseRef<vec2> bounce = makeProcedure<vec2>( 2.0, [] ( Time t, Time duration ) {
+    return vec2( 0, sin( easeInOutQuad(t) * 6 * M_PI ) * 100.0f );
+  } );
+
+  float y = app::getWindowHeight() / 2;
+  float w = app::getWindowWidth();
+  PhraseRef<vec2> slide = makeRamp( vec2( 0, y ), vec2( w, y ), 2.0f );
+
+  PhraseRef<vec2> combined = makeAccumulator( vec2( 0 ), bounce, slide );
+
+  timeline().apply( &_position, combined );
+}
+
+void Oscillator::update( double dt )
 {
-public:
-  /// Analytic Function receives start, end, and normalized time.
-  /// Most basic would be mix( a, b, t ) or lerp( a, b, t ).
-  /// Intended use is to apply something like cos() or random jitter.
-  using Function = std::function<T (Time normalizedTime, Time duration)>;
+  timeline().step( dt );
+}
 
-  ProceduralPhrase( Time duration, const Function &fn ):
-    Phrase<T>( duration ),
-    _function( fn )
-  {}
-
-  T getValue( Time atTime ) const override
-  {
-    return _function( this->normalizeTime( atTime ), this->getDuration() );
-  }
-
-  T getStartValue() const override { return _function( 0, this->getDuration() ); }
-  T getEndValue() const override { return _function( 1, this->getDuration() ); }
-
-private:
-  Function  _function;
-};
-
-} // namespace choreograph
+void Oscillator::draw()
+{
+  gl::drawSolidCircle( _position, 30.0f );
+}

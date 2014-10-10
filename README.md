@@ -72,11 +72,11 @@ target = sequence.getValue( animationTime );
 ```
 
 ### Timeline
-Timelines manage a collection of Motions. They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in-place.
+Timelines manage a collection of TimelineItems (Motions, Cues, &c). They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in-place.
 
 When you create a Motion with a Timeline, you receive a MotionOptions object that provides an interface to manipulate the underlying Sequence as well as the Motion.
 
-Since Motions know where they are in time, the Timeline controlling them doesn’t need to. While that may seem strange, this allows us to keep timelines running in perpetuity without worrying about running out of numerical precision. The largest number we ever need to keep precise is the duration of our longest Sequence and its corresponding Motion.
+Since Motions know where they are in time, the Timeline controlling them doesn’t need to. While that may seem strange, this allows us to keep timelines running in perpetuity without worrying about running out of numerical precision. The largest number we ever need to keep precise is the duration of our longest Sequence and its corresponding Motion. Also, I find it feels natural that new Motions always start at time zero.
 
 ## Building and running
 
