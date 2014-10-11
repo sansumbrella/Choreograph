@@ -8,6 +8,7 @@
 using namespace ci;
 using namespace ci::app;
 using namespace pockets;
+using namespace choreograph;
 using namespace std;
 
 class SamplesApp : public AppNative {
@@ -71,6 +72,10 @@ void SamplesApp::loadSample( int index )
     mCurrentScene->pause(); // stop updating
     mPrevScene = mCurrentScene;
     // animate off
+    mTimeline.apply( mPrevScene->getOffsetOutput() ).then<RampTo>( vec2( -getWindowWidth() * 1.1f, 0.0f ), 0.4f, EaseInCubic() )
+    .finishFn( [this] ( Motion<vec2> &m ) {
+      mPrevScene.reset(); // get rid of previous scene
+    } );
   }
 
   mCurrentScene = SampleList[mSceneIndex].second();
@@ -78,6 +83,14 @@ void SamplesApp::loadSample( int index )
   mCurrentScene->setup();
   mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
+  mCurrentScene->setOffset( vec2( getWindowWidth(), 0.0f ) );
+  mCurrentScene->update( 0 );
+  mCurrentScene->pause();
+  // animate current on.
+  mTimeline.apply( mCurrentScene->getOffsetOutput() ).hold( 0.2f ).then<RampTo>( vec2( 0 ), 0.4f, EaseOutCubic() )
+  .finishFn( [this] ( Motion<vec2> &m ) {
+    mCurrentScene->resume();
+  } );
 
   // If there was a previous cue lined up, cancel it.
   auto control = mCueControl.lock();
