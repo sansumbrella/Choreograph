@@ -21,6 +21,7 @@ private:
   pk::SceneRef            mCurrentScene;
   ch::Timeline            mTimeline;
   ci::Timer               mTimer;
+  std::weak_ptr<ch::Cue::Control> mCueControl;
   int                     mSceneIndex = 0;
   string                  mSceneName;
   params::InterfaceGlRef  mParams;
@@ -70,10 +71,14 @@ void SamplesApp::loadSample( int index )
   mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
 
+  auto control = mCueControl.lock();
+  if( control ) {
+    control->cancel();
+  }
   // Load Next Sample in 10 seconds.
-  mTimeline.cue( [this] {
+  mCueControl = mTimeline.cue( [this] {
     loadSample( mSceneIndex + 1 );
-  }, 6.0f );
+  }, 6.0f ).getCancelControl();
 }
 
 void SamplesApp::update()
