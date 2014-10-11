@@ -8,6 +8,7 @@
 using namespace ci;
 using namespace ci::app;
 using namespace pockets;
+using namespace choreograph;
 using namespace std;
 
 class SamplesApp : public AppNative {
@@ -19,6 +20,7 @@ public:
   void loadSample( int index );
 private:
   pk::SceneRef            mCurrentScene;
+  pk::SceneRef            mPrevScene;
   ch::Timeline            mTimeline;
   ci::Timer               mTimer;
   std::weak_ptr<ch::Cue::Control> mCueControl;
@@ -58,6 +60,10 @@ void SamplesApp::setup()
 
 void SamplesApp::loadSample( int index )
 {
+  bool do_animate = (index != mSceneIndex);
+  const int start_x = (index < mSceneIndex) ? - getWindowWidth() : getWindowWidth();
+  const int vanish_x = - start_x;
+
   if( index < 0 ) { index = SampleList.size() - 1; }
   index %= SampleList.size();
 
@@ -65,11 +71,34 @@ void SamplesApp::loadSample( int index )
   mSceneName = SampleNames[mSceneIndex];
 
   console() << "Loading Sample: " << mSceneName << endl;
+
+  if( mCurrentScene && do_animate ) {
+    mCurrentScene->pause(); // stop updating
+    mPrevScene = mCurrentScene;
+    // animate off
+    mTimeline.apply( mPrevScene->getOffsetOutput() ).then<RampTo>( vec2( vanish_x, 0.0f ), 0.4f, EaseInQuad() )
+    .finishFn( [this] ( Motion<vec2> &m ) {
+      mPrevScene.reset(); // get rid of previous scene
+    } );
+  }
+
   mCurrentScene = SampleList[mSceneIndex].second();
 
   mCurrentScene->setup();
   mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
+  // animate current on.
+  if( do_animate ) {
+
+    mCurrentScene->setOffset( vec2( start_x, 0.0f ) );
+    mCurrentScene->pause();
+
+    mTimeline.apply( mCurrentScene->getOffsetOutput() ).hold( 0.2f ).then<RampTo>( vec2( 0 ), 0.66f, EaseOutQuint() )
+    .finishFn( [this] ( Motion<vec2> &m ) {
+      mCurrentScene->resume();
+    } );
+
+  }
 
   // If there was a previous cue lined up, cancel it.
   auto control = mCueControl.lock();

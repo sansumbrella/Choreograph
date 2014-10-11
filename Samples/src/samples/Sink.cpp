@@ -90,7 +90,9 @@ void Sink::update( double dt )
 void Sink::draw()
 {
   gl::ScopedMatrices matrices;
-  gl::setMatricesWindowPersp( app::getWindowSize(), 60.0f, 1.0f, 1000.0f );
+
+  gl::ScopedAlphaBlend blend( false );
+  gl::drawString( "Dev Junk. Click/touch to interact.", vec2( 10, 30 ) );
 
   gl::disableDepthRead();
   gl::disableDepthWrite();

@@ -32,8 +32,9 @@ using namespace cinder;
 
 void Loops::setup()
 {
-  float left = 100.0f;
-  float right = app::getWindowWidth() - left;
+  float w = app::getWindowWidth();
+  float left = w * 0.08f;
+  float right = w - left;
   PhraseRef<vec2> leftToRight = makeRamp( vec2( left, 0.0f ), vec2( right, 0.0f ), 1.0f, EaseInOutQuad() );
 
   //=====================================================
@@ -77,7 +78,7 @@ void Loops::setup()
   // Reset time when the MotionGroup finishes.
   //==========================================================
 
-  SequenceRef<vec2> positionSequence = createSequence( vec2( app::getWindowSize() ) * vec2( 0.66, 1 ) + vec2( 0, 50 ) );
+  SequenceRef<vec2> positionSequence = createSequence( vec2( app::getWindowSize() ) * vec2( 0.66, 1 ) + vec2( 0, 66 ) );
   SequenceRef<vec3> rotationSequence = createSequence( vec3( M_PI / 2, 0, 0 ) );
 
   rotationSequence->then<RampTo>( vec3( 4 * M_PI, 2 * M_PI, 0 ), 1.0f, EaseOutQuint() );
@@ -116,6 +117,9 @@ void Loops::setup()
   mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ), "Reverse and Reduce Speed and Reset Time on Motion Finish" } );
   mTargets.push_back( { loopPhraseTarget, Color( 1, 1, 0 ), "LoopPhrase 7.5 times composed with makeRepeat" } );
   mTargets.push_back( { pingPongPhraseTarget, Color( 1, 1, 0 ), "PingPongPhrase 7.5 times composed with makePingPong" } );
+
+  // place things at initial timelined values.
+  timeline().jumpTo( 0 );
 }
 
 void Loops::update( double dt )
@@ -126,7 +130,6 @@ void Loops::update( double dt )
 void Loops::draw()
 {
   gl::ScopedModelMatrix matrix;
-  gl::setMatricesWindowPersp( app::getWindowSize() );
   gl::ScopedAlphaBlend blend( false );
 
   {

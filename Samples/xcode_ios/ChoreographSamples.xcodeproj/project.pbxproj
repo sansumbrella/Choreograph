@@ -11,11 +11,15 @@
 		0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
 		00A66A361965AC8800B17EB3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A66A351965AC8800B17EB3 /* Accelerate.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
+		1579A1F919E9E34C008B0861 /* BezierConstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F219E9E34C008B0861 /* BezierConstruction.cpp */; };
+		1579A1FA19E9E34C008B0861 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F319E9E34C008B0861 /* Hello.cpp */; };
+		1579A1FB19E9E34C008B0861 /* Loops.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F419E9E34C008B0861 /* Loops.cpp */; };
+		1579A1FC19E9E34C008B0861 /* Orbits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F519E9E34C008B0861 /* Orbits.cpp */; };
+		1579A1FD19E9E34C008B0861 /* Oscillator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F619E9E34C008B0861 /* Oscillator.cpp */; };
+		1579A1FE19E9E34C008B0861 /* Sink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F719E9E34C008B0861 /* Sink.cpp */; };
+		1579A1FF19E9E34C008B0861 /* Wings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1579A1F819E9E34C008B0861 /* Wings.cpp */; };
 		15BA7BB319DF2131003E13A5 /* ConnectionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BA519DF2131003E13A5 /* ConnectionManager.cpp */; };
 		15BA7BB419DF2131003E13A5 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BA819DF2131003E13A5 /* Scene.cpp */; };
-		15BA7BB519DF2131003E13A5 /* Hello.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BAB19DF2131003E13A5 /* Hello.cpp */; };
-		15BA7BB619DF2131003E13A5 /* Orbits.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BAD19DF2131003E13A5 /* Orbits.cpp */; };
-		15BA7BB719DF2131003E13A5 /* Wings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BB019DF2131003E13A5 /* Wings.cpp */; };
 		15BA7BB819DF2131003E13A5 /* SamplesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BB219DF2131003E13A5 /* SamplesApp.cpp */; };
 		184311972587400085A8A10D /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 61348FC845754FE9A2AF240B /* CinderApp_ios.png */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -34,25 +38,33 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		00692BCF14FF149000D0A05E /* Samples.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Samples.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		00692BCF14FF149000D0A05E /* ChoreographChoreographSamples.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChoreographChoreographSamples.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		00748057165D41390024B57A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00A66A351965AC8800B17EB3 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091FFFF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		147F869E7FA44D658396D499 /* ChoreographSamples_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChoreographSamples_Prefix.pch; sourceTree = "<group>"; };
+		1579A1EA19E9E34C008B0861 /* BezierConstruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierConstruction.h; sourceTree = "<group>"; };
+		1579A1EB19E9E34C008B0861 /* Hello.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hello.h; sourceTree = "<group>"; };
+		1579A1EC19E9E34C008B0861 /* Loops.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Loops.h; sourceTree = "<group>"; };
+		1579A1ED19E9E34C008B0861 /* Orbits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orbits.h; sourceTree = "<group>"; };
+		1579A1EE19E9E34C008B0861 /* Oscillator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Oscillator.h; sourceTree = "<group>"; };
+		1579A1EF19E9E34C008B0861 /* Samples.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Samples.h; sourceTree = "<group>"; };
+		1579A1F019E9E34C008B0861 /* Sink.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Sink.h; sourceTree = "<group>"; };
+		1579A1F119E9E34C008B0861 /* Wings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wings.h; sourceTree = "<group>"; };
+		1579A1F219E9E34C008B0861 /* BezierConstruction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierConstruction.cpp; sourceTree = "<group>"; };
+		1579A1F319E9E34C008B0861 /* Hello.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hello.cpp; sourceTree = "<group>"; };
+		1579A1F419E9E34C008B0861 /* Loops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Loops.cpp; sourceTree = "<group>"; };
+		1579A1F519E9E34C008B0861 /* Orbits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orbits.cpp; sourceTree = "<group>"; };
+		1579A1F619E9E34C008B0861 /* Oscillator.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Oscillator.cpp; sourceTree = "<group>"; };
+		1579A1F719E9E34C008B0861 /* Sink.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Sink.cpp; sourceTree = "<group>"; };
+		1579A1F819E9E34C008B0861 /* Wings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wings.cpp; sourceTree = "<group>"; };
 		15BA7BA519DF2131003E13A5 /* ConnectionManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionManager.cpp; sourceTree = "<group>"; };
 		15BA7BA619DF2131003E13A5 /* ConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionManager.h; sourceTree = "<group>"; };
 		15BA7BA719DF2131003E13A5 /* Pockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pockets.h; sourceTree = "<group>"; };
 		15BA7BA819DF2131003E13A5 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
 		15BA7BA919DF2131003E13A5 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
-		15BA7BAB19DF2131003E13A5 /* Hello.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Hello.cpp; sourceTree = "<group>"; };
-		15BA7BAC19DF2131003E13A5 /* Hello.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Hello.h; sourceTree = "<group>"; };
-		15BA7BAD19DF2131003E13A5 /* Orbits.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Orbits.cpp; sourceTree = "<group>"; };
-		15BA7BAE19DF2131003E13A5 /* Orbits.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Orbits.h; sourceTree = "<group>"; };
-		15BA7BAF19DF2131003E13A5 /* Samples.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Samples.h; sourceTree = "<group>"; };
-		15BA7BB019DF2131003E13A5 /* Wings.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Wings.cpp; sourceTree = "<group>"; };
-		15BA7BB119DF2131003E13A5 /* Wings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wings.h; sourceTree = "<group>"; };
 		15BA7BB219DF2131003E13A5 /* SamplesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SamplesApp.cpp; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -119,7 +131,7 @@
 		00692BD014FF149000D0A05E /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				00692BCF14FF149000D0A05E /* Samples.app */,
+				00692BCF14FF149000D0A05E /* ChoreographChoreographSamples.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -181,13 +193,21 @@
 		15BA7BAA19DF2131003E13A5 /* samples */ = {
 			isa = PBXGroup;
 			children = (
-				15BA7BAB19DF2131003E13A5 /* Hello.cpp */,
-				15BA7BAC19DF2131003E13A5 /* Hello.h */,
-				15BA7BAD19DF2131003E13A5 /* Orbits.cpp */,
-				15BA7BAE19DF2131003E13A5 /* Orbits.h */,
-				15BA7BAF19DF2131003E13A5 /* Samples.h */,
-				15BA7BB019DF2131003E13A5 /* Wings.cpp */,
-				15BA7BB119DF2131003E13A5 /* Wings.h */,
+				1579A1EA19E9E34C008B0861 /* BezierConstruction.h */,
+				1579A1EB19E9E34C008B0861 /* Hello.h */,
+				1579A1EC19E9E34C008B0861 /* Loops.h */,
+				1579A1ED19E9E34C008B0861 /* Orbits.h */,
+				1579A1EE19E9E34C008B0861 /* Oscillator.h */,
+				1579A1EF19E9E34C008B0861 /* Samples.h */,
+				1579A1F019E9E34C008B0861 /* Sink.h */,
+				1579A1F119E9E34C008B0861 /* Wings.h */,
+				1579A1F219E9E34C008B0861 /* BezierConstruction.cpp */,
+				1579A1F319E9E34C008B0861 /* Hello.cpp */,
+				1579A1F419E9E34C008B0861 /* Loops.cpp */,
+				1579A1F519E9E34C008B0861 /* Orbits.cpp */,
+				1579A1F619E9E34C008B0861 /* Oscillator.cpp */,
+				1579A1F719E9E34C008B0861 /* Sink.cpp */,
+				1579A1F819E9E34C008B0861 /* Wings.cpp */,
 			);
 			path = samples;
 			sourceTree = "<group>";
@@ -268,7 +288,7 @@
 			);
 			name = ChoreographChoreographSamples;
 			productName = Samples;
-			productReference = 00692BCF14FF149000D0A05E /* Samples.app */;
+			productReference = 00692BCF14FF149000D0A05E /* ChoreographChoreographSamples.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -313,14 +333,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				15BA7BB519DF2131003E13A5 /* Hello.cpp in Sources */,
+				1579A1FA19E9E34C008B0861 /* Hello.cpp in Sources */,
+				1579A1FD19E9E34C008B0861 /* Oscillator.cpp in Sources */,
+				1579A1FE19E9E34C008B0861 /* Sink.cpp in Sources */,
 				15BA7BB819DF2131003E13A5 /* SamplesApp.cpp in Sources */,
-				15BA7BB719DF2131003E13A5 /* Wings.cpp in Sources */,
+				1579A1F919E9E34C008B0861 /* BezierConstruction.cpp in Sources */,
 				15BA7BB319DF2131003E13A5 /* ConnectionManager.cpp in Sources */,
+				1579A1FF19E9E34C008B0861 /* Wings.cpp in Sources */,
 				89F7F568F5584D0A8E930740 /* Motion.cpp in Sources */,
 				15BA7BB419DF2131003E13A5 /* Scene.cpp in Sources */,
-				15BA7BB619DF2131003E13A5 /* Orbits.cpp in Sources */,
 				6AA2CBB5668A4620A91B75D9 /* Timeline.cpp in Sources */,
+				1579A1FC19E9E34C008B0861 /* Orbits.cpp in Sources */,
+				1579A1FB19E9E34C008B0861 /* Loops.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

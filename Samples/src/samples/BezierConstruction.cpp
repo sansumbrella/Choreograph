@@ -32,11 +32,13 @@ using namespace cinder;
 
 void BezierConstruction::setup()
 {
+  float w = app::getWindowWidth();
+  float h = app::getWindowHeight();
   mCurvePoints = {
-    vec2( 100, 600 ),
-    vec2( 100, 100 ),
-    vec2( 1180, 100 ),
-    vec2( 1180, 600 )
+    vec2( w * 0.08f, h * 0.86f ),
+    vec2( w * 0.08f, h * 0.14f ),
+    vec2( w * 0.92f, h * 0.14f ),
+    vec2( w * 0.92f, h * 0.86f )
   };
 
   const float duration = 1.5f;
@@ -68,8 +70,8 @@ void BezierConstruction::setup()
       }, 0.5f ).removeOnFinish( true );
     } );
 
-  Color first( 1.0f, 0.1f, 0.05f );
-  Color curve( 1.0f, 0.0f, 1.0f );
+  // place things at initial timelined values.
+  timeline().jumpTo( 0 );
 }
 
 void BezierConstruction::update( double dt )
