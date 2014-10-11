@@ -1,10 +1,29 @@
-//
-//  Scene.h
-//  WordShift
-//
-//  Created by David Wicks on 2/21/13.
-//  Copyright (c) 2013 __MyCompanyName__. All rights reserved.
-//
+/*
+ * Copyright (c) 2014 David Wicks, sansumbrella.com
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or
+ * without modification, are permitted provided that the following
+ * conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright
+ * notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
 #pragma once
 #include "Pockets.h"
@@ -42,37 +61,53 @@ namespace pockets
     virtual ~Scene();
     //! Set up scene when OpenGL context is guaranteed to exist (in or after app::setup())
     virtual void  setup() {}
+
     //! connect to receive user interaction events (of subclasses' choosing)
     //! Consider storing reference to the window for passing into potential subviews
     virtual void  connect( ci::app::WindowRef window ){}
+
     //! stop receiving window UI events
     void          disconnect(){ mUIConnections.disconnect(); customDisconnect(); }
+
     //! disconnect any custom connections (non-stored ones)
     virtual void  customDisconnect(){}
+
     //! temporarily stop receiving UI events; useful if we want to present a different UI for a moment
     void          block();
+
     //! resume receiving UI events (if we were connected before block())
     void          unblock();
+
     //! temporarily freeze updates
     void          pause();
+
     //! override to do any needed work when pausing
     virtual void  customPause(){}
+
     //! continue receiving updates
     void          resume();
+
     //! override to do any needed work when resuming
     virtual void  customResume(){}
+
     //! update content
     virtual void  update( double dt ){}
+
     //! render content
     virtual void  draw() {}
+
     //! adds this view to the specified window; override appear to control animation
     void          show( ci::app::WindowRef window, bool useWindowBounds=true );
+
     //! remove this view from render sequence; override vanish to control animation
     void          hide( Callback finishFn=0 ){ vanish( vanishCompleteFn(finishFn) ); }
+
     //! returns the bounds of the controller in points
     ci::Area      getBounds() const { return mBounds; }
+
     //! set the region of screen into which we should draw this view
     void          setBounds( const ci::Area &points ){ mBounds = points; }
+
     //! manage the lifetime of the given connection and control with block/unblock
     void          storeConnection( const ci::signals::connection &c ) { mUIConnections.store( c ); }
 
@@ -83,6 +118,7 @@ namespace pockets
     virtual void appear(){}
     //! called by hide before removing from window; user must call removeFromDisplay when finished animating
     virtual void vanish( Callback finishFn ){ finishFn(); }
+
 	private:
     ci::Area                                          mBounds;
     ci::Timer                                         mTimer;
