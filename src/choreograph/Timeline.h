@@ -221,7 +221,10 @@ public:
   template<typename T>
   Motion<T>* find( T *output ) const;
 
-  /// Remove motion associated with specific output.
+  /// Remove motion associated with specific output. Do not call from Callbacks.
+  /// Required only for raw pointer animation.
+  /// Use Output<T>::disconnect() instead when animating any Output<T> type.
+  /// Use Cue::Control::cancel() to stop Cues from firing.
   void remove( void *output );
 
   /// Set whether motions should be removed when finished. Default is true.
