@@ -35,10 +35,17 @@ void Timeline::step( Time dt )
   // Remove any motions that have stale pointers or that have completed playing.
   detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
+  _updating = true;
   // Update all animation outputs.
   for( auto &c : _motions ) {
     c->step( dt );
   }
+  _updating = false;
+
+  // Copy any queued motions
+  std::copy( std::make_move_iterator( _queue.begin() ), std::make_move_iterator( _queue.end() ), std::back_inserter( _motions ) );
+  _queue.clear();
+
 }
 
 void Timeline::jumpTo( Time time )
@@ -77,7 +84,11 @@ CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
   auto cue = std::unique_ptr<Cue>( new Cue( fn, delay ) );
   CueOptions options( *cue );
-  _motions.emplace_back( std::move( cue ) );
+
+  if( _updating )
+    _queue.emplace_back( std::move( cue ) );
+  else
+    _motions.emplace_back( std::move( cue ) );
 
   return options;
 }

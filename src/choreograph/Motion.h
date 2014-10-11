@@ -212,8 +212,23 @@ class Cue : public TimelineItem
 public:
   Cue() = delete;
 
+  /// Control struct for cancelling Cues if needed.
+  /// Accessible through the CueOptions struct.
+  struct Control
+  {
+    /// Cancel the cue this belongs to.
+    void cancel() { _valid = false; }
+    bool _valid = true;
+  };
+
   /// Creates a cue from a function and a delay.
   Cue( const std::function<void ()> &fn, Time delay );
+
+  /// Returns a weak_ptr to a control that allows you to cancel the Cue.
+  std::weak_ptr<Control> getControl() const { return _control; }
+
+  /// Returns true if the cue should still execute.
+  bool isValid() const override;
 
   /// Calls cue function if time threshold has been crossed.
   void update() override;
@@ -221,7 +236,8 @@ public:
   /// Cues are instantaneous.
   Time getDuration() const override { return 0.0f; }
 private:
-  std::function<void ()> _cue;
+  std::function<void ()>    _cue;
+  std::shared_ptr<Control>  _control;
 };
 
 ///

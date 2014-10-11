@@ -80,6 +80,7 @@ void BezierConstruction::update( double dt )
 void BezierConstruction::draw()
 {
   gl::ScopedColor color( Color::white() );
+  gl::ScopedAlphaBlend blend( false );
   Color curveColor( 1.0f, 1.0f, 0.0f );
   Color controlColor( 1.0f, 0.0f, 1.0f );
   Color lineColor( 0.0f, 1.0f, 1.0f );
@@ -114,4 +115,6 @@ void BezierConstruction::draw()
   gl::drawLine( mControlA, mCurvePoint );
   // And our leading curve point.
   gl::drawStrokedCircle( mCurvePoint, 12.0f );
+
+  gl::drawString( "Bezier Path", mCurvePoint() - vec2( 0, 16 ) );
 }

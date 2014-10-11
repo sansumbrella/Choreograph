@@ -125,6 +125,9 @@ public:
 
   /// Change the rate at which time flows toward the Cue's execution.
   CueOptions& playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
+
+  /// Returns a weak_ptr to the control object for the Cue. Allows you to cancel the Cue.
+  std::weak_ptr<Cue::Control> getCancelControl() { return _cue.getControl(); }
 private:
   Cue  &_cue;
 };
@@ -218,14 +221,17 @@ public:
   template<typename T>
   Motion<T>* find( T *output ) const;
 
-  /// Remove motion associated with specific output.
+  /// Remove motion associated with specific output. Do not call from Callbacks.
+  /// Required only for raw pointer animation.
+  /// Use Output<T>::disconnect() instead when animating any Output<T> type.
+  /// Use Cue::Control::cancel() to stop Cues from firing.
   void remove( void *output );
 
   /// Set whether motions should be removed when finished. Default is true.
   /// This value will be passed to all future Motions created by the timeline.
   void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
 
-  /// Remove all motions from this timeline.
+  /// Remove all motions from this timeline. Do not call from a callback.
   void clear() { _motions.clear(); }
 
   /// Return true iff there are no motions on this timeline.
@@ -238,6 +244,10 @@ private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
   std::vector<TimelineItemUniqueRef>  _motions;
+
+  // queue to make adding cues from callbacks safe. Used if modifying functions are called during update loop.
+  std::vector<TimelineItemUniqueRef>  _queue;
+  bool                                _updating = false;
 };
 
 //=================================================
@@ -252,7 +262,10 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -265,7 +278,10 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -277,7 +293,10 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &seque
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -306,7 +325,10 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -319,7 +341,10 @@ MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
   motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  _motions.emplace_back( std::move( motion ) );
+  if( _updating )
+    _queue.emplace_back( std::move( motion ) );
+  else
+    _motions.emplace_back( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }

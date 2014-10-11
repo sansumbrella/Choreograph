@@ -39,10 +39,10 @@ using SampleFn = std::function<SampleRef ()>;
 
 const std::vector<std::pair<std::string, SampleFn>> SampleList =
 {
-  { "Procedural Oscillator", std::make_shared<Oscillator> },
-  { "Bezier Construction", std::make_shared<BezierConstruction> },
-  { "Looping", std::make_shared<Loops> },
-  { "Hola (Interactive)", std::make_shared<Hello> },
+  { "Slide", std::make_shared<Oscillator> },
+  { "Bezier", std::make_shared<BezierConstruction> },
+  { "Repetition", std::make_shared<Loops> },
+  { "Worm Bunch", std::make_shared<Hello> },
   { "Dev Junk", std::make_shared<Sink> }
 };
 

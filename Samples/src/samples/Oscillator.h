@@ -45,4 +45,7 @@ private:
 
   ch::Output<ci::vec2> _position_a;
   ch::Output<ci::vec2> _position_b;
+
+  ch::Output<ci::vec2> _reference_bounce;
+  ch::Output<ci::vec2> _reference_slide;
 };
