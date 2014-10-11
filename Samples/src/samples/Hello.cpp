@@ -66,6 +66,7 @@ void Hello::setup()
 
     mThings.push_back( thing );
   }
+
 }
 
 void Hello::connect( app::WindowRef window )
@@ -103,6 +104,8 @@ void Hello::update( double dt )
 void Hello::draw()
 {
   gl::ScopedAlphaBlend blend( false );
+
+  gl::drawString( "Worm Buncher. Click/touch to interact.", vec2( 10, 30 ) );
 
   for( auto &thing : mThings )
   {

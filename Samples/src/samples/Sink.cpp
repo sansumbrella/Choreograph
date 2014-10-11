@@ -91,6 +91,9 @@ void Sink::draw()
 {
   gl::ScopedMatrices matrices;
 
+  gl::ScopedAlphaBlend blend( false );
+  gl::drawString( "Dev Junk. Click/touch to interact.", vec2( 10, 30 ) );
+
   gl::disableDepthRead();
   gl::disableDepthWrite();
 

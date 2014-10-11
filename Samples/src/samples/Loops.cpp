@@ -116,6 +116,9 @@ void Loops::setup()
   mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ), "Reverse and Reduce Speed and Reset Time on Motion Finish" } );
   mTargets.push_back( { loopPhraseTarget, Color( 1, 1, 0 ), "LoopPhrase 7.5 times composed with makeRepeat" } );
   mTargets.push_back( { pingPongPhraseTarget, Color( 1, 1, 0 ), "PingPongPhrase 7.5 times composed with makePingPong" } );
+
+  // place things at initial timelined values.
+  timeline().jumpTo( 0 );
 }
 
 void Loops::update( double dt )

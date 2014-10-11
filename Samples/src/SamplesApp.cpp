@@ -87,7 +87,6 @@ void SamplesApp::loadSample( int index )
   mCurrentScene->setup();
   mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
-  mCurrentScene->update( 0 );
   // animate current on.
   if( do_animate ) {
 

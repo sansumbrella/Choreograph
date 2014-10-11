@@ -68,8 +68,8 @@ void BezierConstruction::setup()
       }, 0.5f ).removeOnFinish( true );
     } );
 
-  Color first( 1.0f, 0.1f, 0.05f );
-  Color curve( 1.0f, 0.0f, 1.0f );
+  // place things at initial timelined values.
+  timeline().jumpTo( 0 );
 }
 
 void BezierConstruction::update( double dt )

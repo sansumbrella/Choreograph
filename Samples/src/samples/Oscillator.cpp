@@ -59,6 +59,9 @@ void Oscillator::setup()
   timeline().apply( &_position_b, combined_explicit );
   timeline().apply( &_reference_bounce, bounce );
   timeline().apply( &_reference_slide, slide );
+
+  // place things at initial timelined values.
+  timeline().jumpTo( 0 );
 }
 
 void Oscillator::update( double dt )
