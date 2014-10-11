@@ -118,15 +118,24 @@ bool MotionGroup::isValid() const
 //=================================================
 
 Cue::Cue( const function<void ()> &fn, Time delay ):
-  _cue( fn )
+  _cue( fn ),
+  _control( make_shared<Cue::Control>() )
 {
   setStartTime( delay );
 }
 
+bool Cue::isValid() const
+{
+  return _control->_valid;
+}
+
 void Cue::update()
 {
-  if( forward() && time() >= 0.0f && previousTime() < 0.0f )
-    _cue();
-  else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
-    _cue();
+  if( isValid() )
+  {
+    if( forward() && time() >= 0.0f && previousTime() < 0.0f )
+      _cue();
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
+      _cue();
+  }
 }

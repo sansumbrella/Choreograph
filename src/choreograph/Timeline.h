@@ -125,6 +125,9 @@ public:
 
   /// Change the rate at which time flows toward the Cue's execution.
   CueOptions& playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
+
+  /// Returns a weak_ptr to the control object for the Cue. Allows you to cancel the Cue.
+  std::weak_ptr<Cue::Control> getCancelControl() { return _cue.getControl(); }
 private:
   Cue  &_cue;
 };
