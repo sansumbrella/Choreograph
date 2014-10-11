@@ -17,15 +17,20 @@ Choreograph is designed to describe motion. With it, you compose motion Phrases 
               .then<Hold>( 50.0f, 0.5f );
 
   // Create a Sequence in-place on the Timeline.
-  // Use that Sequence to update target when the timeline advances.
   timeline.apply( &target )
-          .then<RampTo>( float( 50.0f, 10.0f ), 0.3f )
-          .then<Hold>( float( 50.0f, 50.0f ), 0.2f )
+          // Animate target value to 50 over .3 seconds.
+          .then<RampTo>( 50.0f, 0.3f )
+          // Stay at 50 for .2 more seconds.
+          .then<Hold>( 50.0f, 0.2f )
+          // Repeat the motion in our previously created Sequence three times.
           .then( makeRepeat( continuation.asPhrase(), 3 ) )
+          // When finished playing, print out some info.
           .finishFn( [] (Motion<float> &m) { cout << "Finished animating target." << endl; } );
 
   timeline.step( 1.0 / 60.0 );
 ```
+
+Read the concepts section below and see the projects in Samples/ for more ideas on how to use Choreograph in your own projects.
 
 ## Concepts
 
