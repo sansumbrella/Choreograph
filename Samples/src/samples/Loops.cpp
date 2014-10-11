@@ -32,8 +32,9 @@ using namespace cinder;
 
 void Loops::setup()
 {
-  float left = 100.0f;
-  float right = app::getWindowWidth() - left;
+  float w = app::getWindowWidth();
+  float left = w * 0.08f;
+  float right = w - left;
   PhraseRef<vec2> leftToRight = makeRamp( vec2( left, 0.0f ), vec2( right, 0.0f ), 1.0f, EaseInOutQuad() );
 
   //=====================================================

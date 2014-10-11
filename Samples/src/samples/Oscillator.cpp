@@ -42,7 +42,9 @@ void Oscillator::setup()
 
   // Create a ramp phrase from the left to the right side of the window.
   float w = app::getWindowWidth();
-  PhraseRef<vec2> slide = makeRamp( vec2( 100, 0 ), vec2( w - 100, 0 ), 2.0f, EaseInOutCubic() );
+  float x1 = w * 0.08f;
+  float x2 = w - x1;
+  PhraseRef<vec2> slide = makeRamp( vec2( x1, 0 ), vec2( x2, 0 ), 2.0f, EaseInOutCubic() );
 
   // Combine the slide and bounce phrases using an AccumulatePhrase.
   // By default, the accumulation operation sums all the phrase values with an initial value.
@@ -81,6 +83,6 @@ void Oscillator::draw()
   float y = app::getWindowHeight() * 0.2f;
   gl::color( Color( CM_HSV, 0.15f, 1.0f, 1.0f ) );
 
-  gl::drawStrokedCircle( _reference_bounce() + vec2( 100.0f, y ), 4.0f );
+  gl::drawStrokedCircle( _reference_bounce() + vec2( app::getWindowWidth() * 0.08f, y ), 4.0f );
   gl::drawStrokedCircle( _reference_slide() + vec2( 0, y ), 4.0f );
 }
