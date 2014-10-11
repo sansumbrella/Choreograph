@@ -71,14 +71,16 @@ void SamplesApp::loadSample( int index )
   mCurrentScene->connect( getWindow() );
   mCurrentScene->show( getWindow() );
 
+  // If there was a previous cue lined up, cancel it.
   auto control = mCueControl.lock();
   if( control ) {
     control->cancel();
   }
-  // Load Next Sample in 10 seconds.
+
+  // Load Next Sample Automatically.
   mCueControl = mTimeline.cue( [this] {
     loadSample( mSceneIndex + 1 );
-  }, 6.0f ).getCancelControl();
+  }, 15.0f ).getCancelControl();
 }
 
 void SamplesApp::update()
