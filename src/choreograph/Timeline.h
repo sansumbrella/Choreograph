@@ -225,7 +225,7 @@ public:
   /// This value will be passed to all future Motions created by the timeline.
   void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
 
-  /// Remove all motions from this timeline.
+  /// Remove all motions from this timeline. Do not call from a callback.
   void clear() { _motions.clear(); }
 
   /// Return true iff there are no motions on this timeline.
@@ -238,9 +238,8 @@ private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
   std::vector<TimelineItemUniqueRef>  _motions;
-  // queue to make adding cues from callbacks safe
-  // TODO: Decide whether to keep this. Is there a nicer way to add things safely?
-  // Is there a way to add all things safely without copying everything through a queue?
+
+  // queue to make adding cues from callbacks safe. Used if modifying functions are called during update loop.
   std::vector<TimelineItemUniqueRef>  _queue;
   bool                                _updating = false;
 };

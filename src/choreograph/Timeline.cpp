@@ -35,15 +35,17 @@ void Timeline::step( Time dt )
   // Remove any motions that have stale pointers or that have completed playing.
   detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
 
-  std::copy( std::make_move_iterator( _queue.begin() ), std::make_move_iterator( _queue.end() ), std::back_inserter( _motions ) );
-  _queue.clear();
-
   _updating = true;
   // Update all animation outputs.
   for( auto &c : _motions ) {
     c->step( dt );
   }
   _updating = false;
+
+  // Copy any queued motions
+  std::copy( std::make_move_iterator( _queue.begin() ), std::make_move_iterator( _queue.end() ), std::back_inserter( _motions ) );
+  _queue.clear();
+
 }
 
 void Timeline::jumpTo( Time time )
