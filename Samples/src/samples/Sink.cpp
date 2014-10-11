@@ -90,7 +90,6 @@ void Sink::update( double dt )
 void Sink::draw()
 {
   gl::ScopedMatrices matrices;
-  gl::setMatricesWindowPersp( app::getWindowSize(), 60.0f, 1.0f, 1000.0f );
 
   gl::disableDepthRead();
   gl::disableDepthWrite();

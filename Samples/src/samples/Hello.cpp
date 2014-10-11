@@ -102,10 +102,7 @@ void Hello::update( double dt )
 
 void Hello::draw()
 {
-  gl::ScopedMatrices matrices;
-  gl::setMatricesWindowPersp( app::getWindowSize(), 60.0f, 1.0f, 2000.0f );
-
-  gl::enableAlphaBlending();
+  gl::ScopedAlphaBlend blend( false );
 
   for( auto &thing : mThings )
   {

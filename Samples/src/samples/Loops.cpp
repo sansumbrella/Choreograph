@@ -126,7 +126,6 @@ void Loops::update( double dt )
 void Loops::draw()
 {
   gl::ScopedModelMatrix matrix;
-  gl::setMatricesWindowPersp( app::getWindowSize() );
   gl::ScopedAlphaBlend blend( false );
 
   {

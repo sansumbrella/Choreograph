@@ -93,6 +93,8 @@ namespace pockets
     //! update content
     virtual void  update( double dt ){}
 
+    void baseDraw();
+
     //! render content
     virtual void  draw() {}
 
@@ -101,6 +103,11 @@ namespace pockets
 
     //! remove this view from render sequence; override vanish to control animation
     void          hide( Callback finishFn=0 ){ vanish( vanishCompleteFn(finishFn) ); }
+
+    //! Returns a pointer to the Scene's offset for animation.
+    ch::Output<ci::vec2>* getOffsetOutput() { return &_offset; }
+
+    void setOffset( const ci::vec2 &offset ) { _offset = offset; }
 
     //! returns the bounds of the controller in points
     ci::Area      getBounds() const { return mBounds; }
@@ -120,15 +127,16 @@ namespace pockets
     virtual void vanish( Callback finishFn ){ finishFn(); }
 
 	private:
-    ci::Area                                          mBounds;
-    ci::Timer                                         mTimer;
+    ch::Output<ci::vec2>    _offset = ci::vec2( 0 );
+    ci::Area                mBounds;
+    ci::Timer               mTimer;
 
-    choreograph::Timeline                             mTimeline;
+    choreograph::Timeline   mTimeline;
     //! UI connections
-    ConnectionManager                                 mUIConnections;
-    //! window update/display connection
-    ConnectionManager                                 mDisplayConnection;
-    ConnectionManager                                 mUpdateConnection;
+    ConnectionManager       mUIConnections;
+    //! window update/display connections
+    ConnectionManager       mDisplayConnection;
+    ConnectionManager       mUpdateConnection;
 
     Callback  vanishCompleteFn( Callback finishFn );
     void      removeFromDisplay(){ mDisplayConnection.disconnect(); }

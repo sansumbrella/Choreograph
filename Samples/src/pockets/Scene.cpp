@@ -48,6 +48,15 @@ Scene::~Scene()
   removeFromDisplay();
 }
 
+void Scene::baseDraw()
+{
+  gl::ScopedMatrices matrices;
+  gl::setMatricesWindowPersp( app::getWindowSize() );
+  gl::translate( _offset );
+
+  draw();
+}
+
 void Scene::block()
 {
   mUIConnections.block();
@@ -69,6 +78,7 @@ void Scene::resume()
 {
   mUpdateConnection.resume();
   customResume();
+  mTimer.start();
 }
 
 Scene::Callback Scene::vanishCompleteFn( Scene::Callback finishFn)
@@ -79,7 +89,7 @@ Scene::Callback Scene::vanishCompleteFn( Scene::Callback finishFn)
 void Scene::show( app::WindowRef window, bool useWindowBounds )
 {
   mDisplayConnection.disconnect();
-  mDisplayConnection.store( window->getSignalDraw().connect( 1, [this](){ draw(); } ) );
+  mDisplayConnection.store( window->getSignalDraw().connect( 1, [this](){ baseDraw(); } ) );
   if( useWindowBounds ){ setBounds( window->getBounds() ); }
   appear();
 }

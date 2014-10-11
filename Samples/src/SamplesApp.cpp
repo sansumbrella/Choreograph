@@ -19,6 +19,7 @@ public:
   void loadSample( int index );
 private:
   pk::SceneRef            mCurrentScene;
+  pk::SceneRef            mPrevScene;
   ch::Timeline            mTimeline;
   ci::Timer               mTimer;
   std::weak_ptr<ch::Cue::Control> mCueControl;
@@ -65,6 +66,13 @@ void SamplesApp::loadSample( int index )
   mSceneName = SampleNames[mSceneIndex];
 
   console() << "Loading Sample: " << mSceneName << endl;
+
+  if( mCurrentScene ) {
+    mCurrentScene->pause(); // stop updating
+    mPrevScene = mCurrentScene;
+    // animate off
+  }
+
   mCurrentScene = SampleList[mSceneIndex].second();
 
   mCurrentScene->setup();
