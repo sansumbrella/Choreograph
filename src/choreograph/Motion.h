@@ -85,8 +85,8 @@ public:
   /// Returns the duration of the motion.
   virtual Time getDuration() const = 0;
 
-  /// Returns true if motion is valid.
-  virtual bool isValid() const { return true; }
+  /// Returns true iff motion is no longer valid.
+  virtual bool isInvalid() const { return false; }
 
   /// Returns target if motion has one.
   virtual const void* getTarget() const { return nullptr; }
@@ -186,8 +186,8 @@ public:
   /// Update all grouped motions.
   void update() override;
 
-  /// Returns true iff all grouped motions are valid.
-  bool isValid() const override;
+  /// Returns true if any grouped motions are invalid.
+  bool isInvalid() const override;
 
   /// Returns the duration of the motion group (end time of last motion).
   Time getDuration() const override { return _duration; }
@@ -217,8 +217,11 @@ public:
   struct Control
   {
     /// Cancel the cue this belongs to.
-    void cancel() { _valid = false; }
-    bool _valid = true;
+    void cancel() { _cancelled = true; }
+    /// Returns true iff this control was told to cancel.
+    bool cancelled() const { return _cancelled; }
+  private:
+    bool _cancelled = false;
   };
 
   /// Creates a cue from a function and a delay.
@@ -228,7 +231,7 @@ public:
   std::weak_ptr<Control> getControl() const { return _control; }
 
   /// Returns true if the cue should still execute.
-  bool isValid() const override;
+  bool isInvalid() const override;
 
   /// Calls cue function if time threshold has been crossed.
   void update() override;
@@ -274,7 +277,7 @@ public:
   /// Returns the underlying Sequence sampled for this motion.
   SequenceRefT  getSequence() { return _source; }
 
-  bool isValid() const override { return _connection.isConnected(); }
+  inline bool isInvalid() const override { return _connection.isDisconnected(); }
   const void* getTarget() const override { return _connection.targetPtr(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
@@ -327,7 +330,7 @@ MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T
 template<typename T>
 void Motion<T>::update()
 {
-  if( ! Motion<T>::isValid() ) {
+  if( Motion<T>::isInvalid() ) {
     return;
   }
 

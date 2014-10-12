@@ -30,10 +30,14 @@
 
 using namespace choreograph;
 
+void Timeline::removeFinishedAndInvalidMotions()
+{
+  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
+}
+
 void Timeline::step( Time dt )
 {
-  // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  removeFinishedAndInvalidMotions();
 
   _updating = true;
   // Update all animation outputs.
@@ -50,8 +54,7 @@ void Timeline::step( Time dt )
 
 void Timeline::jumpTo( Time time )
 {
-  // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  removeFinishedAndInvalidMotions();
 
   // Update all animation outputs.
   for( auto &c : _motions ) {
@@ -61,8 +64,7 @@ void Timeline::jumpTo( Time time )
 
 void Timeline::setTime( Time time )
 {
-  // Remove any motions that have stale pointers or that have completed playing.
-  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || (! motion->isValid()); } );
+  removeFinishedAndInvalidMotions();
 
   // Update all animation outputs.
   for( auto &c : _motions ) {

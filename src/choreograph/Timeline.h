@@ -248,6 +248,9 @@ private:
   // queue to make adding cues from callbacks safe. Used if modifying functions are called during update loop.
   std::vector<TimelineItemUniqueRef>  _queue;
   bool                                _updating = false;
+
+  // Remove any motions that have stale pointers or that have completed playing.
+  void removeFinishedAndInvalidMotions();
 };
 
 //=================================================

@@ -81,7 +81,7 @@ TEST_CASE( "Raw Pointers" )
     REQUIRE( target == 10.0f );
 
     timeline.applyRaw( &target, sequence );
-    REQUIRE( motion.isValid() == true ); // Working with raw pointer, no management will have happened.
+    REQUIRE( motion.isInvalid() == false ); // Working with raw pointer, no management will have happened.
 
     timeline.jumpTo( 0.0f );
     REQUIRE( target == 1.0f );
@@ -120,7 +120,7 @@ TEST_CASE( "Sequence Composition", "[sequence]" )
     REQUIRE( target == 10.0f );
 
     timeline.apply( &target, sequence );
-    REQUIRE( motion.isValid() == false ); // management will invalidate the motion (because it's been superseded).
+    REQUIRE( motion.isInvalid() == true ); // management will invalidate the motion (because it's been superseded).
 
     timeline.jumpTo( 0.0f );
     REQUIRE( target == 1.0f );
@@ -305,11 +305,11 @@ TEST_CASE( "Output Connections", "[output]" )
     { // create locally scoped output
       Output<float> temp;
       motion = make_shared<Motion<float>>( &temp, sequence );
-      REQUIRE( motion->isValid() );
+      REQUIRE( ! motion->isInvalid() );
       REQUIRE( temp.isConnected() );
     }
 
-    REQUIRE( ! motion->isValid() );
+    REQUIRE( motion->isInvalid() );
   }
 
   SECTION( "Motion falling out of scope disconnects" ) {
@@ -319,7 +319,7 @@ TEST_CASE( "Output Connections", "[output]" )
       Motion<float> temp( &output, sequence );
 
       REQUIRE( output.isConnected() == true );
-      REQUIRE( temp.isValid() == true );
+      REQUIRE( temp.isInvalid() == false );
     }
 
     REQUIRE( output.isConnected() == false );

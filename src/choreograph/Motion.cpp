@@ -102,15 +102,15 @@ void MotionGroup::update()
   }
 }
 
-bool MotionGroup::isValid() const
+bool MotionGroup::isInvalid() const
 {
   for( auto &motion : _motions ) {
-    if( ! motion->isValid() ) {
-      return false;
+    if( motion->isInvalid() ) {
+      return true;
     }
   }
 
-  return true;
+  return false;
 }
 
 //=================================================
@@ -124,18 +124,19 @@ Cue::Cue( const function<void ()> &fn, Time delay ):
   setStartTime( delay );
 }
 
-bool Cue::isValid() const
+bool Cue::isInvalid() const
 {
-  return _control->_valid;
+  return _control->cancelled();
 }
 
 void Cue::update()
 {
-  if( isValid() )
-  {
-    if( forward() && time() >= 0.0f && previousTime() < 0.0f )
-      _cue();
-    else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
-      _cue();
+  if( Cue::isInvalid() ) {
+    return;
   }
+
+  if( forward() && time() >= 0.0f && previousTime() < 0.0f )
+    _cue();
+  else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
+    _cue();
 }

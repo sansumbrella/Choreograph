@@ -55,8 +55,11 @@ public:
   /// Disconnect from Motion input.
   void disconnect();
 
-  /// Returns true iff this output has a connected input.
+  /// Returns true iff this Output has a Connection input.
   bool isConnected() const { return _input != nullptr; }
+
+  /// Returns true iff this Output has no Connection input.
+  bool isDisconnected() const { return _input == nullptr; }
 
   /// Copy assignment takes value and any input Motion.
   /// May remove copy assignment since it has non-obvious semantics.

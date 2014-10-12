@@ -62,6 +62,9 @@ public:
   /// Returns true iff this Connection has an output.
   bool  isConnected() const { return _raw_target != nullptr; }
 
+  /// Returns true iff this Connection has no output.
+  bool isDisconnected() const { return _raw_target == nullptr; }
+
   /// Returns raw pointer to target variable. Used for comparison.
   const T* targetPtr() const { return _raw_target; }
 
