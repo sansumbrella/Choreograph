@@ -327,7 +327,9 @@ MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T
 template<typename T>
 void Motion<T>::update()
 {
-  assert( this->isValid() );
+  if( ! Motion<T>::isValid() ) {
+    return;
+  }
 
   if( _startFn )
   {
