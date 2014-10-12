@@ -251,6 +251,8 @@ private:
 
   // Remove any motions that have stale pointers or that have completed playing.
   void removeFinishedAndInvalidMotions();
+  void removeFinishedMotions();
+  void removeInvalidMotions();
 };
 
 //=================================================

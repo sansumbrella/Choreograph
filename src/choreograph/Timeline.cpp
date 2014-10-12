@@ -35,9 +35,23 @@ void Timeline::removeFinishedAndInvalidMotions()
   detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
 }
 
+void Timeline::removeInvalidMotions()
+{
+  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return motion->isInvalid(); } );
+}
+
+void Timeline::removeFinishedMotions()
+{
+  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()); } );
+}
+
 void Timeline::step( Time dt )
 {
+  // It is ~10% faster to only iterate for removal once.
+  // This means our finished motions won't be removed until the beginning of the next frame.
   removeFinishedAndInvalidMotions();
+
+//  removeInvalidMotions();
 
   _updating = true;
   // Update all animation outputs.
@@ -45,6 +59,8 @@ void Timeline::step( Time dt )
     c->step( dt );
   }
   _updating = false;
+
+//  removeFinishedMotions();
 
   // Copy any queued motions
   std::copy( std::make_move_iterator( _queue.begin() ), std::make_move_iterator( _queue.end() ), std::back_inserter( _motions ) );
