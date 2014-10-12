@@ -109,6 +109,8 @@ namespace pockets
 
     void setOffset( const ci::vec2 &offset ) { _offset = offset; }
 
+    ch::Output<ch::Time>* getAnimationSpeedOutput() { return &_animation_speed; }
+
     //! returns the bounds of the controller in points
     ci::Area      getBounds() const { return mBounds; }
 
@@ -128,6 +130,7 @@ namespace pockets
 
 	private:
     ch::Output<ci::vec2>    _offset = ci::vec2( 0 );
+    ch::Output<ch::Time>    _animation_speed = 1;
     ci::Area                mBounds;
     ci::Timer               mTimer;
 

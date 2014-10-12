@@ -34,7 +34,7 @@ Scene::Scene()
 { // start updating
   mUpdateConnection.store( app::App::get()->getSignalUpdate().connect( [this]()
   {
-    update( mTimer.getSeconds() );
+    update( mTimer.getSeconds() * _animation_speed() );
     mTimer.start();
   } ) );
 
