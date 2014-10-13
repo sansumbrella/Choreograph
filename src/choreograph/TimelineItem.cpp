@@ -25,39 +25,42 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "TimelineItem.h"
 
-#include <cmath>
-#include <memory>
-#include <functional>
-#include <vector>
-#include <array>
+using namespace choreograph;
 
-namespace choreograph
+void TimelineItem::step( Time dt )
 {
+  _time += dt * _speed;
+  update(); // update properties
+  _previous_time = _time;
+}
 
-///
-/// Choreograph uses float to measure Time by default.
-/// We use an alias so it's easier to change out if needed.
-/// Float loses precision pretty quickly, but is fast and doesn't take up much space.
-/// Double works nicely when adding together lots of little bits or if you need long sequences (over 8 hours).
-/// To use double for time instead, #define CHOREOGRAPH_USE_DOUBLE_TIME before any inclusion of Choreograph.
-///
-#if defined( CHOREOGRAPH_USE_DOUBLE_TIME )
-  using Time = double;
-#else
-  using Time = float;
-#endif
-
-/// Wrap \a time past \a duration around \a inflectionPoint.
-inline Time wrapTime( Time time, Time duration, Time inflectionPoint=0.0f )
+void TimelineItem::jumpTo( Time time )
 {
-  if( time > duration ) {
-    return inflectionPoint + std::fmod( time, duration - inflectionPoint );
+  _time = time;
+  update(); // update properties
+  _previous_time = _time;
+}
+
+bool TimelineItem::isFinished() const
+{
+  if( backward() ) {
+    return time() <= 0.0f;
   }
   else {
-    return time;
+    return time() >= getDuration();
   }
 }
 
-} // namespace choreograph
+void TimelineItem::resetTime()
+{
+  if( forward() )
+  {
+    _time = _previous_time = 0.0f;
+  }
+  else
+  {
+    _time = _previous_time = getEndTime();
+  }
+}

@@ -28,10 +28,6 @@
 #pragma once
 
 #include "TimeType.h"
-#include <functional>
-#include <vector>
-#include <array>
-#include <memory>
 
 namespace choreograph
 {

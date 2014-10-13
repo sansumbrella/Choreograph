@@ -27,6 +27,7 @@
 
 #pragma once
 
+#include "TimelineItem.h"
 #include "Sequence.hpp"
 #include "Connection.hpp"
 #include "Output.hpp"
@@ -38,113 +39,12 @@ namespace choreograph
 // Aliases.
 //=================================================
 
-using TimelineItemRef = std::shared_ptr<class TimelineItem>;
-
-using TimelineItemUniqueRef = std::unique_ptr<class TimelineItem>;
-
-using CueRef = std::shared_ptr<class Cue>;
-
 template<typename T>
 class Motion;
 
 template<typename T>
 using MotionRef = std::shared_ptr<Motion<T>>;
 
-
-///
-/// TimelineItem: non-templated base for polymorphic Motions.
-/// Base class for anything that can go on a Timeline.
-///
-class TimelineItem
-{
-public:
-  TimelineItem() = default;
-
-  virtual ~TimelineItem() = default;
-
-  //=================================================
-  // Common public interface.
-  //=================================================
-
-  /// Advance motion in time. Affected by Motion's speed. Do not use from callbacks (it will fire them).
-  void step( Time dt );
-
-  /// Jump to a point in time. Ignores Motion's speed. Do not use from callbacks (it will fire them).
-  void jumpTo( Time time );
-
-  /// Set time. Ignores speed. Safe to use from callbacks.
-  void setTime( Time time ) { _time = _previous_time = time; }
-
-  //=================================================
-  // Virtual Interface.
-  //=================================================
-
-  /// Overridden to determine what a time step does.
-  virtual void update() = 0;
-
-  /// Returns the duration of the motion.
-  virtual Time getDuration() const = 0;
-
-  /// Returns true iff motion is no longer valid.
-  virtual bool isInvalid() const { return false; }
-
-  /// Returns target if motion has one.
-  virtual const void* getTarget() const { return nullptr; }
-
-  //=================================================
-  // Time manipulation and querying.
-  //=================================================
-
-  /// Returns current animation time in seconds.
-  Time time() const { return _time - _start_time; }
-
-  /// Returns previous step's animation time in seconds.
-  Time previousTime() const { return _previous_time - _start_time; }
-
-  /// Returns true if animation plays forward with positive time steps.
-  bool  forward() const { return _speed >= 0.0f; }
-
-  /// Returns true if animation plays backward with positive time steps.
-  bool  backward() const { return _speed < 0.0f; }
-
-  /// Returns true if this Motion's time is past the end of its duration. Accounts for reversed playback.
-  bool  isFinished() const;
-
-  /// Set playback speed of motion. Use negative numbers to play in reverse.
-  void  setPlaybackSpeed( Time s ) { _speed = s; }
-
-  /// Returns the current playback speed of motion.
-  Time getPlaybackSpeed() const { return _speed; }
-
-  /// Reset motion to beginning. Accounts for reversed playback.
-  void resetTime();
-
-  /// Returns the current end time of this motion.
-  Time getEndTime() const { return getStartTime() + getDuration(); }
-
-  /// Set the start time of this motion. Use to delay entire motion.
-  void setStartTime( Time t ) { _start_time = t; }
-  Time getStartTime() const { return _start_time; }
-
-  /// Set whether the Motion should be removed from parent Timeline on finish.
-  void setRemoveOnFinish( bool doRemove ) { _remove_on_finish = doRemove; }
-
-  /// Returns true if the Motion should be removed from parent Timeline on finish.
-  bool getRemoveOnFinish() const { return _remove_on_finish; }
-
-private:
-  /// True if this motion should be removed from Timeline on finish.
-  bool       _remove_on_finish = true;
-  /// Playback speed. Set to negative to go in reverse.
-  Time       _speed = 1;
-  /// Current animation time in seconds. Time at which Sequence is evaluated.
-  Time       _time = 0;
-  /// Previous animation time in seconds.
-  Time       _previous_time = 0;
-  /// Animation start time in seconds. Time from which Sequence is evaluated.
-  /// Use to apply a delay.
-  Time       _start_time = 0;
-};
 
 template<typename T>
 struct MotionGroupOptions
@@ -202,45 +102,6 @@ private:
 
   Callback                            _start_fn = nullptr;
   Callback                            _finish_fn = nullptr;
-};
-
-///
-/// Calls a function after time has elapsed.
-///
-class Cue : public TimelineItem
-{
-public:
-  Cue() = delete;
-
-  /// Control struct for cancelling Cues if needed.
-  /// Accessible through the CueOptions struct.
-  struct Control
-  {
-    /// Cancel the cue this belongs to.
-    void cancel() { _cancelled = true; }
-    /// Returns true iff this control was told to cancel.
-    bool cancelled() const { return _cancelled; }
-  private:
-    bool _cancelled = false;
-  };
-
-  /// Creates a cue from a function and a delay.
-  Cue( const std::function<void ()> &fn, Time delay );
-
-  /// Returns a weak_ptr to a control that allows you to cancel the Cue.
-  std::weak_ptr<Control> getControl() const { return _control; }
-
-  /// Returns true if the cue should still execute.
-  bool isInvalid() const override;
-
-  /// Calls cue function if time threshold has been crossed.
-  void update() override;
-
-  /// Cues are instantaneous.
-  Time getDuration() const override { return 0.0f; }
-private:
-  std::function<void ()>    _cue;
-  std::shared_ptr<Control>  _control;
 };
 
 ///

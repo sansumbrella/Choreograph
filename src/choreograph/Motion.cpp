@@ -28,47 +28,6 @@
 #include "Motion.h"
 
 using namespace choreograph;
-using namespace std;
-
-//=================================================
-// TimelineItem
-//=================================================
-
-void TimelineItem::step( Time dt )
-{
-  _time += dt * _speed;
-  update(); // update properties
-  _previous_time = _time;
-}
-
-void TimelineItem::jumpTo( Time time )
-{
-  _time = time;
-  update(); // update properties
-  _previous_time = _time;
-}
-
-bool TimelineItem::isFinished() const
-{
-  if( backward() ) {
-    return time() <= 0.0f;
-  }
-  else {
-    return time() >= getDuration();
-  }
-}
-
-void TimelineItem::resetTime()
-{
-  if( forward() )
-  {
-    _time = _previous_time = 0.0f;
-  }
-  else
-  {
-    _time = _previous_time = getEndTime();
-  }
-}
 
 //=================================================
 // MotionGroup
@@ -111,32 +70,4 @@ bool MotionGroup::isInvalid() const
   }
 
   return false;
-}
-
-//=================================================
-// Cue
-//=================================================
-
-Cue::Cue( const function<void ()> &fn, Time delay ):
-  _cue( fn ),
-  _control( make_shared<Cue::Control>() )
-{
-  setStartTime( delay );
-}
-
-bool Cue::isInvalid() const
-{
-  return _control->cancelled();
-}
-
-void Cue::update()
-{
-  if( Cue::isInvalid() ) {
-    return;
-  }
-
-  if( forward() && time() >= 0.0f && previousTime() < 0.0f )
-    _cue();
-  else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
-    _cue();
 }

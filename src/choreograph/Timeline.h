@@ -27,6 +27,7 @@
 
 #pragma once
 #include "Motion.h"
+#include "Cue.h"
 
 namespace choreograph
 {

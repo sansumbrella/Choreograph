@@ -27,37 +27,50 @@
 
 #pragma once
 
-#include <cmath>
-#include <memory>
-#include <functional>
-#include <vector>
-#include <array>
+#include "TimelineItem.h"
 
 namespace choreograph
 {
 
-///
-/// Choreograph uses float to measure Time by default.
-/// We use an alias so it's easier to change out if needed.
-/// Float loses precision pretty quickly, but is fast and doesn't take up much space.
-/// Double works nicely when adding together lots of little bits or if you need long sequences (over 8 hours).
-/// To use double for time instead, #define CHOREOGRAPH_USE_DOUBLE_TIME before any inclusion of Choreograph.
-///
-#if defined( CHOREOGRAPH_USE_DOUBLE_TIME )
-  using Time = double;
-#else
-  using Time = float;
-#endif
+using CueRef = std::shared_ptr<class Cue>;
 
-/// Wrap \a time past \a duration around \a inflectionPoint.
-inline Time wrapTime( Time time, Time duration, Time inflectionPoint=0.0f )
+///
+/// Calls a function after time has elapsed.
+///
+class Cue : public TimelineItem
 {
-  if( time > duration ) {
-    return inflectionPoint + std::fmod( time, duration - inflectionPoint );
-  }
-  else {
-    return time;
-  }
-}
+public:
+  Cue() = delete;
+
+  /// Control struct for cancelling Cues if needed.
+  /// Accessible through the CueOptions struct.
+  struct Control
+  {
+    /// Cancel the cue this belongs to.
+    void cancel() { _cancelled = true; }
+    /// Returns true iff this control was told to cancel.
+    bool cancelled() const { return _cancelled; }
+  private:
+    bool _cancelled = false;
+  };
+
+  /// Creates a cue from a function and a delay.
+  Cue( const std::function<void ()> &fn, Time delay );
+
+  /// Returns a weak_ptr to a control that allows you to cancel the Cue.
+  std::weak_ptr<Control> getControl() const { return _control; }
+
+  /// Returns true if the cue should still execute.
+  bool isInvalid() const override;
+
+  /// Calls cue function if time threshold has been crossed.
+  void update() override;
+
+  /// Cues are instantaneous.
+  Time getDuration() const override { return 0.0f; }
+private:
+  std::function<void ()>    _cue;
+  std::shared_ptr<Control>  _control;
+};
 
 } // namespace choreograph
