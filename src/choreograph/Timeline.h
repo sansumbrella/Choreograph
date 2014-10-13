@@ -109,7 +109,7 @@ private:
 
 ///
 /// CueOptions provide a facade for manipulating a timeline Cue.
-/// All methods return a reference back to the CueOptions object for chaining.
+/// Non-get* methods return a reference back to the CueOptions object for chaining.
 /// Do not store the CueOptions object, as it contains a non-owning reference.
 ///
 class CueOptions
@@ -119,16 +119,19 @@ public:
     _cue( cue )
   {}
   /// Set the Cue to be removed from the timeline when finished.
-  CueOptions& removeOnFinish( bool doRemove ) { _cue.setRemoveOnFinish( doRemove ); return *this; }
+  CueOptions&       removeOnFinish( bool doRemove ) { _cue.setRemoveOnFinish( doRemove ); return *this; }
 
   /// Change the time (from now) at which the Cue will be called.
-  CueOptions& setStartTime( Time t ) { _cue.setStartTime( t ); return *this; }
+  CueOptions&       setStartTime( Time t ) { _cue.setStartTime( t ); return *this; }
 
   /// Change the rate at which time flows toward the Cue's execution.
-  CueOptions& playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
+  CueOptions&       playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
 
   /// Returns a weak_ptr to the control object for the Cue. Allows you to cancel the Cue.
-  std::weak_ptr<Cue::Control> getCancelControl() { return _cue.getControl(); }
+  CueControlWeakRef getControl() { return _cue.getControl(); }
+
+  /// Returns an object that cancels the Cue when it falls out of scope.
+  ScopedCueRef      getScopedControl() { return std::make_shared<Cue::ScopedCancel>( _cue.getControl() ); }
 private:
   Cue  &_cue;
 };

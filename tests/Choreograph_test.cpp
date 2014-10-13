@@ -4,7 +4,7 @@
 #include "choreograph/Choreograph.h"
 #include <array>
 
-// If true, will test vec2 and vec3 animation and different ease functions.
+// If true, will test vec2 and vec3 animation.
 #define INCLUDE_CINDER_HEADERS 1
 
 using namespace std;
@@ -198,7 +198,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
     for( size_t i = 0; i < call_counts.size(); ++i )
     {
-      timeline.cue( [i,&call_counts] { call_counts[i] += 1; }, delays[i] );
+      timeline.cue( [i, &call_counts] { call_counts[i] += 1; }, delays[i] );
     }
 
     timeline.step( 0.1f );
@@ -233,6 +233,52 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 1 );
     REQUIRE( call_counts[3] == 1 );
+  }
+
+  SECTION( "Cue Scoping and Cancellation" )
+  {
+    int call_count = 0;
+
+    SECTION( "Plain Handle" )
+    {
+      {
+        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 1 );
+    }
+
+    SECTION( "Plain Handle, cancelled" )
+    {
+      {
+        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
+        auto locked = handle.lock();
+        if( locked ) {
+          locked->cancel();
+        }
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 0 );
+    }
+
+    SECTION( "Scoped Control, falls" )
+    {
+      {
+        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 0 );
+    }
+
+    SECTION( "Scoped Control, lives" )
+    {
+      ScopedCueRef cue;
+      {
+        cue = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 1 );
+    }
   }
 
   SECTION( "Motion Manipulation from Callbacks" )
@@ -277,20 +323,6 @@ TEST_CASE( "Motion Speed and Reversal" )
   }
 
 } // Motion Speed and Reversal
-
-TEST_CASE( "Storage Possibilities" )
-{
-  struct Type
-  {
-    ~Type() {
-      cout << "Type Destructed" << endl;
-    }
-  };
-
-  shared_ptr<void> void_ptr = std::make_shared<Type>();
-  shared_ptr<void> void_two( new Type );
-
-} // Storage Possibilities
 
 TEST_CASE( "Output Connections", "[output]" )
 {

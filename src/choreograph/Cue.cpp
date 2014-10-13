@@ -57,3 +57,11 @@ void Cue::update()
   else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
     _cue();
 }
+
+Cue::ScopedCancel::~ScopedCancel()
+{
+  auto control = _control.lock();
+  if( control ) {
+    control->cancel();
+  }
+}
