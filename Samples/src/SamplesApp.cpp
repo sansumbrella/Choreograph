@@ -111,7 +111,7 @@ void SamplesApp::loadSample( int index )
   // Load Next Sample Automatically.
   mCueControl = mTimeline.cue( [this] {
     loadSample( mSceneIndex + 1 );
-  }, 15.0f ).getCancelControl();
+  }, 15.0f ).getControl();
 }
 
 void SamplesApp::update()

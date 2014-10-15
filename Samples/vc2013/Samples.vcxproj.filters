@@ -19,15 +19,6 @@
     <Filter Include="Blocks\Choreograph">
       <UniqueIdentifier>{5E1E672A-6F5E-4AC5-BB83-F0A117F63EF9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Blocks\Choreograph\src">
-      <UniqueIdentifier>{39FEDE06-D647-488D-8BFA-CC062B9F91A1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\Choreograph\src\choreograph">
-      <UniqueIdentifier>{2BA834AE-6AAE-4A31-AA97-CDAB5874CC61}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Blocks\Choreograph\src\specialization">
-      <UniqueIdentifier>{ACB0FC4E-68CD-4C40-9D10-B1859B934E5F}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\pockets">
       <UniqueIdentifier>{4ff77185-5e0d-4fdf-bdd4-88eccea43ba1}</UniqueIdentifier>
     </Filter>
@@ -45,55 +36,43 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Choreograph.hpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Connection.hpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Output.hpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Phrase.hpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Sequence.hpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Source.hpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Motion.h">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Timeline.h">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
-      <Filter>Blocks\Choreograph\src\choreograph</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\specialization\CinderSpecialization.hpp">
-      <Filter>Blocks\Choreograph\src\specialization</Filter>
-    </ClInclude>
     <ClCompile Include="..\src\pockets\ConnectionManager.cpp">
       <Filter>Source Files\pockets</Filter>
     </ClCompile>
     <ClCompile Include="..\src\pockets\Scene.cpp">
       <Filter>Source Files\pockets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Cue.cpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\samples\BezierConstruction.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\samples\Hello.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\samples\Loops.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
     <ClCompile Include="..\src\samples\Orbits.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\samples\Wings.cpp">
+    <ClCompile Include="..\src\samples\Oscillator.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
     <ClCompile Include="..\src\samples\Sink.cpp">
+      <Filter>Source Files\samples</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\samples\Wings.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,19 +89,85 @@
     <ClInclude Include="..\src\pockets\Scene.h">
       <Filter>Source Files\pockets</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Choreograph.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Connection.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Cue.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Easing.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Motion.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Output.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Combine.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Hold.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Procedural.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Ramp.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Retime.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Sugar.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Phrase.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Sequence.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\specialization\CinderSpecialization.hpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Timeline.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\TimelineItem.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\TimeType.h">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\BezierConstruction.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\samples\Hello.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\samples\Loops.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
     <ClInclude Include="..\src\samples\Orbits.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\samples\Oscillator.h">
+      <Filter>Source Files\samples</Filter>
+    </ClInclude>
     <ClInclude Include="..\src\samples\Samples.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\samples\Wings.h">
+    <ClInclude Include="..\src\samples\Sink.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\samples\Sink.h">
+    <ClInclude Include="..\src\samples\Wings.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
   </ItemGroup>

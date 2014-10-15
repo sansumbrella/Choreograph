@@ -11,21 +11,31 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\choreograph\Cue.cpp" />
     <ClCompile Include="..\..\src\choreograph\Motion.cpp" />
     <ClCompile Include="..\..\src\choreograph\Timeline.cpp" />
+    <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp" />
     <ClCompile Include="..\Choreograph_test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\choreograph\Choreograph.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Choreograph.h" />
     <ClInclude Include="..\..\src\choreograph\Connection.hpp" />
+    <ClInclude Include="..\..\src\choreograph\Cue.h" />
     <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp" />
     <ClInclude Include="..\..\src\choreograph\Motion.h" />
     <ClInclude Include="..\..\src\choreograph\Output.hpp" />
     <ClInclude Include="..\..\src\choreograph\Phrase.hpp" />
-    <ClInclude Include="..\..\src\choreograph\Phrases.hpp" />
+    <ClInclude Include="..\..\src\choreograph\phrase\Combine.hpp" />
+    <ClInclude Include="..\..\src\choreograph\phrase\Hold.hpp" />
+    <ClInclude Include="..\..\src\choreograph\phrase\Procedural.hpp" />
+    <ClInclude Include="..\..\src\choreograph\phrase\Ramp.hpp" />
+    <ClInclude Include="..\..\src\choreograph\phrase\Retime.hpp" />
+    <ClInclude Include="..\..\src\choreograph\phrase\Sugar.hpp" />
     <ClInclude Include="..\..\src\choreograph\Sequence.hpp" />
     <ClInclude Include="..\..\src\choreograph\specialization\CinderSpecialization.hpp" />
     <ClInclude Include="..\..\src\choreograph\Timeline.h" />
+    <ClInclude Include="..\..\src\choreograph\TimelineItem.h" />
+    <ClInclude Include="..\..\src\choreograph\TimeType.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{6A7821E7-F674-4061-B1AA-D78BC317EDB6}</ProjectGuid>

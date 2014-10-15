@@ -18,10 +18,30 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\choreograph\Choreograph.hpp">
+    <ClCompile Include="..\Benchmarks_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Cue.cpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\choreograph\Choreograph.h">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Connection.hpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Cue.h">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp">
@@ -33,10 +53,25 @@
     <ClInclude Include="..\..\src\choreograph\Output.hpp">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Phrase.hpp">
+    <ClInclude Include="..\..\src\choreograph\phrase\Combine.hpp">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Phrases.hpp">
+    <ClInclude Include="..\..\src\choreograph\phrase\Hold.hpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Procedural.hpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Ramp.hpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Retime.hpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\phrase\Sugar.hpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Phrase.hpp">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Sequence.hpp">
@@ -48,16 +83,11 @@
     <ClInclude Include="..\..\src\choreograph\Timeline.h">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
+    <ClInclude Include="..\..\src\choreograph\TimelineItem.h">
       <Filter>Source Files\choreograph</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\TimeType.h">
       <Filter>Source Files\choreograph</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Benchmarks_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    </ClInclude>
   </ItemGroup>
 </Project>
