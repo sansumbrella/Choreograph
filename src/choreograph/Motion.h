@@ -83,6 +83,9 @@ public:
   template<typename T>
   MotionGroupOptions<T> add( const SequenceRef<T> &sequence, Output<T> *output );
 
+  template<typename T>
+  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( std::make_shared<Sequence<T>>( phrase ), output ); }
+
   /// Update all grouped motions.
   void update() override;
 
@@ -94,6 +97,8 @@ public:
 
   void setFinishFn( const Callback &fn ) { _finish_fn = fn; }
   void setStartFn( const Callback &fn ) { _start_fn = fn; }
+
+  void extendDuration( Time amount ) { _duration += amount; }
 
 private:
   MotionGroup() = default;

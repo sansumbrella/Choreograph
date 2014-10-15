@@ -200,8 +200,8 @@ public:
   // Adding other things.
   //=================================================
 
-  /// Add Motion to timeline.
-  void add( TimelineItemUniqueRef motion );
+  /// Add an item to the timeline. Called by append/apply methods. Use to pass in MotionGroups.
+  void add( TimelineItemUniqueRef item );
 
   //=================================================
   // Time manipulation.
@@ -212,9 +212,6 @@ public:
 
   /// Set all motions to \a time.
   void jumpTo( Time time );
-
-  /// Set all motions to \a time. Safe to call from Motion callbacks.
-  void setTime( Time time );
 
   //=================================================
   // Timeline element manipulation.
@@ -268,13 +265,9 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
 {
   auto sequence = std::make_shared<Sequence<T>>( *output );
   auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
-  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  if( _updating )
-    _queue.emplace_back( std::move( motion ) );
-  else
-    _motions.emplace_back( std::move( motion ) );
+  add( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -284,13 +277,9 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
 {
   auto sequence = std::make_shared<Sequence<T>>( phrase );
   auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
-  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  if( _updating )
-    _queue.emplace_back( std::move( motion ) );
-  else
-    _motions.emplace_back( std::move( motion ) );
+  add( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -299,13 +288,9 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
 {
   auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
-  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  if( _updating )
-    _queue.emplace_back( std::move( motion ) );
-  else
-    _motions.emplace_back( std::move( motion ) );
+  add( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -331,13 +316,9 @@ MotionOptions<T> Timeline::applyRaw( T *output )
 
   auto sequence = std::make_shared<Sequence<T>>( *output );
   auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
-  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  if( _updating )
-    _queue.emplace_back( std::move( motion ) );
-  else
-    _motions.emplace_back( std::move( motion ) );
+  add( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }
@@ -347,13 +328,9 @@ MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
   auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
-  motion->setRemoveOnFinish( _default_remove_on_finish );
 
   auto motion_ptr = motion.get();
-  if( _updating )
-    _queue.emplace_back( std::move( motion ) );
-  else
-    _motions.emplace_back( std::move( motion ) );
+  add( std::move( motion ) );
 
   return MotionOptions<T>( *motion_ptr, *sequence, *this );
 }

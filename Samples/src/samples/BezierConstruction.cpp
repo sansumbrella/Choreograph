@@ -53,22 +53,29 @@ void BezierConstruction::setup()
 
   timeline().setDefaultRemoveOnFinish( false );
 
-  timeline().apply<vec2>( &mControlA, ramp_a );
-  timeline().apply<vec2>( &mControlB, ramp_b );
-  timeline().apply( bezier_point->getMixOutput() ).then<RampTo>( 1.0f, duration );
-  timeline().apply<vec2>( &mCurvePoint, bezier_point )
+  auto group = MotionGroup::create();
+
+  group->add<vec2>( ramp_a, &mControlA );
+  group->add<vec2>( ramp_b, &mControlB );
+  group->add<float>( makeRamp( 0.0f, 1.0f, duration ), bezier_point->getMixOutput() );
+  group->add<vec2>( bezier_point, &mCurvePoint )
     .startFn( [this] ( Motion<vec2> &m ) {
       mSegments.clear();
       mSegments.push_back( mCurvePoints[0] );
     } )
     .updateFn( [this] ( vec2 &pos ) {
       mSegments.push_back( pos );
-    } )
-    .finishFn( [this] ( Motion<vec2> &m ) {
-      timeline().cue( [this] {
-        timeline().setTime( 0.0f );
-      }, 0.5f ).removeOnFinish( true );
     } );
+
+  group->setFinishFn( [this] ( MotionGroup &group )
+    {
+      timeline().cue( [&group]
+      {
+        group.resetTime();
+      }, 0.5f );
+    } );
+
+  timeline().add( std::move( group ) );
 
   // place things at initial timelined values.
   timeline().jumpTo( 0 );

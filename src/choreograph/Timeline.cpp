@@ -78,24 +78,21 @@ void Timeline::jumpTo( Time time )
   }
 }
 
-void Timeline::setTime( Time time )
-{
-  removeFinishedAndInvalidMotions();
-
-  // Update all animation outputs.
-  for( auto &c : _motions ) {
-    c->setTime( time );
-  }
-}
-
 void Timeline::remove( void *output )
 {
   detail::erase_if( &_motions, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
 }
 
-void Timeline::add( TimelineItemUniqueRef motion )
+void Timeline::add( TimelineItemUniqueRef item )
 {
-  _motions.emplace_back( std::move( motion ) );
+  item->setRemoveOnFinish( _default_remove_on_finish );
+
+  if( _updating ) {
+    _queue.emplace_back( std::move( item ) );
+  }
+  else {
+    _motions.emplace_back( std::move( item ) );
+  }
 }
 
 CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
@@ -103,10 +100,8 @@ CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
   auto cue = std::unique_ptr<Cue>( new Cue( fn, delay ) );
   CueOptions options( *cue );
 
-  if( _updating )
-    _queue.emplace_back( std::move( cue ) );
-  else
-    _motions.emplace_back( std::move( cue ) );
+  // move required for C++11, though it won't be in C++14
+  add( std::move( cue ) );
 
   return options;
 }

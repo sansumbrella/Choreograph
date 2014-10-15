@@ -47,6 +47,7 @@ void MotionGroup::update()
 
   // Advance motions to current time.
   for( auto &motion : _motions ) {
+    motion->setTime( previousTime() );
     motion->jumpTo( time() );
   }
 

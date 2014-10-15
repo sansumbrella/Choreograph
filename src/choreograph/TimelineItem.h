@@ -57,7 +57,7 @@ public:
   /// Jump to a point in time. Ignores Motion's speed. Do not use from callbacks (it will fire them).
   void jumpTo( Time time );
 
-  /// Set time. Ignores speed. Safe to use from callbacks.
+  /// Set time. Ignores speed. Safe to use from callbacks. Does not call update().
   void setTime( Time time ) { _time = _previous_time = time; }
 
   //=================================================
