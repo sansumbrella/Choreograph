@@ -137,7 +137,10 @@ private:
 };
 
 ///
-/// Holds a collection of Motions and updates them through time.
+/// Timeline holds a collection of TimelineItems and updates them through time.
+/// TimelineItems include Motions and Cues.
+/// Motions can be cancelled by disconnecting their Output<T>.
+/// Cues can be cancelled by using their control object.
 ///
 class Timeline
 {
@@ -161,15 +164,46 @@ public:
   template<typename T>
   MotionOptions<T> append( Output<T> *output );
 
-/*
-  /// Build a Motion Sequence for \a output to be started on a Cue.
-  /// Will create and invalid Motion, then make it valid with a Cue.
-  /// Either allow Outputs multiple Connections (with one active at a time), or this will be dangerous.
-  /// Not yet implemented. May never be implemented.
-  /// Generally, we don't want anything to be on the timeline that the timeline doesn't know about. Believe.
-  template<typename T>
-  MotionOptions<T> later( Output<T> *output );
-*/
+  //=================================================
+  // Creating Cues.
+  //=================================================
+
+  /// Add a cue to the timeline. It will be called after \a delay time elapses on this Timeline.
+  CueOptions cue( const std::function<void ()> &fn, Time delay );
+
+  //=================================================
+  // Adding any TimelineItems.
+  //=================================================
+
+  /// Add an item to the timeline. Called by append/apply/cue methods.
+  /// Use to pass in MotionGroups and other types that Timeline doesn't create.
+  void add( TimelineItemUniqueRef item );
+
+  //=================================================
+  // Time manipulation.
+  //=================================================
+
+  /// Advance all current items by \a dt time.
+  /// Recommended method of updating the timeline.
+  void step( Time dt );
+
+  /// Set all motions to \a time.
+  /// Useful for scrubbing Timelines with non-removed items.
+  void jumpTo( Time time );
+
+  //=================================================
+  // Creating Motions. T* Versions.
+  //=================================================
+
+  /// Returns true iff there are no items on this timeline.
+  bool empty() const { return _motions.empty(); }
+
+  /// Returns the number of items on this timeline.
+  size_t size() const { return _motions.size(); }
+
+  /// Returns the time at which all TimelineItems on this timeline will be finished.
+  /// Useful information to cache when scrubbing Timelines with non-removed items.
+  Time calcDuration() const;
 
   //=================================================
   // Creating Motions. T* Versions.
@@ -188,30 +222,6 @@ public:
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
   MotionOptions<T> appendRaw( T *output );
-
-  //=================================================
-  // Creating Cues.
-  //=================================================
-
-  /// Add a cue to the timeline. It will be called after \a delay time elapses on this Timeline.
-  CueOptions cue( const std::function<void ()> &fn, Time delay );
-
-  //=================================================
-  // Adding other things.
-  //=================================================
-
-  /// Add an item to the timeline. Called by append/apply methods. Use to pass in MotionGroups.
-  void add( TimelineItemUniqueRef item );
-
-  //=================================================
-  // Time manipulation.
-  //=================================================
-
-  /// Advance all current motions.
-  void step( Time dt );
-
-  /// Set all motions to \a time.
-  void jumpTo( Time time );
 
   //=================================================
   // Timeline element manipulation.
@@ -235,11 +245,6 @@ public:
   /// Remove all motions from this timeline. Do not call from a callback.
   void clear() { _motions.clear(); }
 
-  /// Return true iff there are no motions on this timeline.
-  bool empty() const { return _motions.empty(); }
-
-  /// Return the number of motions on this timeline.
-  size_t size() const { return _motions.size(); }
 
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
