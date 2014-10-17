@@ -73,7 +73,9 @@ public:
   /// Returns true iff motion is no longer valid.
   virtual bool isInvalid() const { return false; }
 
-  /// Returns target if motion has one.
+  /// Returns target if TimelineItem has one.
+  /// Used by Timeline when appending to Motions.
+  /// May be removed in favor of an alternative identifying mechanism in the future.
   virtual const void* getTarget() const { return nullptr; }
 
   //=================================================

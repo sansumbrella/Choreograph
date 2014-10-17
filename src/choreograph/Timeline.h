@@ -131,6 +131,7 @@ public:
   CueControlWeakRef getControl() { return _cue.getControl(); }
 
   /// Returns an object that cancels the Cue when it falls out of scope.
+  /// You should store a ScopedCueRef in any class that captures [this] in a cued lambda.
   ScopedCueRef      getScopedControl() { return std::make_shared<Cue::ScopedCancel>( _cue.getControl() ); }
 private:
   Cue  &_cue;
@@ -172,7 +173,7 @@ public:
   CueOptions cue( const std::function<void ()> &fn, Time delay );
 
   //=================================================
-  // Adding any TimelineItems.
+  // Adding TimelineItems.
   //=================================================
 
   /// Add an item to the timeline. Called by append/apply/cue methods.
@@ -192,7 +193,7 @@ public:
   void jumpTo( Time time );
 
   //=================================================
-  // Creating Motions. T* Versions.
+  // Timeline querying methods.
   //=================================================
 
   /// Returns true iff there are no items on this timeline.
@@ -206,7 +207,21 @@ public:
   Time calcDuration() const;
 
   //=================================================
+  // Timeline element manipulation.
+  //=================================================
+
+  /// Set whether motions should be removed when finished. Default is true.
+  /// This value will be passed to all future TimelineItems created by the timeline.
+  /// Does not affect TimelineItems already on the Timeline.
+  void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
+
+  /// Remove all items from this timeline.
+  /// Do not call from a callback.
+  void clear() { _motions.clear(); }
+
+  //=================================================
   // Creating Motions. T* Versions.
+  // Prefer the Output<T>* versions over these.
   //=================================================
 
   /// Apply a source to output, overwriting any previous connections. Raw pointer edition.
@@ -223,29 +238,6 @@ public:
   template<typename T>
   MotionOptions<T> appendRaw( T *output );
 
-  //=================================================
-  // Timeline element manipulation.
-  //=================================================
-
-  /// Returns a non-owning raw pointer to the Motion applied to \a output, if any.
-  /// If there is no Motion applied, returns nullptr.
-  template<typename T>
-  Motion<T>* find( T *output ) const;
-
-  /// Remove motion associated with specific output. Do not call from Callbacks.
-  /// Required only for raw pointer animation.
-  /// Use Output<T>::disconnect() instead when animating any Output<T> type.
-  /// Use Cue::Control::cancel() to stop Cues from firing.
-  void remove( void *output );
-
-  /// Set whether motions should be removed when finished. Default is true.
-  /// This value will be passed to all future Motions created by the timeline.
-  void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
-
-  /// Remove all motions from this timeline. Do not call from a callback.
-  void clear() { _motions.clear(); }
-
-
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
@@ -259,6 +251,19 @@ private:
   void removeFinishedAndInvalidMotions();
   void removeFinishedMotions();
   void removeInvalidMotions();
+ 
+  // Move any items in the queue to our active items collection.
+  void processQueue();
+
+  /// Returns a non-owning raw pointer to the Motion applied to \a output, if any.
+  /// If there is no Motion applied, returns nullptr.
+  /// Used internally when appending to motions.
+  template<typename T>
+  Motion<T>* find( T *output ) const;
+
+  /// Remove motion associated with specific output. Do not call from Callbacks.
+  /// Used internally for raw pointer animation.
+  void remove( void *output );
 };
 
 //=================================================
@@ -355,7 +360,7 @@ Motion<T>* Timeline::find( T *output ) const
 {
   for( auto &m : _motions ) {
     if( m->getTarget() == output ) {
-      return static_cast<Motion<T>*>( m.get() );
+      return dynamic_cast<Motion<T>*>( m.get() );
     }
   }
   return nullptr;

@@ -58,9 +58,7 @@ void Timeline::step( Time dt )
   }
   _updating = false;
 
-  // Copy any queued motions
-  std::copy( std::make_move_iterator( _queue.begin() ), std::make_move_iterator( _queue.end() ), std::back_inserter( _motions ) );
-  _queue.clear();
+  processQueue();
 
 }
 
@@ -75,9 +73,7 @@ void Timeline::jumpTo( Time time )
   }
   _updating = false;
 
-  // Copy any queued motions
-  std::copy( std::make_move_iterator( _queue.begin() ), std::make_move_iterator( _queue.end() ), std::back_inserter( _motions ) );
-  _queue.clear();
+  processQueue();
 }
 
 Time Timeline::calcDuration() const
@@ -87,6 +83,13 @@ Time Timeline::calcDuration() const
 		end = std::max( end, item->getEndTime() );
 	}
 	return end;
+}
+
+void Timeline::processQueue()
+{
+  using namespace std;
+  std::copy( make_move_iterator( _queue.begin() ), make_move_iterator( _queue.end() ), back_inserter( _motions ) );
+  _queue.clear();
 }
 
 void Timeline::remove( void *output )
@@ -111,7 +114,6 @@ CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
   auto cue = std::unique_ptr<Cue>( new Cue( fn, delay ) );
   CueOptions options( *cue );
 
-  // move required for C++11, though it won't be in C++14
   add( std::move( cue ) );
 
   return options;
