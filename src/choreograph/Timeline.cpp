@@ -32,17 +32,17 @@ using namespace choreograph;
 
 void Timeline::removeFinishedAndInvalidMotions()
 {
-  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
+  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
 }
 
 void Timeline::removeInvalidMotions()
 {
-  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return motion->isInvalid(); } );
+  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return motion->isInvalid(); } );
 }
 
 void Timeline::removeFinishedMotions()
 {
-  detail::erase_if( &_motions, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()); } );
+  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()); } );
 }
 
 void Timeline::step( Time dt )
@@ -53,7 +53,7 @@ void Timeline::step( Time dt )
 
   _updating = true;
   // Update all animation outputs.
-  for( auto &c : _motions ) {
+  for( auto &c : _items ) {
     c->step( dt );
   }
   _updating = false;
@@ -68,7 +68,7 @@ void Timeline::jumpTo( Time time )
 
   // Update all animation outputs.
   _updating = true;
-  for( auto &c : _motions ) {
+  for( auto &c : _items ) {
     c->jumpTo( time );
   }
   _updating = false;
@@ -79,7 +79,7 @@ void Timeline::jumpTo( Time time )
 Time Timeline::calcDuration() const
 {
 	Time end = 0;
-	for( auto &item : _motions ) {
+	for( auto &item : _items ) {
 		end = std::max( end, item->getEndTime() );
 	}
 	return end;
@@ -88,13 +88,13 @@ Time Timeline::calcDuration() const
 void Timeline::processQueue()
 {
   using namespace std;
-  std::copy( make_move_iterator( _queue.begin() ), make_move_iterator( _queue.end() ), back_inserter( _motions ) );
+  std::copy( make_move_iterator( _queue.begin() ), make_move_iterator( _queue.end() ), back_inserter( _items ) );
   _queue.clear();
 }
 
 void Timeline::remove( void *output )
 {
-  detail::erase_if( &_motions, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
+  detail::erase_if( &_items, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
 }
 
 void Timeline::add( TimelineItemUniqueRef item )
@@ -105,7 +105,7 @@ void Timeline::add( TimelineItemUniqueRef item )
     _queue.emplace_back( std::move( item ) );
   }
   else {
-    _motions.emplace_back( std::move( item ) );
+    _items.emplace_back( std::move( item ) );
   }
 }
 

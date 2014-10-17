@@ -142,6 +142,7 @@ private:
 /// TimelineItems include Motions and Cues.
 /// Motions can be cancelled by disconnecting their Output<T>.
 /// Cues can be cancelled by using their control object.
+/// Public methods are safe to call from cues and motion callbacks unless otherwise noted.
 ///
 class Timeline
 {
@@ -186,10 +187,12 @@ public:
 
   /// Advance all current items by \a dt time.
   /// Recommended method of updating the timeline.
+  /// Do not call from a callback.
   void step( Time dt );
 
   /// Set all motions to \a time.
   /// Useful for scrubbing Timelines with non-removed items.
+  /// Do not call from a callback.
   void jumpTo( Time time );
 
   //=================================================
@@ -197,10 +200,10 @@ public:
   //=================================================
 
   /// Returns true iff there are no items on this timeline.
-  bool empty() const { return _motions.empty(); }
+  bool empty() const { return _items.empty(); }
 
   /// Returns the number of items on this timeline.
-  size_t size() const { return _motions.size(); }
+  size_t size() const { return _items.size(); }
 
   /// Returns the time at which all TimelineItems on this timeline will be finished.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
@@ -217,7 +220,7 @@ public:
 
   /// Remove all items from this timeline.
   /// Do not call from a callback.
-  void clear() { _motions.clear(); }
+  void clear() { _items.clear(); }
 
   //=================================================
   // Creating Motions. T* Versions.
@@ -241,7 +244,7 @@ public:
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
-  std::vector<TimelineItemUniqueRef>  _motions;
+  std::vector<TimelineItemUniqueRef>  _items;
 
   // queue to make adding cues from callbacks safe. Used if modifying functions are called during update loop.
   std::vector<TimelineItemUniqueRef>  _queue;
@@ -358,7 +361,7 @@ MotionOptions<T> Timeline::appendRaw( T *output )
 template<typename T>
 Motion<T>* Timeline::find( T *output ) const
 {
-  for( auto &m : _motions ) {
+  for( auto &m : _items ) {
     if( m->getTarget() == output ) {
       return dynamic_cast<Motion<T>*>( m.get() );
     }
@@ -380,6 +383,5 @@ MotionOptions<T>& MotionOptions<T>::after( U *other )
   }
   return *this;
 }
-
 
 } // namespace choreograph
