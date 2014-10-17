@@ -120,7 +120,7 @@ void SamplesApp::update()
     loadSample( mSceneIndex );
   }
 
-  ch::Time dt = mTimer.getSeconds();
+  ch::Time dt = (Time)mTimer.getSeconds();
   mTimer.start();
   mTimeline.step( dt );
 }

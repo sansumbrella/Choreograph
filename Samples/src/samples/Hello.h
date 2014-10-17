@@ -43,7 +43,7 @@ public:
 
   void setup() override;
 
-  void update( double dt ) override;
+  void update( ch::Time dt ) override;
 
   void connect( ci::app::WindowRef window ) override;
 

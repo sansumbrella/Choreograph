@@ -34,7 +34,7 @@ void Orbits::setup()
 {
 }
 
-void Orbits::update( double dt )
+void Orbits::update( Time dt )
 {
 
 }

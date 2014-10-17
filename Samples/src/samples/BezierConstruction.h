@@ -35,7 +35,7 @@ class BezierConstruction : public pk::Scene
 {
 public:
   void setup() override;
-  void update( double dt ) override;
+  void update( ch::Time dt ) override;
   void draw() override;
 private:
   struct Point {

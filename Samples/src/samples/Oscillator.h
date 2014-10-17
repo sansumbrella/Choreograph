@@ -38,7 +38,7 @@ class Oscillator : public pockets::Scene
 public:
 
   void setup() override;
-  void update( double dt ) override;
+  void update( ch::Time dt ) override;
   void draw() override;
 
 private:

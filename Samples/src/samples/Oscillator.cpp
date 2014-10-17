@@ -41,14 +41,14 @@ void Oscillator::setup()
   } );
 
   // Create a ramp phrase from the left to the right side of the window.
-  float w = app::getWindowWidth();
+  float w = (float)app::getWindowWidth();
   float x1 = w * 0.08f;
   float x2 = w - x1;
   PhraseRef<vec2> slide = makeRamp( vec2( x1, 0 ), vec2( x2, 0 ), 2.0f, EaseInOutCubic() );
 
   // Combine the slide and bounce phrases using an AccumulatePhrase.
   // By default, the accumulation operation sums all the phrase values with an initial value.
-  float center_y = app::getWindowHeight() / 2;
+  float center_y = app::getWindowHeight() / 2.0f;
   PhraseRef<vec2> combined = makeAccumulator( vec2( 0, center_y ), bounce, slide );
 
   // Provide an explicit combine function.
@@ -66,7 +66,7 @@ void Oscillator::setup()
   timeline().jumpTo( 0 );
 }
 
-void Oscillator::update( double dt )
+void Oscillator::update( Time dt )
 {
   timeline().step( dt );
 }

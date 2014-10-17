@@ -96,7 +96,7 @@ void Hello::connect( app::WindowRef window )
 #endif
 }
 
-void Hello::update( double dt )
+void Hello::update( Time dt )
 {
   timeline().step( dt );
 }

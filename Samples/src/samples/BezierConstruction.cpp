@@ -32,8 +32,8 @@ using namespace cinder;
 
 void BezierConstruction::setup()
 {
-  float w = app::getWindowWidth();
-  float h = app::getWindowHeight();
+  float w = (float)app::getWindowWidth();
+  float h = (float)app::getWindowHeight();
   mCurvePoints = {
     vec2( w * 0.08f, h * 0.86f ),
     vec2( w * 0.08f, h * 0.14f ),
@@ -81,7 +81,7 @@ void BezierConstruction::setup()
   timeline().jumpTo( 0 );
 }
 
-void BezierConstruction::update( double dt )
+void BezierConstruction::update( Time dt )
 {
   timeline().step( dt );
 }

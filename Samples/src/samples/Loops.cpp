@@ -122,7 +122,7 @@ void Loops::setup()
   timeline().jumpTo( 0 );
 }
 
-void Loops::update( double dt )
+void Loops::update( Time dt )
 {
   timeline().step( dt );
 }

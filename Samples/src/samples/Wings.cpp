@@ -58,7 +58,7 @@ void Wings::connect( ci::app::WindowRef window )
   }  ) );
 }
 
-void Wings::update( double dt )
+void Wings::update( Time dt )
 {
   if( ! mMouseDown )
   {

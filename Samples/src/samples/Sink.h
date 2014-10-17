@@ -36,7 +36,7 @@ public:
 
   void connect( ci::app::WindowRef window ) override;
 
-  void update( double dt ) override;
+  void update( ch::Time dt ) override;
 
   void draw() override;
 

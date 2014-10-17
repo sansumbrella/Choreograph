@@ -82,7 +82,7 @@ void Sink::connect( ci::app::WindowRef window )
   } ) );
 }
 
-void Sink::update( double dt )
+void Sink::update( Time dt )
 {
   timeline().step( dt );
 }

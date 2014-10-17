@@ -91,7 +91,7 @@ namespace pockets
     virtual void  customResume(){}
 
     //! update content
-    virtual void  update( double dt ){}
+    virtual void  update( ch::Time dt ){}
 
     void baseDraw();
 
