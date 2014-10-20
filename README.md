@@ -6,6 +6,9 @@ v0.2.0 development. API is stabilizing.
 Choreograph is designed to describe motion. With it, you compose motion Phrases into Sequences that can be used to animate arbitrary properties on a Timeline.
 
 ## Basic Usage
+
+You can perform straightforward animations from point to point in Choreograph by creating sequences of ramps.
+
 ```c++
   using namespace choreograph;
   Timeline timeline;
@@ -29,6 +32,10 @@ Choreograph is designed to describe motion. With it, you compose motion Phrases 
 
   timeline.step( 1.0 / 60.0 );
 ```
+
+Choreograph also provides phrases that allow you to compose procedural and keyframed animation. For example, you can combine a horizontal keyframed phrase with a procedural vertical sine-wave phrase to get the following effect (code is in the Oscillator sample):
+
+![Oscillator Sample](https://cloud.githubusercontent.com/assets/81553/4703448/2a5214ac-586b-11e4-9db5-7b081b4011c3.gif)
 
 Read the concepts section below and see the projects in Samples/ for more ideas on how to use Choreograph in your own projects.
 
