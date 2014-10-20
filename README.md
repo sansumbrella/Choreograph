@@ -42,11 +42,15 @@ A Sequence is a collection of Phrases. Sequences are the primary object you mani
 
 Sequences and Phrases have duration but no concept of playback or the current time. They interpolate values within their duration and clamp values before zero and after their duration.
 
+![diagram-phrase-sequence](https://cloud.githubusercontent.com/assets/81553/4703002/31e31d32-5867-11e4-8296-f6887338dd99.jpg)
+
 ### Motion and Output
 
 A Motion connects a Sequence to an Output. Motions have a sense of starting, finishing, and updating, as well as knowing where in time they currently are.
 
 Outputs are values that can safely be animated with a Motion. The `Output<T>` template wraps any type so that it can communicate with the Motion applied to it about its lifetime. If either the Motion or the Output goes out of scope, the animation on that Output will stop.
+
+![diagram-motion](https://cloud.githubusercontent.com/assets/81553/4703117/2268d490-5868-11e4-8435-789f83e07eee.jpg)
 
 Motions can also be connected to raw pointers using the `Timeline::applyRaw()` family of methods. If you go this route, you need to be very careful about object lifetime and memory management. The Motion has no way to know if the raw pointer becomes invalid, and the raw pointer won’t know anything about the Motion.
 
@@ -81,6 +85,8 @@ Timelines manage a collection of TimelineItems (Motions, Cues, &c). They provide
 
 When you create a Motion with a Timeline, you receive a MotionOptions object that provides an interface to manipulate the underlying Sequence as well as the Motion.
 
+![diagram-timeline](https://cloud.githubusercontent.com/assets/81553/4703003/31f3155c-5867-11e4-932d-5e8cd5da1c33.jpg)
+
 Since Motions know where they are in time, the Timeline controlling them doesn’t need to. While that may seem strange, this allows us to keep timelines running in perpetuity without worrying about running out of numerical precision. The largest number we ever need to keep precise is the duration of our longest Sequence and its corresponding Motion. Also, I find it feels natural that new Motions always start at time zero.
 
 ## Building and running
@@ -97,7 +103,7 @@ You do need a modern C++ compiler. Choreograph is known to work with Apple LLVM 
 
 Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013. Choreograph’s tests use the [Catch](https://github.com/philsquared/Catch) framework, a single-header library that is included in the tests/ directory.
 
-Choreograph_test has no linker dependencies, but will try to include vector and ease function headers from Cinder if INCLUDE_CINDER_HEADERS is true. Including the Cinder headers enables a handful of additional tests, notably those covering the separable component easing of RampToN.
+Choreograph_test has no linker dependencies, but will try to include vector types from Cinder if INCLUDE_CINDER_HEADERS is true. Including the Cinder headers enables a handful of additional tests, notably those covering the separable component easing of RampToN.
 
 Benchmarks_test relies on the Cinder library. It uses Cinder’s Timer class to measure performance. Benchmarks_test also runs a rough performance comparison between choreograph::Timeline and cinder::Timeline.
 
