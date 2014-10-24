@@ -80,7 +80,7 @@ public:
   /// Set the current value of the Sequence. Acts as an instantaneous hold.
   SelfT& set( const T &value ) { _sequence.set( value ); return *this; }
 
-  /// Append a new phrase to the Sequence.
+  /// Construct and append a Phrase to the Sequence.
   template<template <typename> class PhraseT, typename... Args>
   SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence.template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
@@ -277,7 +277,7 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output )
 {
   auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion = std::make_unique<Motion<T>>( output, sequence );
 
   auto motion_ptr = motion.get();
   add( std::move( motion ) );
@@ -289,7 +289,7 @@ template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase )
 {
   auto sequence = std::make_shared<Sequence<T>>( phrase );
-  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion = std::make_unique<Motion<T>>( output, sequence );
 
   auto motion_ptr = motion.get();
   add( std::move( motion ) );
@@ -300,7 +300,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
 {
-  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion = std::make_unique<Motion<T>>( output, sequence );
 
   auto motion_ptr = motion.get();
   add( std::move( motion ) );
@@ -328,7 +328,7 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   remove( output );
 
   auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion = std::make_unique<Motion<T>>( output, sequence );
 
   auto motion_ptr = motion.get();
   add( std::move( motion ) );
@@ -340,7 +340,7 @@ template<typename T>
 MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
-  auto motion = std::unique_ptr<Motion<T>>( new Motion<T>( output, sequence ) );
+  auto motion = std::make_unique<Motion<T>>( output, sequence );
 
   auto motion_ptr = motion.get();
   add( std::move( motion ) );

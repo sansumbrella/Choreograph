@@ -111,7 +111,7 @@ void Timeline::add( TimelineItemUniqueRef item )
 
 CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
-  auto cue = std::unique_ptr<Cue>( new Cue( fn, delay ) );
+  auto cue = std::make_unique<Cue>( fn, delay );
   CueOptions options( *cue );
 
   add( std::move( cue ) );

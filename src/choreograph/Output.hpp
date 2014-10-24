@@ -104,7 +104,7 @@ private:
 
   /// Replaces \a rhs in its relationship to a TimelineItem input.
   void supplant( const Output<T> &rhs );
-  /// Connects this output to a new Connection.
+  /// Connects this output to a different Connection.
   void connect( Connection<T> *input );
 
   friend class    Connection<T>;

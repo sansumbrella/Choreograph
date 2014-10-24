@@ -93,7 +93,7 @@ public:
   Sequence<T>& set( const T &value );
 
   /// Append a Phrase to the sequence.
-  /// Constructs a new Phrase starting with Sequence's end value and
+  /// Constructs a Phrase starting with Sequence's end value and
   /// ending with \a value after \a duration.
   /// Forwards additional arguments to the end of the Phrase constructor.
   /// Example calls look like:
@@ -109,7 +109,7 @@ public:
 
   /// Returns a Phrase that encapsulates this Sequence.
   /// Duplicates the Sequence, so future changes to this do not affect the Phrase.
-  PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( SequenceUniqueRef<T>( new Sequence<T>( *this ) ) ); }
+  PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( *this ); }
 
   //
   // Phrase<T> Equivalents.
@@ -167,7 +167,7 @@ template<typename T>
 template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
-  _phrases.emplace_back( std::unique_ptr<PhraseT<T>>( new PhraseT<T>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) ) );
+  _phrases.emplace_back( std::make_unique<PhraseT<T>>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) );
   _duration += duration;
 
   return *this;
@@ -255,19 +255,19 @@ class SequencePhrase: public Phrase<T>
 {
 public:
   /// Construct a Phrase that wraps a Sequence, allowing it to be passed into meta-Phrases.
-  SequencePhrase( SequenceUniqueRef<T> &&sequence ):
-    Phrase<T>( sequence->getDuration() ),
-    _sequence( std::move( sequence ) )
+  SequencePhrase( const Sequence<T> &sequence ):
+    Phrase<T>( sequence.getDuration() ),
+    _sequence( sequence )
   {}
 
   /// Returns the interpolated value at the given time.
-  T getValue( Time atTime ) const override { return _sequence->getValue( atTime ); }
+  T getValue( Time atTime ) const override { return _sequence.getValue( atTime ); }
 
-  T getStartValue() const override { return _sequence->getStartValue(); }
+  T getStartValue() const override { return _sequence.getStartValue(); }
 
-  T getEndValue() const override { return _sequence->getEndValue(); }
+  T getEndValue() const override { return _sequence.getEndValue(); }
 private:
-  SequenceUniqueRef<T>  _sequence;
+  Sequence<T>  _sequence;
 };
 
 } // namespace choreograph

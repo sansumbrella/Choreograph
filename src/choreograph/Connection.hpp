@@ -81,7 +81,7 @@ private:
   /// Called on destruction of either this or _output_base.
   void disconnect( Output<T> *base );
 
-  /// Connect to a new Output (or update the pointer if Output's address changed).
+  /// Connect to an Output (or update the pointer if Output's address changed).
   /// Called by OutputBase when one Output supplants another (e.g. in copy-construction, move assignment, etc).
   void connect( Output<T> *base );
 
