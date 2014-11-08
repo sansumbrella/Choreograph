@@ -63,14 +63,14 @@ public:
     Phrase<T>( duration ),
     _start_value( start_value ),
     _end_value( end_value ),
-    _easeFn( ease_fn ),
-    _lerpFn( lerp_fn )
+    _ease_fn( ease_fn ),
+    _lerp_fn( lerp_fn )
   {}
 
   /// Returns the interpolated value at the given time.
-  T getValue( Time atTime ) const override
+  T getValue( Time at_time ) const override
   {
-    return _lerpFn( _start_value, _end_value, _easeFn( this->normalizeTime( atTime ) ) );
+    return _lerp_fn( _start_value, _end_value, _ease_fn( this->normalizeTime( at_time ) ) );
   }
 
   T getStartValue() const override { return _start_value; }
@@ -80,8 +80,8 @@ public:
 private:
   T       _start_value;
   T       _end_value;
-  EaseFn  _easeFn;
-  LerpFn  _lerpFn;
+  EaseFn  _ease_fn;
+  LerpFn  _lerp_fn;
 };
 
 ///
@@ -113,9 +113,9 @@ public:
   }
 
   /// Returns the interpolated value at the given time.
-  T getValue( Time atTime ) const override
+  T getValue( Time at_time ) const override
   {
-    Time t = this->normalizeTime( atTime );
+    Time t = this->normalizeTime( at_time );
     T out;
     for( int i = 0; i < SIZE; ++i )
     {

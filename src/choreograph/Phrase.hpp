@@ -41,7 +41,7 @@ using PhraseRef = std::shared_ptr<Phrase<T>>;
 template<typename T>
 using PhraseUniqueRef = std::unique_ptr<Phrase<T>>;
 
-/// The default templated lerp function.
+/// The default templated linear interpolation function.
 template<typename T>
 T lerpT( const T &a, const T &b, float t )
 {
@@ -71,7 +71,7 @@ public:
 
   /// Override to provide value at requested time.
   /// Returns the interpolated value at the given time.
-  virtual T getValue( Time atTime ) const = 0;
+  virtual T getValue( Time at_time ) const = 0;
 
   /// Override to provide value at start (and before).
   virtual T getStartValue() const = 0;
