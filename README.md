@@ -129,7 +129,7 @@ Samples are run from the projects inside the Samples directory. Projects to buil
 ### Lerp Specializations
 If you are using Cinder, Choreograph will automatically include a specialization header to slerp quaternions.
 
-## History/Tweening alternatives:
+## History
 
 The original motivation for having a library like Choreograph came from past experience with Flash tweening libraries like Greensock’s TweenMax. They made programmatic animations art-directable, which was a huge boon for doing work on a team.
 
