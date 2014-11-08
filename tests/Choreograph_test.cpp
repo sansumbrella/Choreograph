@@ -236,7 +236,7 @@ TEST_CASE( "Motions" )
 
 TEST_CASE( "Motion Groups" )
 {
-  auto group = std::make_unique<MotionGroup>();
+  auto group = detail::make_unique<MotionGroup>();
   auto &group_timeline = group->timeline();
   Output<int> target = 0;
   Timeline timeline;
@@ -764,7 +764,7 @@ TEST_CASE( "Callbacks" )
 
   SECTION( "It is safe to destroy a Timeline from the Timeline finish fn." )
   {
-    auto self_destructing_timeline = make_unique<Timeline>();
+    auto self_destructing_timeline = detail::make_unique<Timeline>();
     self_destructing_timeline->apply( &target, sequence );
     self_destructing_timeline->setFinishFn( [&self_destructing_timeline] {
       self_destructing_timeline.reset();
