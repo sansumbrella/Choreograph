@@ -7,34 +7,42 @@ Choreograph is designed to describe motion. With it, you compose motion Phrases 
 
 ## Basic Usage
 
-You can perform straightforward animations from point to point in Choreograph by creating sequences of ramps.
+You can perform simple animations from point to point in Choreograph by creating sequences of ramps.
 
 ```c++
-  using namespace choreograph;
-  Timeline timeline;
-  Output<float> target = 10.0f;
+using namespace choreograph;
 
-  // Build a Sequence from a series of Phrases.
-  Sequence<float> continuation( 0.0f );
-  continuation.then<RampTo>( 100.0f, 1.0f )
-              .then<Hold>( 50.0f, 0.5f );
+Timeline timeline;
+Output<vec2> variable;
 
-  // Create a Sequence in-place on the Timeline.
-  timeline.apply( &target )
-          // Animate target value to 50 over .3 seconds.
-          .then<RampTo>( 50.0f, 0.3f )
-          // Stay at 50 for .2 more seconds.
-          .then<Hold>( 50.0f, 0.2f )
-          // Repeat the motion in our previously created Sequence three times.
-          .then( makeRepeat( continuation.asPhrase(), 3 ) )
-          // When finished playing, print out some info.
-          .finishFn( [] (Motion<float> &m) { cout << "Finished animating target." << endl; } );
+// Create a Sequence that is applied to a variable.
+timeline.apply( &variable )
+  .then<RampTo>( value, 1.0f, EaseInOutQuad() )
+  .then<RampTo>( other_value, 0.5f );
 
-  timeline.step( 1.0 / 60.0 );
+// Move forward in time.
+timeline.step( 1.0 / 60.0 );
 ```
 
-Choreograph also provides phrases that allow you to compose procedural and keyframed animation. For example, you can combine a horizontal keyframed phrase with a procedural vertical sine-wave phrase to get the following effect (code is in the Oscillator sample):
+Choreograph also provides a range of more sophisticated phrases, including procedures and accumulators. These allow you to do things like combine a left-to-right ramp with a sine-wave procedure. The code shown below is elaborated in the Oscillator sample.
 
+```c++
+  // Create a procedural phrase that generates a vertical sine wave.
+  auto bounce = makeProcedure<vec2>( 2.0, [] ( Time t, Time duration ) {
+    return vec2( 0, sin( easeInOutQuad(t) * 6 * M_PI ) * 100.0f );
+  } );
+
+  // Create a ramp phrase that moves from left-to-right.
+  auto slide = makeRamp( vec2( x1, 0 ), vec2( x2, 0 ), 2.0f, EaseInOutCubic() );
+
+  // Combine the slide and bounce phrases using an AccumulatePhrase.
+  float center_y = app::getWindowHeight() / 2.0f;
+  auto combined = makeAccumulator( vec2( 0, center_y ), bounce, slide );
+
+  timeline.apply( &output, combined );
+```
+
+The code above produces the motion of the purple circle below:
 ![Oscillator Sample](https://cloud.githubusercontent.com/assets/81553/4703448/2a5214ac-586b-11e4-9db5-7b081b4011c3.gif)
 
 Read the concepts section below and see the projects in Samples/ for more ideas on how to use Choreograph in your own projects.
@@ -127,7 +135,7 @@ Choreograph’s samples use Cinder for system interaction and graphics display. 
 Samples are run from the projects inside the Samples directory. Projects to build the samples exist for iOS and OSX using Xcode and for Windows Desktop using Visual Studio 2013. These are more of a work in progress than the rest of the library.
 
 ### Lerp Specializations
-If you are using Cinder, Choreograph will automatically include a specialization header to slerp quaternions.
+If you are using Cinder, Choreograph will automatically include a specialization header so RampTos slerp quaternions. Where relevant, Phrases accept an optional lerpFn parameter so you can customize it for other types.
 
 ## History
 
