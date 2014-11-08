@@ -51,7 +51,8 @@ public:
     Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
     _a( a ),
     _b( b ),
-    _mix( mix )
+    _mix( mix ),
+    _lerp_fn( fn )
   {}
 
   /// Returns a blend of the values of a and b at \a atTime.
