@@ -7,21 +7,13 @@ Choreograph is designed to describe motion. With it, you compose motion Phrases 
 
 ## Basic Usage
 
-You can perform simple animations from point to point in Choreograph by creating sequences of ramps.
+Simple things are simple. You can animate a variable through a sequence of values in Choreograph by creating a sequence of ramps.
 
 ```c++
-using namespace choreograph;
-
-Timeline timeline;
-Output<vec2> variable;
-
 // Create a Sequence that is applied to a variable.
 timeline.apply( &variable )
   .then<RampTo>( value, 1.0f, EaseInOutQuad() )
   .then<RampTo>( other_value, 0.5f );
-
-// Move forward in time.
-timeline.step( 1.0 / 60.0 );
 ```
 
 Choreograph also provides a range of more sophisticated phrases, including procedures and accumulators. These allow you to do things like combine a left-to-right ramp with a sine-wave procedure. The code shown below is elaborated in the Oscillator sample.
@@ -43,6 +35,7 @@ Choreograph also provides a range of more sophisticated phrases, including proce
 ```
 
 The code above produces the motion of the purple circle below:
+
 ![Oscillator Sample](https://cloud.githubusercontent.com/assets/81553/4703448/2a5214ac-586b-11e4-9db5-7b081b4011c3.gif)
 
 Read the concepts section below and see the projects in Samples/ for more ideas on how to use Choreograph in your own projects.
