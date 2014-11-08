@@ -41,6 +41,13 @@ using PhraseRef = std::shared_ptr<Phrase<T>>;
 template<typename T>
 using PhraseUniqueRef = std::unique_ptr<Phrase<T>>;
 
+/// The default templated lerp function.
+template<typename T>
+T lerpT( const T &a, const T &b, float t )
+{
+  return a + (b - a) * t;
+}
+
 ///
 /// A Phrase of motion.
 /// Virtual base class with concept of value and implementation of time.

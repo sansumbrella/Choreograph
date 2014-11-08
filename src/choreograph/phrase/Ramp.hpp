@@ -46,13 +46,6 @@ namespace choreograph
 /// EaseFn( 0 ) = 0, EaseFn( 1 ) = 1.
 typedef std::function<float (float)> EaseFn;
 
-/// The default templated lerp function.
-template<typename T>
-T lerpT( const T &a, const T &b, float t )
-{
-  return a + (b - a) * t;
-}
-
 //=================================================
 // Basic Phrases.
 //=================================================

@@ -45,7 +45,9 @@ template<typename T>
 class MixPhrase : public Phrase<T>
 {
 public:
-  MixPhrase( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f ):
+  using LerpFn = std::function<T (const T&, const T&, float)>;
+
+  MixPhrase( const PhraseRef<T> &a, const PhraseRef<T> &b, float mix = 0.5f, const LerpFn &fn = &lerpT<T> ):
     Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
     _a( a ),
     _b( b ),
@@ -54,15 +56,15 @@ public:
 
   /// Returns a blend of the values of a and b at \a atTime.
   T getValue( Time atTime ) const override {
-    return _a->getValue( atTime ) * mixA() + _b->getValue( atTime ) * mixB();
+    return _lerp_fn( _a->getValue( atTime ), _b->getValue( atTime ), _mix() );
   }
 
   T getStartValue() const override {
-    return _a->getStartValue() * mixA() + _b->getStartValue() * mixB();
+    return _lerp_fn( _a->getStartValue(), _b->getStartValue(), _mix() );
   }
 
   T getEndValue() const override {
-    return _a->getEndValue() * mixA() + _b->getEndValue() * mixB();
+    return _lerp_fn( _a->getEndValue(), _b->getEndValue(), _mix() );
   }
 
   /// Sets the balance of the Phrase mix. Values should be in the range [0, 1].
@@ -78,9 +80,8 @@ private:
   Output<float> _mix = 0.5f;
   PhraseRef<T>  _a;
   PhraseRef<T>  _b;
+  LerpFn        _lerp_fn;
 
-  inline float mixA() const { return 1 - _mix(); }
-  inline float mixB() const { return _mix(); }
 };
 
 ///
