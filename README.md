@@ -130,6 +130,9 @@ Samples are run from the projects inside the Samples directory. Projects to buil
 If you are using Cinder, Choreograph will automatically include a specialization header to slerp quaternions.
 
 ## History/Tweening alternatives:
-Cinder's Timeline is an excellent, production-ready tweening option. It has a stable and proven API. It is based on the previous version of Choreograph.
 
-The original motivation for having a library like Choreograph came from past experience with Flash tweening libraries like Greensock’s TweenMax. While they aren’t for C++, you might draw your own inspiration from them.
+The original motivation for having a library like Choreograph came from past experience with Flash tweening libraries like Greensock’s TweenMax. They made programmatic animations art-directable, which was a huge boon for doing work on a team.
+
+The first version of Choreograph served as a proof-of-concept for what eventually became Timeline in libCinder. Cinder’s timeline is an excellent, production-ready tweening option.
+
+The current iteration of Choreograph is redesigned from whole cloth. The library concepts, outlined above, allow for a smaller, more expressive API than what is possible with a tween-centric system. As a bonus, Choreograph’s new design also outperforms Cinder’s timeline in the included benchmarks for creating and running animations.
