@@ -135,7 +135,7 @@ Choreograph’s samples use Cinder for system interaction and graphics display. 
 Samples are run from the projects inside the Samples directory. Projects to build the samples exist for iOS and OSX using Xcode and for Windows Desktop using Visual Studio 2013. These are more of a work in progress than the rest of the library.
 
 ### Interpolating Special Types
-If you are using Cinder, Choreograph will automatically include a specialization header so quaternions will be slerped. Where relevant, Phrases also accept an optional interpolation function parameter so you can customize it for other types.
+If you are using Cinder, Choreograph will automatically include a specialization header so quaternions will be slerped. Where relevant, Phrases also accept an optional interpolation function parameter so you can customize them for other types.
 
 ## History
 
