@@ -1,7 +1,7 @@
 # Choreograph
 
-A simple C++11 animation and timing library.  
-v0.2.0 development. API is stabilizing.
+A simple, modern C++ animation and timing library.  
+v0.2.0
 
 Choreograph is designed to describe motion. With it, you compose motion Phrases into Sequences that can be used to animate arbitrary properties on a Timeline.
 
@@ -87,6 +87,10 @@ sequence.then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
 target = sequence.getValue( animationTime );
 ```
 
+### Cues
+
+Cues are functions that are called at a certain point in time. You can add them to a Timeline to trigger events in the future. They are useful for changing application state that isn’t strictly animatable. The sample application uses cues to manage transitions between each of the samples.
+
 ### Timeline
 Timelines manage a collection of TimelineItems (Motions, Cues, &c). They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in-place.
 
@@ -106,6 +110,8 @@ Choreograph itself has no third-party dependencies.
 
 You do need a modern C++ compiler. Choreograph is known to work with Apple LLVM 6.0 (Clang 600), and Visual Studio 2013.
 
+On Clang, make sure you specify C++14 or C++1y as your language dialect (-std=c++14), as std::make_unique didn’t make it in the standard until just after C++11.
+
 ### Building the Tests
 
 Tests are built and run with the projects inside the tests/ directory. There are test projects for Xcode 6 and Visual Studio 2013. Choreograph’s tests use the [Catch](https://github.com/philsquared/Catch) framework, a single-header library that is included in the tests/ directory.
@@ -121,9 +127,9 @@ Choreograph’s samples use Cinder for system interaction and graphics display. 
 Samples are run from the projects inside the Samples directory. Projects to build the samples exist for iOS and OSX using Xcode and for Windows Desktop using Visual Studio 2013. These are more of a work in progress than the rest of the library.
 
 ### Lerp Specializations
-If you are using Cinder, Choreograph will include a specialization header to slerp quaternions.
+If you are using Cinder, Choreograph will automatically include a specialization header to slerp quaternions.
 
 ## History/Tweening alternatives:
 Cinder's Timeline is an excellent, production-ready tweening option. It has a stable and proven API. It is based on the previous version of Choreograph.
 
-Choreograph itself was originally inspired by Flash tweening libraries like Greensock’s TweenMax. While they aren’t for C++, you might draw your own inspiration from them.
+The original motivation for having a library like Choreograph came from past experience with Flash tweening libraries like Greensock’s TweenMax. While they aren’t for C++, you might draw your own inspiration from them.
