@@ -47,31 +47,28 @@ void Timeline::removeFinishedMotions()
 
 void Timeline::step( Time dt )
 {
-  // It is ~10% faster to only iterate for removal once. That is, to remove both finished and invalid at the same time.
-  // This means our finished motions won't be removed until the beginning of the next frame.
-  removeFinishedAndInvalidMotions();
-
-  _updating = true;
   // Update all animation outputs.
+  _updating = true;
   for( auto &c : _items ) {
     c->step( dt );
   }
   _updating = false;
 
-  processQueue();
+  removeFinishedAndInvalidMotions();
 
+  processQueue();
 }
 
 void Timeline::jumpTo( Time time )
 {
-  removeFinishedAndInvalidMotions();
-
   // Update all animation outputs.
   _updating = true;
   for( auto &c : _items ) {
     c->jumpTo( time );
   }
   _updating = false;
+
+  removeFinishedAndInvalidMotions();
 
   processQueue();
 }

@@ -218,7 +218,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
       timeline.step( 0.1f );
     }
 
-//    REQUIRE( timeline.size() == 1 );
+    REQUIRE( timeline.size() == 1 );
     REQUIRE( call_counts[0] == 1 );
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 1 );
@@ -228,7 +228,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
       timeline.step( 0.1f );
     }
 
-//    REQUIRE( timeline.size() == 0 );
+    REQUIRE( timeline.size() == 0 );
     REQUIRE( call_counts[0] == 1 );
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 1 );
