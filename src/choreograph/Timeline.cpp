@@ -35,16 +35,6 @@ void Timeline::removeFinishedAndInvalidMotions()
   detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
 }
 
-void Timeline::removeInvalidMotions()
-{
-  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return motion->isInvalid(); } );
-}
-
-void Timeline::removeFinishedMotions()
-{
-  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()); } );
-}
-
 void Timeline::step( Time dt )
 {
   // Update all animation outputs.
