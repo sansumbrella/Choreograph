@@ -196,7 +196,7 @@ public:
   void jumpTo( Time time );
 
   //=================================================
-  // Timeline querying methods.
+  // Timeline querying methods and callbacks.
   //=================================================
 
   /// Returns true iff there are no items on this timeline.
@@ -204,6 +204,10 @@ public:
 
   /// Returns the number of items on this timeline.
   size_t size() const { return _items.size(); }
+
+  /// Sets a function to be called when this timeline becomes empty.
+  /// It is safe to destroy the timeline from this callback, unlike any Cue.
+  void setClearedFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
 
   /// Returns the time at which all TimelineItems on this timeline will be finished.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
@@ -249,6 +253,12 @@ private:
   // queue to make adding cues from callbacks safe. Used if modifying functions are called during update loop.
   std::vector<TimelineItemUniqueRef>  _queue;
   bool                                _updating = false;
+  std::function<void ()>              _finish_fn = nullptr;
+
+
+  // Clean up finished motions and add queued motions after update.
+  // Calls finish function if we went from having items to no items this iteration.
+  void postUpdate();
 
   // Remove any motions that have stale pointers or that have completed playing.
   void removeFinishedAndInvalidMotions();

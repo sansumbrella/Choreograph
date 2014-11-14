@@ -44,9 +44,7 @@ void Timeline::step( Time dt )
   }
   _updating = false;
 
-  removeFinishedAndInvalidMotions();
-
-  processQueue();
+  postUpdate();
 }
 
 void Timeline::jumpTo( Time time )
@@ -58,9 +56,27 @@ void Timeline::jumpTo( Time time )
   }
   _updating = false;
 
+  postUpdate();
+}
+
+void Timeline::postUpdate()
+{
+  bool was_empty = empty();
+
   removeFinishedAndInvalidMotions();
 
   processQueue();
+
+  bool is_empty = empty();
+
+  // Call finish function last if provided.
+  // We do this here so it's safe to destroy the timeline from the callback.
+  if( _finish_fn ) {
+    if( is_empty && ! was_empty ) {
+      _finish_fn();
+    }
+
+  }
 }
 
 Time Timeline::calcDuration() const
