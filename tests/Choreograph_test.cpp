@@ -120,6 +120,7 @@ TEST_CASE( "Inflection Points", "[timeline]" )
     .then<RampTo>( 2.0f, 1.0f );
   REQUIRE( timeline.calcDuration() == 2.5f );
   options.cutAt( 2.0f );
+  options.cutIn( 2.0f );
   REQUIRE( timeline.calcDuration() == 2.0f );
 
   timeline.step( 0.49f );
