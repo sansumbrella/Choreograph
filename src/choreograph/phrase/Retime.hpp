@@ -115,8 +115,7 @@ private:
 
 ///
 /// ClipPhrase cuts off an existing Phrase at some point in time.
-/// Note that if the clip times are outside the range of the source,
-/// the source may continue interpolating to outside values.
+/// Time values are clamped to within the original Phrase's valid range.
 ///
 template<typename T>
 class ClipPhrase : public Phrase<T>
@@ -129,9 +128,11 @@ public:
     _source( source )
   {}
 
-  T getValue( Time atTime ) const override { return _source->getValue( _begin + atTime ); }
-  T getStartValue() const override { return _source->getValue( _begin ); }
-  T getEndValue() const override { return _source->getValue( _end ); }
+  T getValue( Time atTime ) const override { return _source->getValue( clampTime( _begin + atTime ) ); }
+  T getStartValue() const override { return _source->getValue( clampTime( _begin ) ); }
+  T getEndValue() const override { return _source->getValue( clampTime( _end ) ); }
+
+  Time clampTime( Time t ) const { return std::min( t, _source->getDuration() ); }
 private:
   PhraseRef<T>  _source;
   Time          _begin;

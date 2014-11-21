@@ -79,6 +79,13 @@ public:
   /// You must add a phrase after this for the inflection to occur.
   SelfT& onInflection( const MotionCallback &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
 
+  /// Clip the motion in \t time from the current Motion playhead.
+  /// Also discards any phrases we have already played up to this point.
+  SelfT& cutIn( Time t ) { _motion.cutIn( t ); return *this; }
+
+  /// Clip the motion at time \t from the beginning of the Motion's Sequence.
+  SelfT& cutAt( Time t ) { _motion.sliceSequence( 0, t ); return *this; }
+
   //=================================================
   // Sequence Interface Mirroring.
   //=================================================

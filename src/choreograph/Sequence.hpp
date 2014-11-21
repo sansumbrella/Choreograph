@@ -297,6 +297,10 @@ Time Sequence<T>::getTimeAtInflection( size_t inflection ) const
 template<typename T>
 Sequence<T> Sequence<T>::slice( Time from, Time to )
 {
+  if( _phrases.empty() ) {
+    return Sequence<T>( _initial_value );
+  }
+
   // the indices of the first and last Phrases in our time range.
   auto points = getInflectionPoints( from, to );
   const auto &first = _phrases.at( points.first );
