@@ -206,9 +206,8 @@ Sequence<T>& Sequence<T>::then( const PhraseRef<T> &phrase )
 template<typename T>
 Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
 {
-  for( const auto &phrase : next._phrases ) {
-    then( phrase );
-  }
+  _phrases.insert( _phrases.end(), next._phrases.cbegin(), next._phrases.cend() );
+  _duration = calcDuration();
 
   return *this;
 }
