@@ -73,6 +73,11 @@ public:
   /// Set the rate at which time advances for Motion.
   SelfT& playbackSpeed( Time speed ) { _motion.setPlaybackSpeed( speed ); return *this; }
 
+  /// Set a function to be called when the current inflection point is crossed.
+  /// An inflection occcurs when the Sequence moves from one Phrase to the next.
+  /// You must add a phrase after this for the inflection to occur.
+  SelfT& onInflection( const std::function<void ()> &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
+
   //=================================================
   // Sequence Interface Mirroring.
   //=================================================

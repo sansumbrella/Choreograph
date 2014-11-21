@@ -154,6 +154,9 @@ public:
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
   void setStartFn( const Callback &c ) { _startFn = c; }
 
+  /// Set a function to be called when we cross the given inflection point. (No args while doing initial testing)
+  void addInflectionCallback( size_t inflection_point, const std::function<void ()> &callback );
+
   /// Set a function to be called at each update step of the sequence.
   /// Function will be called immediately after setting the target value.
   void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
@@ -167,6 +170,7 @@ private:
   // This enables us to do pseudo-instancing on our animations, reducing their memory footprint.
   SequenceRefT    _source;
   Connection<T>   _connection;
+  std::vector<std::pair<size_t, std::function<void()>>>  _inflectionCallbacks;
 
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
@@ -212,8 +216,21 @@ void Motion<T>::update()
     }
   }
 
-  auto points = _source->getInflectionPoints( previousTime(), time() );
   _connection.target() = _source->getValue( time() );
+
+  if( ! _inflectionCallbacks.empty() )
+  {
+    auto points = _source->getInflectionPoints( previousTime(), time() );
+    if( points.first != points.second ) {
+      // We just crossed an inflection point...
+      auto crossed = std::max( points.first, points.second );
+      for( const auto &fn : _inflectionCallbacks ) {
+        if( fn.first == crossed ) {
+          fn.second();
+        }
+      }
+    }
+  }
 
   if( _updateFn )
   {
@@ -229,6 +246,12 @@ void Motion<T>::update()
       _finishFn( *this );
     }
   }
+}
+
+template<typename T>
+void Motion<T>::addInflectionCallback( size_t inflection_point, const std::function<void ()> &callback )
+{
+  _inflectionCallbacks.emplace_back( std::make_pair( inflection_point, callback ) );
 }
 
 } // namespace choreograph

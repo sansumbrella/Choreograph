@@ -98,6 +98,34 @@ TEST_CASE( "Raw Pointers" )
 
 }
 
+TEST_CASE( "Inflection Points", "[motion]" )
+{
+  Timeline timeline;
+
+  Output<float> target = 0.0f;
+  int c1 = 0;
+  int c2 = 0;
+
+  timeline.apply( &target )
+    .hold( 0.5f )
+    .onInflection( [&c1] { c1 += 1; } ) // inflect around 0.5
+    .then<RampTo>( 3.0f, 1.0f )
+    .onInflection( [&c2] { c2 += 1; } ) // inflect around 1.5
+    .then<RampTo>( 2.0f, 1.0f );
+
+  timeline.step( 0.49f );
+  timeline.step( 0.11f );
+  REQUIRE( c1 == 1 );
+  REQUIRE( c2 == 0 );
+
+  timeline.jumpTo( 1.51f );
+  REQUIRE( c2 == 1 );
+  REQUIRE( c1 == 1 );
+  timeline.jumpTo( 1.49f );
+  REQUIRE( c2 == 2 );
+  REQUIRE( c1 == 1 );
+}
+
 TEST_CASE( "Sequence Composition", "[sequence]" )
 {
   Output<float> target = 0.0f;

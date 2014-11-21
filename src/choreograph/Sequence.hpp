@@ -135,6 +135,7 @@ public:
   //
 
   /// Returns which phrase we are in at each point in time.
+  /// Note that you cannot inflect over the start or finish.
   std::pair<size_t, size_t> getInflectionPoints( Time t1, Time t2 ) const;
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
@@ -245,6 +246,7 @@ std::pair<size_t, size_t> Sequence<T>::getInflectionPoints( Time t1, Time t2 ) c
     }
     else if( ! set.first ) {
       output.first = i;
+      set.first = true;
     }
 
     if( duration < t2 ) {
@@ -252,6 +254,7 @@ std::pair<size_t, size_t> Sequence<T>::getInflectionPoints( Time t1, Time t2 ) c
     }
     else if( ! set.second ) {
       output.second = i;
+      set.second = true;
     }
 
     if( set.first && set.second ) {
