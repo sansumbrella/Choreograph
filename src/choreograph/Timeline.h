@@ -77,7 +77,9 @@ public:
   /// Set a function to be called when the current inflection point is crossed.
   /// An inflection occcurs when the Sequence moves from one Phrase to the next.
   /// You must add a phrase after this for the inflection to occur.
-  SelfT& onInflection( const MotionCallback &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
+  SelfT& onInflection( const MotionCallback &fn ) { return onInflection( _sequence.getPhraseCount(), fn ); }
+  /// Adds an inflection callback when the specified phrase index is crossed.
+  SelfT& onInflection( size_t point, const MotionCallback &fn ) { _motion.addInflectionCallback( point, fn ); return *this; }
 
   /// Clip the motion in \t time from the current Motion playhead.
   /// Also discards any phrases we have already played up to this point.
