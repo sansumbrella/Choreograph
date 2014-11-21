@@ -134,6 +134,8 @@ public:
   //
   //
 
+  /// Returns which phrase we are in at each point in time.
+  std::pair<size_t, size_t> getInflectionPoints( Time t1, Time t2 ) const;
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
@@ -226,6 +228,38 @@ Time Sequence<T>::calcDuration() const
     sum += phrase->getDuration();
   }
   return sum;
+}
+
+template<typename T>
+std::pair<size_t, size_t> Sequence<T>::getInflectionPoints( Time t1, Time t2 ) const
+{
+  auto output = std::make_pair<size_t, size_t>( 0, 0 );
+  auto set = std::make_pair( false, false );
+
+  for( size_t i = 0; i < _phrases.size(); ++i )
+  {
+    const auto duration = _phrases[i]->getDuration();
+
+    if( duration < t1 ) {
+      t1 -= duration;
+    }
+    else if( ! set.first ) {
+      output.first = i;
+    }
+
+    if( duration < t2 ) {
+      t2 -= duration;
+    }
+    else if( ! set.second ) {
+      output.second = i;
+    }
+
+    if( set.first && set.second ) {
+      break;
+    }
+  }
+
+  return output;
 }
 
 //=================================================

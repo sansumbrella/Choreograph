@@ -212,6 +212,7 @@ void Motion<T>::update()
     }
   }
 
+  auto points = _source->getInflectionPoints( previousTime(), time() );
   _connection.target() = _source->getValue( time() );
 
   if( _updateFn )
