@@ -10,36 +10,196 @@
 using namespace std;
 using namespace choreograph;
 
-TEST_CASE( "Sequence Interpolation", "[sequence]" )
+//==========================================
+// Phrases
+//==========================================
+
+TEST_CASE( "Phrases" )
 {
-  // Since the precision of floats decreases as they get larger,
-  // we need an epsilon larger than the delta from 1.0 to the next float.
-  const float epsilon = std::numeric_limits<float>::epsilon() * 20;
 
-  Sequence<float> sequence( 0.0f );
-  // 4 second sequence.
-  sequence.set( 1.0f ).then<Hold>( 1.0f, 1.0f ).then<RampTo>( 2.0f, 1.0f ).then<RampTo>( 10.0f, 1.0f ).then<RampTo>( 2.0f, 1.0f );
+}
 
-  SECTION( "Sequence values within duration are correct." ) {
-    REQUIRE( sequence.getValue( 0.5f ) == 1.0f );
-    REQUIRE( sequence.getValue( 1.0f ) == 1.0f );
-    REQUIRE( sequence.getValue( 1.5f ) == 1.5f );
+//==========================================
+// Sequences
+//==========================================
+
+TEST_CASE( "Sequences" )
+{
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  SECTION( "Sequence duration is correct." )
+  {
+    REQUIRE( sequence.getDuration() == 3 );
   }
 
-  SECTION( "Sequence values outside duration are correct." ) {
-    REQUIRE( sequence.getValue( std::numeric_limits<float>::min() ) == 1.0f );
-    REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == 2.0f );
+  SECTION( "Sequence values within duration are correct." )
+  {
+    REQUIRE( sequence.getValue( 0.5 ) == 0.5 );
+    REQUIRE( sequence.getValue( 1.0 ) == 1.0 );
+    REQUIRE( sequence.getValue( 1.5 ) == 5.5 );
   }
 
-  SECTION( "Looped sequence values are correct." ) {
-    float offset = 2.015f;
+  SECTION( "Sequence values outside duration are clamped." )
+  {
+    REQUIRE( sequence.getValue( - std::numeric_limits<float>::max() ) == 0.0f );
+    REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == 100.0f );
+  }
+
+  SECTION( "Looped sequence values are equivalent." )
+  {
+    Time offset = 1.55;
+    // Since the precision of floats decreases as they get larger,
+    // we need an epsilon larger than the delta from 1.0 to the next float.
+    const Time epsilon = 1.0e-5;
 
     REQUIRE( (wrapTime( 10 * sequence.getDuration() + offset, sequence.getDuration() ) - offset) < epsilon );
     REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset ) ) < epsilon );
     REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
-    REQUIRE( (sequence.getValueWrapped( (50 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
+    REQUIRE( (sequence.getValueWrapped( (20 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
+  }
+
+  SECTION( "Sequences are composable." )
+  {
+    sequence.then( sequence ).then( sequence.asPhrase() );
+
+    // We have the sequence four times, since it was doubled by the time we add it a second time.
+    REQUIRE( sequence.getDuration() == 12.0f );
+    REQUIRE( sequence.getValue( 3.5f ) == sequence.getValue( 6.5f ) );
+    REQUIRE( sequence.getValue( 1.0f ) == sequence.getValue( 4.0f ) );
   }
 }
+
+//==========================================
+// Motions
+//==========================================
+
+TEST_CASE( "Motions" )
+{
+
+}
+
+//==========================================
+// Timeline and Options
+//==========================================
+
+TEST_CASE( "Timeline" )
+{
+  Timeline      timeline;
+  Output<float> target = 0.0f;
+
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  auto options = timeline.apply( &target, sequence );
+
+  SECTION( "Output<T> Pointers" )
+  {
+    Output<float> target = 0.0f;
+
+    // Construct Motion directly
+    Motion<float> motion( &target, sequence );
+
+    motion.jumpTo( 1.0f );
+    REQUIRE( target == 1.0f );
+    motion.jumpTo( 0.5f );
+    REQUIRE( target == 0.5f );
+
+    // Use timeline to create Motion.
+    timeline.apply( &target, sequence );
+    // Motions on Output types will be disconnected when another is created.
+    REQUIRE( motion.isInvalid() == true );
+
+    timeline.jumpTo( 2.0f );
+    REQUIRE( target == 10.0f );
+  }
+
+  SECTION( "Raw Pointers" )
+  {
+    float target = 0.0f;
+    // Construct Motion directly
+    Motion<float> motion( &target, sequence );
+
+    motion.jumpTo( 1.0f );
+    REQUIRE( target == 1.0f );
+    motion.jumpTo( 0.5f );
+    REQUIRE( target == 0.5f );
+
+    // Use timeline to create Motion.
+    timeline.applyRaw( &target, sequence );
+    // Known issue with raw pointers, no management will have happened.
+    REQUIRE( motion.isInvalid() == false );
+
+    timeline.jumpTo( 2.0f );
+    REQUIRE( target == 10.0f );
+  }
+
+  SECTION( "Equivalence between motion time and sequence time" )
+  {
+    options.removeOnFinish( false );
+
+    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
+    for( auto &t : times ) {
+      timeline.jumpTo( t );
+      REQUIRE( target() == sequence.getValue( t ) );
+    }
+  }
+
+  SECTION( "Inflection Point Callbacks" )
+  {
+    int c1 = 0;
+    int c2 = 0;
+
+    timeline.apply( &target )
+      .hold( 0.5f )
+      // inflects around 0.5
+      .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
+      .then<RampTo>( 3.0f, 1.0f )
+      // inflects around 1.5
+      .onInflection( [&c2] (Motion<float> &m) {
+        c2 += 1;
+      } )
+      .then<RampTo>( 2.0f, 1.0f );
+
+    timeline.step( 0.49f );
+    timeline.step( 0.02f );
+    REQUIRE( c1 == 1 );
+    REQUIRE( c2 == 0 );
+
+    timeline.jumpTo( 1.51f );
+    REQUIRE( c2 == 1 );
+    REQUIRE( c1 == 1 );
+    timeline.jumpTo( 1.49f );
+    REQUIRE( c2 == 2 );
+    REQUIRE( c1 == 1 );
+  }
+
+  SECTION( "Trimming" )
+  {
+    SECTION( "Cut At" )
+    {
+      REQUIRE( timeline.calcDuration() == 3.0f );
+      options.cutAt( 2.0f );
+      REQUIRE( timeline.calcDuration() == 2.0f );
+    }
+
+    SECTION( "Cut In" )
+    {
+      REQUIRE( timeline.calcDuration() == 3.0f );
+      options.cutIn( 0.5f );
+      REQUIRE( timeline.calcDuration() == 0.5f );
+    }
+  }
+
+}
+
+//==========================================
+// Time and Other Stuff
+//==========================================
 
 TEST_CASE( "Time and Infinity" )
 {
@@ -58,84 +218,6 @@ TEST_CASE( "Time and Infinity" )
   REQUIRE( sequence.getValue( infinity ) == 2.0f );
   REQUIRE( (1000.0f / infinity) == 0.0f );
 } // Time and Infinity
-
-TEST_CASE( "Raw Pointers" )
-{
-  float target = 0.0f;
-  Timeline timeline;
-
-  SECTION( "Composing Sequences in Sequences" ) {
-    Sequence<float> sequence( 1.0f );
-    Sequence<float> continuation( 5.0f );
-    continuation.then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
-
-    sequence.then<RampTo>( 5.0f, 0.5f ).then( continuation ).then( continuation.asPhrase() );
-
-    REQUIRE( sequence.getDuration() == 4.5f );
-
-    Motion<float> motion( &target, sequence );
-    motion.jumpTo( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    motion.jumpTo( 1.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.applyRaw( &target, sequence );
-    REQUIRE( motion.isInvalid() == false ); // Working with raw pointer, no management will have happened.
-
-    timeline.jumpTo( 0.0f );
-    REQUIRE( target == 1.0f );
-
-    timeline.step( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 3.0f );
-  }
-
-}
-
-TEST_CASE( "Inflection Points", "[timeline]" )
-{
-  Timeline timeline;
-  timeline.setDefaultRemoveOnFinish( false );
-
-
-  Output<float> target = 0.0f;
-  int c1 = 0;
-  int c2 = 0;
-
-  auto &options = timeline.apply( &target )
-    .hold( 0.5f )
-    // inflects around 0.5
-    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
-    .then<RampTo>( 3.0f, 1.0f )
-    // inflects around 1.5
-    .onInflection( [&c2] (Motion<float> &m) {
-        c2 += 1;
-      } )
-    .then<RampTo>( 2.0f, 1.0f );
-  REQUIRE( timeline.calcDuration() == 2.5f );
-  options.cutAt( 2.0f );
-  options.cutIn( 2.0f );
-  REQUIRE( timeline.calcDuration() == 2.0f );
-
-  timeline.step( 0.49f );
-  timeline.step( 0.11f );
-  REQUIRE( c1 == 1 );
-  REQUIRE( c2 == 0 );
-
-  timeline.jumpTo( 1.52f );
-  REQUIRE( c2 == 1 );
-  REQUIRE( c1 == 1 );
-  timeline.jumpTo( 0.9f );
-  REQUIRE( c2 == 2 );
-  REQUIRE( c1 == 1 );
-
-}
 
 TEST_CASE( "Cutting", "[motion]" )
 {
@@ -174,49 +256,12 @@ TEST_CASE( "Slicing", "[sequence]" )
   REQUIRE( alt.getDuration() == 3.0f );
 }
 
-TEST_CASE( "Sequence Composition", "[sequence]" )
-{
-  Output<float> target = 0.0f;
-  Timeline timeline;
-
-  SECTION( "Composing Sequences in Sequences" ) {
-    Sequence<float> sequence( 1.0f );
-    Sequence<float> continuation( 5.0f );
-    continuation.then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
-
-    sequence.then<RampTo>( 5.0f, 0.5f ).then( continuation ).then( continuation.asPhrase() );
-
-    REQUIRE( sequence.getDuration() == 4.5f );
-
-    Motion<float> motion( &target, sequence );
-    motion.jumpTo( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    motion.jumpTo( 1.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.apply( &target, sequence );
-    REQUIRE( motion.isInvalid() == true ); // management will invalidate the motion (because it's been superseded).
-
-    timeline.jumpTo( 0.0f );
-    REQUIRE( target == 1.0f );
-
-    timeline.step( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 3.0f );
-  }
-}
-
-TEST_CASE( "Cues and Callbacks", "[motion]" )
+TEST_CASE( "Cues and Callbacks", "[timeline]" )
 {
   ch::Timeline  timeline;
+  Output<float> target = 0.0f;
 
-  SECTION( "Timeline Callbacks" )
+  SECTION( "Motion Callbacks" )
   {
     bool          updateCalled = false;
     bool          startCalled = false;
@@ -225,7 +270,8 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     int           updateCount = 0;
     float         updateTarget = 0;
 
-    timeline.apply( &target ).startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
+    timeline.apply( &target )
+      .startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
       .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
       .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } )
       .then<RampTo>( 10.0f, 1.0f );
@@ -233,42 +279,42 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
     SECTION( "Callbacks from step" )
     {
       timeline.step( 0.1f );
-      REQUIRE( startCalled == true );
-      REQUIRE( updateCalled == true );
+      REQUIRE( startCalled );
+      REQUIRE( updateCalled );
       REQUIRE( updateCount == 1 );
       REQUIRE( updateTarget == (target / 2.0f) );
       REQUIRE( target == 1.0f );
 
       for( int i = 0; i < 9; ++i ) {
-        REQUIRE( endCalled == false );
+        REQUIRE_FALSE( endCalled );
         timeline.step( 0.1f );
       }
 
-      REQUIRE( endCalled == true );
+      REQUIRE( endCalled );
       REQUIRE( updateCount == 10 );
     }
 
     SECTION( "Callbacks from jumpTo" )
     {
       timeline.jumpTo( 0.1f );
-      REQUIRE( startCalled == true );
-      REQUIRE( updateCalled == true );
+      REQUIRE( startCalled );
+      REQUIRE( updateCalled );
       REQUIRE( updateCount == 1 );
       REQUIRE( updateTarget == (target / 2.0f) );
       REQUIRE( target == 1.0f );
-      REQUIRE( endCalled == false );
+      REQUIRE_FALSE( endCalled );
 
       timeline.jumpTo( 0.9f );
       REQUIRE( updateCount == 2 );
-      REQUIRE( endCalled == false );
+      REQUIRE_FALSE( endCalled );
 
       timeline.jumpTo( 1.0f );
       REQUIRE( updateCount == 3 );
-      REQUIRE( endCalled == true );
+      REQUIRE( endCalled );
     }
   }
 
-  SECTION( "Cues" )
+  SECTION( "Timeline Cues" )
   {
     vector<int> call_counts( 4, 0 );
     std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
@@ -337,7 +383,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
       REQUIRE( call_count == 0 );
     }
 
-    SECTION( "Scoped Control, falls" )
+    SECTION( "Scoped Control, destructed" )
     {
       {
         auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
@@ -346,7 +392,7 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
       REQUIRE( call_count == 0 );
     }
 
-    SECTION( "Scoped Control, lives" )
+    SECTION( "Scoped Control, persistent" )
     {
       ScopedCueRef cue;
       {
@@ -359,46 +405,8 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
 
   SECTION( "Motion Manipulation from Callbacks" )
   {
-
   }
 }
-
-TEST_CASE( "Motion Speed and Reversal" )
-{
-  ch::Timeline timeline;
-  Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 10.0f, 1.0f ).then<RampTo>( -30.0f, 2.0f );
-
-  SECTION( "Equivalence between motion time and sequence time" )
-  {
-    Output<float> target;
-    timeline.setDefaultRemoveOnFinish( false );
-    timeline.apply( &target, sequence );
-
-    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
-    for( auto &t : times )
-    {
-      timeline.jumpTo( t );
-      REQUIRE( target() == sequence.getValue( t ) );
-    }
-  }
-
-  SECTION( "Walking Backwards" )
-  {
-
-  }
-
-  SECTION( "Walking Slowly" )
-  {
-
-  }
-
-  SECTION( "Walking In Both Directions" )
-  {
-
-  }
-
-} // Motion Speed and Reversal
 
 TEST_CASE( "Output Connections", "[output]" )
 {
