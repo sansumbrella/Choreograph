@@ -44,6 +44,7 @@ class MotionOptions
 {
 public:
   using SelfT = MotionOptions<T>;
+  using MotionCallback = typename Motion<T>::Callback;
 
   MotionOptions( Motion<T> &motion, Sequence<T> &sequence, const Timeline &timeline ):
     _motion( motion ),
@@ -56,13 +57,13 @@ public:
   //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
-  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
+  SelfT& startFn( const MotionCallback &fn ) { _motion.setStartFn( fn ); return *this; }
 
   /// Set function to be called when Motion updates. Receives current target value.
   SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
-  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
+  SelfT& finishFn( const MotionCallback &fn ) { _motion.setFinishFn( fn ); return *this; }
 
   /// Set whether the motion should be removed from the timeline on finish.
   SelfT& removeOnFinish( bool doRemove ) { _motion.setRemoveOnFinish( doRemove ); return *this; }
@@ -72,6 +73,18 @@ public:
 
   /// Set the rate at which time advances for Motion.
   SelfT& playbackSpeed( Time speed ) { _motion.setPlaybackSpeed( speed ); return *this; }
+
+  /// Set a function to be called when the current inflection point is crossed.
+  /// An inflection occcurs when the Sequence moves from one Phrase to the next.
+  /// You must add a phrase after this for the inflection to occur.
+  SelfT& onInflection( const MotionCallback &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
+
+  /// Clip the motion in \t time from the current Motion playhead.
+  /// Also discards any phrases we have already played up to this point.
+  SelfT& cutIn( Time t ) { _motion.cutIn( t ); return *this; }
+
+  /// Clip the motion at time \t from the beginning of the Motion's Sequence.
+  SelfT& cutAt( Time t ) { _motion.sliceSequence( 0, t ); return *this; }
 
   //=================================================
   // Sequence Interface Mirroring.
@@ -157,7 +170,7 @@ public:
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> apply( Output<T> *output, const SequenceRef<T> &sequence );
+  MotionOptions<T> apply( Output<T> *output, const Sequence<T> &sequence );
 
   template<typename T>
   MotionOptions<T> apply( Output<T> *output, const PhraseRef<T> &phrase );
@@ -238,7 +251,7 @@ public:
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> applyRaw( T *output, const SequenceRef<T> &sequence );
+  MotionOptions<T> applyRaw( T *output, const Sequence<T> &sequence );
 
   /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
@@ -284,36 +297,34 @@ private:
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output )
 {
-  auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = std::make_unique<Motion<T>>( output );
 
-  auto motion_ptr = motion.get();
+  auto &motion_ref = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( motion_ref, motion_ref.getSequence(), *this );
 }
 
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase )
 {
-  auto sequence = std::make_shared<Sequence<T>>( phrase );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = std::make_unique<Motion<T>>( output, Sequence<T>( phrase ) );
 
-  auto motion_ptr = motion.get();
+  auto &motion_ref = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( motion_ref, motion_ref.getSequence(), *this );
 }
 
 template<typename T>
-MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
+MotionOptions<T> Timeline::apply( Output<T> *output, const Sequence<T> &sequence )
 {
   auto motion = std::make_unique<Motion<T>>( output, sequence );
 
-  auto motion_ptr = motion.get();
+  auto &motion_ref = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( motion_ref, motion_ref.getSequence(), *this );
 }
 
 template<typename T>
@@ -323,7 +334,7 @@ MotionOptions<T> Timeline::append( Output<T> *output )
   {
     auto motion = find( output->valuePtr() );
     if( motion ) {
-      return MotionOptions<T>( *motion, *motion->getSequence(), *this );
+      return MotionOptions<T>( *motion, motion->getSequence(), *this );
     }
   }
   return apply( output );
@@ -335,25 +346,24 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   // This is a raw pointer, so we don't know about any prior relationships.
   remove( output );
 
-  auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = std::make_unique<Motion<T>>( output );
 
-  auto motion_ptr = motion.get();
+  auto &m = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( m, m.getSequence(), *this );
 }
 
 template<typename T>
-MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
+MotionOptions<T> Timeline::applyRaw( T *output, const Sequence<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
   auto motion = std::make_unique<Motion<T>>( output, sequence );
 
-  auto motion_ptr = motion.get();
+  auto &m = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( m, m.getSequence(), *this );
 }
 
 template<typename T>
@@ -361,7 +371,7 @@ MotionOptions<T> Timeline::appendRaw( T *output )
 {
   auto motion = find( output );
   if( motion ) {
-    return MotionOptions<T>( *motion, *motion->getSequence(), *this );
+    return MotionOptions<T>( *motion, motion->getSequence(), *this );
   }
   return apply( output );
 }

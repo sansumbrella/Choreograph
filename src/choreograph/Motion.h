@@ -31,6 +31,7 @@
 #include "Sequence.hpp"
 #include "Connection.hpp"
 #include "Output.hpp"
+#include "detail/VectorManipulation.hpp"
 
 namespace choreograph
 {
@@ -81,12 +82,12 @@ public:
   /// Create and add a Motion to the group.
   /// The Motion will apply \a sequence to \a output.
   template<typename T>
-  MotionGroupOptions<T> add( const SequenceRef<T> &sequence, Output<T> *output );
+  MotionGroupOptions<T> add( const Sequence<T> &sequence, Output<T> *output );
 
   /// Create and add a Motion to the group.
   /// The Phrase is converted to a Sequence.
   template<typename T>
-  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( std::make_shared<Sequence<T>>( phrase ), output ); }
+  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( Sequence<T>( phrase ), output ); }
 
   /// Update all grouped motions.
   void update() override;
@@ -120,30 +121,35 @@ class Motion : public TimelineItem
 {
 public:
   using MotionT       = Motion<T>;
-  using SequenceRefT  = SequenceRef<T>;
+  using SequenceT     = Sequence<T>;
   using DataCallback  = std::function<void (T&)>;
   using Callback      = std::function<void (MotionT&)>;
 
   Motion() = delete;
 
-  Motion( T *target, const SequenceRefT &sequence ):
+  Motion( T *target, const SequenceT &sequence ):
     _connection( target ),
     _source( sequence )
   {}
 
-  Motion( Output<T> *target, const SequenceRefT &sequence ):
+  Motion( Output<T> *target, const SequenceT &sequence ):
     _connection( target ),
     _source( sequence )
+  {}
+
+  Motion( Output<T> *target ):
+    _connection( target ),
+    _source( target->value() )
   {}
 
   /// Returns duration of the underlying sequence.
-  Time getDuration() const override { return _source->getDuration(); }
+  Time getDuration() const override { return _source.getDuration(); }
 
   /// Returns ratio of time elapsed, from [0,1] over duration.
-  Time getProgress() const { return time() / _source->getDuration(); }
+  Time getProgress() const { return time() / _source.getDuration(); }
 
   /// Returns the underlying Sequence sampled for this motion.
-  SequenceRefT  getSequence() { return _source; }
+  SequenceT&  getSequence() { return _source; }
 
   inline bool isInvalid() const override { return _connection.isDisconnected(); }
   const void* getTarget() const override { return _connection.targetPtr(); }
@@ -154,6 +160,9 @@ public:
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
   void setStartFn( const Callback &c ) { _startFn = c; }
 
+  /// Set a function to be called when we cross the given inflection point. Receives *this as an argument.
+  void addInflectionCallback( size_t inflection_point, const Callback &callback );
+
   /// Set a function to be called at each update step of the sequence.
   /// Function will be called immediately after setting the target value.
   void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
@@ -162,15 +171,22 @@ public:
   /// Calls start/update/finish functions as appropriate if assigned.
   void update() override;
 
+  /// Removes phrases from sequence before specified time.
+  /// Note that you can safely share sequences if you add them to each motion as phrases.
+  void cutPhrasesBefore( Time time ) { sliceSequence( time, _source.getDuration() ); }
+  /// Cut animation in \a time from the Motion's current time().
+  void cutIn( Time time ) { sliceSequence( this->time(), this->time() + time ); }
+  /// Slices up our underlying Sequence.
+  void sliceSequence( Time from, Time to );
+
 private:
-  // shared_ptr to source since many connections could share the same source.
-  // This enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-  SequenceRefT    _source;
+  SequenceT       _source;
   Connection<T>   _connection;
 
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
   DataCallback    _updateFn = nullptr;
+  std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
 };
 
 //=================================================
@@ -178,7 +194,7 @@ private:
 //=================================================
 
 template<typename T>
-MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T> *output )
+MotionGroupOptions<T> MotionGroup::add( const Sequence<T> &sequence, Output<T> *output )
 {
   auto motion = std::make_unique<Motion<T>>( output, sequence );
   auto motion_ptr = motion.get();
@@ -212,7 +228,21 @@ void Motion<T>::update()
     }
   }
 
-  _connection.target() = _source->getValue( time() );
+  _connection.target() = _source.getValue( time() );
+
+  if( ! _inflectionCallbacks.empty() )
+  {
+    auto points = _source.getInflectionPoints( previousTime(), time() );
+    if( points.first != points.second ) {
+      // We just crossed an inflection point...
+      auto crossed = std::max( points.first, points.second );
+      for( const auto &fn : _inflectionCallbacks ) {
+        if( fn.first == crossed ) {
+          fn.second( *this );
+        }
+      }
+    }
+  }
 
   if( _updateFn )
   {
@@ -228,6 +258,30 @@ void Motion<T>::update()
       _finishFn( *this );
     }
   }
+}
+
+template<typename T>
+void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &callback )
+{
+  _inflectionCallbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
+}
+
+template<typename T>
+void Motion<T>::sliceSequence( Time from, Time to )
+{
+  // Shift inflection point references
+  const auto inflection = _source.getInflectionPoints( from, to ).first;
+  for( auto &fn : _inflectionCallbacks ) {
+    fn.first -= inflection;
+  }
+
+  detail::erase_if( &_inflectionCallbacks, [] (const std::pair<int, Callback> &p) {
+    return p.first < 0;
+  } );
+
+  _source = _source.slice( from, to );
+
+  setTime( this->time() - from );
 }
 
 } // namespace choreograph

@@ -78,11 +78,11 @@ void Loops::setup()
   // Reset time when the MotionGroup finishes.
   //==========================================================
 
-  SequenceRef<vec2> positionSequence = createSequence( vec2( app::getWindowSize() ) * vec2( 0.66, 1 ) + vec2( 0, 66 ) );
-  SequenceRef<vec3> rotationSequence = createSequence( vec3( M_PI / 2, 0, 0 ) );
+  Sequence<vec2> positionSequence( vec2( app::getWindowSize() ) * vec2( 0.66, 1 ) + vec2( 0, 66 ) );
+  Sequence<vec3> rotationSequence( vec3( M_PI / 2, 0, 0 ) );
 
-  rotationSequence->then<RampTo>( vec3( 4 * M_PI, 2 * M_PI, 0 ), 1.0f, EaseOutQuint() );
-  positionSequence->then<RampTo>( vec2( app::getWindowSize() ) * vec2( 0.66, 0.5 ), 0.5f, EaseOutAtan() );
+  rotationSequence.then<RampTo>( vec3( 4 * M_PI, 2 * M_PI, 0 ), 1.0f, EaseOutQuint() );
+  positionSequence.then<RampTo>( vec2( app::getWindowSize() ) * vec2( 0.66, 0.5 ), 0.5f, EaseOutAtan() );
 
   auto group = MotionGroup::create();
   group->add( positionSequence, &_position );

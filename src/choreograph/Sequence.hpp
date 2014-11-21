@@ -29,6 +29,7 @@
 
 #include "Phrase.hpp"
 #include "phrase/Hold.hpp"
+#include "phrase/Retime.hpp"
 
 namespace choreograph
 {
@@ -77,6 +78,12 @@ public:
     _duration( calcDuration() )
   {}
 
+  explicit Sequence( const std::vector<PhraseRef<T>> &phrases ):
+    _initial_value( phrases.front()->getStartValue() ),
+    _phrases( phrases ),
+    _duration( calcDuration() )
+  {}
+
   explicit Sequence( const PhraseRef<T> &phrase ):
     _initial_value( phrase->getStartValue() ),
     _duration( phrase->getDuration() ),
@@ -107,9 +114,17 @@ public:
   /// Append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
 
+  //
+  // Sequence conversion.
+  //
+
   /// Returns a Phrase that encapsulates this Sequence.
   /// Duplicates the Sequence, so future changes to this do not affect the Phrase.
   PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( *this ); }
+
+  /// Returns a Sequence containing the phrases between Times from and to.
+  /// Partial phrases at the beginning and end are wrapped in ClipPhrases.
+  Sequence slice( Time from, Time to );
 
   //
   // Phrase<T> Equivalents.
@@ -134,10 +149,16 @@ public:
   //
   //
 
+  /// Returns which phrase we are in at each point in time.
+  /// Note that you cannot inflect over the start or finish.
+  std::pair<size_t, size_t> getInflectionPoints( Time t1, Time t2 ) const;
+
+  Time getTimeAtInflection( size_t inflection ) const;
+
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
 
-  /// Recalculate Sequence duration. Might never be used...
+  /// Calculate and return the Sequence duration.
   Time calcDuration() const;
 
 private:
@@ -226,6 +247,84 @@ Time Sequence<T>::calcDuration() const
     sum += phrase->getDuration();
   }
   return sum;
+}
+
+template<typename T>
+std::pair<size_t, size_t> Sequence<T>::getInflectionPoints( Time t1, Time t2 ) const
+{
+  auto output = std::make_pair<size_t, size_t>( 0, 0 );
+  auto set = std::make_pair( false, false );
+
+  for( size_t i = 0; i < _phrases.size(); i += 1 )
+  {
+    const auto duration = _phrases.at( i )->getDuration();
+
+    if( duration < t1 ) {
+      t1 -= duration;
+    }
+    else if( ! set.first ) {
+      output.first = i;
+      set.first = true;
+    }
+
+    if( duration < t2 ) {
+      t2 -= duration;
+    }
+    else if( ! set.second ) {
+      output.second = i;
+      set.second = true;
+    }
+
+    if( set.first && set.second ) {
+      break;
+    }
+  }
+
+  return output;
+}
+
+template<typename T>
+Time Sequence<T>::getTimeAtInflection( size_t inflection ) const
+{
+  Time t = 0;
+  while( inflection != 0 ) {
+    t += _phrases.at( inflection )->getDuration();
+    inflection -= 1;
+  }
+  return t;
+}
+
+template<typename T>
+Sequence<T> Sequence<T>::slice( Time from, Time to )
+{
+  if( _phrases.empty() ) {
+    return Sequence<T>( _initial_value );
+  }
+
+  // the indices of the first and last Phrases in our time range.
+  auto points = getInflectionPoints( from, to );
+  const auto &first = _phrases.at( points.first );
+  const auto &last = _phrases.at( points.second );
+
+  if( points.first < points.second ) {
+    // construct vector from range [begin, end)
+    auto begin = _phrases.begin() + points.first;
+    auto end = _phrases.begin() + points.second + 1;
+    std::vector<PhraseRef<T>> phrases( begin, end );
+
+    Time t1 = from - getTimeAtInflection( points.first );
+    Time t2 = to - getTimeAtInflection( points.second );
+
+    auto p1 = std::make_shared<ClipPhrase<T>>( first, t1, first->getDuration() );
+    phrases[0] = p1;
+    phrases[phrases.size() - 1] = std::make_shared<ClipPhrase<T>>( last, 0, t2 );
+
+    return Sequence<T>( phrases );
+  }
+  else {
+    Time t = getTimeAtInflection( points.first );
+    return Sequence<T>( std::make_shared<ClipPhrase<T>>( first, from - t, to - t ) );
+  }
 }
 
 //=================================================

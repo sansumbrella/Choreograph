@@ -113,4 +113,30 @@ private:
   PhraseRef<T>  _source;
 };
 
+///
+/// ClipPhrase cuts off an existing Phrase at some point in time.
+/// Time values are clamped to within the original Phrase's valid range.
+///
+template<typename T>
+class ClipPhrase : public Phrase<T>
+{
+public:
+  ClipPhrase( const PhraseRef<T> &source, Time begin, Time end ):
+    Phrase<T>( end - begin ),
+    _begin( begin ),
+    _end( end ),
+    _source( source )
+  {}
+
+  T getValue( Time atTime ) const override { return _source->getValue( clampTime( _begin + atTime ) ); }
+  T getStartValue() const override { return _source->getValue( clampTime( _begin ) ); }
+  T getEndValue() const override { return _source->getValue( clampTime( _end ) ); }
+
+  Time clampTime( Time t ) const { return std::min( t, _source->getDuration() ); }
+private:
+  PhraseRef<T>  _source;
+  Time          _begin;
+  Time          _end;
+};
+
 } // namespace choreograph
