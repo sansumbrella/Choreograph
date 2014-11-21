@@ -44,6 +44,7 @@ class MotionOptions
 {
 public:
   using SelfT = MotionOptions<T>;
+  using MotionCallback = typename Motion<T>::Callback;
 
   MotionOptions( Motion<T> &motion, Sequence<T> &sequence, const Timeline &timeline ):
     _motion( motion ),
@@ -56,13 +57,13 @@ public:
   //=================================================
 
   /// Set function to be called when Motion starts. Receives reference to motion.
-  SelfT& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
+  SelfT& startFn( const MotionCallback &fn ) { _motion.setStartFn( fn ); return *this; }
 
   /// Set function to be called when Motion updates. Receives current target value.
   SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
-  SelfT& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
+  SelfT& finishFn( const MotionCallback &fn ) { _motion.setFinishFn( fn ); return *this; }
 
   /// Set whether the motion should be removed from the timeline on finish.
   SelfT& removeOnFinish( bool doRemove ) { _motion.setRemoveOnFinish( doRemove ); return *this; }
@@ -76,7 +77,7 @@ public:
   /// Set a function to be called when the current inflection point is crossed.
   /// An inflection occcurs when the Sequence moves from one Phrase to the next.
   /// You must add a phrase after this for the inflection to occur.
-  SelfT& onInflection( const std::function<void ()> &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
+  SelfT& onInflection( const MotionCallback &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
 
   //=================================================
   // Sequence Interface Mirroring.

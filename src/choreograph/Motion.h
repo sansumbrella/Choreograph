@@ -154,8 +154,8 @@ public:
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
   void setStartFn( const Callback &c ) { _startFn = c; }
 
-  /// Set a function to be called when we cross the given inflection point. (No args while doing initial testing)
-  void addInflectionCallback( size_t inflection_point, const std::function<void ()> &callback );
+  /// Set a function to be called when we cross the given inflection point. Receives *this as an argument.
+  void addInflectionCallback( size_t inflection_point, const Callback &callback );
 
   /// Set a function to be called at each update step of the sequence.
   /// Function will be called immediately after setting the target value.
@@ -165,16 +165,22 @@ public:
   /// Calls start/update/finish functions as appropriate if assigned.
   void update() override;
 
+  /// Removes elements from sequence before specified time.
+  /// Don't use this if the Motion shares a sequence with others.
+  /// Note that you can safely share sequences if you add them to each motion as phrases.
+  void burnTracksBefore( Time time );
+
 private:
   // shared_ptr to source since many connections could share the same source.
   // This enables us to do pseudo-instancing on our animations, reducing their memory footprint.
+  // Might switch to a named sequence object rather than a shared_ptr in future.
   SequenceRefT    _source;
   Connection<T>   _connection;
-  std::vector<std::pair<size_t, std::function<void()>>>  _inflectionCallbacks;
 
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
   DataCallback    _updateFn = nullptr;
+  std::vector<std::pair<size_t, Callback>>  _inflectionCallbacks;
 };
 
 //=================================================
@@ -226,7 +232,7 @@ void Motion<T>::update()
       auto crossed = std::max( points.first, points.second );
       for( const auto &fn : _inflectionCallbacks ) {
         if( fn.first == crossed ) {
-          fn.second();
+          fn.second( *this );
         }
       }
     }
@@ -249,9 +255,15 @@ void Motion<T>::update()
 }
 
 template<typename T>
-void Motion<T>::addInflectionCallback( size_t inflection_point, const std::function<void ()> &callback )
+void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &callback )
 {
   _inflectionCallbacks.emplace_back( std::make_pair( inflection_point, callback ) );
+}
+
+template<typename T>
+void Motion<T>::burnTracksBefore( Time time )
+{
+  _source = std::make_shared<Sequence>( _source->slice( 0, time ) );
 }
 
 } // namespace choreograph

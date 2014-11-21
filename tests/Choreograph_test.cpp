@@ -108,9 +108,9 @@ TEST_CASE( "Inflection Points", "[motion]" )
 
   timeline.apply( &target )
     .hold( 0.5f )
-    .onInflection( [&c1] { c1 += 1; } ) // inflect around 0.5
+    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } ) // inflects around 0.5
     .then<RampTo>( 3.0f, 1.0f )
-    .onInflection( [&c2] { c2 += 1; } ) // inflect around 1.5
+    .onInflection( [&c2] (Motion<float> &m) { c2 += 1; } ) // inflects around 1.5
     .then<RampTo>( 2.0f, 1.0f );
 
   timeline.step( 0.49f );

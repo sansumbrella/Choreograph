@@ -97,5 +97,4 @@ inline PhraseRef<T> makeProcedure( Time duration, const typename ProceduralPhras
   return std::make_shared<ProceduralPhrase<T>>( duration, fn );
 }
 
-
 } // namespace choreograph

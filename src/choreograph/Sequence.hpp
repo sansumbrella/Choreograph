@@ -107,9 +107,17 @@ public:
   /// Append all Phrases from another Sequence to this Sequence.
   Sequence<T>& then( const Sequence<T> &next );
 
+  //
+  // Sequence conversion.
+  //
+
   /// Returns a Phrase that encapsulates this Sequence.
   /// Duplicates the Sequence, so future changes to this do not affect the Phrase.
   PhraseRef<T> asPhrase() const { return std::make_shared<SequencePhrase<T>>( *this ); }
+
+  /// Returns a Sequence containing the phrases between Times from and to.
+  /// Partial phrases at the beginning and end are wrapped in ClipPhrases.
+  Sequence slice( Time from, Time to );
 
   //
   // Phrase<T> Equivalents.

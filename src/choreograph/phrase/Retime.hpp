@@ -114,24 +114,28 @@ private:
 };
 
 ///
-/// ClipPhrase cuts of an existing Phrase at some point in time.
-/// Note that if the clip time is after the end of the source, the
-/// source will continue interpolating past the end of its range.
+/// ClipPhrase cuts off an existing Phrase at some point in time.
+/// Note that if the clip times are outside the range of the source,
+/// the source may continue interpolating to outside values.
 ///
 template<typename T>
 class ClipPhrase : public Phrase<T>
 {
 public:
-  ClipPhrase( const PhraseRef<T> &source, float end ):
-    Phrase<T>( end ),
+  ClipPhrase( const PhraseRef<T> &source, Time begin, Time end ):
+    Phrase<T>( end - begin ),
+    _begin( begin ),
+    _end( end ),
     _source( source )
   {}
 
   T getValue( Time atTime ) const override { return _source->getValue( atTime ); }
-  T getStartValue() const override { return _source->getStartValue(); }
-  T getEndValue() const override { return _source->getValue( this->getDuration() ); }
+  T getStartValue() const override { return _source->getValue( _begin ); }
+  T getEndValue() const override { return _source->getValue( _end ); }
 private:
   PhraseRef<T>  _source;
+  Time          _begin;
+  Time          _end;
 };
 
 } // namespace choreograph
