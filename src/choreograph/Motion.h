@@ -31,6 +31,7 @@
 #include "Sequence.hpp"
 #include "Connection.hpp"
 #include "Output.hpp"
+#include "detail/VectorManipulation.hpp"
 
 namespace choreograph
 {
@@ -185,7 +186,7 @@ private:
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
   DataCallback    _updateFn = nullptr;
-  std::vector<std::pair<size_t, Callback>>  _inflectionCallbacks;
+  std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
 };
 
 //=================================================
@@ -262,7 +263,7 @@ void Motion<T>::update()
 template<typename T>
 void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &callback )
 {
-  _inflectionCallbacks.emplace_back( std::make_pair( inflection_point, callback ) );
+  _inflectionCallbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
 }
 
 template<typename T>
@@ -273,6 +274,10 @@ void Motion<T>::sliceSequence( Time from, Time to )
   for( auto &fn : _inflectionCallbacks ) {
     fn.first -= inflection;
   }
+
+  detail::erase_if( &_inflectionCallbacks, [] (const std::pair<int, Callback> &p) {
+    return p.first < 0;
+  } );
 
   _source = _source.slice( from, to );
 
