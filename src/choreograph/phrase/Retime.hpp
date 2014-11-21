@@ -113,4 +113,25 @@ private:
   PhraseRef<T>  _source;
 };
 
+///
+/// ClipPhrase cuts of an existing Phrase at some point in time.
+/// Note that if the clip time is after the end of the source, the
+/// source will continue interpolating past the end of its range.
+///
+template<typename T>
+class ClipPhrase : public Phrase<T>
+{
+public:
+  ClipPhrase( const PhraseRef<T> &source, float end ):
+    Phrase<T>( end ),
+    _source( source )
+  {}
+
+  T getValue( Time atTime ) const override { return _source->getValue( atTime ); }
+  T getStartValue() const override { return _source->getStartValue(); }
+  T getEndValue() const override { return _source->getValue( this->getDuration() ); }
+private:
+  PhraseRef<T>  _source;
+};
+
 } // namespace choreograph
