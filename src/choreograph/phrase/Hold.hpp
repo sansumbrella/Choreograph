@@ -40,6 +40,13 @@ class Hold : public Phrase<T>
 {
 public:
 
+  /// Constructs a Hold that holds \a value for \a duration.
+  Hold( Time duration, const T &value ):
+    Phrase<T>( duration ),
+    _value( value )
+  {}
+
+  /// Constructor variant to support Sequence::then<> syntax.
   Hold( Time duration, const T &start_value, const T &end_value ):
   Phrase<T>( duration ),
   _value( end_value )

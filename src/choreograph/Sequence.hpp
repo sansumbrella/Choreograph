@@ -298,7 +298,7 @@ template<typename T>
 Sequence<T> Sequence<T>::slice( Time from, Time to )
 {
   if( _phrases.empty() ) {
-    return Sequence<T>( _initial_value );
+    return Sequence<T>( std::make_shared<Hold<T>>( to - from, _initial_value ) );
   }
 
   // the indices of the first and last Phrases in our time range.
