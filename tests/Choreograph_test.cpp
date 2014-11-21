@@ -98,9 +98,11 @@ TEST_CASE( "Raw Pointers" )
 
 }
 
-TEST_CASE( "Inflection Points", "[motion]" )
+TEST_CASE( "Inflection Points", "[timeline]" )
 {
   Timeline timeline;
+  timeline.setDefaultRemoveOnFinish( false );
+
 
   Output<float> target = 0.0f;
   int c1 = 0;
@@ -110,7 +112,7 @@ TEST_CASE( "Inflection Points", "[motion]" )
     .hold( 0.5f )
     .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } ) // inflects around 0.5
     .then<RampTo>( 3.0f, 1.0f )
-    .onInflection( [&c2] (Motion<float> &m) { c2 += 1; } ) // inflects around 1.5
+  .onInflection( [&c2] (Motion<float> &m) { c2 += 1; } ) // inflects around 1.5
     .then<RampTo>( 2.0f, 1.0f );
 
   timeline.step( 0.49f );
@@ -118,12 +120,42 @@ TEST_CASE( "Inflection Points", "[motion]" )
   REQUIRE( c1 == 1 );
   REQUIRE( c2 == 0 );
 
-  timeline.jumpTo( 1.51f );
+  timeline.jumpTo( 1.52f );
   REQUIRE( c2 == 1 );
   REQUIRE( c1 == 1 );
-  timeline.jumpTo( 1.49f );
+  timeline.jumpTo( 0.9f );
   REQUIRE( c2 == 2 );
   REQUIRE( c1 == 1 );
+
+}
+
+TEST_CASE( "Burning", "[motion]" )
+{
+  Output<float> target = 0.0f;
+  auto sequence = createSequence( 0.0f );
+  sequence->then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 5.0f, 1.0f )
+    .then<RampTo>( 20.0f, 1.0f );
+
+  Motion<float> motion( &target, sequence );
+  REQUIRE( motion.getDuration() == 4.0f );
+
+  motion.burnTracksBefore( 1.5f );
+  REQUIRE( motion.getDuration() == 2.5f );
+}
+
+TEST_CASE( "Slicing", "[sequence]" )
+{
+  Sequence<float> s( 0.0f );
+  s.then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 5.0f, 1.0f )
+    .then<RampTo>( 20.0f, 1.0f );
+
+  REQUIRE( s.getDuration() == 4.0f );
+  auto sub = s.slice( 0.5f, 3.5f );
+  REQUIRE( sub.getDuration() == 3.0f );
 }
 
 TEST_CASE( "Sequence Composition", "[sequence]" )

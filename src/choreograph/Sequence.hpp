@@ -255,9 +255,9 @@ std::pair<size_t, size_t> Sequence<T>::getInflectionPoints( Time t1, Time t2 ) c
   auto output = std::make_pair<size_t, size_t>( 0, 0 );
   auto set = std::make_pair( false, false );
 
-  for( size_t i = 0; i < _phrases.size(); ++i )
+  for( size_t i = 0; i < _phrases.size(); i += 1 )
   {
-    const auto duration = _phrases[i]->getDuration();
+    const auto duration = _phrases.at( i )->getDuration();
 
     if( duration < t1 ) {
       t1 -= duration;
@@ -289,7 +289,9 @@ Time Sequence<T>::getTimeAtInflection( size_t inflection ) const
   Time t = 0;
   while( inflection != 0 ) {
     t += _phrases.at( inflection )->getDuration();
+    inflection -= 1;
   }
+  return t;
 }
 
 template<typename T>
@@ -300,14 +302,18 @@ Sequence<T> Sequence<T>::slice( Time from, Time to )
   const auto &first = _phrases.at( points.first );
   const auto &last = _phrases.at( points.second );
 
-  if( points.first != points.second ) {
-    std::vector<PhraseRef<T>> phrases( _phrases.begin() + points.first, _phrases.begin() + points.second );
+  if( points.first < points.second ) {
+    // construct vector from range [begin, end)
+    auto begin = _phrases.begin() + points.first;
+    auto end = _phrases.begin() + points.second + 1;
+    std::vector<PhraseRef<T>> phrases( begin, end );
 
     Time t1 = from - getTimeAtInflection( points.first );
     Time t2 = to - getTimeAtInflection( points.second );
 
-    phrases.front() = std::make_shared<ClipPhrase<T>>( first, t1, first->getDuration() );
-    phrases.back() = std::make_shared<ClipPhrase<T>>( last, 0, t2 );
+    auto p1 = std::make_shared<ClipPhrase<T>>( first, t1, first->getDuration() );
+    phrases[0] = p1;
+    phrases[phrases.size() - 1] = std::make_shared<ClipPhrase<T>>( last, 0, t2 );
 
     return Sequence<T>( phrases );
   }

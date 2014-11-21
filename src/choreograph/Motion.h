@@ -166,7 +166,6 @@ public:
   void update() override;
 
   /// Removes elements from sequence before specified time.
-  /// Don't use this if the Motion shares a sequence with others.
   /// Note that you can safely share sequences if you add them to each motion as phrases.
   void burnTracksBefore( Time time );
 
@@ -263,7 +262,18 @@ void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &
 template<typename T>
 void Motion<T>::burnTracksBefore( Time time )
 {
-  _source = std::make_shared<Sequence>( _source->slice( 0, time ) );
+  // Shift inflection point references
+  const auto inflection = _source->getInflectionPoints( time, time ).first;
+  if( inflection > 0 ) {
+    for( auto &fn : _inflectionCallbacks ) {
+      fn.first -= inflection;
+    }
+
+    // slice the sequence if it would remove something from the beginning.
+    _source = std::make_shared<Sequence<T>>( _source->slice( time, _source->getDuration() ) );
+
+    setTime( this->time() - time );
+  }
 }
 
 } // namespace choreograph
