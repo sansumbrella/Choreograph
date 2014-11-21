@@ -108,7 +108,7 @@ TEST_CASE( "Inflection Points", "[timeline]" )
   int c1 = 0;
   int c2 = 0;
 
-  timeline.apply( &target )
+  auto &options = timeline.apply( &target )
     .hold( 0.5f )
     // inflects around 0.5
     .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
@@ -118,6 +118,9 @@ TEST_CASE( "Inflection Points", "[timeline]" )
         c2 += 1;
       } )
     .then<RampTo>( 2.0f, 1.0f );
+  REQUIRE( timeline.calcDuration() == 2.5f );
+  options.cutAt( 2.0f );
+  REQUIRE( timeline.calcDuration() == 2.0f );
 
   timeline.step( 0.49f );
   timeline.step( 0.11f );
@@ -166,6 +169,8 @@ TEST_CASE( "Slicing", "[sequence]" )
   REQUIRE( s.getDuration() == 4.0f );
   auto sub = s.slice( 0.5f, 3.5f );
   REQUIRE( sub.getDuration() == 3.0f );
+  auto alt = s.slice( 0.0f, 3.0f );
+  REQUIRE( alt.getDuration() == 3.0f );
 }
 
 TEST_CASE( "Sequence Composition", "[sequence]" )

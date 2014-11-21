@@ -288,7 +288,7 @@ Time Sequence<T>::getTimeAtInflection( size_t inflection ) const
 {
   Time t = 0;
   while( inflection != 0 ) {
-    t += _phrases.at( inflection )->getDuration();
+    t += _phrases.at( inflection - 1 )->getDuration();
     inflection -= 1;
   }
   return t;
@@ -315,8 +315,7 @@ Sequence<T> Sequence<T>::slice( Time from, Time to )
     Time t1 = from - getTimeAtInflection( points.first );
     Time t2 = to - getTimeAtInflection( points.second );
 
-    auto p1 = std::make_shared<ClipPhrase<T>>( first, t1, first->getDuration() );
-    phrases[0] = p1;
+    phrases[0] = std::make_shared<ClipPhrase<T>>( first, t1, first->getDuration() );
     phrases[phrases.size() - 1] = std::make_shared<ClipPhrase<T>>( last, 0, t2 );
 
     return Sequence<T>( phrases );
