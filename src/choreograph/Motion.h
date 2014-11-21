@@ -165,9 +165,13 @@ public:
   /// Calls start/update/finish functions as appropriate if assigned.
   void update() override;
 
-  /// Removes elements from sequence before specified time.
+  /// Removes phrases from sequence before specified time.
   /// Note that you can safely share sequences if you add them to each motion as phrases.
-  void burnTracksBefore( Time time );
+  void cutPhrasesBefore( Time time ) { sliceSequence( time, _source->getDuration() ); }
+  /// Cut animation in \a time from the Motion's current time().
+  void cutIn( Time time ) { sliceSequence( this->time(), this->time() + time ); }
+  /// Slices up our underlying Sequence.
+  void sliceSequence( Time from, Time to );
 
 private:
   // shared_ptr to source since many connections could share the same source.
@@ -260,20 +264,17 @@ void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &
 }
 
 template<typename T>
-void Motion<T>::burnTracksBefore( Time time )
+void Motion<T>::sliceSequence( Time from, Time to )
 {
   // Shift inflection point references
-  const auto inflection = _source->getInflectionPoints( time, time ).first;
-  if( inflection > 0 ) {
-    for( auto &fn : _inflectionCallbacks ) {
-      fn.first -= inflection;
-    }
-
-    // slice the sequence if it would remove something from the beginning.
-    _source = std::make_shared<Sequence<T>>( _source->slice( time, _source->getDuration() ) );
-
-    setTime( this->time() - time );
+  const auto inflection = _source->getInflectionPoints( from, to ).first;
+  for( auto &fn : _inflectionCallbacks ) {
+    fn.first -= inflection;
   }
+
+  _source = std::make_shared<Sequence<T>>( _source->slice( from, to ) );
+
+  setTime( this->time() - from );
 }
 
 } // namespace choreograph

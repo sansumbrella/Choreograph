@@ -110,9 +110,13 @@ TEST_CASE( "Inflection Points", "[timeline]" )
 
   timeline.apply( &target )
     .hold( 0.5f )
-    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } ) // inflects around 0.5
+    // inflects around 0.5
+    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
     .then<RampTo>( 3.0f, 1.0f )
-  .onInflection( [&c2] (Motion<float> &m) { c2 += 1; } ) // inflects around 1.5
+    // inflects around 1.5
+    .onInflection( [&c2] (Motion<float> &m) {
+        c2 += 1;
+      } )
     .then<RampTo>( 2.0f, 1.0f );
 
   timeline.step( 0.49f );
@@ -129,7 +133,7 @@ TEST_CASE( "Inflection Points", "[timeline]" )
 
 }
 
-TEST_CASE( "Burning", "[motion]" )
+TEST_CASE( "Cutting", "[motion]" )
 {
   Output<float> target = 0.0f;
   auto sequence = createSequence( 0.0f );
@@ -141,7 +145,13 @@ TEST_CASE( "Burning", "[motion]" )
   Motion<float> motion( &target, sequence );
   REQUIRE( motion.getDuration() == 4.0f );
 
-  motion.burnTracksBefore( 1.5f );
+  motion.jumpTo( 1.5f );
+  float v1 = target();
+  motion.cutPhrasesBefore( motion.time() );
+  motion.jumpTo( 0.0f );
+  float v2 = target();
+  REQUIRE( v1 == v2 );
+  REQUIRE( v1 == 5.5f );
   REQUIRE( motion.getDuration() == 2.5f );
 }
 
