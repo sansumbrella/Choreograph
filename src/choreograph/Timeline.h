@@ -163,7 +163,7 @@ public:
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> apply( Output<T> *output, const SequenceRef<T> &sequence );
+  MotionOptions<T> apply( Output<T> *output, const Sequence<T> &sequence );
 
   template<typename T>
   MotionOptions<T> apply( Output<T> *output, const PhraseRef<T> &phrase );
@@ -244,7 +244,7 @@ public:
 
   /// Apply a source to output, overwriting any previous connections.
   template<typename T>
-  MotionOptions<T> applyRaw( T *output, const SequenceRef<T> &sequence );
+  MotionOptions<T> applyRaw( T *output, const Sequence<T> &sequence );
 
   /// Add phrases to the end of the Sequence currently connected to \a output. Raw pointer edition.
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
@@ -290,36 +290,34 @@ private:
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output )
 {
-  auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = std::make_unique<Motion<T>>( output );
 
-  auto motion_ptr = motion.get();
+  auto &motion_ref = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( motion_ref, motion_ref.getSequence(), *this );
 }
 
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase )
 {
-  auto sequence = std::make_shared<Sequence<T>>( phrase );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = std::make_unique<Motion<T>>( output, Sequence<T>( phrase ) );
 
-  auto motion_ptr = motion.get();
+  auto &motion_ref = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( motion_ref, motion_ref.getSequence(), *this );
 }
 
 template<typename T>
-MotionOptions<T> Timeline::apply( Output<T> *output, const SequenceRef<T> &sequence )
+MotionOptions<T> Timeline::apply( Output<T> *output, const Sequence<T> &sequence )
 {
   auto motion = std::make_unique<Motion<T>>( output, sequence );
 
-  auto motion_ptr = motion.get();
+  auto &motion_ref = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( motion_ref, motion_ref.getSequence(), *this );
 }
 
 template<typename T>
@@ -329,7 +327,7 @@ MotionOptions<T> Timeline::append( Output<T> *output )
   {
     auto motion = find( output->valuePtr() );
     if( motion ) {
-      return MotionOptions<T>( *motion, *motion->getSequence(), *this );
+      return MotionOptions<T>( *motion, motion->getSequence(), *this );
     }
   }
   return apply( output );
@@ -341,25 +339,24 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   // This is a raw pointer, so we don't know about any prior relationships.
   remove( output );
 
-  auto sequence = std::make_shared<Sequence<T>>( *output );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = std::make_unique<Motion<T>>( output );
 
-  auto motion_ptr = motion.get();
+  auto &m = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( m, m.getSequence(), *this );
 }
 
 template<typename T>
-MotionOptions<T> Timeline::applyRaw( T *output, const SequenceRef<T> &sequence )
+MotionOptions<T> Timeline::applyRaw( T *output, const Sequence<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   remove( output );
   auto motion = std::make_unique<Motion<T>>( output, sequence );
 
-  auto motion_ptr = motion.get();
+  auto &m = *motion;
   add( std::move( motion ) );
 
-  return MotionOptions<T>( *motion_ptr, *sequence, *this );
+  return MotionOptions<T>( m, m.getSequence(), *this );
 }
 
 template<typename T>
@@ -367,7 +364,7 @@ MotionOptions<T> Timeline::appendRaw( T *output )
 {
   auto motion = find( output );
   if( motion ) {
-    return MotionOptions<T>( *motion, *motion->getSequence(), *this );
+    return MotionOptions<T>( *motion, motion->getSequence(), *this );
   }
   return apply( output );
 }

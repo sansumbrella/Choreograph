@@ -120,30 +120,35 @@ class Motion : public TimelineItem
 {
 public:
   using MotionT       = Motion<T>;
-  using SequenceRefT  = SequenceRef<T>;
+  using SequenceT     = Sequence<T>;
   using DataCallback  = std::function<void (T&)>;
   using Callback      = std::function<void (MotionT&)>;
 
   Motion() = delete;
 
-  Motion( T *target, const SequenceRefT &sequence ):
+  Motion( T *target, const SequenceT &sequence ):
     _connection( target ),
     _source( sequence )
   {}
 
-  Motion( Output<T> *target, const SequenceRefT &sequence ):
+  Motion( Output<T> *target, const SequenceT &sequence ):
     _connection( target ),
     _source( sequence )
+  {}
+
+  Motion( Output<T> *target ):
+    _connection( target ),
+    _source( target->value() )
   {}
 
   /// Returns duration of the underlying sequence.
-  Time getDuration() const override { return _source->getDuration(); }
+  Time getDuration() const override { return _source.getDuration(); }
 
   /// Returns ratio of time elapsed, from [0,1] over duration.
-  Time getProgress() const { return time() / _source->getDuration(); }
+  Time getProgress() const { return time() / _source.getDuration(); }
 
   /// Returns the underlying Sequence sampled for this motion.
-  SequenceRefT  getSequence() { return _source; }
+  SequenceT&  getSequence() { return _source; }
 
   inline bool isInvalid() const override { return _connection.isDisconnected(); }
   const void* getTarget() const override { return _connection.targetPtr(); }
@@ -167,17 +172,14 @@ public:
 
   /// Removes phrases from sequence before specified time.
   /// Note that you can safely share sequences if you add them to each motion as phrases.
-  void cutPhrasesBefore( Time time ) { sliceSequence( time, _source->getDuration() ); }
+  void cutPhrasesBefore( Time time ) { sliceSequence( time, _source.getDuration() ); }
   /// Cut animation in \a time from the Motion's current time().
   void cutIn( Time time ) { sliceSequence( this->time(), this->time() + time ); }
   /// Slices up our underlying Sequence.
   void sliceSequence( Time from, Time to );
 
 private:
-  // shared_ptr to source since many connections could share the same source.
-  // This enables us to do pseudo-instancing on our animations, reducing their memory footprint.
-  // Might switch to a named sequence object rather than a shared_ptr in future.
-  SequenceRefT    _source;
+  SequenceT       _source;
   Connection<T>   _connection;
 
   Callback        _finishFn = nullptr;
@@ -225,11 +227,11 @@ void Motion<T>::update()
     }
   }
 
-  _connection.target() = _source->getValue( time() );
+  _connection.target() = _source.getValue( time() );
 
   if( ! _inflectionCallbacks.empty() )
   {
-    auto points = _source->getInflectionPoints( previousTime(), time() );
+    auto points = _source.getInflectionPoints( previousTime(), time() );
     if( points.first != points.second ) {
       // We just crossed an inflection point...
       auto crossed = std::max( points.first, points.second );
@@ -267,12 +269,12 @@ template<typename T>
 void Motion<T>::sliceSequence( Time from, Time to )
 {
   // Shift inflection point references
-  const auto inflection = _source->getInflectionPoints( from, to ).first;
+  const auto inflection = _source.getInflectionPoints( from, to ).first;
   for( auto &fn : _inflectionCallbacks ) {
     fn.first -= inflection;
   }
 
-  _source = std::make_shared<Sequence<T>>( _source->slice( from, to ) );
+  _source = _source.slice( from, to );
 
   setTime( this->time() - from );
 }

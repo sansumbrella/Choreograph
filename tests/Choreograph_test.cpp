@@ -65,13 +65,13 @@ TEST_CASE( "Raw Pointers" )
   Timeline timeline;
 
   SECTION( "Composing Sequences in Sequences" ) {
-    auto sequence = createSequence( 1.0f );
-    SequenceRef<float> continuation = createSequence( 5.0f );
-    continuation->then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
+    Sequence<float> sequence( 1.0f );
+    Sequence<float> continuation( 5.0f );
+    continuation.then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
 
-    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( continuation->asPhrase() );
+    sequence.then<RampTo>( 5.0f, 0.5f ).then( continuation ).then( continuation.asPhrase() );
 
-    REQUIRE( sequence->getDuration() == 4.5f );
+    REQUIRE( sequence.getDuration() == 4.5f );
 
     Motion<float> motion( &target, sequence );
     motion.jumpTo( 1.0f );
@@ -136,8 +136,8 @@ TEST_CASE( "Inflection Points", "[timeline]" )
 TEST_CASE( "Cutting", "[motion]" )
 {
   Output<float> target = 0.0f;
-  auto sequence = createSequence( 0.0f );
-  sequence->then<RampTo>( 1.0f, 1.0f )
+  Sequence<float> sequence( 0.0f );
+  sequence.then<RampTo>( 1.0f, 1.0f )
     .then<RampTo>( 10.0f, 1.0f )
     .then<RampTo>( 5.0f, 1.0f )
     .then<RampTo>( 20.0f, 1.0f );
@@ -174,13 +174,13 @@ TEST_CASE( "Sequence Composition", "[sequence]" )
   Timeline timeline;
 
   SECTION( "Composing Sequences in Sequences" ) {
-    auto sequence = createSequence( 1.0f );
-    SequenceRef<float> continuation = createSequence( 5.0f );
-    continuation->then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
+    Sequence<float> sequence( 1.0f );
+    Sequence<float> continuation( 5.0f );
+    continuation.then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
 
-    sequence->then<RampTo>( 5.0f, 0.5f ).then( *continuation ).then( continuation->asPhrase() );
+    sequence.then<RampTo>( 5.0f, 0.5f ).then( continuation ).then( continuation.asPhrase() );
 
-    REQUIRE( sequence->getDuration() == 4.5f );
+    REQUIRE( sequence.getDuration() == 4.5f );
 
     Motion<float> motion( &target, sequence );
     motion.jumpTo( 1.0f );
@@ -360,8 +360,8 @@ TEST_CASE( "Cues and Callbacks", "[motion]" )
 TEST_CASE( "Motion Speed and Reversal" )
 {
   ch::Timeline timeline;
-  auto sequence = createSequence( 0.0f );
-  sequence->then<RampTo>( 10.0f, 1.0f ).then<RampTo>( -30.0f, 2.0f );
+  Sequence<float> sequence( 0.0f );
+  sequence.then<RampTo>( 10.0f, 1.0f ).then<RampTo>( -30.0f, 2.0f );
 
   SECTION( "Equivalence between motion time and sequence time" )
   {
@@ -373,7 +373,7 @@ TEST_CASE( "Motion Speed and Reversal" )
     for( auto &t : times )
     {
       timeline.jumpTo( t );
-      REQUIRE( target() == sequence->getValue( t ) );
+      REQUIRE( target() == sequence.getValue( t ) );
     }
   }
 
@@ -398,8 +398,8 @@ TEST_CASE( "Output Connections", "[output]" )
 {
 
   ch::Timeline timeline;
-  auto sequence = make_shared<Sequence<float>>( 0.0f );
-  sequence->then<RampTo>( 10.0f, 2.0f );
+  Sequence<float> sequence( 0.0f );
+  sequence.then<RampTo>( 10.0f, 2.0f );
 
   SECTION( "Output falling out of scope disconnects" ) {
     MotionRef<float> motion;

@@ -91,8 +91,8 @@ TEST_CASE( "Creating Motions" ) {
 
   {
     ScopedTimer timer( "Creating Motions from shared Sequence" );
-    SequenceRef<vec2> sequence = make_shared<Sequence<vec2>>( vec2( 1.0f ) );
-    sequence->then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
+    Sequence<vec2> sequence( vec2( 1.0f ) );
+    sequence.then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
     for( auto &target : targets ) {
       test_timeline.apply( &target, sequence );
     }
