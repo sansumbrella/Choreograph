@@ -81,12 +81,12 @@ public:
   /// Create and add a Motion to the group.
   /// The Motion will apply \a sequence to \a output.
   template<typename T>
-  MotionGroupOptions<T> add( const SequenceRef<T> &sequence, Output<T> *output );
+  MotionGroupOptions<T> add( const Sequence<T> &sequence, Output<T> *output );
 
   /// Create and add a Motion to the group.
   /// The Phrase is converted to a Sequence.
   template<typename T>
-  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( std::make_shared<Sequence<T>>( phrase ), output ); }
+  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( Sequence<T>( phrase ), output ); }
 
   /// Update all grouped motions.
   void update() override;
@@ -193,7 +193,7 @@ private:
 //=================================================
 
 template<typename T>
-MotionGroupOptions<T> MotionGroup::add( const SequenceRef<T> &sequence, Output<T> *output )
+MotionGroupOptions<T> MotionGroup::add( const Sequence<T> &sequence, Output<T> *output )
 {
   auto motion = std::make_unique<Motion<T>>( output, sequence );
   auto motion_ptr = motion.get();
