@@ -129,7 +129,7 @@ public:
     _source( source )
   {}
 
-  T getValue( Time atTime ) const override { return _source->getValue( atTime ); }
+  T getValue( Time atTime ) const override { return _source->getValue( _begin + atTime ); }
   T getStartValue() const override { return _source->getValue( _begin ); }
   T getEndValue() const override { return _source->getValue( _end ); }
 private:
