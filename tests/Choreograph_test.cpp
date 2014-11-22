@@ -18,6 +18,7 @@ TEST_CASE( "Phrases" )
 {
   auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
   auto other = makeRamp( 10.0f, 100.0f, 1.0f );
+  Hold<float> hold( 1.0f, 1.0f );
 
   SECTION( "Retime" )
   {
@@ -321,52 +322,46 @@ TEST_CASE( "Timeline" )
 
   SECTION( "Motion Callbacks" )
   {
-    bool          updateCalled = false;
     bool          startCalled = false;
     bool          endCalled = false;
-    Output<float> target = 0;
     int           updateCount = 0;
     float         updateTarget = 0;
 
-    timeline.apply( &target )
-      .startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
-      .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
-      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } )
-      .then<RampTo>( 10.0f, 1.0f );
+    options.startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
+      .updateFn( [&updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; } )
+      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
 
     SECTION( "Callbacks from step" )
     {
-      timeline.step( 0.1f );
+      const float end = timeline.calcDuration();
+      const float step = end / 10.0f;
+      timeline.step( step );
       REQUIRE( startCalled );
-      REQUIRE( updateCalled );
       REQUIRE( updateCount == 1 );
       REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE( target == 1.0f );
 
-      for( int i = 0; i < 9; ++i ) {
+      for( int i = 0; i < 10; i += 1 ) {
         REQUIRE_FALSE( endCalled );
-        timeline.step( 0.1f );
+        timeline.step( step );
       }
 
       REQUIRE( endCalled );
-      REQUIRE( updateCount == 10 );
+      REQUIRE( updateCount == 11 );
     }
 
     SECTION( "Callbacks from jumpTo" )
     {
       timeline.jumpTo( 0.1f );
       REQUIRE( startCalled );
-      REQUIRE( updateCalled );
       REQUIRE( updateCount == 1 );
       REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE( target == 1.0f );
       REQUIRE_FALSE( endCalled );
 
       timeline.jumpTo( 0.9f );
       REQUIRE( updateCount == 2 );
       REQUIRE_FALSE( endCalled );
 
-      timeline.jumpTo( 1.0f );
+      timeline.jumpTo( timeline.calcDuration() );
       REQUIRE( updateCount == 3 );
       REQUIRE( endCalled );
     }
@@ -378,9 +373,10 @@ TEST_CASE( "Timeline" )
     timeline.clear();
     vector<int> call_counts( 4, 0 );
     std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
-    for( size_t i = 0; i < call_counts.size(); ++i )
-    {
-      timeline.cue( [i, &call_counts] { call_counts[i] += 1; }, delays[i] );
+    for( size_t i = 0; i < call_counts.size(); ++i ) {
+      timeline.cue( [i, &call_counts] {
+        call_counts[i] += 1;
+      }, delays[i] );
     }
 
     timeline.step( 0.1f );
@@ -406,8 +402,8 @@ TEST_CASE( "Timeline" )
     REQUIRE( call_counts[2] == 1 );
     REQUIRE( call_counts[3] == 0 );
 
-    for( int i = 0; i < 11; ++i ) {
-      timeline.step( 0.1f );
+    for( int i = 0; i < 10; ++i ) {
+      timeline.step( 0.101f );
     }
 
     REQUIRE( timeline.size() == 0 );
