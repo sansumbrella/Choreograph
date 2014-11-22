@@ -87,12 +87,47 @@ TEST_CASE( "Phrases" )
     REQUIRE( decumulate->getValue( 1.0 ) == -110 );
   }
 
-  SECTION( "Ramps and Mix Phrases can use custom interpolation functions." )
+  SECTION( "Ramps and Mix Phrases receive optional interpolation functions to support custom objects." )
   {
-    struct Custom {
-      float a;
-      float b;
+    struct Obj {
+      float       x;
+      float       y;
+      std::string name;
     };
+
+    auto lerp_obj = [] (const Obj &lhs, const Obj &rhs, float mix) {
+      return Obj{ ch::lerpT( lhs.x, rhs.x, mix ),
+                  ch::lerpT( lhs.y, rhs.y, mix ),
+                  lhs.name };
+    };
+
+    auto a = Obj{ 0.0f, 10.0f, "hello" };
+    auto b = Obj{ 10.0f, 100.0f, "target" };
+    auto c = Obj{ 100.0f, 1000.0f, "another" };
+
+    auto ramp_ab = makeRamp( a, b, 1.0f, EaseInOutQuad(), lerp_obj );
+    auto ramp_bc = makeRamp( b, c, 1.0f, EaseNone(), lerp_obj );
+
+    auto mix_ramps = makeBlend<Obj>( ramp_ab, ramp_bc, 0.5f, lerp_obj );
+
+    REQUIRE( ramp_ab->getValue( 1.0f ).x == b.x );
+    REQUIRE( ramp_ab->getValue( 0.5f ).x == 5.0f );
+    REQUIRE( ramp_ab->getValue( 0.5f ).y == 55.0f );
+    REQUIRE( ramp_ab->getValue( 1.0f ).name == "hello" );
+    REQUIRE( ramp_bc->getValue( 1.0f ).name == "target" );
+    REQUIRE( mix_ramps->getValue( 0.5f ).y == ((550.0f * 0.5f) + (55.0f * 0.5f)) );
+  }
+
+  SECTION( "Clip Phrases retime existing phrases and clamp their end values." )
+  {
+    auto clip_equal = ClipPhrase<float>( ramp, 0.0f, 1.0f );
+    auto clip_past_end = ClipPhrase<float>( ramp, 0.5f, 1.25f );
+    auto clip_from_start = ClipPhrase<float>( ramp, 0.0f, 0.5f );
+    auto clip_center = ClipPhrase<float>( ramp, 0.25f, 0.75f );
+
+    REQUIRE( clip_from_start.getDuration() == 0.5f );
+    REQUIRE( clip_from_start.getValue( 0.0f ) == ramp->getValue( 0.0f ) );
+    REQUIRE( clip_from_start.getValue( 10.0f ) == ramp->getValue( 0.5f ) );
   }
 }
 
