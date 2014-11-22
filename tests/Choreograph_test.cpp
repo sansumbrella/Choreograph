@@ -349,6 +349,35 @@ TEST_CASE( "Slicing Time" )
       REQUIRE( motion.getDuration() == 2 );
     }
   }
+
+  SECTION( "Timeline MotionOptions expose trim methods." )
+  {
+    Timeline timeline;
+    auto options = timeline.apply( &target, sequence );
+
+    SECTION( "With single Motion, Timeline duration is motions duration." )
+    {
+      REQUIRE( timeline.timeUntilFinish() == sequence.getDuration() );
+    }
+
+    SECTION( "Cut at trims the sequence relative to their start." )
+    {
+      options.cutAt( 2.0f );
+      REQUIRE( timeline.timeUntilFinish() == 2.0f );
+    }
+
+    SECTION( "Cut In trims the sequence relative to the motion's current time." )
+    {
+      timeline.step( 0.5f );
+      float v1 = target();
+      options.cutIn( 0.5f );
+      timeline.step( 0.0f );
+      float v2 = target();
+
+      REQUIRE( timeline.timeUntilFinish() == 0.5f );
+      REQUIRE( v1 == v2 );
+    }
+  }
 }
 
 //==========================================
@@ -437,8 +466,6 @@ TEST_CASE( "Timeline" )
     .then<RampTo>( 10.0f, 1.0f )
     .then<RampTo>( 100.0f, 1.0f );
 
-  auto options = timeline.apply( &target, sequence );
-
   SECTION( "Output<T> pointers can be controlled via Timeline." )
   {
     Output<float> target = 0.0f;
@@ -480,27 +507,21 @@ TEST_CASE( "Timeline" )
     REQUIRE( target == 10.0f );
   }
 
-  SECTION( "Sequences can be trimmed via motion options." )
+  SECTION( "Timeline duration is a function of all motions." )
   {
-    SECTION( "Cut at trims the sequence relative to their start." )
+    Output<float> other = 0.0f;
+    auto options = timeline.apply( &other, sequence );
+
+    SECTION( "Adjusting motion start time affects timeline duration." )
     {
-      REQUIRE( timeline.calcDuration() == 3.0f );
-      options.cutAt( 2.0f );
-      REQUIRE( timeline.calcDuration() == 2.0f );
+      options.setStartTime( 1.0f );
+      REQUIRE( timeline.timeUntilFinish() == 4.0f );
     }
 
-    SECTION( "Cut In trims the sequence relative to the motion's current time." )
+    SECTION( "Adjusting motion playback speed affects timeline duration." )
     {
-      REQUIRE( timeline.calcDuration() == 3.0f );
-
-      timeline.step( 0.5f );
-      float v1 = target();
-      options.cutIn( 0.5f );
-      timeline.step( 0.0f );
-      float v2 = target();
-
-      REQUIRE( timeline.calcDuration() == 0.5f );
-      REQUIRE( v1 == v2 );
+      options.playbackSpeed( 0.5f );
+      REQUIRE( timeline.timeUntilFinish() == 6.0f );
     }
   }
 } // Timeline
@@ -532,7 +553,7 @@ TEST_CASE( "Callbacks" )
       .updateFn( [&updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; } )
       .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
 
-    const float step = timeline.calcDuration() / 10.0f;
+    const float step = timeline.timeUntilFinish() / 10.0f;
     timeline.step( step );
     REQUIRE( startCalled );
     REQUIRE( updateCount == 1 );
@@ -580,7 +601,7 @@ TEST_CASE( "Callbacks" )
   {
     SECTION( "Add Motion From Cue" )
     {
-
+//      options.finishFn( );
     }
 
     SECTION( "Cancel Motion From Cue" )

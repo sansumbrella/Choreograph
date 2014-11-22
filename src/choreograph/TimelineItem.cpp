@@ -64,3 +64,13 @@ void TimelineItem::resetTime()
     _time = _previous_time = getEndTime();
   }
 }
+
+Time TimelineItem::getTimeUntilFinish() const
+{
+  if( forward() ) {
+    return (getDuration() / getPlaybackSpeed()) - time();
+  }
+  else {
+    return time() / getPlaybackSpeed();
+  }
+}

@@ -109,6 +109,9 @@ public:
   /// Returns the current end time of this motion.
   Time getEndTime() const { return getStartTime() + getDuration(); }
 
+  /// Returns the amount of time at current playback speed before finish.
+  Time getTimeUntilFinish() const;
+
   /// Set the start time of this motion. Use to delay entire motion.
   void setStartTime( Time t ) { _start_time = t; }
   Time getStartTime() const { return _start_time; }

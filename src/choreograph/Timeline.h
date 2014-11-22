@@ -223,11 +223,11 @@ public:
 
   /// Sets a function to be called when this timeline becomes empty.
   /// It is safe to destroy the timeline from this callback, unlike any Cue.
-  void setClearedFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
+  void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
 
-  /// Returns the time at which all TimelineItems on this timeline will be finished.
+  /// Returns the time (from now) at which all TimelineItems on this timeline will be finished.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
-  Time calcDuration() const;
+  Time timeUntilFinish() const;
 
   //=================================================
   // Timeline element manipulation.
@@ -278,7 +278,7 @@ private:
 
   // Remove any motions that have stale pointers or that have completed playing.
   void removeFinishedAndInvalidMotions();
- 
+
   // Move any items in the queue to our active items collection.
   void processQueue();
 
@@ -400,7 +400,7 @@ MotionOptions<T>& MotionOptions<T>::after( U *other )
 {
   auto ptr = _timeline.find( other );
   if( ptr ) {
-    _motion->setStartTime( ptr->getEndTime() );
+    _motion->setStartTime( ptr->getTimeUntilFinish() );
   }
   return *this;
 }
