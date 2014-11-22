@@ -115,7 +115,8 @@ private:
 
 ///
 /// ClipPhrase cuts off an existing Phrase at some point in time.
-/// Time values are clamped to within the original Phrase's valid range.
+/// End time values are clamped to within the original Phrase's valid range.
+/// Begin and end times should be non-negative.
 ///
 template<typename T>
 class ClipPhrase : public Phrase<T>

@@ -121,13 +121,26 @@ TEST_CASE( "Phrases" )
   SECTION( "Clip Phrases retime existing phrases and clamp their end values." )
   {
     auto clip_equal = ClipPhrase<float>( ramp, 0.0f, 1.0f );
-    auto clip_past_end = ClipPhrase<float>( ramp, 0.5f, 1.25f );
     auto clip_from_start = ClipPhrase<float>( ramp, 0.0f, 0.5f );
-    auto clip_center = ClipPhrase<float>( ramp, 0.25f, 0.75f );
+    auto clip_middle = ClipPhrase<float>( ramp, 0.25f, 0.75f );
+    auto clip_past_end = ClipPhrase<float>( ramp, 0.5f, 1.25f );
+
+    REQUIRE( clip_equal.getDuration() == 1.0f );
+    REQUIRE( clip_equal.getStartValue() == ramp->getStartValue() );
+    REQUIRE( clip_equal.getEndValue() == ramp->getEndValue() );
+    REQUIRE( clip_equal.getValue( 0.5f ) == ramp->getValue( 0.5f ) );
 
     REQUIRE( clip_from_start.getDuration() == 0.5f );
     REQUIRE( clip_from_start.getValue( 0.0f ) == ramp->getValue( 0.0f ) );
     REQUIRE( clip_from_start.getValue( 10.0f ) == ramp->getValue( 0.5f ) );
+
+    REQUIRE( clip_middle.getDuration() == 0.5f );
+    REQUIRE( clip_middle.getValue( 0.0f ) == ramp->getValue( 0.25f ) );
+    REQUIRE( clip_middle.getEndValue() == ramp->getValue( 0.75f ) );
+
+    REQUIRE( clip_past_end.getDuration() == 0.75f );
+    REQUIRE( clip_past_end.getEndValue() == ramp->getEndValue() );
+    REQUIRE( clip_past_end.getValue( 0.5f ) == ramp->getValue( 1.0f ) );
   }
 }
 
