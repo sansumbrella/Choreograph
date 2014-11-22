@@ -415,7 +415,7 @@ TEST_CASE( "Callbacks" )
 
   auto options = timeline.apply( &target, sequence );
 
-  SECTION( "Functions can be cued from motion events." )
+  SECTION( "Functions can be cued by motion events: start, update, and finish." )
   {
     bool          startCalled = false;
     bool          endCalled = false;
@@ -426,57 +426,36 @@ TEST_CASE( "Callbacks" )
       .updateFn( [&updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; } )
       .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
 
-    SECTION( "Callbacks from step" )
-    {
-      const float end = timeline.calcDuration();
-      const float step = end / 10.0f;
+    const float step = timeline.calcDuration() / 10.0f;
+    timeline.step( step );
+    REQUIRE( startCalled );
+    REQUIRE( updateCount == 1 );
+    REQUIRE( updateTarget == (target / 2.0f) );
+
+    for( int i = 0; i < 10; i += 1 ) {
+      REQUIRE_FALSE( endCalled );
       timeline.step( step );
-      REQUIRE( startCalled );
-      REQUIRE( updateCount == 1 );
-      REQUIRE( updateTarget == (target / 2.0f) );
-
-      for( int i = 0; i < 10; i += 1 ) {
-        REQUIRE_FALSE( endCalled );
-        timeline.step( step );
-      }
-
-      REQUIRE( endCalled );
-      REQUIRE( updateCount == 11 );
     }
 
-    SECTION( "Callbacks from jumpTo" )
-    {
-      timeline.jumpTo( 0.1f );
-      REQUIRE( startCalled );
-      REQUIRE( updateCount == 1 );
-      REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE_FALSE( endCalled );
-
-      timeline.jumpTo( 0.9f );
-      REQUIRE( updateCount == 2 );
-      REQUIRE_FALSE( endCalled );
-
-      timeline.jumpTo( timeline.calcDuration() );
-      REQUIRE( updateCount == 3 );
-      REQUIRE( endCalled );
-    }
+    REQUIRE( endCalled );
+    REQUIRE( updateCount == 11 );
   }
 
-  SECTION( "Functions can be cued from sequence inflection points." )
+  SECTION( "Functions can be cued by sequence inflection points." )
   {
     int c1 = 0;
     int c2 = 0;
 
     timeline.apply( &target )
-    .hold( 0.5f )
-    // inflects around 0.5
-    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
-    .then<RampTo>( 3.0f, 1.0f )
-    // inflects around 1.5
-    .onInflection( [&c2] (Motion<float> &m) {
-      c2 += 1;
-    } )
-    .then<RampTo>( 2.0f, 1.0f );
+      .hold( 0.5f )
+      // inflects around 0.5
+      .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
+      .then<RampTo>( 3.0f, 1.0f )
+      // inflects around 1.5
+      .onInflection( [&c2] (Motion<float> &m) {
+        c2 += 1;
+      } )
+      .then<RampTo>( 2.0f, 1.0f );
 
     timeline.step( 0.49f );
     timeline.step( 0.02f );
