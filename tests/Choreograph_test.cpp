@@ -5,7 +5,7 @@
 #include <array>
 
 // If true, will test vec2 and vec3 animation.
-#define INCLUDE_CINDER_HEADERS 1
+#define INCLUDE_CINDER_HEADERS true
 
 using namespace std;
 using namespace choreograph;
@@ -16,7 +16,29 @@ using namespace choreograph;
 
 TEST_CASE( "Phrases" )
 {
+  auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
+  auto other = makeRamp( 10.0f, 100.0f, 1.0f );
 
+  SECTION( "Procedural" )
+  {
+    auto proc = makeProcedure<float>( 1.0f, [] ( Time t, Time duration ) {
+      return sin( t * PI ) * 10.0f;
+    } );
+
+    REQUIRE( proc->getValue( 0.5 ) == 10 );
+    REQUIRE( proc->getValue( 1 ) < 1.0e-14 );
+  }
+
+  SECTION( "Combine" )
+  {
+    auto accumulate = makeAccumulator<float>( 0.0f, ramp, other );
+    REQUIRE( accumulate->getValue( 1.0 ) == 110 );
+
+    auto decumulate = makeAccumulator<float>( 0.0f, ramp, other, [] (float a, float b) {
+      return a - b;
+    } );
+    REQUIRE( decumulate->getValue( 1.0 ) == -110 );
+  }
 }
 
 //==========================================
@@ -285,10 +307,166 @@ TEST_CASE( "Timeline" )
     }
   }
 
+  SECTION( "Motion Callbacks" )
+  {
+    bool          updateCalled = false;
+    bool          startCalled = false;
+    bool          endCalled = false;
+    Output<float> target = 0;
+    int           updateCount = 0;
+    float         updateTarget = 0;
+
+    timeline.apply( &target )
+      .startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
+      .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
+      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } )
+      .then<RampTo>( 10.0f, 1.0f );
+
+    SECTION( "Callbacks from step" )
+    {
+      timeline.step( 0.1f );
+      REQUIRE( startCalled );
+      REQUIRE( updateCalled );
+      REQUIRE( updateCount == 1 );
+      REQUIRE( updateTarget == (target / 2.0f) );
+      REQUIRE( target == 1.0f );
+
+      for( int i = 0; i < 9; ++i ) {
+        REQUIRE_FALSE( endCalled );
+        timeline.step( 0.1f );
+      }
+
+      REQUIRE( endCalled );
+      REQUIRE( updateCount == 10 );
+    }
+
+    SECTION( "Callbacks from jumpTo" )
+    {
+      timeline.jumpTo( 0.1f );
+      REQUIRE( startCalled );
+      REQUIRE( updateCalled );
+      REQUIRE( updateCount == 1 );
+      REQUIRE( updateTarget == (target / 2.0f) );
+      REQUIRE( target == 1.0f );
+      REQUIRE_FALSE( endCalled );
+
+      timeline.jumpTo( 0.9f );
+      REQUIRE( updateCount == 2 );
+      REQUIRE_FALSE( endCalled );
+
+      timeline.jumpTo( 1.0f );
+      REQUIRE( updateCount == 3 );
+      REQUIRE( endCalled );
+    }
+  }
+
+
+  SECTION( "Cues" )
+  {
+    timeline.clear();
+    vector<int> call_counts( 4, 0 );
+    std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
+    for( size_t i = 0; i < call_counts.size(); ++i )
+    {
+      timeline.cue( [i, &call_counts] { call_counts[i] += 1; }, delays[i] );
+    }
+
+    timeline.step( 0.1f );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 0 );
+    REQUIRE( call_counts[2] == 0 );
+
+    for( int i = 0; i < 9; ++i ) {
+      timeline.step( 0.1f );
+    }
+
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 1 );
+    REQUIRE( call_counts[2] == 0 );
+
+    for( int i = 0; i < 10; ++i ) {
+      timeline.step( 0.1f );
+    }
+
+    REQUIRE( timeline.size() == 1 );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 1 );
+    REQUIRE( call_counts[2] == 1 );
+    REQUIRE( call_counts[3] == 0 );
+
+    for( int i = 0; i < 11; ++i ) {
+      timeline.step( 0.1f );
+    }
+
+    REQUIRE( timeline.size() == 0 );
+    REQUIRE( call_counts[0] == 1 );
+    REQUIRE( call_counts[1] == 1 );
+    REQUIRE( call_counts[2] == 1 );
+    REQUIRE( call_counts[3] == 1 );
+  }
+
+  SECTION( "Cue Scoping and Cancellation" )
+  {
+    int call_count = 0;
+
+    SECTION( "Plain Handle" )
+    {
+      {
+        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 1 );
+    }
+
+    SECTION( "Plain Handle, cancelled" )
+    {
+      {
+        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
+        auto locked = handle.lock();
+        if( locked ) {
+          locked->cancel();
+        }
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 0 );
+    }
+
+    SECTION( "Scoped Control, destructed" )
+    {
+      {
+        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 0 );
+    }
+
+    SECTION( "Scoped Control, persistent" )
+    {
+      ScopedCueRef cue;
+      {
+        cue = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
+      }
+      timeline.jumpTo( 1.0f );
+      REQUIRE( call_count == 1 );
+    }
+  }
+
+  SECTION( "Manipulating During Update" )
+  {
+    SECTION( "Add Motion From Cue" )
+    {
+
+    }
+
+    SECTION( "Cancel Motion From Cue" )
+    {
+
+    }
+  }
 }
 
 //==========================================
-// Output, Time and Other Stuff
+// Output
 //==========================================
 
 TEST_CASE( "Outputs" )
@@ -409,11 +587,15 @@ TEST_CASE( "Outputs" )
 
     REQUIRE( base.value() == 500.0f );
     REQUIRE( copy.value() == 1.0f );
-    
+
     motion.jumpTo( 2.0f );
     REQUIRE( copy.value() == 10.0f );
   }
 } // Outputs
+
+//==========================================
+// Time and Other Stuff
+//==========================================
 
 TEST_CASE( "Time and Infinity" )
 {
@@ -433,158 +615,6 @@ TEST_CASE( "Time and Infinity" )
   REQUIRE( (1000.0f / infinity) == 0.0f );
 } // Time and Infinity
 
-TEST_CASE( "Cues and Callbacks", "[timeline]" )
-{
-  ch::Timeline  timeline;
-  Output<float> target = 0.0f;
-
-  SECTION( "Motion Callbacks" )
-  {
-    bool          updateCalled = false;
-    bool          startCalled = false;
-    bool          endCalled = false;
-    Output<float> target = 0;
-    int           updateCount = 0;
-    float         updateTarget = 0;
-
-    timeline.apply( &target )
-      .startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
-      .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
-      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } )
-      .then<RampTo>( 10.0f, 1.0f );
-
-    SECTION( "Callbacks from step" )
-    {
-      timeline.step( 0.1f );
-      REQUIRE( startCalled );
-      REQUIRE( updateCalled );
-      REQUIRE( updateCount == 1 );
-      REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE( target == 1.0f );
-
-      for( int i = 0; i < 9; ++i ) {
-        REQUIRE_FALSE( endCalled );
-        timeline.step( 0.1f );
-      }
-
-      REQUIRE( endCalled );
-      REQUIRE( updateCount == 10 );
-    }
-
-    SECTION( "Callbacks from jumpTo" )
-    {
-      timeline.jumpTo( 0.1f );
-      REQUIRE( startCalled );
-      REQUIRE( updateCalled );
-      REQUIRE( updateCount == 1 );
-      REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE( target == 1.0f );
-      REQUIRE_FALSE( endCalled );
-
-      timeline.jumpTo( 0.9f );
-      REQUIRE( updateCount == 2 );
-      REQUIRE_FALSE( endCalled );
-
-      timeline.jumpTo( 1.0f );
-      REQUIRE( updateCount == 3 );
-      REQUIRE( endCalled );
-    }
-  }
-
-  SECTION( "Timeline Cues" )
-  {
-    vector<int> call_counts( 4, 0 );
-    std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
-    for( size_t i = 0; i < call_counts.size(); ++i )
-    {
-      timeline.cue( [i, &call_counts] { call_counts[i] += 1; }, delays[i] );
-    }
-
-    timeline.step( 0.1f );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 0 );
-    REQUIRE( call_counts[2] == 0 );
-
-    for( int i = 0; i < 9; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 0 );
-
-    for( int i = 0; i < 10; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( timeline.size() == 1 );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 1 );
-    REQUIRE( call_counts[3] == 0 );
-
-    for( int i = 0; i < 11; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( timeline.size() == 0 );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 1 );
-    REQUIRE( call_counts[3] == 1 );
-  }
-
-  SECTION( "Cue Scoping and Cancellation" )
-  {
-    int call_count = 0;
-
-    SECTION( "Plain Handle" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 1 );
-    }
-
-    SECTION( "Plain Handle, cancelled" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
-        auto locked = handle.lock();
-        if( locked ) {
-          locked->cancel();
-        }
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 0 );
-    }
-
-    SECTION( "Scoped Control, destructed" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 0 );
-    }
-
-    SECTION( "Scoped Control, persistent" )
-    {
-      ScopedCueRef cue;
-      {
-        cue = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 1 );
-    }
-  }
-
-  SECTION( "Motion Manipulation from Callbacks" )
-  {
-  }
-}
-
 #if INCLUDE_CINDER_HEADERS
 
 #include "cinder/Vector.h"
@@ -594,7 +624,8 @@ using namespace cinder;
 TEST_CASE( "Separate component interpolation", "[sequence]" )
 {
 
-  SECTION( "Compare 2-Component Values" ) {
+  SECTION( "Compare 2-Component Values" )
+  {
     // Animate XY from and to same values with different ease curves.
     Sequence<vec2> sequence( vec2( 1 ) );
     sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
@@ -604,7 +635,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
   }
 
-  SECTION( "Compare 3-Component Values" ) {
+  SECTION( "Compare 3-Component Values" )
+  {
     Sequence<vec3> sequence( vec3( 1 ) );
     sequence.then<RampTo3>( vec3( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad(), EaseInOutQuad() );
 
@@ -619,7 +651,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).z );
   }
 
-  SECTION( "Compare 4-Component Values" ) {
+  SECTION( "Compare 4-Component Values" )
+  {
     Sequence<vec4> sequence( vec4( 1 ) );
     sequence.then<RampTo4>( vec4( 10.0f ), 1.0f, EaseOutQuad(), EaseInAtan(), EaseInOutQuad(), EaseInCubic() );
 
@@ -635,7 +668,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence.getValue( 0.5f ).z != sequence.getValue( 0.5f ).w );
   }
 
-  SECTION( "Over- and Under-fill Separate Easings" ) {
+  SECTION( "Over- and Under-fill Separate Easings" )
+  {
     auto sequence = createSequence( vec3( 10.0f ) );
     // The real test here is that we don't crash when creating or using this sequence.
     sequence->then<RampTo3>( vec3( 1.0f ), 1.0f, EaseInOutQuad() ).then<RampTo3>( vec3( 5.0f ), 1.0f, EaseInQuad(), EaseNone(), EaseInAtan(), EaseInBack() );
@@ -645,7 +679,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence->getValue( 1.5f ).y != sequence->getValue( 1.5f ).z );
   }
 
-  SECTION( "Mixing Sequences" ) {
+  SECTION( "Mixing Sequences" )
+  {
     Sequence<vec2> sequence( vec2( 0 ) );
 
     Sequence<vec2> bounce_y( vec2( 0 ) );
