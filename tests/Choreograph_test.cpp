@@ -18,21 +18,37 @@ TEST_CASE( "Phrases" )
 {
   auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
   auto other = makeRamp( 10.0f, 100.0f, 1.0f );
-  Hold<float> hold( 1.0f, 1.0f );
+  auto hold = make_shared<Hold<float>>( 5.0f, 1.0f );
 
-  SECTION( "Retime" )
+  SECTION( "Ramps perform linear interpolation between two values." )
+  {
+    REQUIRE( ramp->getValue( 0.0f ) == 1.0f );
+    REQUIRE( ramp->getValue( 0.5f ) == 5.5f );
+    REQUIRE( ramp->getValue( 1.0f ) == 10.0f );
+  }
+
+  SECTION( "Holds return a single value over a duration." )
+  {
+    REQUIRE( hold->getValue( 0.2f ) == hold->getValue( 1.0f ) );
+  }
+
+  SECTION( "Retime phrases change how an existing phrase plays back." )
   {
     auto repeat = makeRepeat<float>( ramp, 4 );
     auto reverse = makeReverse<float>( ramp );
-    auto ping = makePingPong<float>( ramp, 4 );
+    auto ping = makePingPong<float>( ramp, 7 );
 
     REQUIRE( reverse->getValue( 0.2 ) == ramp->getValue( 0.8 ) );
     REQUIRE( repeat->getValue( 3 ) == ramp->getValue( 0 ) );
     REQUIRE( ping->getValue( 1 ) == ramp->getValue( 1 ) );
     REQUIRE( ping->getValue( 2 ) == ramp->getValue( 0 ) );
+
+    REQUIRE( repeat->getDuration() == ramp->getDuration() * 4 );
+    REQUIRE( reverse->getDuration() == ramp->getDuration() );
+    REQUIRE( ping->getDuration() == ramp->getDuration() * 7 );
   }
 
-  SECTION( "Procedural" )
+  SECTION( "Procedural phrases return values from functional procedures." )
   {
     auto proc = makeProcedure<float>( 1.0f, [] ( Time t, Time duration ) {
       return sin( t * PI ) * 10.0f;
@@ -42,14 +58,15 @@ TEST_CASE( "Phrases" )
     REQUIRE( proc->getValue( 1 ) < 1.0e-14 );
   }
 
-  SECTION( "Combine" )
+  SECTION( "Combine phrases mix the output of multiple phrases into one." )
   {
     auto accumulate = makeAccumulator<float>( 0.0f, ramp, other );
-    REQUIRE( accumulate->getValue( 1.0 ) == 110 );
 
     auto decumulate = makeAccumulator<float>( 0.0f, ramp, other, [] (float a, float b) {
       return a - b;
     } );
+
+    REQUIRE( accumulate->getValue( 1.0 ) == 110 );
     REQUIRE( decumulate->getValue( 1.0 ) == -110 );
   }
 }
@@ -65,12 +82,12 @@ TEST_CASE( "Sequences" )
     .then<RampTo>( 10.0f, 1.0f )
     .then<RampTo>( 100.0f, 1.0f );
 
-  SECTION( "Sequence duration is correct." )
+  SECTION( "Sequence duration is the sum of all of its component phrase's durations." )
   {
     REQUIRE( sequence.getDuration() == 3 );
   }
 
-  SECTION( "Sequences can be constructed other ways" )
+  SECTION( "Sequences have multiple construction patterns." )
   {
     SECTION( "Copy Constructor" )
     {
@@ -90,14 +107,14 @@ TEST_CASE( "Sequences" )
     }
   }
 
-  SECTION( "Sequence values within duration are correct." )
+  SECTION( "Sequence values within duration are interpolated by the appropriate Phrase." )
   {
     REQUIRE( sequence.getValue( 0.5 ) == 0.5 );
     REQUIRE( sequence.getValue( 1.0 ) == 1.0 );
     REQUIRE( sequence.getValue( 1.5 ) == 5.5 );
   }
 
-  SECTION( "Sequence values outside duration are clamped." )
+  SECTION( "Sequence values outside duration are clamped to begin and end values." )
   {
     REQUIRE( sequence.getValue( - std::numeric_limits<float>::max() ) == 0.0f );
     REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == 100.0f );
@@ -151,13 +168,13 @@ TEST_CASE( "Motions" )
 
   Motion<float> motion( &target, sequence );
 
-  SECTION( "Motion Duration is Correct" )
+  SECTION( "Motion duration is derived from its Sequence." )
   {
     REQUIRE( motion.getDuration() == sequence.getDuration() );
     REQUIRE( motion.getDuration() == 3 );
   }
 
-  SECTION( "Motion target value matches Sequence value" )
+  SECTION( "Motion target's value matches Sequence value at that time." )
   {
     vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
     for( auto &t : times ) {
@@ -166,21 +183,9 @@ TEST_CASE( "Motions" )
     }
   }
 
-  SECTION( "Slicing Source" )
+  SECTION( "Motions can slice their Sequence." )
   {
-    SECTION( "Cut Before" )
-    {
-      motion.jumpTo( 1.5f );
-      float v1 = target();
-      motion.cutPhrasesBefore( motion.time() );
-      motion.jumpTo( 0.0f );
-      float v2 = target();
-      REQUIRE( v1 == v2 );
-      REQUIRE( v1 == 5.5f );
-      REQUIRE( motion.getDuration() == 1.5f );
-    }
-
-    SECTION( "Slice" )
+    SECTION( "Slicing the Sequence changes the Motion's output." )
     {
       motion.sliceSequence( 0.5f, 1.5f );
       motion.jumpTo( 1.5f );
@@ -193,23 +198,42 @@ TEST_CASE( "Motions" )
       REQUIRE( v2 == sequence.getValue( 0.5f ) );
     }
 
-    SECTION( "Cut In" )
+    SECTION( "Cutting before removes past Phrases from the Sequence." )
+    {
+      motion.jumpTo( 1.5f );
+      float v1 = target();
+      motion.cutPhrasesBefore( motion.time() );
+      motion.jumpTo( 0.0f );
+      float v2 = target();
+      REQUIRE( v1 == v2 );
+      REQUIRE( v1 == 5.5f );
+      REQUIRE( motion.getDuration() == 1.5f );
+    }
+
+    SECTION( "Cut In slices the Sequence so it ends in the specified amount of time." )
     {
       motion.cutIn( 2.0f );
       REQUIRE( motion.getDuration() == 2 );
     }
 
-    SECTION( "Cut In Later" )
+    SECTION( "Cut In also removes Phrases prior to the current Motion time." )
     {
       motion.jumpTo( 1.0f );
       motion.cutIn( 2.0f );
+
+      REQUIRE( motion.time() == 0 );
       REQUIRE( motion.getDuration() == 2 );
     }
 
-    SECTION( "Cut Past End" )
+    SECTION( "Cut In will extend the Sequence if the cut time is past the end of the Sequence." )
     {
       motion.jumpTo( 2.5f );
       motion.cutIn( 2.0f );
+
+      motion.jumpTo( 1.5f );
+      auto v1 = target();
+
+      REQUIRE( v1 == sequence.getEndValue() );
       REQUIRE( motion.getDuration() == 2 );
     }
   }
@@ -303,7 +327,7 @@ TEST_CASE( "Timeline" )
 
   auto options = timeline.apply( &target, sequence );
 
-  SECTION( "Output<T> Pointers" )
+  SECTION( "Output<T> pointers can be controlled via Timeline." )
   {
     Output<float> target = 0.0f;
 
@@ -324,7 +348,7 @@ TEST_CASE( "Timeline" )
     REQUIRE( target == 10.0f );
   }
 
-  SECTION( "Raw Pointers" )
+  SECTION( "Raw pointers can be controlled via Timeline." )
   {
     float target = 0.0f;
     // Construct Motion directly
@@ -344,36 +368,7 @@ TEST_CASE( "Timeline" )
     REQUIRE( target == 10.0f );
   }
 
-  SECTION( "Inflection Point Callbacks" )
-  {
-    int c1 = 0;
-    int c2 = 0;
-
-    timeline.apply( &target )
-      .hold( 0.5f )
-      // inflects around 0.5
-      .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
-      .then<RampTo>( 3.0f, 1.0f )
-      // inflects around 1.5
-      .onInflection( [&c2] (Motion<float> &m) {
-        c2 += 1;
-      } )
-      .then<RampTo>( 2.0f, 1.0f );
-
-    timeline.step( 0.49f );
-    timeline.step( 0.02f );
-    REQUIRE( c1 == 1 );
-    REQUIRE( c2 == 0 );
-
-    timeline.jumpTo( 1.51f );
-    REQUIRE( c2 == 1 );
-    REQUIRE( c1 == 1 );
-    timeline.jumpTo( 1.49f );
-    REQUIRE( c2 == 2 );
-    REQUIRE( c1 == 1 );
-  }
-
-  SECTION( "Trimming" )
+  SECTION( "Sequences can be trimmed via motion options." )
   {
     SECTION( "Cut At" )
     {
@@ -389,8 +384,25 @@ TEST_CASE( "Timeline" )
       REQUIRE( timeline.calcDuration() == 0.5f );
     }
   }
+} // Timeline
 
-  SECTION( "Motion Callbacks" )
+//==========================================
+// Motion Callbacks on the Timeline
+//==========================================
+
+TEST_CASE( "Callbacks" )
+{
+  Timeline      timeline;
+  Output<float> target = 0.0f;
+
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  auto options = timeline.apply( &target, sequence );
+
+  SECTION( "Functions can be cued from motion events." )
   {
     bool          startCalled = false;
     bool          endCalled = false;
@@ -437,7 +449,36 @@ TEST_CASE( "Timeline" )
     }
   }
 
-  SECTION( "Manipulating During Update" )
+  SECTION( "Functions can be cued from sequence inflection points." )
+  {
+    int c1 = 0;
+    int c2 = 0;
+
+    timeline.apply( &target )
+    .hold( 0.5f )
+    // inflects around 0.5
+    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
+    .then<RampTo>( 3.0f, 1.0f )
+    // inflects around 1.5
+    .onInflection( [&c2] (Motion<float> &m) {
+      c2 += 1;
+    } )
+    .then<RampTo>( 2.0f, 1.0f );
+
+    timeline.step( 0.49f );
+    timeline.step( 0.02f );
+    REQUIRE( c1 == 1 );
+    REQUIRE( c2 == 0 );
+
+    timeline.jumpTo( 1.51f );
+    REQUIRE( c2 == 1 );
+    REQUIRE( c1 == 1 );
+    timeline.jumpTo( 1.49f );
+    REQUIRE( c2 == 2 );
+    REQUIRE( c1 == 1 );
+  }
+
+  SECTION( "It is safe to add and cancel motions from callbacks." )
   {
     SECTION( "Add Motion From Cue" )
     {
