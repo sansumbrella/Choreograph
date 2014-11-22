@@ -185,12 +185,14 @@ TEST_CASE( "Motions" )
 
   SECTION( "Motions can slice their Sequence." )
   {
-    SECTION( "Slicing the Sequence changes the Motion's output." )
+    SECTION( "Slicing changes the Sequence animation." )
     {
       motion.sliceSequence( 0.5f, 1.5f );
-      motion.jumpTo( 1.5f );
+
+      motion.jumpTo( 1.0f );
       float v1 = target();
-      motion.jumpTo( -1.0f );
+
+      motion.jumpTo( 0.0f );
       float v2 = target();
 
       REQUIRE( motion.getDuration() == 1 );
@@ -198,13 +200,24 @@ TEST_CASE( "Motions" )
       REQUIRE( v2 == sequence.getValue( 0.5f ) );
     }
 
+    SECTION( "When sliced, the Motion's time is adjusted to be fixed relative to its Sequence." )
+    {
+      motion.jumpTo( 1.0f );
+      motion.sliceSequence( 0.5f, 1.5f );
+
+      REQUIRE( motion.time() == 0.5f );
+    }
+
     SECTION( "Cutting before removes past Phrases from the Sequence." )
     {
       motion.jumpTo( 1.5f );
       float v1 = target();
+
       motion.cutPhrasesBefore( motion.time() );
+
       motion.jumpTo( 0.0f );
       float v2 = target();
+
       REQUIRE( v1 == v2 );
       REQUIRE( v1 == 5.5f );
       REQUIRE( motion.getDuration() == 1.5f );
