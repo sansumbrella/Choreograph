@@ -597,7 +597,7 @@ TEST_CASE( "Callbacks" )
     REQUIRE( c1 == 1 );
   }
 
-  SECTION( "It is safe to add and cancel motions from callbacks." )
+  SECTION( "It is safe to add and cancel motions from Motion callbacks." )
   {
     SECTION( "Add Motion From Cue" )
     {
@@ -608,6 +608,23 @@ TEST_CASE( "Callbacks" )
     {
 
     }
+  }
+
+  SECTION( "It is safe to destroy a Timeline from the Timeline finish fn." )
+  {
+    auto self_destructing_timeline = make_unique<Timeline>();
+    self_destructing_timeline->apply( &target, sequence );
+    self_destructing_timeline->setFinishFn( [&self_destructing_timeline] {
+      self_destructing_timeline.reset();
+    } );
+
+    REQUIRE( self_destructing_timeline );
+
+    // Stepping forward gets to the end and triggers our finish fn.
+    // Note that our application does not crash here (that's the real test).
+    self_destructing_timeline->jumpTo( sequence.getDuration() );
+
+    REQUIRE_FALSE( self_destructing_timeline );
   }
 }
 
