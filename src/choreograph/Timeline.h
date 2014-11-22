@@ -77,7 +77,9 @@ public:
   /// Set a function to be called when the current inflection point is crossed.
   /// An inflection occcurs when the Sequence moves from one Phrase to the next.
   /// You must add a phrase after this for the inflection to occur.
-  SelfT& onInflection( const MotionCallback &fn ) { _motion.addInflectionCallback( _sequence.getPhraseCount(), fn ); return *this; }
+  SelfT& onInflection( const MotionCallback &fn ) { return onInflection( _sequence.getPhraseCount(), fn ); }
+  /// Adds an inflection callback when the specified phrase index is crossed.
+  SelfT& onInflection( size_t point, const MotionCallback &fn ) { _motion.addInflectionCallback( point, fn ); return *this; }
 
   /// Clip the motion in \t time from the current Motion playhead.
   /// Also discards any phrases we have already played up to this point.
@@ -98,8 +100,11 @@ public:
   template<template <typename> class PhraseT, typename... Args>
   SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence.template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
-  /// Clone and append a phrase to the Sequence.
+  /// Append a phrase to the Sequence.
   SelfT& then( const PhraseRef<T> &phrase ) { _sequence.then( phrase ); return *this; }
+
+  /// Append a sequence to the Sequence.
+  SelfT& then( const Sequence<T> &sequence ) { _sequence.then( sequence ); return *this; }
 
   //=================================================
   // Extra Sugar.
@@ -206,6 +211,7 @@ public:
 
   /// Set all motions to \a time.
   /// Useful for scrubbing Timelines with non-removed items.
+  /// Ignores the playback speed of TimelineItems, as it calls TimelineItem::jumpTo.
   /// Do not call from a callback.
   void jumpTo( Time time );
 
@@ -221,11 +227,12 @@ public:
 
   /// Sets a function to be called when this timeline becomes empty.
   /// It is safe to destroy the timeline from this callback, unlike any Cue.
-  void setClearedFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
+  void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
 
-  /// Returns the time at which all TimelineItems on this timeline will be finished.
+  /// Returns the time (from now) at which all TimelineItems on this timeline will be finished.
+  /// Cannot take into account Cues or Callbacks that may change the Timeline before finish.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
-  Time calcDuration() const;
+  Time timeUntilFinish() const;
 
   //=================================================
   // Timeline element manipulation.
@@ -276,7 +283,7 @@ private:
 
   // Remove any motions that have stale pointers or that have completed playing.
   void removeFinishedAndInvalidMotions();
- 
+
   // Move any items in the queue to our active items collection.
   void processQueue();
 
@@ -398,7 +405,7 @@ MotionOptions<T>& MotionOptions<T>::after( U *other )
 {
   auto ptr = _timeline.find( other );
   if( ptr ) {
-    _motion->setStartTime( ptr->getEndTime() );
+    _motion->setStartTime( ptr->getTimeUntilFinish() );
   }
   return *this;
 }

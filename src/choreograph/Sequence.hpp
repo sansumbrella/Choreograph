@@ -279,6 +279,10 @@ std::pair<size_t, size_t> Sequence<T>::getInflectionPoints( Time t1, Time t2 ) c
     }
   }
 
+  if( ! set.second ) {
+    output.second = _phrases.size() - 1;
+  }
+
   return output;
 }
 

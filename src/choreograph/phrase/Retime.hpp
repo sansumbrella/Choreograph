@@ -115,7 +115,8 @@ private:
 
 ///
 /// ClipPhrase cuts off an existing Phrase at some point in time.
-/// Time values are clamped to within the original Phrase's valid range.
+/// End time values are clamped to within the original Phrase's valid range.
+/// Begin and end times should be non-negative.
 ///
 template<typename T>
 class ClipPhrase : public Phrase<T>
@@ -132,7 +133,7 @@ public:
   T getStartValue() const override { return _source->getValue( clampTime( _begin ) ); }
   T getEndValue() const override { return _source->getValue( clampTime( _end ) ); }
 
-  Time clampTime( Time t ) const { return std::min( t, _source->getDuration() ); }
+  Time clampTime( Time t ) const { return std::min( std::min( t, _source->getDuration() ), _end ); }
 private:
   PhraseRef<T>  _source;
   Time          _begin;

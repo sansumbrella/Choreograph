@@ -5,41 +5,796 @@
 #include <array>
 
 // If true, will test vec2 and vec3 animation.
-#define INCLUDE_CINDER_HEADERS 1
+#define INCLUDE_CINDER_HEADERS true
 
 using namespace std;
 using namespace choreograph;
 
-TEST_CASE( "Sequence Interpolation", "[sequence]" )
+//==========================================
+// Phrases
+//==========================================
+
+TEST_CASE( "Phrases" )
 {
-  // Since the precision of floats decreases as they get larger,
-  // we need an epsilon larger than the delta from 1.0 to the next float.
-  const float epsilon = std::numeric_limits<float>::epsilon() * 20;
+  auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
+  auto other = makeRamp( 10.0f, 100.0f, 1.0f );
+  auto hold = make_shared<Hold<float>>( 5.0f, 1.0f );
 
-  Sequence<float> sequence( 0.0f );
-  // 4 second sequence.
-  sequence.set( 1.0f ).then<Hold>( 1.0f, 1.0f ).then<RampTo>( 2.0f, 1.0f ).then<RampTo>( 10.0f, 1.0f ).then<RampTo>( 2.0f, 1.0f );
-
-  SECTION( "Sequence values within duration are correct." ) {
-    REQUIRE( sequence.getValue( 0.5f ) == 1.0f );
-    REQUIRE( sequence.getValue( 1.0f ) == 1.0f );
-    REQUIRE( sequence.getValue( 1.5f ) == 1.5f );
+  SECTION( "Ramps perform linear interpolation between two values." )
+  {
+    REQUIRE( ramp->getValue( 0.0f ) == 1.0f );
+    REQUIRE( ramp->getValue( 0.5f ) == 5.5f );
+    REQUIRE( ramp->getValue( 1.0f ) == 10.0f );
   }
 
-  SECTION( "Sequence values outside duration are correct." ) {
-    REQUIRE( sequence.getValue( std::numeric_limits<float>::min() ) == 1.0f );
-    REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == 2.0f );
+  SECTION( "Holds return a single value over a duration." )
+  {
+    REQUIRE( hold->getValue( 0.2f ) == hold->getValue( 1.0f ) );
   }
 
-  SECTION( "Looped sequence values are correct." ) {
-    float offset = 2.015f;
+  SECTION( "Retime phrases change how an existing phrase plays back." )
+  {
+    auto repeat = makeRepeat<float>( ramp, 4 );
+    auto reverse = makeReverse<float>( ramp );
+    auto ping = makePingPong<float>( ramp, 7 );
+
+    REQUIRE( reverse->getValue( 0.2 ) == ramp->getValue( 0.8 ) );
+    REQUIRE( repeat->getValue( 3 ) == ramp->getValue( 0 ) );
+    REQUIRE( ping->getValue( 1 ) == ramp->getValue( 1 ) );
+    REQUIRE( ping->getValue( 2 ) == ramp->getValue( 0 ) );
+
+    REQUIRE( repeat->getDuration() == ramp->getDuration() * 4 );
+    REQUIRE( reverse->getDuration() == ramp->getDuration() );
+    REQUIRE( ping->getDuration() == ramp->getDuration() * 7 );
+  }
+
+  SECTION( "Procedural phrases return values from functional procedures." )
+  {
+    auto proc = makeProcedure<float>( 1.0f, [] ( Time t, Time duration ) {
+      return sin( t * PI ) * 10.0f;
+    } );
+
+    REQUIRE( proc->getValue( 0.5 ) == 10 );
+    REQUIRE( proc->getValue( 1 ) < 1.0e-14 );
+  }
+
+  SECTION( "Mix phrases blend between two phrases." )
+  {
+    auto mix_0 = makeBlend<float>( ramp, other, 0.0f );
+    auto mix_25 = makeBlend<float>( ramp, other, 0.25f );
+    auto mix_50 = makeBlend<float>( ramp, other, 0.5f );
+
+    auto mix_100 = makeBlend<float>( ramp, other );
+    mix_100->setMix( 1.0f );
+
+    REQUIRE( mix_100->getMix() == 1.0f );
+
+    REQUIRE( mix_0->getValue( 1.0f ) == ramp->getValue( 1.0f ) );
+    REQUIRE( mix_25->getValue( 1.0f ) == 32.5f );
+    REQUIRE( mix_50->getValue( 1.0f ) == 55.0f );
+    REQUIRE( mix_100->getValue( 1.0f ) == other->getValue( 1.0f ) );
+  }
+
+  SECTION( "Accumulate phrases mix the output of multiple phrases into one." )
+  {
+    auto accumulate = makeAccumulator<float>( 0.0f, ramp, other );
+
+    auto decumulate = makeAccumulator<float>( 0.0f, ramp, other, [] (float a, float b) {
+      return a - b;
+    } );
+
+    REQUIRE( accumulate->getValue( 1.0 ) == 110 );
+    REQUIRE( decumulate->getValue( 1.0 ) == -110 );
+  }
+
+  SECTION( "Ramps and Mix Phrases receive optional interpolation functions to support custom objects." )
+  {
+    struct Obj {
+      float       x;
+      float       y;
+      std::string name;
+    };
+
+    auto lerp_obj = [] (const Obj &lhs, const Obj &rhs, float mix) {
+      return Obj{ ch::lerpT( lhs.x, rhs.x, mix ),
+                  ch::lerpT( lhs.y, rhs.y, mix ),
+                  lhs.name };
+    };
+
+    auto a = Obj{ 0.0f, 10.0f, "hello" };
+    auto b = Obj{ 10.0f, 100.0f, "target" };
+    auto c = Obj{ 100.0f, 1000.0f, "another" };
+
+    auto ramp_ab = makeRamp( a, b, 1.0f, EaseInOutQuad(), lerp_obj );
+    auto ramp_bc = makeRamp( b, c, 1.0f, EaseNone(), lerp_obj );
+
+    auto mix_ramps = makeBlend<Obj>( ramp_ab, ramp_bc, 0.5f, lerp_obj );
+
+    REQUIRE( ramp_ab->getValue( 1.0f ).x == b.x );
+    REQUIRE( ramp_ab->getValue( 0.5f ).x == 5.0f );
+    REQUIRE( ramp_ab->getValue( 0.5f ).y == 55.0f );
+    REQUIRE( ramp_ab->getValue( 1.0f ).name == "hello" );
+    REQUIRE( ramp_bc->getValue( 1.0f ).name == "target" );
+    REQUIRE( mix_ramps->getValue( 0.5f ).y == ((550.0f * 0.5f) + (55.0f * 0.5f)) );
+  }
+}
+
+//==========================================
+// Sequences
+//==========================================
+
+TEST_CASE( "Sequences" )
+{
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  SECTION( "Sequence duration is the sum of all of its component phrase's durations." )
+  {
+    REQUIRE( sequence.getDuration() == 3 );
+  }
+
+  SECTION( "Sequences have multiple construction patterns." )
+  {
+    SECTION( "Copy Constructor" )
+    {
+      Sequence<float> other( sequence );
+
+      REQUIRE( other.getDuration() == sequence.getDuration() );
+      REQUIRE( other.getValue( 1.5 ) == sequence.getValue( 1.5 ) );
+    }
+
+    SECTION( "Phrase Constructor" )
+    {
+      auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
+      Sequence<float> other( ramp );
+
+      REQUIRE( other.getValue( 0.5 ) == ramp->getValue( 0.5 ) );
+      REQUIRE( other.getDuration() == ramp->getDuration() );
+    }
+  }
+
+  SECTION( "Sequence values within duration are interpolated by the appropriate Phrase." )
+  {
+    REQUIRE( sequence.getValue( 0.5 ) == 0.5 );
+    REQUIRE( sequence.getValue( 1.0 ) == 1.0 );
+    REQUIRE( sequence.getValue( 1.5 ) == 5.5 );
+  }
+
+  SECTION( "Sequence values outside duration are clamped to begin and end values." )
+  {
+    REQUIRE( sequence.getValue( - std::numeric_limits<float>::max() ) == sequence.getStartValue() );
+    REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == sequence.getEndValue() );
+  }
+
+  SECTION( "Looped sequence values are equivalent." )
+  {
+    Time offset = 1.55;
+    // Since the precision of floats decreases as they get larger,
+    // we need an epsilon larger than the delta from 1.0 to the next float.
+    const Time epsilon = 1.0e-5;
 
     REQUIRE( (wrapTime( 10 * sequence.getDuration() + offset, sequence.getDuration() ) - offset) < epsilon );
     REQUIRE( (sequence.getValueWrapped( sequence.getDuration() + offset ) - sequence.getValue( offset ) ) < epsilon );
     REQUIRE( (sequence.getValueWrapped( (2 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
-    REQUIRE( (sequence.getValueWrapped( (50 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
+    REQUIRE( (sequence.getValueWrapped( (20 * sequence.getDuration()) + offset ) - sequence.getValue( offset ) ) < epsilon );
+  }
+
+  SECTION( "Sequences are composable." )
+  {
+    sequence.then( sequence ).then( sequence.asPhrase() );
+
+    // We have the sequence four times, since it was doubled by the time we add it a second time.
+    REQUIRE( sequence.getDuration() == 12.0f );
+    REQUIRE( sequence.getValue( 3.5f ) == sequence.getValue( 6.5f ) );
+    REQUIRE( sequence.getValue( 1.0f ) == sequence.getValue( 4.0f ) );
   }
 }
+
+//==========================================
+// Motions
+//==========================================
+
+TEST_CASE( "Motions" )
+{
+  Output<float> target = 0.0f;
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  Motion<float> motion( &target, sequence );
+
+  SECTION( "Motion duration is derived from its Sequence." )
+  {
+    REQUIRE( motion.getDuration() == sequence.getDuration() );
+    REQUIRE( motion.getDuration() == 3 );
+  }
+
+  SECTION( "Motions apply their Sequence's value to their target." )
+  {
+    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
+    for( auto &t : times ) {
+      motion.jumpTo( t );
+      REQUIRE( target() == sequence.getValue( t ) );
+    }
+  }
+}
+
+//==========================================
+// Slicing and dicing
+//==========================================
+
+TEST_CASE( "Slicing Time" )
+{
+  SECTION( "Clip Phrases retime existing phrases and clamp their end values." )
+  {
+    auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
+    auto clip_equal = ClipPhrase<float>( ramp, 0.0f, 1.0f );
+    auto clip_from_start = ClipPhrase<float>( ramp, 0.0f, 0.5f );
+    auto clip_middle = ClipPhrase<float>( ramp, 0.25f, 0.75f );
+    auto clip_past_end = ClipPhrase<float>( ramp, 0.5f, 1.25f );
+
+    REQUIRE( clip_equal.getDuration() == 1.0f );
+    REQUIRE( clip_equal.getStartValue() == ramp->getStartValue() );
+    REQUIRE( clip_equal.getEndValue() == ramp->getEndValue() );
+    REQUIRE( clip_equal.getValue( 0.5f ) == ramp->getValue( 0.5f ) );
+
+    REQUIRE( clip_from_start.getDuration() == 0.5f );
+    REQUIRE( clip_from_start.getValue( 0.0f ) == ramp->getValue( 0.0f ) );
+    REQUIRE( clip_from_start.getValue( 10.0f ) == ramp->getValue( 0.5f ) );
+
+    REQUIRE( clip_middle.getDuration() == 0.5f );
+    REQUIRE( clip_middle.getValue( 0.0f ) == ramp->getValue( 0.25f ) );
+    REQUIRE( clip_middle.getEndValue() == ramp->getValue( 0.75f ) );
+
+    REQUIRE( clip_past_end.getDuration() == 0.75f );
+    REQUIRE( clip_past_end.getEndValue() == ramp->getEndValue() );
+    REQUIRE( clip_past_end.getValue( 0.5f ) == ramp->getValue( 1.0f ) );
+  }
+
+  Output<float> target = 0.0f;
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  SECTION( "Sequences can be sliced into subsequences." )
+  {
+    auto slice_equal = sequence.slice( 0.0f, sequence.calcDuration() );
+    auto slice_middle = sequence.slice( 0.25f, 2.25f );
+    auto slice_past_end = sequence.slice( 0.5f, 3.5f );
+
+    REQUIRE( slice_equal.getDuration() == sequence.getDuration() );
+    REQUIRE( slice_equal.getValue( 1.5f ) == sequence.getValue( 1.5f ) );
+
+    REQUIRE( sequence.getDuration() == 3 );
+    REQUIRE( slice_middle.getDuration() == 2 );
+    REQUIRE( slice_middle.getValue( 0.0f ) == sequence.getValue( 0.25f ) );
+    REQUIRE( slice_middle.getEndValue() == sequence.getValue( 2.25f ) );
+
+    REQUIRE( slice_past_end.getDuration() == 3 );
+    REQUIRE( slice_past_end.getValue( 3.0f ) == sequence.getEndValue() );
+    REQUIRE( slice_past_end.getValue( 0.0f ) == sequence.getValue( 0.5f ) );
+  }
+
+
+  SECTION( "Motions can slice their Sequence." )
+  {
+    Motion<float> motion( &target, sequence );
+
+    SECTION( "Slicing changes the Sequence animation." )
+    {
+      motion.sliceSequence( 0.5f, 1.5f );
+
+      motion.jumpTo( 1.0f );
+      float v1 = target();
+
+      motion.jumpTo( 0.0f );
+      float v2 = target();
+
+      REQUIRE( motion.getDuration() == 1 );
+      REQUIRE( v1 == sequence.getValue( 1.5f ) );
+      REQUIRE( v2 == sequence.getValue( 0.5f ) );
+    }
+
+    SECTION( "When sliced, the Motion's time is adjusted to be fixed relative to its Sequence." )
+    {
+      motion.jumpTo( 1.0f );
+      motion.sliceSequence( 0.5f, 1.5f );
+
+      REQUIRE( motion.time() == 0.5f );
+    }
+
+    SECTION( "Cutting before removes past Phrases from the Sequence." )
+    {
+      motion.jumpTo( 1.5f );
+      float v1 = target();
+
+      motion.cutPhrasesBefore( motion.time() );
+
+      motion.jumpTo( 0.0f );
+      float v2 = target();
+
+      REQUIRE( v1 == v2 );
+      REQUIRE( v1 == 5.5f );
+      REQUIRE( motion.getDuration() == 1.5f );
+    }
+
+    SECTION( "Cut In slices the Sequence so it ends in the specified amount of time." )
+    {
+      motion.cutIn( 2.0f );
+      REQUIRE( motion.getDuration() == 2 );
+    }
+
+    SECTION( "Cut In also removes Phrases prior to the current Motion time." )
+    {
+      motion.jumpTo( 1.0f );
+      motion.cutIn( 2.0f );
+
+      REQUIRE( motion.time() == 0 );
+      REQUIRE( motion.getDuration() == 2 );
+    }
+
+    SECTION( "Cut In will extend the Sequence if the cut time is past the end of the Sequence." )
+    {
+      motion.jumpTo( 2.5f );
+      motion.cutIn( 2.0f );
+
+      motion.jumpTo( 1.5f );
+      auto v1 = target();
+
+      REQUIRE( v1 == sequence.getEndValue() );
+      REQUIRE( motion.getDuration() == 2 );
+    }
+  }
+
+  SECTION( "Timeline MotionOptions expose trim methods." )
+  {
+    Timeline timeline;
+    auto options = timeline.apply( &target, sequence );
+
+    SECTION( "With single Motion, Timeline duration is motions duration." )
+    {
+      REQUIRE( timeline.timeUntilFinish() == sequence.getDuration() );
+    }
+
+    SECTION( "Cut at trims the sequence relative to their start." )
+    {
+      options.cutAt( 2.0f );
+      REQUIRE( timeline.timeUntilFinish() == 2.0f );
+    }
+
+    SECTION( "Cut In trims the sequence relative to the motion's current time." )
+    {
+      timeline.step( 0.5f );
+      float v1 = target();
+      options.cutIn( 0.5f );
+      timeline.step( 0.0f );
+      float v2 = target();
+
+      REQUIRE( timeline.timeUntilFinish() == 0.5f );
+      REQUIRE( v1 == v2 );
+    }
+  }
+}
+
+//==========================================
+// Cues
+//==========================================
+
+TEST_CASE( "Cues" )
+{
+  Timeline  timeline;
+  int       call_count = 0;
+  auto      options = timeline.cue( [&call_count] { call_count += 1; }, 1.0f );
+
+  SECTION( "Cues are called on time." )
+  {
+    timeline.jumpTo( 0.5f );
+    REQUIRE( call_count == 0 );
+
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 1 );
+  }
+
+  SECTION( "Cues can be cancelled by Handle." )
+  {
+    auto handle = options.getControl();
+    auto locked = handle.lock();
+    if( locked ) {
+      locked->cancel();
+    }
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 0 );
+  }
+
+  SECTION( "Living Scoped Control allows cue to call." )
+  {
+    auto scoped_control = options.getScopedControl();
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 1 );
+  }
+
+  SECTION( "Destructed Scoped Control prevents cue from calling." )
+  {
+    {
+      auto scoped_control = options.getScopedControl();
+    }
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 0 );
+  }
+
+  SECTION( "Cue signalling is directional." )
+  {
+    options.removeOnFinish( false );
+
+    SECTION( "Forward" )
+    {
+      timeline.jumpTo( 1.0f );
+      timeline.jumpTo( 0.5f );
+      timeline.jumpTo( 1.0f );
+
+      REQUIRE( call_count == 2 );
+    }
+
+    SECTION( "Reversed" )
+    {
+      options.playbackSpeed( -1 );
+
+      timeline.jumpTo( 1.1f );
+      timeline.jumpTo( 0.5f );
+      timeline.jumpTo( 1.1f );
+
+      REQUIRE( call_count == 1 );
+    }
+  }
+}
+
+//==========================================
+// Timeline and Options
+//==========================================
+
+TEST_CASE( "Timeline" )
+{
+  Timeline      timeline;
+  Output<float> target = 0.0f;
+
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  SECTION( "Output<T> pointers can be controlled via Timeline." )
+  {
+    Output<float> target = 0.0f;
+
+    // Construct Motion directly
+    Motion<float> motion( &target, sequence );
+
+    motion.jumpTo( 1.0f );
+    REQUIRE( target == 1.0f );
+    motion.jumpTo( 0.5f );
+    REQUIRE( target == 0.5f );
+
+    // Use timeline to create Motion.
+    timeline.apply( &target, sequence );
+    // Motions on Output types will be disconnected when another is created.
+    REQUIRE( motion.isInvalid() == true );
+
+    timeline.jumpTo( 2.0f );
+    REQUIRE( target == 10.0f );
+  }
+
+  SECTION( "Raw pointers can be controlled via Timeline." )
+  {
+    float target = 0.0f;
+    // Construct Motion directly
+    Motion<float> motion( &target, sequence );
+
+    motion.jumpTo( 1.0f );
+    REQUIRE( target == 1.0f );
+    motion.jumpTo( 0.5f );
+    REQUIRE( target == 0.5f );
+
+    // Use timeline to create Motion.
+    timeline.applyRaw( &target, sequence );
+    // Known issue with raw pointers, no management will have happened.
+    REQUIRE( motion.isInvalid() == false );
+
+    timeline.jumpTo( 2.0f );
+    REQUIRE( target == 10.0f );
+  }
+
+  SECTION( "Timeline duration is a function of all motions." )
+  {
+    Output<float> other = 0.0f;
+    auto options = timeline.apply( &other, sequence );
+
+    SECTION( "Adjusting motion start time affects timeline duration." )
+    {
+      options.setStartTime( 1.0f );
+      REQUIRE( timeline.timeUntilFinish() == 4.0f );
+    }
+
+    SECTION( "Adjusting motion playback speed affects timeline duration." )
+    {
+      options.playbackSpeed( 0.5f );
+      REQUIRE( timeline.timeUntilFinish() == 6.0f );
+    }
+  }
+} // Timeline
+
+//==========================================
+// Motion Callbacks on the Timeline
+//==========================================
+
+TEST_CASE( "Callbacks" )
+{
+  Timeline      timeline;
+  Output<float> target = 0.0f;
+
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  auto options = timeline.apply( &target, sequence );
+
+  SECTION( "Functions can be cued by motion events: start, update, and finish." )
+  {
+    bool          startCalled = false;
+    bool          endCalled = false;
+    int           updateCount = 0;
+    float         updateTarget = 0;
+
+    options.startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
+      .updateFn( [&updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; } )
+      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
+
+    const float step = timeline.timeUntilFinish() / 10.0f;
+    timeline.step( step );
+    REQUIRE( startCalled );
+    REQUIRE( updateCount == 1 );
+    REQUIRE( updateTarget == (target / 2.0f) );
+
+    for( int i = 0; i < 10; i += 1 ) {
+      REQUIRE_FALSE( endCalled );
+      timeline.step( step );
+    }
+
+    REQUIRE( endCalled );
+    REQUIRE( updateCount == 11 );
+  }
+
+  SECTION( "Functions can be cued by sequence inflection points." )
+  {
+    int c1 = 0;
+    int c2 = 0;
+
+    timeline.apply( &target )
+      .hold( 0.5f )
+      // inflects around 0.5
+      .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
+      .then<RampTo>( 3.0f, 1.0f )
+      // inflects around 1.5
+      .onInflection( [&c2] (Motion<float> &m) {
+        c2 += 1;
+      } )
+      .then<RampTo>( 2.0f, 1.0f );
+
+    timeline.step( 0.49f );
+    timeline.step( 0.02f );
+    REQUIRE( c1 == 1 );
+    REQUIRE( c2 == 0 );
+
+    timeline.jumpTo( 1.51f );
+    REQUIRE( c2 == 1 );
+    REQUIRE( c1 == 1 );
+    timeline.jumpTo( 1.49f );
+    REQUIRE( c2 == 2 );
+    REQUIRE( c1 == 1 );
+  }
+
+  SECTION( "It is safe to add and cancel motions from Cues and Motion callbacks." )
+  {
+    Output<float> t2 = 1.0f;
+
+    SECTION( "Add Motion from Motion callback." )
+    {
+      options.startFn( [&] (Motion<float> &) {
+        timeline.apply( &t2, sequence );
+      } );
+
+      REQUIRE( timeline.size() == 1 );
+      timeline.step( 0.1f );
+
+      REQUIRE( timeline.size() == 2 );
+    }
+
+    SECTION( "Cancel Motion from Motion callback." )
+    {
+      // Play t2 motion twice as fast as previous, disconnect target on finish.
+      timeline.apply( &t2, sequence )
+        .playbackSpeed( 2.0f )
+        .finishFn( [&target] (Motion<float> &) {
+          target.disconnect();
+      } );
+
+      REQUIRE( timeline.size() == 2 );
+      timeline.step( 1.5f );
+      float v1 = target();
+      float v2 = t2();
+
+      REQUIRE( v1 == 5.5f );
+      REQUIRE( v2 == 100.0f );
+      REQUIRE( timeline.empty() );
+    }
+
+    SECTION( "Change Motion from Cue." )
+    {
+      timeline.cue( [&] {
+        timeline.append( &target )
+          .then( sequence );
+      }, 0.5f );
+
+      REQUIRE( timeline.timeUntilFinish() == 3.0f );
+      timeline.step( 0.5f );
+
+      REQUIRE( timeline.timeUntilFinish() == 5.5f );
+    }
+  }
+
+  SECTION( "It is safe to destroy a Timeline from the Timeline finish fn." )
+  {
+    auto self_destructing_timeline = make_unique<Timeline>();
+    self_destructing_timeline->apply( &target, sequence );
+    self_destructing_timeline->setFinishFn( [&self_destructing_timeline] {
+      self_destructing_timeline.reset();
+    } );
+
+    REQUIRE( self_destructing_timeline );
+
+    // Stepping forward gets to the end and triggers our finish fn.
+    // Note that our application does not crash here (that's the real test).
+    self_destructing_timeline->jumpTo( sequence.getDuration() );
+
+    REQUIRE_FALSE( self_destructing_timeline );
+  }
+}
+
+//==========================================
+// Output
+//==========================================
+
+TEST_CASE( "Outputs" )
+{
+  ch::Timeline  timeline;
+  Output<float> output = 0.0f;
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f );
+
+  SECTION( "Output falling out of scope disconnects" )
+  {
+    // Reference so we can survive the inner scope.
+    MotionRef<float> motion;
+
+    { // create locally scoped output
+      Output<float> temp = 0.0f;
+      motion = make_shared<Motion<float>>( &temp );
+      REQUIRE( ! motion->isInvalid() );
+      REQUIRE( temp.isConnected() );
+    }
+
+    REQUIRE( motion->isInvalid() );
+  }
+
+  SECTION( "Motion falling out of scope disconnects" )
+  {
+    { // hook up a motion to our output
+      Motion<float> temp( &output );
+
+      REQUIRE( output.isConnected() == true );
+      REQUIRE( temp.isInvalid() == false );
+    }
+
+    REQUIRE( output.isConnected() == false );
+  }
+
+  SECTION( "Timeline Removes Invalid Connections" )
+  {
+    { // create locally scoped output
+      Output<float> temp;
+      timeline.apply( &temp ).then<RampTo>( 5.0f, 1.0f );
+
+      REQUIRE( timeline.size() == 1 );
+    }
+
+    // Part of test is that nothing fails when stepping the timeline.
+    timeline.step( 0.5f );
+    REQUIRE( timeline.empty() == true );
+  }
+
+  SECTION( "Vector of outputs can be moved." )
+  {
+    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> copy;
+
+    for( auto &output : outputs ) {
+      timeline.apply( &output, sequence );
+    }
+    copy = std::move( outputs );
+
+    timeline.step( 1.0f );
+    bool all_five = true;
+    for( auto &c : copy ) {
+      if( c != 1.0f ) {
+        all_five = false;
+      }
+    }
+    REQUIRE( copy.front() == 1.0f );
+    REQUIRE( all_five == true );
+  }
+
+  SECTION( "Move assignment brings motion along." )
+  {
+    Output<float> base( 1.0f );
+    Output<float> copy( 0.0f );
+
+    Motion<float> motion( &base, sequence );
+    copy = std::move( base );
+    motion.jumpTo( 1.0f );
+
+    REQUIRE( copy.value() == 1.0f );
+
+    motion.jumpTo( 2.0f );
+    REQUIRE( copy.value() == 10.0f );
+  }
+
+  SECTION( "Vector of outputs can be copied." )
+  {
+    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> copy;
+
+    for( auto &output : outputs ) {
+      timeline.apply( &output, sequence );
+    }
+    copy = outputs;
+
+    timeline.step( 1.0f );
+    bool all_five = true;
+    for( auto &c : copy ) {
+      if( c != 1.0f ) {
+        all_five = false;
+      }
+    }
+    REQUIRE( copy.front() == 1.0f );
+    REQUIRE( all_five == true );
+    REQUIRE( outputs.front() == 0.0f );
+  }
+
+  SECTION( "Copy assignment brings motion along. (this may be removed in future)" )
+  {
+    Output<float> base( 500.0f );
+    Output<float> copy( 0.0f );
+
+    Motion<float> motion( &base, sequence );
+    copy = base;
+    motion.jumpTo( 1.0f );
+
+    REQUIRE( base.value() == 500.0f );
+    REQUIRE( copy.value() == 1.0f );
+
+    motion.jumpTo( 2.0f );
+    REQUIRE( copy.value() == 10.0f );
+  }
+} // Outputs
+
+//==========================================
+// Time and Other Stuff
+//==========================================
 
 TEST_CASE( "Time and Infinity" )
 {
@@ -57,465 +812,11 @@ TEST_CASE( "Time and Infinity" )
   REQUIRE( sequence.getDuration() == infinity );
   REQUIRE( sequence.getValue( infinity ) == 2.0f );
   REQUIRE( (1000.0f / infinity) == 0.0f );
-} // Time and Infinity
-
-TEST_CASE( "Raw Pointers" )
-{
-  float target = 0.0f;
-  Timeline timeline;
-
-  SECTION( "Composing Sequences in Sequences" ) {
-    Sequence<float> sequence( 1.0f );
-    Sequence<float> continuation( 5.0f );
-    continuation.then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
-
-    sequence.then<RampTo>( 5.0f, 0.5f ).then( continuation ).then( continuation.asPhrase() );
-
-    REQUIRE( sequence.getDuration() == 4.5f );
-
-    Motion<float> motion( &target, sequence );
-    motion.jumpTo( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    motion.jumpTo( 1.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.applyRaw( &target, sequence );
-    REQUIRE( motion.isInvalid() == false ); // Working with raw pointer, no management will have happened.
-
-    timeline.jumpTo( 0.0f );
-    REQUIRE( target == 1.0f );
-
-    timeline.step( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 3.0f );
-  }
-
 }
 
-TEST_CASE( "Inflection Points", "[timeline]" )
-{
-  Timeline timeline;
-  timeline.setDefaultRemoveOnFinish( false );
-
-
-  Output<float> target = 0.0f;
-  int c1 = 0;
-  int c2 = 0;
-
-  auto &options = timeline.apply( &target )
-    .hold( 0.5f )
-    // inflects around 0.5
-    .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
-    .then<RampTo>( 3.0f, 1.0f )
-    // inflects around 1.5
-    .onInflection( [&c2] (Motion<float> &m) {
-        c2 += 1;
-      } )
-    .then<RampTo>( 2.0f, 1.0f );
-  REQUIRE( timeline.calcDuration() == 2.5f );
-  options.cutAt( 2.0f );
-  options.cutIn( 2.0f );
-  REQUIRE( timeline.calcDuration() == 2.0f );
-
-  timeline.step( 0.49f );
-  timeline.step( 0.11f );
-  REQUIRE( c1 == 1 );
-  REQUIRE( c2 == 0 );
-
-  timeline.jumpTo( 1.52f );
-  REQUIRE( c2 == 1 );
-  REQUIRE( c1 == 1 );
-  timeline.jumpTo( 0.9f );
-  REQUIRE( c2 == 2 );
-  REQUIRE( c1 == 1 );
-
-}
-
-TEST_CASE( "Cutting", "[motion]" )
-{
-  Output<float> target = 0.0f;
-  Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 1.0f, 1.0f )
-    .then<RampTo>( 10.0f, 1.0f )
-    .then<RampTo>( 5.0f, 1.0f )
-    .then<RampTo>( 20.0f, 1.0f );
-
-  Motion<float> motion( &target, sequence );
-  REQUIRE( motion.getDuration() == 4.0f );
-
-  motion.jumpTo( 1.5f );
-  float v1 = target();
-  motion.cutPhrasesBefore( motion.time() );
-  motion.jumpTo( 0.0f );
-  float v2 = target();
-  REQUIRE( v1 == v2 );
-  REQUIRE( v1 == 5.5f );
-  REQUIRE( motion.getDuration() == 2.5f );
-}
-
-TEST_CASE( "Slicing", "[sequence]" )
-{
-  Sequence<float> s( 0.0f );
-  s.then<RampTo>( 1.0f, 1.0f )
-    .then<RampTo>( 10.0f, 1.0f )
-    .then<RampTo>( 5.0f, 1.0f )
-    .then<RampTo>( 20.0f, 1.0f );
-
-  REQUIRE( s.getDuration() == 4.0f );
-  auto sub = s.slice( 0.5f, 3.5f );
-  REQUIRE( sub.getDuration() == 3.0f );
-  auto alt = s.slice( 0.0f, 3.0f );
-  REQUIRE( alt.getDuration() == 3.0f );
-}
-
-TEST_CASE( "Sequence Composition", "[sequence]" )
-{
-  Output<float> target = 0.0f;
-  Timeline timeline;
-
-  SECTION( "Composing Sequences in Sequences" ) {
-    Sequence<float> sequence( 1.0f );
-    Sequence<float> continuation( 5.0f );
-    continuation.then<RampTo>( 10.0f, 1.0f ).then<Hold>( 3.0f, 1.0f );
-
-    sequence.then<RampTo>( 5.0f, 0.5f ).then( continuation ).then( continuation.asPhrase() );
-
-    REQUIRE( sequence.getDuration() == 4.5f );
-
-    Motion<float> motion( &target, sequence );
-    motion.jumpTo( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    motion.jumpTo( 1.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.apply( &target, sequence );
-    REQUIRE( motion.isInvalid() == true ); // management will invalidate the motion (because it's been superseded).
-
-    timeline.jumpTo( 0.0f );
-    REQUIRE( target == 1.0f );
-
-    timeline.step( 1.0f );
-    REQUIRE( target == 7.5f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 10.0f );
-
-    timeline.step( 0.5f );
-    REQUIRE( target == 3.0f );
-  }
-}
-
-TEST_CASE( "Cues and Callbacks", "[motion]" )
-{
-  ch::Timeline  timeline;
-
-  SECTION( "Timeline Callbacks" )
-  {
-    bool          updateCalled = false;
-    bool          startCalled = false;
-    bool          endCalled = false;
-    Output<float> target = 0;
-    int           updateCount = 0;
-    float         updateTarget = 0;
-
-    timeline.apply( &target ).startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
-      .updateFn( [&updateCalled, &updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; updateCalled = true; } )
-      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } )
-      .then<RampTo>( 10.0f, 1.0f );
-
-    SECTION( "Callbacks from step" )
-    {
-      timeline.step( 0.1f );
-      REQUIRE( startCalled == true );
-      REQUIRE( updateCalled == true );
-      REQUIRE( updateCount == 1 );
-      REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE( target == 1.0f );
-
-      for( int i = 0; i < 9; ++i ) {
-        REQUIRE( endCalled == false );
-        timeline.step( 0.1f );
-      }
-
-      REQUIRE( endCalled == true );
-      REQUIRE( updateCount == 10 );
-    }
-
-    SECTION( "Callbacks from jumpTo" )
-    {
-      timeline.jumpTo( 0.1f );
-      REQUIRE( startCalled == true );
-      REQUIRE( updateCalled == true );
-      REQUIRE( updateCount == 1 );
-      REQUIRE( updateTarget == (target / 2.0f) );
-      REQUIRE( target == 1.0f );
-      REQUIRE( endCalled == false );
-
-      timeline.jumpTo( 0.9f );
-      REQUIRE( updateCount == 2 );
-      REQUIRE( endCalled == false );
-
-      timeline.jumpTo( 1.0f );
-      REQUIRE( updateCount == 3 );
-      REQUIRE( endCalled == true );
-    }
-  }
-
-  SECTION( "Cues" )
-  {
-    vector<int> call_counts( 4, 0 );
-    std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
-    for( size_t i = 0; i < call_counts.size(); ++i )
-    {
-      timeline.cue( [i, &call_counts] { call_counts[i] += 1; }, delays[i] );
-    }
-
-    timeline.step( 0.1f );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 0 );
-    REQUIRE( call_counts[2] == 0 );
-
-    for( int i = 0; i < 9; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 0 );
-
-    for( int i = 0; i < 10; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( timeline.size() == 1 );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 1 );
-    REQUIRE( call_counts[3] == 0 );
-
-    for( int i = 0; i < 11; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( timeline.size() == 0 );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 1 );
-    REQUIRE( call_counts[3] == 1 );
-  }
-
-  SECTION( "Cue Scoping and Cancellation" )
-  {
-    int call_count = 0;
-
-    SECTION( "Plain Handle" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 1 );
-    }
-
-    SECTION( "Plain Handle, cancelled" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
-        auto locked = handle.lock();
-        if( locked ) {
-          locked->cancel();
-        }
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 0 );
-    }
-
-    SECTION( "Scoped Control, falls" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 0 );
-    }
-
-    SECTION( "Scoped Control, lives" )
-    {
-      ScopedCueRef cue;
-      {
-        cue = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 1 );
-    }
-  }
-
-  SECTION( "Motion Manipulation from Callbacks" )
-  {
-
-  }
-}
-
-TEST_CASE( "Motion Speed and Reversal" )
-{
-  ch::Timeline timeline;
-  Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 10.0f, 1.0f ).then<RampTo>( -30.0f, 2.0f );
-
-  SECTION( "Equivalence between motion time and sequence time" )
-  {
-    Output<float> target;
-    timeline.setDefaultRemoveOnFinish( false );
-    timeline.apply( &target, sequence );
-
-    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
-    for( auto &t : times )
-    {
-      timeline.jumpTo( t );
-      REQUIRE( target() == sequence.getValue( t ) );
-    }
-  }
-
-  SECTION( "Walking Backwards" )
-  {
-
-  }
-
-  SECTION( "Walking Slowly" )
-  {
-
-  }
-
-  SECTION( "Walking In Both Directions" )
-  {
-
-  }
-
-} // Motion Speed and Reversal
-
-TEST_CASE( "Output Connections", "[output]" )
-{
-
-  ch::Timeline timeline;
-  Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 10.0f, 2.0f );
-
-  SECTION( "Output falling out of scope disconnects" ) {
-    MotionRef<float> motion;
-
-    { // create locally scoped output
-      Output<float> temp;
-      motion = make_shared<Motion<float>>( &temp, sequence );
-      REQUIRE( ! motion->isInvalid() );
-      REQUIRE( temp.isConnected() );
-    }
-
-    REQUIRE( motion->isInvalid() );
-  }
-
-  SECTION( "Motion falling out of scope disconnects" ) {
-    Output<float> output;
-
-    { // hook up a motion to our output
-      Motion<float> temp( &output, sequence );
-
-      REQUIRE( output.isConnected() == true );
-      REQUIRE( temp.isInvalid() == false );
-    }
-
-    REQUIRE( output.isConnected() == false );
-  }
-
-  SECTION( "Timeline Removes Invalid Connections" ) {
-    { // create locally scoped output
-      Output<float> temp;
-      timeline.apply( &temp ).then<RampTo>( 5.0f, 1.0f );
-
-      REQUIRE( timeline.size() == 1 );
-    }
-
-    // Part of test is that nothing fails when stepping the timeline.
-    timeline.step( 0.5f );
-    REQUIRE( timeline.empty() == true );
-  }
-
-  SECTION( "Vector of outputs can be moved." ) {
-    vector<Output<float>> outputs( 500, 0.0f );
-    vector<Output<float>> copy;
-
-    for( auto &output : outputs ) {
-      timeline.apply( &output, sequence );
-    }
-    copy = std::move( outputs );
-
-    timeline.step( 1.0f );
-    bool all_five = true;
-    for( auto &c : copy ) {
-      if( c != 5.0f ) {
-        all_five = false;
-      }
-    }
-    REQUIRE( copy.front() == 5.0f );
-    REQUIRE( all_five == true );
-  }
-
-  SECTION( "Move assignment brings motion along." ) {
-    Output<float> base( 1.0f );
-    Output<float> copy( 0.0f );
-
-    Motion<float> motion( &base, sequence );
-    copy = std::move( base );
-    motion.jumpTo( 1.0f );
-
-    REQUIRE( copy.value() == 5.0f );
-
-    motion.jumpTo( 2.0f );
-    REQUIRE( copy.value() == 10.0f );
-  }
-
-  SECTION( "Vector of outputs can be copied." ) {
-    vector<Output<float>> outputs( 500, 0.0f );
-    vector<Output<float>> copy;
-
-    for( auto &output : outputs ) {
-      timeline.apply( &output, sequence );
-    }
-    copy = outputs;
-
-    timeline.step( 1.0f );
-    bool all_five = true;
-    for( auto &c : copy ) {
-      if( c != 5.0f ) {
-        all_five = false;
-      }
-    }
-    REQUIRE( copy.front() == 5.0f );
-    REQUIRE( all_five == true );
-    REQUIRE( outputs.front() == 0.0f );
-  }
-
-  SECTION( "Copy assignment brings motion along." ) {
-    Output<float> base( 1.0f );
-    Output<float> copy( 0.0f );
-
-    Motion<float> motion( &base, sequence );
-    copy = base;
-    motion.jumpTo( 1.0f );
-
-    REQUIRE( base.value() == 1.0f );
-    REQUIRE( copy.value() == 5.0f );
-
-    motion.jumpTo( 2.0f );
-    REQUIRE( copy.value() == 10.0f );
-  }
-} // Output Connections
+//========================================================
+// Separate Component Interpolation (with glm::vec types)
+//========================================================
 
 #if INCLUDE_CINDER_HEADERS
 
@@ -526,7 +827,8 @@ using namespace cinder;
 TEST_CASE( "Separate component interpolation", "[sequence]" )
 {
 
-  SECTION( "Compare 2-Component Values" ) {
+  SECTION( "Compare 2-Component Values" )
+  {
     // Animate XY from and to same values with different ease curves.
     Sequence<vec2> sequence( vec2( 1 ) );
     sequence.then<RampTo2>( vec2( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad() );
@@ -536,7 +838,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).y );
   }
 
-  SECTION( "Compare 3-Component Values" ) {
+  SECTION( "Compare 3-Component Values" )
+  {
     Sequence<vec3> sequence( vec3( 1 ) );
     sequence.then<RampTo3>( vec3( 10.0f ), 1.0f, EaseOutQuad(), EaseInQuad(), EaseInOutQuad() );
 
@@ -551,7 +854,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence.getValue( 0.5f ).x != sequence.getValue( 0.5f ).z );
   }
 
-  SECTION( "Compare 4-Component Values" ) {
+  SECTION( "Compare 4-Component Values" )
+  {
     Sequence<vec4> sequence( vec4( 1 ) );
     sequence.then<RampTo4>( vec4( 10.0f ), 1.0f, EaseOutQuad(), EaseInAtan(), EaseInOutQuad(), EaseInCubic() );
 
@@ -567,7 +871,8 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence.getValue( 0.5f ).z != sequence.getValue( 0.5f ).w );
   }
 
-  SECTION( "Over- and Under-fill Separate Easings" ) {
+  SECTION( "Over- and Under-fill Separate Easings" )
+  {
     auto sequence = createSequence( vec3( 10.0f ) );
     // The real test here is that we don't crash when creating or using this sequence.
     sequence->then<RampTo3>( vec3( 1.0f ), 1.0f, EaseInOutQuad() ).then<RampTo3>( vec3( 5.0f ), 1.0f, EaseInQuad(), EaseNone(), EaseInAtan(), EaseInBack() );
@@ -575,25 +880,6 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence->getValue( 0.0f ).x == sequence->getValue( 0.0f ).y );
     REQUIRE( sequence->getValue( 1.5f ).x != sequence->getValue( 1.5f ).y );
     REQUIRE( sequence->getValue( 1.5f ).y != sequence->getValue( 1.5f ).z );
-  }
-
-  SECTION( "Mixing Sequences" ) {
-    Sequence<vec2> sequence( vec2( 0 ) );
-
-    Sequence<vec2> bounce_y( vec2( 0 ) );
-    bounce_y.then<RampTo>( vec2( 0, 10.0f ), 0.5f, EaseOutCubic() ).then<RampTo>( vec2( 0 ), 0.5f, EaseInCubic() );
-
-    Sequence<vec2> slide_x( vec2( 0 ) );
-    slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
-
-    auto combine = makeAccumulator( vec2( 0 ), slide_x.asPhrase(), makeRepeat<vec2>( bounce_y.asPhrase(), 3 ) );
-    combine->add( bounce_y.asPhrase() );
-
-    sequence.then( combine );
-
-    REQUIRE( sequence.getValue( 0.5 ).y == 20.0 ); // both bounces up
-    REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only the repeated bounce up remains
-    REQUIRE( sequence.getEndValue().x == 100.0 );
   }
 } // Separate Component Easing
 

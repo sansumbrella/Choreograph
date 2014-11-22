@@ -51,13 +51,16 @@ public:
   // Common public interface.
   //=================================================
 
-  /// Advance motion in time. Affected by Motion's speed. Do not use from callbacks (it will fire them).
+  /// Advance motion in time. Affected by playback speed.
+  /// Do not use from callbacks (it will fire them, likely causing an infinite loop).
   void step( Time dt );
 
-  /// Jump to a point in time. Ignores Motion's speed. Do not use from callbacks (it will fire them).
+  /// Jump to a point in time. Ignores playback speed.
+  /// Do not use from callbacks (it will fire them, likely causing an infinite loop).
   void jumpTo( Time time );
 
-  /// Set time. Ignores speed. Safe to use from callbacks. Does not call update().
+  /// Set time of item without updating state. Ignores playback speed.
+  /// Safe to use from callbacks.
   void setTime( Time time ) { _time = _previous_time = time; }
 
   //=================================================
@@ -65,6 +68,7 @@ public:
   //=================================================
 
   /// Overridden to determine what a time step does.
+  /// Called from step() and jumpTo()
   virtual void update() = 0;
 
   /// Returns the duration of the motion.
@@ -108,6 +112,9 @@ public:
 
   /// Returns the current end time of this motion.
   Time getEndTime() const { return getStartTime() + getDuration(); }
+
+  /// Returns the amount of time at current playback speed before finish.
+  Time getTimeUntilFinish() const;
 
   /// Set the start time of this motion. Use to delay entire motion.
   void setStartTime( Time t ) { _start_time = t; }

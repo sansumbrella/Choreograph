@@ -72,7 +72,7 @@ public:
   void setMix( float amount ) { _mix = amount; }
 
   /// Returns the current balance of the Phrase mix.
-  float getMix() const { return _mix; }
+  float getMix() const { return _mix(); }
 
   /// Returns a pointer to the mix output for animation with a choreograph::Motion.
   Output<float>* getMixOutput() { return &_mix; }

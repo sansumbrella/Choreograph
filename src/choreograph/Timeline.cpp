@@ -79,11 +79,11 @@ void Timeline::postUpdate()
   }
 }
 
-Time Timeline::calcDuration() const
+Time Timeline::timeUntilFinish() const
 {
 	Time end = 0;
 	for( auto &item : _items ) {
-		end = std::max( end, item->getEndTime() );
+		end = std::max( end, item->getTimeUntilFinish() );
 	}
 	return end;
 }
