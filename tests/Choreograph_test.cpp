@@ -157,6 +157,15 @@ TEST_CASE( "Motions" )
     REQUIRE( motion.getDuration() == 3 );
   }
 
+  SECTION( "Motion target value matches Sequence value" )
+  {
+    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
+    for( auto &t : times ) {
+      motion.jumpTo( t );
+      REQUIRE( target() == sequence.getValue( t ) );
+    }
+  }
+
   SECTION( "Slicing Source" )
   {
     SECTION( "Cut Before" )
@@ -204,6 +213,76 @@ TEST_CASE( "Motions" )
       REQUIRE( motion.getDuration() == 2 );
     }
   }
+}
+
+//==========================================
+// Cues
+//==========================================
+
+TEST_CASE( "Cues" )
+{
+  Timeline  timeline;
+  int       call_count = 0;
+  auto options = timeline.cue( [&call_count] { call_count += 1; }, 1.0f );
+
+  SECTION( "Basic cue" )
+  {
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 1 );
+  }
+
+  SECTION( "Cancelled by Handle" )
+  {
+    auto handle = options.getControl();
+    auto locked = handle.lock();
+    if( locked ) {
+      locked->cancel();
+    }
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 0 );
+  }
+
+  SECTION( "Scoped Control, persistent" )
+  {
+    auto scoped_control = options.getScopedControl();
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 1 );
+  }
+
+  SECTION( "Scoped Control, destructed" )
+  {
+    {
+      auto scoped_control = options.getScopedControl();
+    }
+    timeline.jumpTo( 1.0f );
+    REQUIRE( call_count == 0 );
+  }
+
+  SECTION( "Cue signalling is directional." )
+  {
+    options.removeOnFinish( false );
+
+    SECTION( "Forward" )
+    {
+      timeline.jumpTo( 1.0f );
+      timeline.jumpTo( 0.5f );
+      timeline.jumpTo( 1.0f );
+
+      REQUIRE( call_count == 2 );
+    }
+
+    SECTION( "Reversed" )
+    {
+      options.playbackSpeed( -1 );
+
+      timeline.jumpTo( 1.1f );
+      timeline.jumpTo( 0.5f );
+      timeline.jumpTo( 1.1f );
+
+      REQUIRE( call_count == 1 );
+    }
+  }
+
 }
 
 //==========================================
@@ -261,17 +340,6 @@ TEST_CASE( "Timeline" )
 
     timeline.jumpTo( 2.0f );
     REQUIRE( target == 10.0f );
-  }
-
-  SECTION( "Equivalence between motion time and sequence time" )
-  {
-    options.removeOnFinish( false );
-
-    vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
-    for( auto &t : times ) {
-      timeline.jumpTo( t );
-      REQUIRE( target() == sequence.getValue( t ) );
-    }
   }
 
   SECTION( "Inflection Point Callbacks" )
@@ -411,52 +479,6 @@ TEST_CASE( "Timeline" )
     REQUIRE( call_counts[1] == 1 );
     REQUIRE( call_counts[2] == 1 );
     REQUIRE( call_counts[3] == 1 );
-  }
-
-  SECTION( "Cue Scoping and Cancellation" )
-  {
-    int call_count = 0;
-
-    SECTION( "Plain Handle" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 1 );
-    }
-
-    SECTION( "Plain Handle, cancelled" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getControl();
-        auto locked = handle.lock();
-        if( locked ) {
-          locked->cancel();
-        }
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 0 );
-    }
-
-    SECTION( "Scoped Control, destructed" )
-    {
-      {
-        auto handle = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 0 );
-    }
-
-    SECTION( "Scoped Control, persistent" )
-    {
-      ScopedCueRef cue;
-      {
-        cue = timeline.cue( [&call_count] { call_count += 1; }, 1.0f ).getScopedControl();
-      }
-      timeline.jumpTo( 1.0f );
-      REQUIRE( call_count == 1 );
-    }
   }
 
   SECTION( "Manipulating During Update" )
