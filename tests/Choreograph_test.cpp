@@ -482,18 +482,25 @@ TEST_CASE( "Timeline" )
 
   SECTION( "Sequences can be trimmed via motion options." )
   {
-    SECTION( "Cut At" )
+    SECTION( "Cut at trims the sequence relative to their start." )
     {
       REQUIRE( timeline.calcDuration() == 3.0f );
       options.cutAt( 2.0f );
       REQUIRE( timeline.calcDuration() == 2.0f );
     }
 
-    SECTION( "Cut In" )
+    SECTION( "Cut In trims the sequence relative to the motion's current time." )
     {
       REQUIRE( timeline.calcDuration() == 3.0f );
+
+      timeline.step( 0.5f );
+      float v1 = target();
       options.cutIn( 0.5f );
+      timeline.step( 0.0f );
+      float v2 = target();
+
       REQUIRE( timeline.calcDuration() == 0.5f );
+      REQUIRE( v1 == v2 );
     }
   }
 } // Timeline
