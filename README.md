@@ -29,9 +29,9 @@ Choreograph also provides a range of more sophisticated phrases, including proce
 
   // Combine the slide and bounce phrases using an AccumulatePhrase.
   float center_y = app::getWindowHeight() / 2.0f;
-  auto combined = makeAccumulator( vec2( 0, center_y ), bounce, slide );
+  auto bounceAndSlide = makeAccumulator<vec2>( vec2( 0, center_y ), bounce, slide );
 
-  timeline.apply( &output, combined );
+  timeline.apply( &output, bounceAndSlide );
 ```
 
 The code above produces the motion of the purple circle below:
@@ -72,8 +72,9 @@ choreograph::Output<vec3> target;
 choreograph::Timeline timeline;
 // Create a Motion with a Connection to target and modify
 // the Motion’s underlying Sequence.
-timeline.apply( &target ).then<Hold>( vec3( 1.0 ), 1.0 )
-                        .then<RampTo>( vec3( 100 ), 3.0 );
+timeline.apply( &target )
+  .then<Hold>( vec3( 1.0 ), 1.0 )
+  .then<RampTo>( vec3( 100 ), 3.0 );
 timeline.step( 1.0 / 60.0 );
 ```
 
@@ -83,8 +84,9 @@ If you cannot wrap your animation target in an Output template, consider creatin
 // Recommended approach to animating non-Output types
 vec3 target;
 // Create a Sequence with initial value from target.
-Sequence<vec3> sequence( target );
-sequence.then<Hold>( 1.0, 1.0 ).then<RampTo>( vec3( 100 ), 3.0 );
+auto sequence = Sequence<vec3>( target.value() );
+  .then<Hold>( 1.0, 1.0 )
+  .then<RampTo>( vec3( 100 ), 3.0 );
 target = sequence.getValue( animationTime );
 ```
 
