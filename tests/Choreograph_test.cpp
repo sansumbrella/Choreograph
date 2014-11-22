@@ -117,31 +117,6 @@ TEST_CASE( "Phrases" )
     REQUIRE( ramp_bc->getValue( 1.0f ).name == "target" );
     REQUIRE( mix_ramps->getValue( 0.5f ).y == ((550.0f * 0.5f) + (55.0f * 0.5f)) );
   }
-
-  SECTION( "Clip Phrases retime existing phrases and clamp their end values." )
-  {
-    auto clip_equal = ClipPhrase<float>( ramp, 0.0f, 1.0f );
-    auto clip_from_start = ClipPhrase<float>( ramp, 0.0f, 0.5f );
-    auto clip_middle = ClipPhrase<float>( ramp, 0.25f, 0.75f );
-    auto clip_past_end = ClipPhrase<float>( ramp, 0.5f, 1.25f );
-
-    REQUIRE( clip_equal.getDuration() == 1.0f );
-    REQUIRE( clip_equal.getStartValue() == ramp->getStartValue() );
-    REQUIRE( clip_equal.getEndValue() == ramp->getEndValue() );
-    REQUIRE( clip_equal.getValue( 0.5f ) == ramp->getValue( 0.5f ) );
-
-    REQUIRE( clip_from_start.getDuration() == 0.5f );
-    REQUIRE( clip_from_start.getValue( 0.0f ) == ramp->getValue( 0.0f ) );
-    REQUIRE( clip_from_start.getValue( 10.0f ) == ramp->getValue( 0.5f ) );
-
-    REQUIRE( clip_middle.getDuration() == 0.5f );
-    REQUIRE( clip_middle.getValue( 0.0f ) == ramp->getValue( 0.25f ) );
-    REQUIRE( clip_middle.getEndValue() == ramp->getValue( 0.75f ) );
-
-    REQUIRE( clip_past_end.getDuration() == 0.75f );
-    REQUIRE( clip_past_end.getEndValue() == ramp->getEndValue() );
-    REQUIRE( clip_past_end.getValue( 0.5f ) == ramp->getValue( 1.0f ) );
-  }
 }
 
 //==========================================
@@ -215,16 +190,6 @@ TEST_CASE( "Sequences" )
     REQUIRE( sequence.getValue( 3.5f ) == sequence.getValue( 6.5f ) );
     REQUIRE( sequence.getValue( 1.0f ) == sequence.getValue( 4.0f ) );
   }
-
-  SECTION( "Sequences can be sliced into subsequences." )
-  {
-    auto sub = sequence.slice( 0.5f, 3.5f );
-    auto alt = sequence.slice( 0.25f, 2.25f );
-
-    REQUIRE( sequence.getDuration() == 3 );
-    REQUIRE( sub.getDuration() == 3 );
-    REQUIRE( alt.getDuration() == 2 );
-  }
 }
 
 //==========================================
@@ -247,7 +212,7 @@ TEST_CASE( "Motions" )
     REQUIRE( motion.getDuration() == 3 );
   }
 
-  SECTION( "Motion target's value matches Sequence value at that time." )
+  SECTION( "Motions apply their Sequence's value to their target." )
   {
     vector<Time> times = { 0.5, 0.2f, 1.0, 0.0, 2.0, 2.5, 3.0, 0.0, 0.3f, 0.5 };
     for( auto &t : times ) {
@@ -255,9 +220,65 @@ TEST_CASE( "Motions" )
       REQUIRE( target() == sequence.getValue( t ) );
     }
   }
+}
+
+//==========================================
+// Slicing and dicing
+//==========================================
+
+TEST_CASE( "Slicing Time" )
+{
+  SECTION( "Clip Phrases retime existing phrases and clamp their end values." )
+  {
+    auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
+    auto clip_equal = ClipPhrase<float>( ramp, 0.0f, 1.0f );
+    auto clip_from_start = ClipPhrase<float>( ramp, 0.0f, 0.5f );
+    auto clip_middle = ClipPhrase<float>( ramp, 0.25f, 0.75f );
+    auto clip_past_end = ClipPhrase<float>( ramp, 0.5f, 1.25f );
+
+    REQUIRE( clip_equal.getDuration() == 1.0f );
+    REQUIRE( clip_equal.getStartValue() == ramp->getStartValue() );
+    REQUIRE( clip_equal.getEndValue() == ramp->getEndValue() );
+    REQUIRE( clip_equal.getValue( 0.5f ) == ramp->getValue( 0.5f ) );
+
+    REQUIRE( clip_from_start.getDuration() == 0.5f );
+    REQUIRE( clip_from_start.getValue( 0.0f ) == ramp->getValue( 0.0f ) );
+    REQUIRE( clip_from_start.getValue( 10.0f ) == ramp->getValue( 0.5f ) );
+
+    REQUIRE( clip_middle.getDuration() == 0.5f );
+    REQUIRE( clip_middle.getValue( 0.0f ) == ramp->getValue( 0.25f ) );
+    REQUIRE( clip_middle.getEndValue() == ramp->getValue( 0.75f ) );
+
+    REQUIRE( clip_past_end.getDuration() == 0.75f );
+    REQUIRE( clip_past_end.getEndValue() == ramp->getEndValue() );
+    REQUIRE( clip_past_end.getValue( 0.5f ) == ramp->getValue( 1.0f ) );
+  }
+
+  Output<float> target = 0.0f;
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
+
+  SECTION( "Sequences can be sliced into subsequences." )
+  {
+    auto slice_middle = sequence.slice( 0.25f, 2.25f );
+    auto slice_past_end = sequence.slice( 0.5f, 3.5f );
+
+    REQUIRE( sequence.getDuration() == 3 );
+    REQUIRE( slice_middle.getDuration() == 2 );
+    REQUIRE( slice_past_end.getDuration() == 3 );
+
+    REQUIRE( slice_middle.getValue( 0.0f ) == sequence.getValue( 0.25f ) );
+    REQUIRE( slice_past_end.getValue( 3.0f ) == sequence.getValue( 3.5f ) );
+    REQUIRE( slice_past_end.getValue( 0.0f ) == sequence.getValue( 0.5f ) );
+  }
+
 
   SECTION( "Motions can slice their Sequence." )
   {
+    Motion<float> motion( &target, sequence );
+
     SECTION( "Slicing changes the Sequence animation." )
     {
       motion.sliceSequence( 0.5f, 1.5f );
