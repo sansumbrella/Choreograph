@@ -100,8 +100,11 @@ public:
   template<template <typename> class PhraseT, typename... Args>
   SelfT& then( const T &value, Time duration, Args&&... args ) { _sequence.template then<PhraseT>( value, duration, std::forward<Args>(args)... ); return *this; }
 
-  /// Clone and append a phrase to the Sequence.
+  /// Append a phrase to the Sequence.
   SelfT& then( const PhraseRef<T> &phrase ) { _sequence.then( phrase ); return *this; }
+
+  /// Append a sequence to the Sequence.
+  SelfT& then( const Sequence<T> &sequence ) { _sequence.then( sequence ); return *this; }
 
   //=================================================
   // Extra Sugar.
@@ -208,6 +211,7 @@ public:
 
   /// Set all motions to \a time.
   /// Useful for scrubbing Timelines with non-removed items.
+  /// Ignores the playback speed of TimelineItems, as it calls TimelineItem::jumpTo.
   /// Do not call from a callback.
   void jumpTo( Time time );
 
@@ -226,6 +230,7 @@ public:
   void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
 
   /// Returns the time (from now) at which all TimelineItems on this timeline will be finished.
+  /// Cannot take into account Cues or Callbacks that may change the Timeline before finish.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
   Time timeUntilFinish() const;
 

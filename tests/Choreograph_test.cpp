@@ -597,16 +597,52 @@ TEST_CASE( "Callbacks" )
     REQUIRE( c1 == 1 );
   }
 
-  SECTION( "It is safe to add and cancel motions from Motion callbacks." )
+  SECTION( "It is safe to add and cancel motions from Cues and Motion callbacks." )
   {
-    SECTION( "Add Motion From Cue" )
+    Output<float> t2 = 1.0f;
+
+    SECTION( "Add Motion from Motion callback." )
     {
-//      options.finishFn( );
+      options.startFn( [&] (Motion<float> &) {
+        timeline.apply( &t2, sequence );
+      } );
+
+      REQUIRE( timeline.size() == 1 );
+      timeline.step( 0.1f );
+
+      REQUIRE( timeline.size() == 2 );
     }
 
-    SECTION( "Cancel Motion From Cue" )
+    SECTION( "Cancel Motion from Motion callback." )
     {
+      // Play t2 motion twice as fast as previous, disconnect target on finish.
+      timeline.apply( &t2, sequence )
+        .playbackSpeed( 2.0f )
+        .finishFn( [&target] (Motion<float> &) {
+          target.disconnect();
+      } );
 
+      REQUIRE( timeline.size() == 2 );
+      timeline.step( 1.5f );
+      float v1 = target();
+      float v2 = t2();
+
+      REQUIRE( v1 == 5.5f );
+      REQUIRE( v2 == 100.0f );
+      REQUIRE( timeline.empty() );
+    }
+
+    SECTION( "Change Motion from Cue." )
+    {
+      timeline.cue( [&] {
+        timeline.append( &target )
+          .then( sequence );
+      }, 0.5f );
+
+      REQUIRE( timeline.timeUntilFinish() == 3.0f );
+      timeline.step( 0.5f );
+
+      REQUIRE( timeline.timeUntilFinish() == 5.5f );
     }
   }
 
