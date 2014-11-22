@@ -35,6 +35,26 @@ TEST_CASE( "Sequences" )
     REQUIRE( sequence.getDuration() == 3 );
   }
 
+  SECTION( "Sequences can be constructed other ways" )
+  {
+    SECTION( "Copy Constructor" )
+    {
+      Sequence<float> other( sequence );
+
+      REQUIRE( other.getDuration() == sequence.getDuration() );
+      REQUIRE( other.getValue( 1.5 ) == sequence.getValue( 1.5 ) );
+    }
+
+    SECTION( "Phrase Constructor" )
+    {
+      auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
+      Sequence<float> other( ramp );
+
+      REQUIRE( other.getValue( 0.5 ) == ramp->getValue( 0.5 ) );
+      REQUIRE( other.getDuration() == ramp->getDuration() );
+    }
+  }
+
   SECTION( "Sequence values within duration are correct." )
   {
     REQUIRE( sequence.getValue( 0.5 ) == 0.5 );
@@ -70,6 +90,16 @@ TEST_CASE( "Sequences" )
     REQUIRE( sequence.getValue( 3.5f ) == sequence.getValue( 6.5f ) );
     REQUIRE( sequence.getValue( 1.0f ) == sequence.getValue( 4.0f ) );
   }
+
+  SECTION( "Sequences can be sliced into subsequences." )
+  {
+    auto sub = sequence.slice( 0.5f, 3.5f );
+    auto alt = sequence.slice( 0.25f, 2.25f );
+
+    REQUIRE( sequence.getDuration() == 3 );
+    REQUIRE( sub.getDuration() == 3 );
+    REQUIRE( alt.getDuration() == 2 );
+  }
 }
 
 //==========================================
@@ -78,7 +108,67 @@ TEST_CASE( "Sequences" )
 
 TEST_CASE( "Motions" )
 {
+  Output<float> target = 0.0f;
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f )
+    .then<RampTo>( 100.0f, 1.0f );
 
+  Motion<float> motion( &target, sequence );
+
+  SECTION( "Motion Duration is Correct" )
+  {
+    REQUIRE( motion.getDuration() == sequence.getDuration() );
+    REQUIRE( motion.getDuration() == 3 );
+  }
+
+  SECTION( "Slicing Source" )
+  {
+    SECTION( "Cut Before" )
+    {
+      motion.jumpTo( 1.5f );
+      float v1 = target();
+      motion.cutPhrasesBefore( motion.time() );
+      motion.jumpTo( 0.0f );
+      float v2 = target();
+      REQUIRE( v1 == v2 );
+      REQUIRE( v1 == 5.5f );
+      REQUIRE( motion.getDuration() == 1.5f );
+    }
+
+    SECTION( "Slice" )
+    {
+      motion.sliceSequence( 0.5f, 1.5f );
+      motion.jumpTo( 1.5f );
+      float v1 = target();
+      motion.jumpTo( -1.0f );
+      float v2 = target();
+
+      REQUIRE( motion.getDuration() == 1 );
+      REQUIRE( v1 == sequence.getValue( 1.5f ) );
+      REQUIRE( v2 == sequence.getValue( 0.5f ) );
+    }
+
+    SECTION( "Cut In" )
+    {
+      motion.cutIn( 2.0f );
+      REQUIRE( motion.getDuration() == 2 );
+    }
+
+    SECTION( "Cut In Later" )
+    {
+      motion.jumpTo( 1.0f );
+      motion.cutIn( 2.0f );
+      REQUIRE( motion.getDuration() == 2 );
+    }
+
+    SECTION( "Cut Past End" )
+    {
+      motion.jumpTo( 2.5f );
+      motion.cutIn( 2.0f );
+      REQUIRE( motion.getDuration() == 2 );
+    }
+  }
 }
 
 //==========================================
@@ -198,8 +288,132 @@ TEST_CASE( "Timeline" )
 }
 
 //==========================================
-// Time and Other Stuff
+// Output, Time and Other Stuff
 //==========================================
+
+TEST_CASE( "Outputs" )
+{
+  ch::Timeline  timeline;
+  Output<float> output = 0.0f;
+  auto sequence = Sequence<float>( 0.0f )
+    .then<RampTo>( 1.0f, 1.0f )
+    .then<RampTo>( 10.0f, 1.0f );
+
+  SECTION( "Output falling out of scope disconnects" )
+  {
+    // Reference so we can survive the inner scope.
+    MotionRef<float> motion;
+
+    { // create locally scoped output
+      Output<float> temp = 0.0f;
+      motion = make_shared<Motion<float>>( &temp );
+      REQUIRE( ! motion->isInvalid() );
+      REQUIRE( temp.isConnected() );
+    }
+
+    REQUIRE( motion->isInvalid() );
+  }
+
+  SECTION( "Motion falling out of scope disconnects" )
+  {
+    { // hook up a motion to our output
+      Motion<float> temp( &output );
+
+      REQUIRE( output.isConnected() == true );
+      REQUIRE( temp.isInvalid() == false );
+    }
+
+    REQUIRE( output.isConnected() == false );
+  }
+
+  SECTION( "Timeline Removes Invalid Connections" )
+  {
+    { // create locally scoped output
+      Output<float> temp;
+      timeline.apply( &temp ).then<RampTo>( 5.0f, 1.0f );
+
+      REQUIRE( timeline.size() == 1 );
+    }
+
+    // Part of test is that nothing fails when stepping the timeline.
+    timeline.step( 0.5f );
+    REQUIRE( timeline.empty() == true );
+  }
+
+  SECTION( "Vector of outputs can be moved." )
+  {
+    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> copy;
+
+    for( auto &output : outputs ) {
+      timeline.apply( &output, sequence );
+    }
+    copy = std::move( outputs );
+
+    timeline.step( 1.0f );
+    bool all_five = true;
+    for( auto &c : copy ) {
+      if( c != 1.0f ) {
+        all_five = false;
+      }
+    }
+    REQUIRE( copy.front() == 1.0f );
+    REQUIRE( all_five == true );
+  }
+
+  SECTION( "Move assignment brings motion along." )
+  {
+    Output<float> base( 1.0f );
+    Output<float> copy( 0.0f );
+
+    Motion<float> motion( &base, sequence );
+    copy = std::move( base );
+    motion.jumpTo( 1.0f );
+
+    REQUIRE( copy.value() == 1.0f );
+
+    motion.jumpTo( 2.0f );
+    REQUIRE( copy.value() == 10.0f );
+  }
+
+  SECTION( "Vector of outputs can be copied." )
+  {
+    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> copy;
+
+    for( auto &output : outputs ) {
+      timeline.apply( &output, sequence );
+    }
+    copy = outputs;
+
+    timeline.step( 1.0f );
+    bool all_five = true;
+    for( auto &c : copy ) {
+      if( c != 1.0f ) {
+        all_five = false;
+      }
+    }
+    REQUIRE( copy.front() == 1.0f );
+    REQUIRE( all_five == true );
+    REQUIRE( outputs.front() == 0.0f );
+  }
+
+  SECTION( "Copy assignment brings motion along. (this may be removed in future)" )
+  {
+    Output<float> base( 500.0f );
+    Output<float> copy( 0.0f );
+
+    Motion<float> motion( &base, sequence );
+    copy = base;
+    motion.jumpTo( 1.0f );
+
+    REQUIRE( base.value() == 500.0f );
+    REQUIRE( copy.value() == 1.0f );
+    
+    motion.jumpTo( 2.0f );
+    REQUIRE( copy.value() == 10.0f );
+  }
+} // Outputs
 
 TEST_CASE( "Time and Infinity" )
 {
@@ -218,43 +432,6 @@ TEST_CASE( "Time and Infinity" )
   REQUIRE( sequence.getValue( infinity ) == 2.0f );
   REQUIRE( (1000.0f / infinity) == 0.0f );
 } // Time and Infinity
-
-TEST_CASE( "Cutting", "[motion]" )
-{
-  Output<float> target = 0.0f;
-  Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 1.0f, 1.0f )
-    .then<RampTo>( 10.0f, 1.0f )
-    .then<RampTo>( 5.0f, 1.0f )
-    .then<RampTo>( 20.0f, 1.0f );
-
-  Motion<float> motion( &target, sequence );
-  REQUIRE( motion.getDuration() == 4.0f );
-
-  motion.jumpTo( 1.5f );
-  float v1 = target();
-  motion.cutPhrasesBefore( motion.time() );
-  motion.jumpTo( 0.0f );
-  float v2 = target();
-  REQUIRE( v1 == v2 );
-  REQUIRE( v1 == 5.5f );
-  REQUIRE( motion.getDuration() == 2.5f );
-}
-
-TEST_CASE( "Slicing", "[sequence]" )
-{
-  Sequence<float> s( 0.0f );
-  s.then<RampTo>( 1.0f, 1.0f )
-    .then<RampTo>( 10.0f, 1.0f )
-    .then<RampTo>( 5.0f, 1.0f )
-    .then<RampTo>( 20.0f, 1.0f );
-
-  REQUIRE( s.getDuration() == 4.0f );
-  auto sub = s.slice( 0.5f, 3.5f );
-  REQUIRE( sub.getDuration() == 3.0f );
-  auto alt = s.slice( 0.0f, 3.0f );
-  REQUIRE( alt.getDuration() == 3.0f );
-}
 
 TEST_CASE( "Cues and Callbacks", "[timeline]" )
 {
@@ -407,123 +584,6 @@ TEST_CASE( "Cues and Callbacks", "[timeline]" )
   {
   }
 }
-
-TEST_CASE( "Output Connections", "[output]" )
-{
-
-  ch::Timeline timeline;
-  Sequence<float> sequence( 0.0f );
-  sequence.then<RampTo>( 10.0f, 2.0f );
-
-  SECTION( "Output falling out of scope disconnects" ) {
-    MotionRef<float> motion;
-
-    { // create locally scoped output
-      Output<float> temp;
-      motion = make_shared<Motion<float>>( &temp, sequence );
-      REQUIRE( ! motion->isInvalid() );
-      REQUIRE( temp.isConnected() );
-    }
-
-    REQUIRE( motion->isInvalid() );
-  }
-
-  SECTION( "Motion falling out of scope disconnects" ) {
-    Output<float> output;
-
-    { // hook up a motion to our output
-      Motion<float> temp( &output, sequence );
-
-      REQUIRE( output.isConnected() == true );
-      REQUIRE( temp.isInvalid() == false );
-    }
-
-    REQUIRE( output.isConnected() == false );
-  }
-
-  SECTION( "Timeline Removes Invalid Connections" ) {
-    { // create locally scoped output
-      Output<float> temp;
-      timeline.apply( &temp ).then<RampTo>( 5.0f, 1.0f );
-
-      REQUIRE( timeline.size() == 1 );
-    }
-
-    // Part of test is that nothing fails when stepping the timeline.
-    timeline.step( 0.5f );
-    REQUIRE( timeline.empty() == true );
-  }
-
-  SECTION( "Vector of outputs can be moved." ) {
-    vector<Output<float>> outputs( 500, 0.0f );
-    vector<Output<float>> copy;
-
-    for( auto &output : outputs ) {
-      timeline.apply( &output, sequence );
-    }
-    copy = std::move( outputs );
-
-    timeline.step( 1.0f );
-    bool all_five = true;
-    for( auto &c : copy ) {
-      if( c != 5.0f ) {
-        all_five = false;
-      }
-    }
-    REQUIRE( copy.front() == 5.0f );
-    REQUIRE( all_five == true );
-  }
-
-  SECTION( "Move assignment brings motion along." ) {
-    Output<float> base( 1.0f );
-    Output<float> copy( 0.0f );
-
-    Motion<float> motion( &base, sequence );
-    copy = std::move( base );
-    motion.jumpTo( 1.0f );
-
-    REQUIRE( copy.value() == 5.0f );
-
-    motion.jumpTo( 2.0f );
-    REQUIRE( copy.value() == 10.0f );
-  }
-
-  SECTION( "Vector of outputs can be copied." ) {
-    vector<Output<float>> outputs( 500, 0.0f );
-    vector<Output<float>> copy;
-
-    for( auto &output : outputs ) {
-      timeline.apply( &output, sequence );
-    }
-    copy = outputs;
-
-    timeline.step( 1.0f );
-    bool all_five = true;
-    for( auto &c : copy ) {
-      if( c != 5.0f ) {
-        all_five = false;
-      }
-    }
-    REQUIRE( copy.front() == 5.0f );
-    REQUIRE( all_five == true );
-    REQUIRE( outputs.front() == 0.0f );
-  }
-
-  SECTION( "Copy assignment brings motion along." ) {
-    Output<float> base( 1.0f );
-    Output<float> copy( 0.0f );
-
-    Motion<float> motion( &base, sequence );
-    copy = base;
-    motion.jumpTo( 1.0f );
-
-    REQUIRE( base.value() == 1.0f );
-    REQUIRE( copy.value() == 5.0f );
-
-    motion.jumpTo( 2.0f );
-    REQUIRE( copy.value() == 10.0f );
-  }
-} // Output Connections
 
 #if INCLUDE_CINDER_HEADERS
 
