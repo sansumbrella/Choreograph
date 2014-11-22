@@ -223,15 +223,18 @@ TEST_CASE( "Cues" )
 {
   Timeline  timeline;
   int       call_count = 0;
-  auto options = timeline.cue( [&call_count] { call_count += 1; }, 1.0f );
+  auto      options = timeline.cue( [&call_count] { call_count += 1; }, 1.0f );
 
-  SECTION( "Basic cue" )
+  SECTION( "Cues are called on time." )
   {
+    timeline.jumpTo( 0.5f );
+    REQUIRE( call_count == 0 );
+
     timeline.jumpTo( 1.0f );
     REQUIRE( call_count == 1 );
   }
 
-  SECTION( "Cancelled by Handle" )
+  SECTION( "Cues can be cancelled by Handle." )
   {
     auto handle = options.getControl();
     auto locked = handle.lock();
@@ -242,14 +245,14 @@ TEST_CASE( "Cues" )
     REQUIRE( call_count == 0 );
   }
 
-  SECTION( "Scoped Control, persistent" )
+  SECTION( "Living Scoped Control allows cue to call." )
   {
     auto scoped_control = options.getScopedControl();
     timeline.jumpTo( 1.0f );
     REQUIRE( call_count == 1 );
   }
 
-  SECTION( "Scoped Control, destructed" )
+  SECTION( "Destructed Scoped Control prevents cue from calling." )
   {
     {
       auto scoped_control = options.getScopedControl();
@@ -282,7 +285,6 @@ TEST_CASE( "Cues" )
       REQUIRE( call_count == 1 );
     }
   }
-
 }
 
 //==========================================
@@ -433,52 +435,6 @@ TEST_CASE( "Timeline" )
       REQUIRE( updateCount == 3 );
       REQUIRE( endCalled );
     }
-  }
-
-
-  SECTION( "Cues" )
-  {
-    timeline.clear();
-    vector<int> call_counts( 4, 0 );
-    std::array<float, 4> delays = { 0.01f, 1.0f, 2.0f, 3.0f };
-    for( size_t i = 0; i < call_counts.size(); ++i ) {
-      timeline.cue( [i, &call_counts] {
-        call_counts[i] += 1;
-      }, delays[i] );
-    }
-
-    timeline.step( 0.1f );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 0 );
-    REQUIRE( call_counts[2] == 0 );
-
-    for( int i = 0; i < 9; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 0 );
-
-    for( int i = 0; i < 10; ++i ) {
-      timeline.step( 0.1f );
-    }
-
-    REQUIRE( timeline.size() == 1 );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 1 );
-    REQUIRE( call_counts[3] == 0 );
-
-    for( int i = 0; i < 10; ++i ) {
-      timeline.step( 0.101f );
-    }
-
-    REQUIRE( timeline.size() == 0 );
-    REQUIRE( call_counts[0] == 1 );
-    REQUIRE( call_counts[1] == 1 );
-    REQUIRE( call_counts[2] == 1 );
-    REQUIRE( call_counts[3] == 1 );
   }
 
   SECTION( "Manipulating During Update" )
@@ -643,7 +599,11 @@ TEST_CASE( "Time and Infinity" )
   REQUIRE( sequence.getDuration() == infinity );
   REQUIRE( sequence.getValue( infinity ) == 2.0f );
   REQUIRE( (1000.0f / infinity) == 0.0f );
-} // Time and Infinity
+}
+
+//========================================================
+// Separate Component Interpolation (with glm::vec types)
+//========================================================
 
 #if INCLUDE_CINDER_HEADERS
 
