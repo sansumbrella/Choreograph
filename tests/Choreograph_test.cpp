@@ -58,7 +58,24 @@ TEST_CASE( "Phrases" )
     REQUIRE( proc->getValue( 1 ) < 1.0e-14 );
   }
 
-  SECTION( "Combine phrases mix the output of multiple phrases into one." )
+  SECTION( "Mix phrases blend between two phrases." )
+  {
+    auto mix_0 = makeBlend<float>( ramp, other, 0.0f );
+    auto mix_25 = makeBlend<float>( ramp, other, 0.25f );
+    auto mix_50 = makeBlend<float>( ramp, other, 0.5f );
+
+    auto mix_100 = makeBlend<float>( ramp, other );
+    mix_100->setMix( 1.0f );
+
+    REQUIRE( mix_100->getMix() == 1.0f );
+
+    REQUIRE( mix_0->getValue( 1.0f ) == ramp->getValue( 1.0f ) );
+    REQUIRE( mix_25->getValue( 1.0f ) == 32.5f );
+    REQUIRE( mix_50->getValue( 1.0f ) == 55.0f );
+    REQUIRE( mix_100->getValue( 1.0f ) == other->getValue( 1.0f ) );
+  }
+
+  SECTION( "Accumulate phrases mix the output of multiple phrases into one." )
   {
     auto accumulate = makeAccumulator<float>( 0.0f, ramp, other );
 
@@ -68,6 +85,14 @@ TEST_CASE( "Phrases" )
 
     REQUIRE( accumulate->getValue( 1.0 ) == 110 );
     REQUIRE( decumulate->getValue( 1.0 ) == -110 );
+  }
+
+  SECTION( "Ramps and Mix Phrases can use custom interpolation functions." )
+  {
+    struct Custom {
+      float a;
+      float b;
+    };
   }
 }
 
