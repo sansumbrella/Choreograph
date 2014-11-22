@@ -881,26 +881,6 @@ TEST_CASE( "Separate component interpolation", "[sequence]" )
     REQUIRE( sequence->getValue( 1.5f ).x != sequence->getValue( 1.5f ).y );
     REQUIRE( sequence->getValue( 1.5f ).y != sequence->getValue( 1.5f ).z );
   }
-
-  SECTION( "Mixing Sequences" )
-  {
-    Sequence<vec2> sequence( vec2( 0 ) );
-
-    Sequence<vec2> bounce_y( vec2( 0 ) );
-    bounce_y.then<RampTo>( vec2( 0, 10.0f ), 0.5f, EaseOutCubic() ).then<RampTo>( vec2( 0 ), 0.5f, EaseInCubic() );
-
-    Sequence<vec2> slide_x( vec2( 0 ) );
-    slide_x.then<RampTo>( vec2( 100.0f, 0.0f ), 3.0f, EaseOutQuad() );
-
-    auto combine = makeAccumulator( vec2( 0 ), slide_x.asPhrase(), makeRepeat<vec2>( bounce_y.asPhrase(), 3 ) );
-    combine->add( bounce_y.asPhrase() );
-
-    sequence.then( combine );
-
-    REQUIRE( sequence.getValue( 0.5 ).y == 20.0 ); // both bounces up
-    REQUIRE( sequence.getValue( 1.5 ).y == 10.0 ); // only the repeated bounce up remains
-    REQUIRE( sequence.getEndValue().x == 100.0 );
-  }
 } // Separate Component Easing
 
 #endif
