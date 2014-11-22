@@ -164,8 +164,8 @@ TEST_CASE( "Sequences" )
 
   SECTION( "Sequence values outside duration are clamped to begin and end values." )
   {
-    REQUIRE( sequence.getValue( - std::numeric_limits<float>::max() ) == 0.0f );
-    REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == 100.0f );
+    REQUIRE( sequence.getValue( - std::numeric_limits<float>::max() ) == sequence.getStartValue() );
+    REQUIRE( sequence.getValue( std::numeric_limits<float>::max() ) == sequence.getEndValue() );
   }
 
   SECTION( "Looped sequence values are equivalent." )
@@ -262,15 +262,20 @@ TEST_CASE( "Slicing Time" )
 
   SECTION( "Sequences can be sliced into subsequences." )
   {
+    auto slice_equal = sequence.slice( 0.0f, sequence.calcDuration() );
     auto slice_middle = sequence.slice( 0.25f, 2.25f );
     auto slice_past_end = sequence.slice( 0.5f, 3.5f );
 
+    REQUIRE( slice_equal.getDuration() == sequence.getDuration() );
+    REQUIRE( slice_equal.getValue( 1.5f ) == sequence.getValue( 1.5f ) );
+
     REQUIRE( sequence.getDuration() == 3 );
     REQUIRE( slice_middle.getDuration() == 2 );
-    REQUIRE( slice_past_end.getDuration() == 3 );
-
     REQUIRE( slice_middle.getValue( 0.0f ) == sequence.getValue( 0.25f ) );
-    REQUIRE( slice_past_end.getValue( 3.0f ) == sequence.getValue( 3.5f ) );
+    REQUIRE( slice_middle.getEndValue() == sequence.getValue( 2.25f ) );
+
+    REQUIRE( slice_past_end.getDuration() == 3 );
+    REQUIRE( slice_past_end.getValue( 3.0f ) == sequence.getEndValue() );
     REQUIRE( slice_past_end.getValue( 0.0f ) == sequence.getValue( 0.5f ) );
   }
 
