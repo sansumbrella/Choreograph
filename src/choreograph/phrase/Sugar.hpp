@@ -60,7 +60,7 @@ inline PhraseRef<T> makePingPong( const PhraseRef<T> &source, float numLoops, Ti
 template<typename T>
 inline PhraseRef<T> makeReverse( const PhraseRef<T> &source )
 {
-  return std::make_shared<PingPongPhrase<T>>( source );
+  return std::make_shared<ReversePhrase<T>>( source );
 }
 
 /// Create a MixPhrase that blends the value of Phrases \a a and \a b.

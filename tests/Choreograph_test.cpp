@@ -19,6 +19,18 @@ TEST_CASE( "Phrases" )
   auto ramp = makeRamp( 1.0f, 10.0f, 1.0f );
   auto other = makeRamp( 10.0f, 100.0f, 1.0f );
 
+  SECTION( "Retime" )
+  {
+    auto repeat = makeRepeat<float>( ramp, 4 );
+    auto reverse = makeReverse<float>( ramp );
+    auto ping = makePingPong<float>( ramp, 4 );
+
+    REQUIRE( reverse->getValue( 0.2 ) == ramp->getValue( 0.8 ) );
+    REQUIRE( repeat->getValue( 3 ) == ramp->getValue( 0 ) );
+    REQUIRE( ping->getValue( 1 ) == ramp->getValue( 1 ) );
+    REQUIRE( ping->getValue( 2 ) == ramp->getValue( 0 ) );
+  }
+
   SECTION( "Procedural" )
   {
     auto proc = makeProcedure<float>( 1.0f, [] ( Time t, Time duration ) {
