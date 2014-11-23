@@ -99,7 +99,7 @@ private:
   Connection<T>  *_input = nullptr;
 
   /// Replaces \a rhs in its relationship to a TimelineItem input.
-  void supplant( const Output<T> &rhs );
+  void supplant( Output<T> &&rhs );
   /// Connects this output to a different Connection.
   void connect( Connection<T> *input );
 
@@ -113,17 +113,17 @@ private:
 // Move constructor takes value and any input Motion.
 template<typename T>
 Output<T>::Output( Output<T> &&rhs ):
-mValue( rhs.mValue )
+  mValue( std::move( rhs.mValue ) )
 {
-  supplant( rhs );
+  supplant( std::move( rhs ) );
 }
 
 // Move assignment takes value and any input Motion.
 template<typename T>
 Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
   if( this != &rhs ) {
-    mValue = rhs.mValue;
-    supplant( rhs );
+    mValue = std::move( rhs.mValue );
+    supplant( std::move( rhs ) );
   }
   return *this;
 }
@@ -157,7 +157,7 @@ void Output<T>::disconnect()
 }
 
 template<typename T>
-void Output<T>::supplant( const Output<T> &rhs )
+void Output<T>::supplant( Output<T> &&rhs )
 {
   disconnect();
   connect( rhs._input );
