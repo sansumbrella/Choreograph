@@ -25,21 +25,25 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Orbits.h"
+#pragma once
 
-using namespace choreograph;
-using namespace cinder;
+#include "pockets/Scene.h"
 
-void Orbits::setup()
+class Quaternions : public pockets::Scene
 {
-}
+public:
+  void setup() override;
 
-void Orbits::update( Time dt )
-{
+  void connect( ci::app::WindowRef window ) override;
 
-}
+  void update( ch::Time dt ) override;
 
-void Orbits::draw()
-{
+  void draw() override;
 
-}
+  void rotateMore( ch::MotionOptions<ci::quat> &motion );
+
+private:
+  ch::Output<ci::quat>  _append_orientation;
+  ch::Output<ci::quat>  _apply_orientation;
+  ch::Output<ci::quat>  _continuous_orientation;
+};

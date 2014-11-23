@@ -30,22 +30,39 @@
 #include "pockets/Scene.h"
 
 ///
-/// Oscillator demonstrates the ProceduralPhrase.
-/// Sometimes key positions aren't the easiest way to describe a motion.
+/// Demonstrates different kinds of looping effects:
+/// Motion looping, Group looping, and Loop Phrases.
 ///
-class Oscillator : public pockets::Scene
+class Repetition : public pk::Scene
 {
 public:
-
   void setup() override;
   void update( ch::Time dt ) override;
   void draw() override;
-
 private:
+  struct Point {
+#if defined(CINDER_MSW)
+    Point( ch::Output<ci::vec2> &&position, const ci::Color &color, const std::string &description ):
+      _position( std::move( position ) ),
+      _color( color ),
+      _description( description )
+    {}
+    Point() = default;
+    Point( Point &&rhs ):
+      _position( std::move( rhs._position ) ),
+      _color( std::move( rhs._color ) ),
+      _description( std::move( rhs._description) )
+    {}
+    Point( const Point &rhs ) = delete;
+#endif
+    ch::Output<ci::vec2>  _position;
+    ci::Color             _color;
+    std::string           _description;
+  };
 
-  ch::Output<ci::vec2> _position_a;
-  ch::Output<ci::vec2> _position_b;
+  std::vector<Point> mTargets;
 
-  ch::Output<ci::vec2> _reference_bounce;
-  ch::Output<ci::vec2> _reference_slide;
+  // For grouped motion, we'll use these two properties.
+  ch::Output<ci::vec2>  _position;
+  ch::Output<ci::vec3>  _rotation;
 };

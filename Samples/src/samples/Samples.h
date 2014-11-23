@@ -27,23 +27,22 @@
 
 #pragma once
 
-#include "Hello.h"
-#include "Sink.h"
-#include "Wings.h"
-#include "Loops.h"
+#include "WormBuncher.h"
+#include "Quaternions.h"
+#include "Repetition.h"
 #include "BezierConstruction.h"
-#include "Oscillator.h"
+#include "SlideAndBounce.h"
 
 using SampleRef = std::shared_ptr<pk::Scene>;
 using SampleFn = std::function<SampleRef ()>;
 
 const std::vector<std::pair<std::string, SampleFn>> SampleList =
 {
-  { "Slide", std::make_shared<Oscillator> },
+  { "Slide", std::make_shared<SlideAndBounce> },
   { "Bezier", std::make_shared<BezierConstruction> },
-  { "Repetition", std::make_shared<Loops> },
-  { "Worm Bunch", std::make_shared<Hello> },
-  { "Dev Junk", std::make_shared<Sink> }
+  { "Repetition", std::make_shared<Repetition> },
+  { "Worm Bunch", std::make_shared<WormBuncher> },
+  { "Dev Junk", std::make_shared<Quaternions> }
 };
 
 const std::vector<std::string> SampleNames = ([]

@@ -25,13 +25,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Oscillator.h"
+#include "SlideAndBounce.h"
 
 using namespace choreograph;
 using namespace cinder;
 using namespace std;
 
-void Oscillator::setup()
+void SlideAndBounce::setup()
 {
 
   // Create a procedural phrase that moves on a sine wave.
@@ -66,12 +66,12 @@ void Oscillator::setup()
   timeline().jumpTo( 0 );
 }
 
-void Oscillator::update( Time dt )
+void SlideAndBounce::update( Time dt )
 {
   timeline().step( dt );
 }
 
-void Oscillator::draw()
+void SlideAndBounce::draw()
 {
   gl::ScopedColor color( Color( CM_HSV, 0.72f, 1.0f, 1.0f ) );
   gl::drawSolidCircle( _position_a, 30.0f );

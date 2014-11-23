@@ -25,13 +25,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Hello.h"
+#include "WormBuncher.h"
 #include "cinder/Rand.h"
 
 using namespace choreograph;
 using namespace cinder;
 
-void Hello::setup()
+void WormBuncher::setup()
 {
   const int count = 64;
   Sequence<quat> spin{ quat() };
@@ -69,7 +69,7 @@ void Hello::setup()
 
 }
 
-void Hello::connect( app::WindowRef window )
+void WormBuncher::connect( app::WindowRef window )
 {
   auto seekPoint = [this] ( const ivec2 &point ) {
     vec3 center( point, 0.0f );
@@ -96,12 +96,12 @@ void Hello::connect( app::WindowRef window )
 #endif
 }
 
-void Hello::update( Time dt )
+void WormBuncher::update( Time dt )
 {
   timeline().step( dt );
 }
 
-void Hello::draw()
+void WormBuncher::draw()
 {
   gl::ScopedAlphaBlend blend( false );
 
