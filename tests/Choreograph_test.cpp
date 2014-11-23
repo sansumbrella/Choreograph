@@ -725,8 +725,12 @@ TEST_CASE( "Outputs" )
 
   SECTION( "Vector of outputs can be moved." )
   {
-    vector<Output<float>> outputs( 500, 0.0f );
+    vector<Output<float>> outputs;
     vector<Output<float>> copy;
+
+    while( outputs.size() < 500 ) {
+      outputs.emplace_back( Output<float>{ 0.0f } );
+    }
 
     for( auto &output : outputs ) {
       timeline.apply( &output, sequence );
@@ -753,44 +757,6 @@ TEST_CASE( "Outputs" )
     copy = std::move( base );
     motion.jumpTo( 1.0f );
 
-    REQUIRE( copy.value() == 1.0f );
-
-    motion.jumpTo( 2.0f );
-    REQUIRE( copy.value() == 10.0f );
-  }
-
-  SECTION( "Vector of outputs can be copied." )
-  {
-    vector<Output<float>> outputs( 500, 0.0f );
-    vector<Output<float>> copy;
-
-    for( auto &output : outputs ) {
-      timeline.apply( &output, sequence );
-    }
-    copy = outputs;
-
-    timeline.step( 1.0f );
-    bool all_five = true;
-    for( auto &c : copy ) {
-      if( c != 1.0f ) {
-        all_five = false;
-      }
-    }
-    REQUIRE( copy.front() == 1.0f );
-    REQUIRE( all_five == true );
-    REQUIRE( outputs.front() == 0.0f );
-  }
-
-  SECTION( "Copy assignment brings motion along. (this may be removed in future)" )
-  {
-    Output<float> base( 500.0f );
-    Output<float> copy( 0.0f );
-
-    Motion<float> motion( &base, sequence );
-    copy = base;
-    motion.jumpTo( 1.0f );
-
-    REQUIRE( base.value() == 500.0f );
     REQUIRE( copy.value() == 1.0f );
 
     motion.jumpTo( 2.0f );

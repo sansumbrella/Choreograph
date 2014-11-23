@@ -64,7 +64,7 @@ void Hello::setup()
     timeline().apply( &thing.orientation ).set( back ).then<RampTo>( front, 0.44f, EaseInOutAtan() ).setStartTime( delay );
     timeline().apply( &thing.alpha ).setStartTime( delay ).then<RampTo>( 1.0f, 0.16f );
 
-    mThings.push_back( thing );
+    mThings.emplace_back( std::move( thing ) );
   }
 
 }

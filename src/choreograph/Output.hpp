@@ -52,6 +52,16 @@ public:
     mValue( value )
   {}
 
+  /// Move assignment takes value and any input Motion.
+  Output<T>& operator= ( Output<T> &&rhs );
+  /// Move constructor takes value and any input Motion.
+  Output( Output<T> &&rhs );
+
+  /// Delete copy assignment. Behavior was confusing due to relationship with Connection<T>.
+  Output<T>& operator= ( const Output<T> &rhs ) = delete;
+  /// Delete copy constructor. Behavior was confusing due to relationship with Connection<T>.
+  Output( const Output<T> &rhs ) = delete;
+
   /// Disconnect from Motion input.
   void disconnect();
 
@@ -61,23 +71,9 @@ public:
   /// Returns true iff this Output has no Connection input.
   bool isDisconnected() const { return _input == nullptr; }
 
-  /// Copy assignment takes value and any input Motion.
-  /// May remove copy assignment since it has non-obvious semantics.
-  Output<T>& operator= ( const Output<T> &rhs );
-//  Output<T>& operator= ( const Output<T> &rhs ) = delete;
-
-  /// Move assignment takes value and any input Motion.
-  Output<T>& operator= ( Output<T> &&rhs );
-
-  /// Copy constructor takes value and any motions.
-  Output( const Output<T> &rhs );
-
-  /// Move constructor takes value and any input Motion.
-  Output( Output<T> &&rhs );
-
-  /// Assignment operator.
+  /// Value assignment operator.
 	Output<T>& operator= ( T value ) { mValue = value; return *this; }
-
+  /// Value add-assign.
   Output<T>& operator+= ( T value ) { mValue += value; return *this; }
 
 	/// Returns value of output.
@@ -114,17 +110,15 @@ private:
 // Output Implementation
 //=================================================
 
-/// Copy assignment takes value and any input Motion.
+// Move constructor takes value and any input Motion.
 template<typename T>
-Output<T>& Output<T>::operator= ( const Output<T> &rhs ) {
-  if( this != &rhs ) {
-    mValue = rhs.mValue;
-    supplant( rhs );
-  }
-  return *this;
+Output<T>::Output( Output<T> &&rhs ):
+mValue( rhs.mValue )
+{
+  supplant( rhs );
 }
 
-/// Move assignment takes value and any input Motion.
+// Move assignment takes value and any input Motion.
 template<typename T>
 Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
   if( this != &rhs ) {
@@ -134,21 +128,25 @@ Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
   return *this;
 }
 
-/// Copy constructor takes value and any motions.
+/*
+// Copy assignment takes value and any input Motion.
+template<typename T>
+Output<T>& Output<T>::operator= ( const Output<T> &rhs ) {
+  if( this != &rhs ) {
+    mValue = rhs.mValue;
+    supplant( rhs );
+  }
+  return *this;
+}
+
+// Copy constructor takes value and any motions.
 template<typename T>
 Output<T>::Output( const Output<T> &rhs ):
 mValue( rhs.mValue )
 {
   supplant( rhs );
 }
-
-/// Move constructor takes value and any input Motion.
-template<typename T>
-Output<T>::Output( Output<T> &&rhs ):
-mValue( rhs.mValue )
-{
-  supplant( rhs );
-}
+*/
 
 template<typename T>
 void Output<T>::disconnect()
