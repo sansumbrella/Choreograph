@@ -25,12 +25,12 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Loops.h"
+#include "Repetition.h"
 
 using namespace choreograph;
 using namespace cinder;
 
-void Loops::setup()
+void Repetition::setup()
 {
   float w = app::getWindowWidth();
   float left = w * 0.08f;
@@ -97,7 +97,7 @@ void Loops::setup()
   timeline().add( std::move( group ) );
 
   //=====================================================
-  // Looping Phrases. Use for a finite number of loops.
+  // Looping Phrases. Use for a finite number of Repetition.
   // Compose Phrases in Loop/PingPongPhrases.
   //=====================================================
 
@@ -121,12 +121,12 @@ void Loops::setup()
   timeline().jumpTo( 0 );
 }
 
-void Loops::update( Time dt )
+void Repetition::update( Time dt )
 {
   timeline().step( dt );
 }
 
-void Loops::draw()
+void Repetition::draw()
 {
   gl::ScopedModelMatrix matrix;
   gl::ScopedAlphaBlend blend( false );

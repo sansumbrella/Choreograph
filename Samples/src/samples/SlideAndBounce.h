@@ -30,39 +30,22 @@
 #include "pockets/Scene.h"
 
 ///
-/// Demonstrates different kinds of looping effects:
-/// Motion looping, Group looping, and Loop Phrases.
+/// SlideAndBounce demonstrates the ProceduralPhrase.
+/// Sometimes key positions aren't the easiest way to describe a motion.
 ///
-class Loops : public pk::Scene
+class SlideAndBounce : public pockets::Scene
 {
 public:
+
   void setup() override;
   void update( ch::Time dt ) override;
   void draw() override;
+
 private:
-  struct Point {
-#if defined(CINDER_MSW)
-    Point( ch::Output<ci::vec2> &&position, const ci::Color &color, const std::string &description ):
-      _position( std::move( position ) ),
-      _color( color ),
-      _description( description )
-    {}
-    Point() = default;
-    Point( Point &&rhs ):
-      _position( std::move( rhs._position ) ),
-      _color( std::move( rhs._color ) ),
-      _description( std::move( rhs._description) )
-    {}
-    Point( const Point &rhs ) = delete;
-#endif
-    ch::Output<ci::vec2>  _position;
-    ci::Color             _color;
-    std::string           _description;
-  };
 
-  std::vector<Point> mTargets;
+  ch::Output<ci::vec2> _position_a;
+  ch::Output<ci::vec2> _position_b;
 
-  // For grouped motion, we'll use these two properties.
-  ch::Output<ci::vec2>  _position;
-  ch::Output<ci::vec3>  _rotation;
+  ch::Output<ci::vec2> _reference_bounce;
+  ch::Output<ci::vec2> _reference_slide;
 };

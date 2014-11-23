@@ -57,22 +57,16 @@
     <ClCompile Include="..\src\samples\BezierConstruction.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\samples\Hello.cpp">
+    <ClCompile Include="..\src\samples\Quaternions.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\samples\Loops.cpp">
+    <ClCompile Include="..\src\samples\Repetition.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\samples\Orbits.cpp">
+    <ClCompile Include="..\src\samples\SlideAndBounce.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\samples\Oscillator.cpp">
-      <Filter>Source Files\samples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\samples\Sink.cpp">
-      <Filter>Source Files\samples</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\samples\Wings.cpp">
+    <ClCompile Include="..\src\samples\WormBuncher.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
   </ItemGroup>
@@ -149,25 +143,19 @@
     <ClInclude Include="..\src\samples\BezierConstruction.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\samples\Hello.h">
+    <ClInclude Include="..\src\samples\Quaternions.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\samples\Loops.h">
-      <Filter>Source Files\samples</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\samples\Orbits.h">
-      <Filter>Source Files\samples</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\samples\Oscillator.h">
+    <ClInclude Include="..\src\samples\Repetition.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
     <ClInclude Include="..\src\samples\Samples.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\samples\Sink.h">
+    <ClInclude Include="..\src\samples\SlideAndBounce.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\samples\Wings.h">
+    <ClInclude Include="..\src\samples\WormBuncher.h">
       <Filter>Source Files\samples</Filter>
     </ClInclude>
   </ItemGroup>

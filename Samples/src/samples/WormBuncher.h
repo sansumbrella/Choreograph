@@ -25,49 +25,46 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "Wings.h"
+#pragma once
 
-using namespace choreograph;
-using namespace cinder;
+#include "pockets/Scene.h"
 
-void Wings::setup()
+struct Thing
 {
+#if defined(CINDER_MSW)
+  Thing() = default;
+  /// We need to provide a move constructor for VS2013 to use instead of copy construction.
+  /// Clang auto-generates the move constructor for us, so it's not needed on OSX.
+  Thing( Thing &&rhs ):
+    color( std::move( rhs.color ) ),
+    alpha( std::move( rhs.alpha ) ),
+    position( std::move( rhs.position ) ),
+    orientation( std::move( rhs.orientation ) )
+  {}
+  // In C++11, we should be able to declare move-ctor as default, but VS2013 doesn't support this yet.
+  // http://msdn.microsoft.com/en-us/library/dn457344.aspx
+  // Thing( Thing &&rhs ) = default;
+  Thing( const Thing &rhs ) = delete;
+#endif
 
-  timeline().setDefaultRemoveOnFinish( false );
+  ci::Color             color;
+  ch::Output<float>     alpha = 0.0f;
+  ch::Output<ci::vec3>  position;
+  ch::Output<ci::quat>  orientation;
+};
 
-  timeline().apply( &position ).set( vec2( 0, app::getWindowHeight() / 2 ) )
-    .then<RampTo>( vec2( app::getWindowWidth(), app::getWindowHeight() ), 1.0f, EaseInOutQuad() );
-}
-
-void Wings::connect( ci::app::WindowRef window )
+class WormBuncher : public pk::Scene
 {
-  storeConnection( window->getSignalMouseDown().connect( [this] ( const app::MouseEvent &event ) {
-    mMouseDown = true;
-    float t = (event.getPos().x / (float) app::getWindowWidth());
-    timeline().jumpTo( t );
-  } ) );
-  storeConnection( window->getSignalMouseUp().connect( [this] ( const app::MouseEvent &event ) { mMouseDown = false; } ) );
+public:
 
-  storeConnection( window->getSignalMouseDrag().connect( [this] ( const app::MouseEvent &event ) {
-    float t = (event.getPos().x / (float) app::getWindowWidth());
-    timeline().jumpTo( t );
-  }) );
+  void setup() override;
 
-  storeConnection( window->getSignalKeyDown().connect( [this] ( const app::KeyEvent &event ) {
-    position.disconnect();
-  }  ) );
-}
+  void update( ch::Time dt ) override;
 
-void Wings::update( Time dt )
-{
-  if( ! mMouseDown )
-  {
-    timeline().step( dt );
-  }
-}
+  void connect( ci::app::WindowRef window ) override;
 
-void Wings::draw()
-{
-  gl::ScopedColor color( Color::white() );
-  gl::drawSolidCircle( position, 100.0f );
-}
+  void draw() override;
+
+private:
+  std::vector<Thing>  mThings;
+};
