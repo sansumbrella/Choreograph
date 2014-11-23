@@ -120,6 +120,13 @@ public:
   /// Offset the Motion's start time.
   SelfT& shiftStartTime( Time t ) { _motion.setStartTime( _motion.getStartTime() + t ); return *this; }
 
+  //=================================================
+  // Accessors to Motion and Sequence.
+  //=================================================
+
+  Sequence<T>& getSequence() { return _sequence; }
+  Motion<T>&   getMotion() { return _motion; }
+
 private:
   Motion<T>       &_motion;
   Sequence<T>     &_sequence;
