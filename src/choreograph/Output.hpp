@@ -128,26 +128,6 @@ Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
   return *this;
 }
 
-/*
-// Copy assignment takes value and any input Motion.
-template<typename T>
-Output<T>& Output<T>::operator= ( const Output<T> &rhs ) {
-  if( this != &rhs ) {
-    mValue = rhs.mValue;
-    supplant( rhs );
-  }
-  return *this;
-}
-
-// Copy constructor takes value and any motions.
-template<typename T>
-Output<T>::Output( const Output<T> &rhs ):
-mValue( rhs.mValue )
-{
-  supplant( rhs );
-}
-*/
-
 template<typename T>
 void Output<T>::disconnect()
 {
