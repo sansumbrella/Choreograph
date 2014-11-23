@@ -6,17 +6,15 @@
 
 #include "cinder/Vector.h"
 #include "cinder/Timeline.h"
+#include "cinder/Timer.h"
 
 #include <chrono>
 
 using namespace std;
 using cinder::Timeline;
 using cinder::vec2;
+using cinder::Timer;
 using namespace choreograph;
-
-using timer = chrono::high_resolution_clock;
-// double millis
-using d = chrono::duration<double, ratio<1, 1000>>;
 
 void printTiming( const std::string &text, double milliseconds, const std::string &suffix = "ms" )
 {
@@ -33,11 +31,6 @@ void printTiming( const std::string &text, double milliseconds, const std::strin
   cout << message << number << endl;
 }
 
-void printTiming( const std::string &text, const timer::duration &duration )
-{
-  printTiming( text, chrono::duration_cast<d>( duration ).count(), "ms" );
-}
-
 void printHeading( const std::string &text )
 {
   cout << endl << text << endl;
@@ -48,7 +41,7 @@ TEST_CASE( "Sequence Manipulation Timing" )
 {
   printHeading( "Sequence Creation and Slicing" );
 
-  auto create_medium_begin = timer::now();
+  Timer create_medium( true );
   Sequence<float> medium_sequence( 0.0f );
   medium_sequence.then<RampTo>( 10.0f, 1.0f, EaseInOutQuad() )
     .then<RampTo>( 1.0f, 1.0f, EaseInOutQuad() )
@@ -63,10 +56,10 @@ TEST_CASE( "Sequence Manipulation Timing" )
     .then<RampTo>( 6.0f, 1.0f, EaseInOutQuad() )
     .then<RampTo>( 70.0f, 1.0f, EaseInOutQuad() );
 
-  auto create_medium_end = timer::now();
-  printTiming( "Creating Medium Sequence", create_medium_end - create_medium_begin );
+  create_medium.stop();
+  printTiming( "Creating Medium Sequence", create_medium.getSeconds() * 1000 );
 
-  auto create_auto_medium_begin = timer::now();
+  Timer create_auto_medium( true );
   auto auto_medium_sequence = Sequence<float>( 0.0f )
     .then<RampTo>( 1.0f, 1.0f, EaseInOutQuad() )
     .then<RampTo>( 20.0f, 1.0f, EaseInOutQuad() )
@@ -81,27 +74,27 @@ TEST_CASE( "Sequence Manipulation Timing" )
     .then<RampTo>( 70.0f, 1.0f, EaseInOutQuad() )
     .then<RampTo>( 10.0f, 1.0f, EaseInOutQuad() );
 
-  auto create_auto_medium_end = timer::now();
-  printTiming( "Creating Medium Sequence rhs Assignment", create_auto_medium_end - create_auto_medium_begin );
+  create_auto_medium.stop();
+  printTiming( "Creating Medium Sequence rhs Assignment", create_auto_medium.getSeconds() * 1000 );
 
-  auto create_huge_begin = timer::now();
+  Timer create_huge( true );
   Sequence<float> huge_sequence( 0.0f );
   for( int i = 0; i < 1.0e6; i += 1 ) {
     huge_sequence.then<RampTo>( cos( i * 0.1 ) * (i - 1.0e3), 1.0f, EaseInOutCubic() );
   }
-  auto create_huge_end = timer::now();
-  printTiming( "Creating Huge Sequence", create_huge_end - create_huge_begin );
+  create_huge.stop();
+  printTiming( "Creating Huge Sequence", create_huge.getSeconds() * 1000 );
 
-  auto slice_medium_begin = timer::now();
+  Timer slice_medium( true );
   auto sub_medium = medium_sequence.slice( 1.3f, 7.2f );
-  auto slice_medium_end = timer::now();
-  printTiming( "Slicing Medium Sequence", slice_medium_end - slice_medium_begin );
+  slice_medium.stop();
+  printTiming( "Slicing Medium Sequence", slice_medium.getSeconds() * 1000 );
 
-  auto slice_huge_begin = timer::now();
+  Timer slice_huge( true );
   // Performance is linear on the number of phrases before end time.
   auto sub_huge = huge_sequence.slice( 5.55f, 15000.025f );
-  auto slice_huge_end = timer::now();
-  printTiming( "Slicing Huge Sequence", slice_huge_end - slice_huge_begin );
+  slice_huge.stop();
+  printTiming( "Slicing Huge Sequence", slice_huge.getSeconds() * 1000 );
 }
 
 TEST_CASE( "Choreograph Timeline Basic Performance" )
@@ -114,51 +107,51 @@ TEST_CASE( "Choreograph Timeline Basic Performance" )
 
   printHeading( "Basic Timing for " + to_string( count ) + " Motions" );
   vector<Output<vec2>> targets( count, vec2( 0 ) );
-  auto create_in_place_begin = timer::now();
+  Timer create_in_place( true );
   for( auto &target : targets ) {
     choreograph_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).startFn( [] (Motion<vec2> &) {} ).updateFn( [] ( const vec2 &value ) { value + vec2(1); } ).finishFn( [] (Motion<vec2> &) {} );
   }
-  auto create_in_place_end = timer::now();
-  printTiming( "Creating Motions with Callbacks in place", create_in_place_end - create_in_place_begin );
+  create_in_place.stop();
+  printTiming( "Creating Motions with Callbacks in place", create_in_place.getSeconds() * 1000 );
 
-  auto step_created_in_place_begin = timer::now();
+  Timer step_created_in_place( true );
   for( int i = 0; i < 60; ++i ) {
     choreograph_timeline.step( dt );
   }
-  auto step_created_in_place_end = timer::now();
-  printTiming( "60 Motion Steps (1sec at 60Hz)", step_created_in_place_end - step_created_in_place_begin );
+  step_created_in_place.stop();
+  printTiming( "60 Motion Steps (1sec at 60Hz)", step_created_in_place.getSeconds() * 1000 );
 
-  auto disconnect_begin = timer::now();
+  Timer disconnect( true );
   for( auto &target : targets ) {
     target.disconnect();
   }
 
-  auto disconnect_end = timer::now();
-  printTiming( "Disconnecting Motions", disconnect_end - disconnect_begin );
+  disconnect.stop();
+  printTiming( "Disconnecting Motions", disconnect.getSeconds() * 1000 );
 
-  auto step_disconnected_begin = timer::now();
+  Timer step_disconnected( true );
   choreograph_timeline.step( dt );
 
-  auto step_disconnected_end = timer::now();
-  printTiming( "Step to remove disconnected Motions", step_disconnected_end - step_disconnected_begin );
+  step_disconnected.stop();
+  printTiming( "Step to remove disconnected Motions", step_disconnected.getSeconds() * 1000 );
 
-  auto create_copy_begin = timer::now();
+  Timer create_copy( true );
   Sequence<vec2> sequence( vec2( 1.0f ) );
   sequence.then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
   for( auto &target : targets ) {
     choreograph_timeline.apply( &target, sequence ).startFn( [] (Motion<vec2> &) {} ).updateFn( [] ( const vec2 &value ) { value + vec2(1); } ).finishFn( [] (Motion<vec2> &) {} );
   }
 
-  auto create_copy_end = timer::now();
-  printTiming( "Creating Motions from existing Sequence", create_copy_end - create_copy_begin );
+  create_copy.stop();
+  printTiming( "Creating Motions from existing Sequence", create_copy.getSeconds() * 1000 );
 
 
-  auto step_copy_created_begin = timer::now();
+  Timer step_copy_created( true );
   for( int i = 0; i < 60; ++i ) {
     choreograph_timeline.step( dt );
   }
-  auto step_copy_created_end = timer::now();
-  printTiming( "60 Motion Steps (1sec at 60Hz)", step_copy_created_end - step_copy_created_begin );
+  step_copy_created.stop();
+  printTiming( "60 Motion Steps (1sec at 60Hz)", step_copy_created.getSeconds() * 1000 );
 
 }
 
@@ -186,41 +179,41 @@ TEST_CASE( "Comparative Performance with cinder::Timeline" )
     for( int step = 0; step < iterations; step += 1 )
     {
       // Create Choreograph Motions
-      auto ch_create_begin = timer::now();
+      Timer ch_create( true );
       for( int i = 0; i < tween_count; ++i ) {
         choreograph_timeline.apply( &targets[i] )
           .then<Hold>( vec2( 0 ), 1.0f )
           .then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
       }
-      auto ch_create_end = timer::now();
+      ch_create.stop();
 
       // Create Cinder Tweens
-      auto ci_create_begin = timer::now();
+      Timer ci_create( true );
       for( int i = 0; i < tween_count; ++i ) {
         cinder_timeline->apply( &cinder_targets[i], vec2( i * 5, i * 20 ), 2.0f )
           .delay( 1.0f );
       }
-      auto ci_create_end = timer::now();
+      ci_create.stop();
 
-      auto ch_step_begin = timer::now();
+      Timer ch_step( true );
       // Step through Choreograph Motions
       for( float t = 0.0f; t <= total_time; t += dt ) {
         choreograph_timeline.step( dt );
       }
-      auto ch_step_end = timer::now();
+      ch_step.stop();
 
-      auto ci_step_begin = timer::now();
+      Timer ci_step( true );
       // Step through Cinder Tweens
       for( float t = 0.0f; t <= total_time; t += dt ) {
         cinder_timeline->step( dt );
       }
-      auto ci_step_end = timer::now();
+      ci_step.stop();
 
-      ci_create_avg += chrono::duration_cast<d>( ci_create_end - ci_create_begin ).count();
-      ci_step_avg += chrono::duration_cast<d>( ci_step_end - ci_step_begin ).count();
+      ci_create_avg += ci_create.getSeconds() * 1000;
+      ci_step_avg += ci_step.getSeconds() * 1000;
 
-      ch_create_avg += chrono::duration_cast<d>( ch_create_end - ch_create_begin ).count();
-      ch_step_avg += chrono::duration_cast<d>( ch_step_end - ch_step_begin ).count();
+      ch_create_avg += ch_create.getSeconds() * 1000;
+      ch_step_avg += ch_step.getSeconds() * 1000;
     }
 
     ci_create_avg /= iterations;
@@ -248,38 +241,38 @@ TEST_CASE( "Comparative Performance with cinder::Timeline" )
       ci::Anim<vec2>  cinder_target( vec2( 0 ) );
 
       // Create Choreograph Motions
-      auto ch_create_begin = timer::now();
+      Timer ch_create( true );
       for( int i = 0; i < tween_count; ++i ) {
         choreograph_timeline.append( &target ).then<Hold>( vec2( 0 ), 1.0f ).then<RampTo>( vec2( i * 5, i * 20 ), 2.0f );
       }
-      auto ch_create_end = timer::now();
+      ch_create.stop();
 
       // Create Cinder Tweens
-      auto ci_create_begin = timer::now();
+      Timer ci_create( true );
       for( int i = 0; i < tween_count; ++i ) {
         cinder_timeline->appendTo( &cinder_target, vec2( i * 5, i * 20 ), 2.0f ).delay( 1.0f );
       }
-      auto ci_create_end = timer::now();
+      ci_create.stop();
 
       // Step through Choreograph Motions
-      auto ch_step_begin = timer::now();
+      Timer ch_step( true );
       for( float t = 0.0f; t <= total_time; t += dt ) {
         choreograph_timeline.step( dt );
       }
-      auto ch_step_end = timer::now();
+      ch_step.stop();
 
       // Step through Cinder Tweens
-      auto ci_step_begin = timer::now();
+      Timer ci_step( true );
       for( float t = 0.0f; t <= total_time; t += dt ) {
         cinder_timeline->step( dt );
       }
-      auto ci_step_end = timer::now();
+      ci_step.stop();
 
-      ci_create_avg += chrono::duration_cast<d>( ci_create_end - ci_create_begin ).count();
-      ci_step_avg += chrono::duration_cast<d>( ci_step_end - ci_step_begin ).count();
+      ci_create_avg += ci_create.getSeconds() * 1000;
+      ci_step_avg += ci_step.getSeconds() * 1000;
 
-      ch_create_avg += chrono::duration_cast<d>( ch_create_end - ch_create_begin ).count();
-      ch_step_avg += chrono::duration_cast<d>( ch_step_end - ch_step_begin ).count();
+      ch_create_avg += ch_create.getSeconds() * 1000;
+      ch_step_avg += ch_step.getSeconds() * 1000;
     }
 
     ci_create_avg /= iterations;
