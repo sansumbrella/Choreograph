@@ -81,15 +81,11 @@ TEST_CASE( "Choreograph Timeline Basic Performance" ) {
   }
 
   {
-    REQUIRE( choreograph_timeline.empty() == false );
-
     auto begin = timer::now();
     choreograph_timeline.step( dt );
 
     auto end = timer::now();
     printTiming( "Step to remove disconnected Motions", end - begin );
-
-    REQUIRE( choreograph_timeline.empty() == true );
   }
 
   {
