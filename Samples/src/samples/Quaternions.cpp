@@ -38,14 +38,18 @@ void Quaternions::setup()
   timeline().apply( &_continuous_orientation )
     .then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() )
     .finishFn( [this] (Motion<quat> &m) {
-      m.sliceSequence( 0, 0 );
-      m.resetTime();
+      // create a future for yourself.
       m.getSequence().then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+      // erase the past
+      m.cutPhrasesBefore( m.time() );
     } );
 }
 
 void Quaternions::rotateMore( ch::MotionOptions<ci::quat> &options )
 {
+  // If appending to a motion, this will be the end value of that motion.
+  // If the motion was applied, it will be the current value of the target,
+  // since any previous motion will have been cancelled.
   auto end = normalize( options.getSequence().getEndValue() );
 
   auto axis = vec3( 1, 0, 0 );
@@ -99,15 +103,15 @@ void Quaternions::draw()
   }
   {
     gl::ScopedMatrices orientMatrices;
-    gl::translate( vec2( app::getWindowWidth() * 0.75f, app::getWindowHeight() * 0.33f ) );
+    gl::translate( vec2( app::getWindowWidth() * 0.7f, app::getWindowHeight() * 0.52f ) );
     gl::rotate( _append_orientation );
-    gl::drawColorCube( vec3( 0 ), vec3( 50.0f ) );
+    gl::drawColorCube( vec3( 0 ), vec3( 100.0f ) );
   }
   {
     gl::ScopedMatrices orientMatrices;
-    gl::translate( vec2( app::getWindowWidth() * 0.25f, app::getWindowHeight() * 0.33f ) );
+    gl::translate( vec2( app::getWindowWidth() * 0.3f, app::getWindowHeight() * 0.52f ) );
     gl::rotate( _apply_orientation );
-    gl::drawColorCube( vec3( 0 ), vec3( 50.0f ) );
+    gl::drawColorCube( vec3( 0 ), vec3( 100.0f ) );
   }
 
   gl::disableDepthRead();
