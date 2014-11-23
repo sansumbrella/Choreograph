@@ -1,7 +1,7 @@
 # Choreograph
 
 A simple, modern C++ animation and timing library.  
-v0.2.0
+v0.3.0
 
 Choreograph is designed to describe motion. With it, you compose motion Phrases into Sequences that can be used to animate arbitrary properties on a Timeline.
 
