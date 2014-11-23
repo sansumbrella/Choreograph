@@ -108,15 +108,14 @@ void Loops::setup()
   timeline().apply( &pingPongPhraseTarget ).then( makePingPong( leftToRight, 7.5f ) );
 
   // Keep track of our animating things.
-  // Intermediate Note:
-  // when we copy the targets into our array, we steal the Connection
-  // from the locally-scoped target. The Motion connection is
-  // moved to connect to the copied object.
-  mTargets.push_back( { loopTarget, Color( 1, 0, 1 ), "Reset Time on Motion Finish" } );
-  mTargets.push_back( { pingPongTarget, Color( 1, 0, 1 ), "Reverse Speed and Reset Time on Motion Finish" } );
-  mTargets.push_back( { pingPongSlowerTarget, Color( 0, 1, 1 ), "Reverse and Reduce Speed and Reset Time on Motion Finish" } );
-  mTargets.push_back( { loopPhraseTarget, Color( 1, 1, 0 ), "LoopPhrase 7.5 times composed with makeRepeat" } );
-  mTargets.push_back( { pingPongPhraseTarget, Color( 1, 1, 0 ), "PingPongPhrase 7.5 times composed with makePingPong" } );
+  // Note:
+  // We `move` our Outputs into our Points to preserve the Motion connection to them.
+  // This invalidates the locally-scoped names for the Outputs, which cannot be used after the move.
+  mTargets.emplace_back( Point{ std::move(loopTarget), Color( 1, 0, 1 ), "Reset Time on Motion Finish" } );
+  mTargets.emplace_back( Point{ std::move(pingPongTarget), Color( 1, 0, 1 ), "Reverse Speed and Reset Time on Motion Finish" } );
+  mTargets.emplace_back( Point{ std::move(pingPongSlowerTarget), Color( 0, 1, 1 ), "Reverse and Reduce Speed and Reset Time on Motion Finish" } );
+  mTargets.emplace_back( Point{ std::move(loopPhraseTarget), Color( 1, 1, 0 ), "LoopPhrase 7.5 times composed with makeRepeat" } );
+  mTargets.emplace_back( Point{ std::move(pingPongPhraseTarget), Color( 1, 1, 0 ), "PingPongPhrase 7.5 times composed with makePingPong" } );
 
   // place things at initial timelined values.
   timeline().jumpTo( 0 );

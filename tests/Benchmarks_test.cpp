@@ -106,7 +106,10 @@ TEST_CASE( "Choreograph Timeline Basic Performance" )
   const size_t count = 50e3;
 
   printHeading( "Basic Timing for " + to_string( count ) + " Motions" );
-  vector<Output<vec2>> targets( count, vec2( 0 ) );
+  vector<Output<vec2>> targets;
+  while( targets.size() < count ) {
+    targets.emplace_back( vec2( 0 ) );
+  }
   Timer create_in_place( true );
   for( auto &target : targets ) {
     choreograph_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).startFn( [] (Motion<vec2> &) {} ).updateFn( [] ( const vec2 &value ) { value + vec2(1); } ).finishFn( [] (Motion<vec2> &) {} );
@@ -161,7 +164,10 @@ TEST_CASE( "Comparative Performance with cinder::Timeline" )
   ci::TimelineRef cinder_timeline = ci::Timeline::create();
 
   const int               tween_count = 5000;
-  vector<Output<vec2>>    targets( tween_count, vec2( 0 ) );
+  vector<Output<vec2>>    targets;
+  while ( targets.size() < tween_count ) {
+    targets.emplace_back( vec2( 0 ) );
+  }
   vector<ci::Anim<vec2>>  cinder_targets( tween_count, vec2( 0 ) );
 
   double ci_step_avg    = 0;
