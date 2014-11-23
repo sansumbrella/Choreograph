@@ -58,7 +58,7 @@ template<typename T>
 class Sequence
 {
 public:
-  // Sequences always need to have some valid value.
+  /// Sequences always need to have some valid value, so we can't start undefined.
   Sequence() = delete;
 
   /// Construct a Sequence with an initial \a value.
@@ -71,23 +71,27 @@ public:
     _initial_value( std::forward<T>( value ) )
   {}
 
-  /// Construct a Sequence by duplicating the phrases in an \a other sequence.
-  Sequence( const Sequence<T> &other ):
-    _initial_value( other._initial_value ),
-    _phrases( other._phrases ),
-    _duration( calcDuration() )
-  {}
+  // Default copy and move assignment and construction work fine.
+  // VS2013 doesn't like the default-declared move, so we omit it.
+  Sequence( const Sequence<T> &other ) = default;
+  // Sequence( Sequence<T> &&other ) = default;
+  Sequence& operator= (const Sequence<T> &rhs) = default;
+  // Sequence& operator= (Sequence<T> &&rhs) = default;
 
-  explicit Sequence( const std::vector<PhraseRef<T>> &phrases ):
-    _initial_value( phrases.front()->getStartValue() ),
-    _phrases( phrases ),
-    _duration( calcDuration() )
-  {}
-
-  explicit Sequence( const PhraseRef<T> &phrase ):
+  /// Construct a Sequence from a single Phrase.
+  explicit Sequence( const PhraseRef<T> &phrase ) :
+    _phrases( 1, phrase ),
     _initial_value( phrase->getStartValue() ),
-    _duration( phrase->getDuration() ),
-    _phrases( 1, phrase )
+    _duration( phrase->getDuration() )
+  {}
+
+  /// Construct a Sequence from a vector of phrases.
+  /// A bug in VS2013 causes this constructor to be called when you meant to use
+  /// the single-phrase constructor. Cast to PhraseRef<T> to get around it.
+  explicit Sequence( const std::vector<PhraseRef<T>> &phrases ):
+    _phrases( phrases ),
+    _initial_value( phrases.front()->getStartValue() ),
+    _duration( calcDuration() )
   {}
 
   //
@@ -206,7 +210,8 @@ Sequence<T>& Sequence<T>::then( const PhraseRef<T> &phrase )
 template<typename T>
 Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
 {
-  _phrases.insert( _phrases.end(), next._phrases.cbegin(), next._phrases.cend() );
+  auto phrases = next._phrases;
+  _phrases.insert( _phrases.end(), phrases.begin(), phrases.end() );
   _duration = calcDuration();
 
   return *this;
@@ -301,7 +306,7 @@ template<typename T>
 Sequence<T> Sequence<T>::slice( Time from, Time to )
 {
   if( _phrases.empty() ) {
-    return Sequence<T>( std::make_shared<Hold<T>>( to - from, _initial_value ) );
+    return Sequence<T>( PhraseRef<T>( std::make_shared<Hold<T>>( to - from, _initial_value ) ) );
   }
 
   // the indices of the first and last Phrases in our time range.
@@ -325,7 +330,7 @@ Sequence<T> Sequence<T>::slice( Time from, Time to )
   }
   else {
     Time t = getTimeAtInflection( points.first );
-    return Sequence<T>( std::make_shared<ClipPhrase<T>>( first, from - t, to - t ) );
+    return Sequence<T>( PhraseRef<T>( std::make_shared<ClipPhrase<T>>( first, from - t, to - t ) ) );
   }
 }
 
