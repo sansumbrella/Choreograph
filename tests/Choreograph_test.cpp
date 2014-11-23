@@ -5,7 +5,7 @@
 #include <array>
 
 // If true, will test vec2 and vec3 animation.
-#define INCLUDE_CINDER_HEADERS true
+#define INCLUDE_CINDER_HEADERS 1
 
 using namespace std;
 using namespace choreograph;

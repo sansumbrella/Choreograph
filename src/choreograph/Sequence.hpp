@@ -72,10 +72,11 @@ public:
   {}
 
   // Default copy and move assignment and construction work fine.
+  // VS2013 doesn't like the default-declared move, so we omit it.
   Sequence( const Sequence<T> &other ) = default;
-  Sequence( Sequence<T> &&other ) = default;
+  // Sequence( Sequence<T> &&other ) = default;
   Sequence& operator= (const Sequence<T> &rhs) = default;
-  Sequence& operator= (Sequence<T> &&rhs) = default;
+  // Sequence& operator= (Sequence<T> &&rhs) = default;
 
   explicit Sequence( const std::vector<PhraseRef<T>> &phrases ):
     _phrases( phrases ),
