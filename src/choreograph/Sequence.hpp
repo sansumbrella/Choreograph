@@ -71,22 +71,21 @@ public:
     _initial_value( std::forward<T>( value ) )
   {}
 
-  /// Construct a Sequence by duplicating the phrases in an \a other sequence.
-  Sequence( const Sequence<T> &other ):
-    _initial_value( other._initial_value ),
-    _phrases( other._phrases ),
-    _duration( calcDuration() )
-  {}
+  /// Default copy and move assignment and construction work fine.
+  Sequence( const Sequence<T> &other ) = default;
+  Sequence( Sequence<T> &&other ) = default;
+  Sequence& operator= (const Sequence<T> &rhs) = default;
+  Sequence& operator= (Sequence<T> &&rhs) = default;
 
   explicit Sequence( const std::vector<PhraseRef<T>> &phrases ):
-    _initial_value( phrases.front()->getStartValue() ),
     _phrases( phrases ),
+    _initial_value( phrases.front()->getStartValue() ),
     _duration( calcDuration() )
   {}
 
   explicit Sequence( const PhraseRef<T> &phrase ):
-    _initial_value( phrase->getStartValue() ),
     _duration( phrase->getDuration() ),
+    _initial_value( phrase->getStartValue() ),
     _phrases( 1, phrase )
   {}
 
