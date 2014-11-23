@@ -69,14 +69,21 @@ void Quaternions::rotateMore( ch::MotionOptions<ci::quat> &options )
 
 void Quaternions::connect( ci::app::WindowRef window )
 {
-  storeConnection( window->getSignalTouchesBegan().connect( [this] ( app::TouchEvent &event ) {
-    auto apply_options = timeline().apply( &_apply_orientation );
+  auto change_orientations = [this] {
+    auto apply_options = timeline( ).apply( &_apply_orientation );
     rotateMore( apply_options );
 
-    auto append_options = timeline().append( &_append_orientation );
+    auto append_options = timeline( ).append( &_append_orientation );
     rotateMore( append_options );
+  };
+  
+  storeConnection( window->getSignalTouchesBegan().connect( [=] ( app::TouchEvent &event ) {
+    change_orientations();
   } ) );
 
+  storeConnection( window->getSignalMouseDown().connect( [=] ( app::MouseEvent &event ) {
+    change_orientations();
+  } ) );
 }
 
 void Quaternions::update( Time dt )
