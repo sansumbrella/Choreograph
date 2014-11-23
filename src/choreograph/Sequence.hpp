@@ -82,13 +82,17 @@ public:
     _phrases( phrases ),
     _initial_value( phrases.front()->getStartValue() ),
     _duration( calcDuration() )
-  {}
+  {
+    std::cout << "Vector constructor" << std::endl;
+  }
 
   explicit Sequence( const PhraseRef<T> &phrase ):
     _duration( phrase->getDuration() ),
     _initial_value( phrase->getStartValue() ),
     _phrases( 1, phrase )
-  {}
+  {
+    std::cout << "Phrase constructor" << std::endl;
+  }
 
   //
   // Sequence manipulation and expansion.
