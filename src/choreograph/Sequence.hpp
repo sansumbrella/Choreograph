@@ -58,7 +58,7 @@ template<typename T>
 class Sequence
 {
 public:
-  // Sequences always need to have some valid value.
+  /// Sequences always need to have some valid value, so we can't start undefined.
   Sequence() = delete;
 
   /// Construct a Sequence with an initial \a value.
@@ -71,7 +71,7 @@ public:
     _initial_value( std::forward<T>( value ) )
   {}
 
-  /// Default copy and move assignment and construction work fine.
+  // Default copy and move assignment and construction work fine.
   Sequence( const Sequence<T> &other ) = default;
   Sequence( Sequence<T> &&other ) = default;
   Sequence& operator= (const Sequence<T> &rhs) = default;
