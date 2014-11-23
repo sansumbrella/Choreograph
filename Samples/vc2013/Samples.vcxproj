@@ -115,12 +115,10 @@
     <ClCompile Include="..\src\pockets\Scene.cpp" />
     <ClCompile Include="..\src\SamplesApp.cpp" />
     <ClCompile Include="..\src\samples\BezierConstruction.cpp" />
-    <ClCompile Include="..\src\samples\Hello.cpp" />
-    <ClCompile Include="..\src\samples\Loops.cpp" />
-    <ClCompile Include="..\src\samples\Orbits.cpp" />
-    <ClCompile Include="..\src\samples\Oscillator.cpp" />
-    <ClCompile Include="..\src\samples\Sink.cpp" />
-    <ClCompile Include="..\src\samples\Wings.cpp" />
+    <ClCompile Include="..\src\samples\Quaternions.cpp" />
+    <ClCompile Include="..\src\samples\Repetition.cpp" />
+    <ClCompile Include="..\src\samples\SlideAndBounce.cpp" />
+    <ClCompile Include="..\src\samples\WormBuncher.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\choreograph\Choreograph.h" />
@@ -147,13 +145,11 @@
     <ClInclude Include="..\src\pockets\Pockets.h" />
     <ClInclude Include="..\src\pockets\Scene.h" />
     <ClInclude Include="..\src\samples\BezierConstruction.h" />
-    <ClInclude Include="..\src\samples\Hello.h" />
-    <ClInclude Include="..\src\samples\Loops.h" />
-    <ClInclude Include="..\src\samples\Orbits.h" />
-    <ClInclude Include="..\src\samples\Oscillator.h" />
+    <ClInclude Include="..\src\samples\Quaternions.h" />
+    <ClInclude Include="..\src\samples\Repetition.h" />
     <ClInclude Include="..\src\samples\Samples.h" />
-    <ClInclude Include="..\src\samples\Sink.h" />
-    <ClInclude Include="..\src\samples\Wings.h" />
+    <ClInclude Include="..\src\samples\SlideAndBounce.h" />
+    <ClInclude Include="..\src\samples\WormBuncher.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
