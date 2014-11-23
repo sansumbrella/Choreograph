@@ -78,21 +78,21 @@ public:
   Sequence& operator= (const Sequence<T> &rhs) = default;
   // Sequence& operator= (Sequence<T> &&rhs) = default;
 
+  /// Construct a Sequence from a single Phrase.
+  explicit Sequence( const PhraseRef<T> &phrase ) :
+    _phrases( 1, phrase ),
+    _initial_value( phrase->getStartValue() ),
+    _duration( phrase->getDuration() )
+  {}
+
+  /// Construct a Sequence from a vector of phrases.
+  /// A bug in VS2013 causes this constructor to be called when you meant to use
+  /// the single-phrase constructor. Cast to PhraseRef<T> to get around it.
   explicit Sequence( const std::vector<PhraseRef<T>> &phrases ):
     _phrases( phrases ),
     _initial_value( phrases.front()->getStartValue() ),
     _duration( calcDuration() )
-  {
-    std::cout << "Vector constructor" << std::endl;
-  }
-
-  explicit Sequence( const PhraseRef<T> &phrase ):
-    _duration( phrase->getDuration() ),
-    _initial_value( phrase->getStartValue() ),
-    _phrases( 1, phrase )
-  {
-    std::cout << "Phrase constructor" << std::endl;
-  }
+  {}
 
   //
   // Sequence manipulation and expansion.
