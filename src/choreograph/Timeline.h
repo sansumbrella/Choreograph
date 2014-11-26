@@ -154,11 +154,11 @@ public:
   CueOptions&       playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
 
   /// Returns a weak_ptr to the control object for the Cue. Allows you to cancel the Cue.
-  CueControlWeakRef getControl() { return _cue.getControl(); }
+  TimelineItemControlRef  getControl() { return _cue.getControl(); }
 
   /// Returns an object that cancels the Cue when it falls out of scope.
   /// You should store a ScopedCueRef in any class that captures [this] in a cued lambda.
-  ScopedCueRef      getScopedControl() { return std::make_shared<Cue::ScopedCancel>( _cue.getControl() ); }
+  ScopedCancelRef         getScopedControl() { return std::make_shared<Cue::ScopedCancel>( _cue.getControl() ); }
 private:
   Cue  &_cue;
 };

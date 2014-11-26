@@ -43,47 +43,14 @@ public:
   /// Creates a cue from a function and a delay.
   Cue( const std::function<void ()> &fn, Time delay );
 
-  /// Returns true if the cue should still execute.
-  bool isInvalid() const override;
-
   /// Calls cue function if time threshold has been crossed.
   void update() override;
 
   /// Cues are instantaneous.
   Time getDuration() const override { return 0.0f; }
 
-
-  /// Control struct for cancelling Cues if needed.
-  /// Accessible through the CueOptions struct.
-  struct Control
-  {
-    /// Cancel the cue this belongs to.
-    void cancel() { _cancelled = true; }
-    /// Returns true iff this control was told to cancel.
-    bool cancelled() const { return _cancelled; }
-  private:
-    bool _cancelled = false;
-  };
-
-  /// Struct that cancels a Cue when it falls out of scope.
-  struct ScopedCancel
-  {
-    ScopedCancel( std::weak_ptr<Control> control ): _control( control ) {}
-    ~ScopedCancel();
-  private:
-    std::weak_ptr<Control>  _control;
-  };
-
-  /// Returns a weak_ptr to a control that allows you to cancel the Cue.
-  std::weak_ptr<Control> getControl() const { return _control; }
-
 private:
   std::function<void ()>    _cue;
-  std::shared_ptr<Control>  _control;
 };
-
-using CueControlWeakRef = std::weak_ptr<Cue::Control>;
-/// Object that cancels Cue when it falls out of scope.
-using ScopedCueRef = std::shared_ptr<Cue::ScopedCancel>;
 
 } // namespace choreograph

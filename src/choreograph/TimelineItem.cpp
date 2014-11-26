@@ -29,6 +29,11 @@
 
 using namespace choreograph;
 
+TimelineItem::~TimelineItem()
+{
+  _control->cancel();
+}
+
 void TimelineItem::step( Time dt )
 {
   _time += dt * _speed;

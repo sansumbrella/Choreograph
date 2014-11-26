@@ -408,10 +408,7 @@ TEST_CASE( "Cues" )
   SECTION( "Cues can be cancelled by Handle." )
   {
     auto handle = options.getControl();
-    auto locked = handle.lock();
-    if( locked ) {
-      locked->cancel();
-    }
+    handle->cancel();
     timeline.jumpTo( 1.0f );
     REQUIRE( call_count == 0 );
   }
