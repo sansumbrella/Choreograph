@@ -42,7 +42,7 @@ template<typename T> class Motion;
 ///
 
 template<typename T>
-  class Connection : public Control
+class Connection : public Control
 {
 public:
   /// Constructs an invalid Connection.

@@ -49,7 +49,7 @@ public:
 
   /// Construct with a value.
   Output( const T &value ):
-  mValue( value )
+  _value( value )
   {}
 
   /// Move assignment takes value and any input Motion.
@@ -72,30 +72,30 @@ public:
   bool isDisconnected() const { return _input == nullptr; }
 
   /// Value assignment operator.
-  Output<T>& operator= ( T value ) { mValue = value; return *this; }
+  Output<T>& operator= ( T value ) { _value = value; return *this; }
   /// Value add-assign.
-  Output<T>& operator+= ( T value ) { mValue += value; return *this; }
+  Output<T>& operator+= ( T value ) { _value += value; return *this; }
 
   /// Returns value of output.
-  const T& 	value() const { return mValue; }
+  const T& 	value() const { return _value; }
 
   /// Returns value of output.
-  const T& 	operator() () const { return mValue; }
+  const T& 	operator() () const { return _value; }
 
   /// Returns value of output for manipulating.
-  T&				operator() () { return mValue; }
+  T&				operator() () { return _value; }
 
   /// Enable cast to value type.
-  operator const T&()	{ return mValue; }
+  operator const T&()	{ return _value; }
 
   /// Returns pointer to value.
-  const T* 	valuePtr() const { return &mValue; }
+  const T* 	valuePtr() const { return &_value; }
 
   /// Returns pointer to value.
-  T*				valuePtr() { return &mValue; }
+  T*				valuePtr() { return &_value; }
 
 private:
-  T               mValue;
+  T               _value;
   Connection<T>  *_input = nullptr;
 
   /// Replaces \a rhs in its relationship to a TimelineItem input.
@@ -113,7 +113,7 @@ private:
 // Move constructor takes value and any input Motion.
 template<typename T>
 Output<T>::Output( Output<T> &&rhs ):
-  mValue( std::move( rhs.mValue ) )
+  _value( std::move( rhs._value ) )
 {
   supplant( std::move( rhs ) );
 }
@@ -122,7 +122,7 @@ Output<T>::Output( Output<T> &&rhs ):
 template<typename T>
 Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
   if( this != &rhs ) {
-    mValue = std::move( rhs.mValue );
+    _value = std::move( rhs._value );
     supplant( std::move( rhs ) );
   }
   return *this;
