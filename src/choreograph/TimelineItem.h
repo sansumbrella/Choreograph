@@ -36,8 +36,10 @@ class TimelineItem;
 using TimelineItemRef = std::shared_ptr<TimelineItem>;
 using TimelineItemUniqueRef = std::unique_ptr<TimelineItem>;
 
-/// Control struct for cancelling Cues if needed.
+///
+/// Control struct for cancelling TimelineItems.
 /// Accessible through the CueOptions struct.
+///
 class Control
 {
 public:
@@ -54,7 +56,7 @@ protected:
   TimelineItem *_item = nullptr;
 };
 
-/// Struct that cancels a Cue when it falls out of scope.
+/// Struct that cancels a TimelineItem when it falls out of scope.
 class ScopedCancel
 {
 public:
