@@ -42,10 +42,6 @@ _cue( fn )
 
 void Cue::update()
 {
-  if( Cue::isInvalid() ) {
-    return;
-  }
-
   if( forward() && time() >= 0.0f && previousTime() < 0.0f )
     _cue();
   else if( backward() && time() <= 0.0f && previousTime() > 0.0f )

@@ -63,14 +63,20 @@ TimelineItem::~TimelineItem()
 void TimelineItem::step( Time dt )
 {
   _time += dt * _speed;
-  update(); // update properties
+  if( ! cancelled() ) {
+    // update properties
+    update();
+  }
   _previous_time = _time;
 }
 
 void TimelineItem::jumpTo( Time time )
 {
   _time = time;
-  update(); // update properties
+  if( ! cancelled() ) {
+    // update properties
+    update();
+  }
   _previous_time = _time;
 }
 

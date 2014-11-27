@@ -126,10 +126,6 @@ private:
 template<typename T>
 void Motion<T>::update()
 {
-  if( Motion<T>::isInvalid() ) {
-    return;
-  }
-
   if( _startFn )
   {
     if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
