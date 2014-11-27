@@ -124,6 +124,7 @@ void Connection<T>::disconnect( Output<T> *base )
     _output_base->_input = nullptr;
     _output_base = nullptr;
     _raw_target = nullptr;
+    cancel();
   }
 }
 

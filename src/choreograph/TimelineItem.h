@@ -76,6 +76,9 @@ class TimelineItem
 {
 public:
   TimelineItem() = default;
+  TimelineItem( const std::shared_ptr<Control> &control ):
+    _control( control )
+  {}
 
   virtual ~TimelineItem();
 

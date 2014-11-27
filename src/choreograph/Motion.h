@@ -59,17 +59,20 @@ public:
   Motion() = delete;
 
   Motion( T *target, const SequenceT &sequence ):
-    _connection( this, target ),
+    TimelineItem( std::make_shared<Connection<T>>( this, target ) ),
+    _connection( *std::static_pointer_cast<Connection<T>>( getControl() ) ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceT &sequence ):
-    _connection( this, target ),
+    TimelineItem( std::make_shared<Connection<T>>( this, target ) ),
+    _connection( *std::static_pointer_cast<Connection<T>>( getControl() ) ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target ):
-    _connection( this, target ),
+    TimelineItem( std::make_shared<Connection<T>>( this, target ) ),
+    _connection( *std::static_pointer_cast<Connection<T>>( getControl() ) ),
     _source( target->value() )
   {}
 
@@ -111,7 +114,7 @@ public:
 
 private:
   SequenceT       _source;
-  Connection<T>   _connection;
+  Connection<T>   &_connection;
 
   Callback        _finishFn = nullptr;
   Callback        _startFn  = nullptr;
