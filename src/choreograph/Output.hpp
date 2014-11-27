@@ -1,29 +1,29 @@
 /*
- * Copyright (c) 2014 David Wicks, sansumbrella.com
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or
- * without modification, are permitted provided that the following
- * conditions are met:
- *
- * Redistributions of source code must retain the above copyright
- * notice, this list of conditions and the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright
- * notice, this list of conditions and the following disclaimer in the
- * documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+* Copyright (c) 2014 David Wicks, sansumbrella.com
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or
+* without modification, are permitted provided that the following
+* conditions are met:
+*
+* Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
+* Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in the
+* documentation and/or other materials provided with the distribution.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+* HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
 
 #pragma once
 
@@ -49,7 +49,7 @@ public:
 
   /// Construct with a value.
   Output( const T &value ):
-    mValue( value )
+  mValue( value )
   {}
 
   /// Move assignment takes value and any input Motion.
@@ -72,30 +72,30 @@ public:
   bool isDisconnected() const { return _input == nullptr; }
 
   /// Value assignment operator.
-	Output<T>& operator= ( T value ) { mValue = value; return *this; }
+  Output<T>& operator= ( T value ) { mValue = value; return *this; }
   /// Value add-assign.
   Output<T>& operator+= ( T value ) { mValue += value; return *this; }
 
-	/// Returns value of output.
-	const T& 	value() const { return mValue; }
+  /// Returns value of output.
+  const T& 	value() const { return mValue; }
 
-	/// Returns value of output.
-	const T& 	operator() () const { return mValue; }
+  /// Returns value of output.
+  const T& 	operator() () const { return mValue; }
 
-	/// Returns value of output for manipulating.
-	T&				operator() () { return mValue; }
+  /// Returns value of output for manipulating.
+  T&				operator() () { return mValue; }
 
-	/// Enable cast to value type.
-	operator const T&()	{ return mValue; }
+  /// Enable cast to value type.
+  operator const T&()	{ return mValue; }
 
-	/// Returns pointer to value.
-	const T* 	valuePtr() const { return &mValue; }
+  /// Returns pointer to value.
+  const T* 	valuePtr() const { return &mValue; }
 
-	/// Returns pointer to value.
-	T*				valuePtr() { return &mValue; }
+  /// Returns pointer to value.
+  T*				valuePtr() { return &mValue; }
 
 private:
-	T               mValue;
+  T               mValue;
   Connection<T>  *_input = nullptr;
 
   /// Replaces \a rhs in its relationship to a TimelineItem input.

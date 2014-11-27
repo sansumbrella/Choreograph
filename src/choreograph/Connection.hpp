@@ -32,8 +32,8 @@
 namespace choreograph
 {
 
-template<typename T>
-class Output;
+template<typename T> class Output;
+template<typename T> class Motion;
 
 ///
 /// Connection maintains a connection to an output.
@@ -42,22 +42,22 @@ class Output;
 ///
 
 template<typename T>
-class Connection
+  class Connection : public Control
 {
 public:
-  /// Constructs and invalid Connection.
+  /// Constructs an invalid Connection.
   Connection() = default;
 
   ~Connection();
 
   /// Create a Connection to a managed Output pointer.
   /// Connection will be disconnected when either Connection or Output falls out of scope.
-  explicit Connection( Output<T> *base );
+  explicit Connection( Motion<T> *motion, Output<T> *base );
 
   /// Create a Connection to a raw pointer.
   /// No lifetime management will occur.
   /// In most cases, use Connection( Output<T>* ) instead of this.
-  explicit Connection( T *target );
+  explicit Connection( Motion<T> *motion, T *target );
 
   /// Returns true iff this Connection has an output.
   bool  isConnected() const { return _raw_target != nullptr; }
@@ -71,6 +71,7 @@ public:
   /// Returns reference to target variable. Used for assignment.
   T& target() { return *_raw_target; }
 
+  Motion<T>* getMotionPtr() const { return reinterpret_cast<Motion<T>*>( _item ); }
 private:
   // void pointer to target, used for comparison with other TimelineItem's.
   T          *_raw_target = nullptr;
@@ -93,7 +94,8 @@ private:
 //=================================================
 
 template<typename T>
-Connection<T>::Connection( Output<T> *base ):
+Connection<T>::Connection( Motion<T> *motion, Output<T> *base ):
+  Control( motion ),
   _output_base( base ),
   _raw_target( base->valuePtr() )
 {
@@ -104,7 +106,8 @@ Connection<T>::Connection( Output<T> *base ):
 }
 
 template<typename T>
-Connection<T>::Connection( T *target ):
+Connection<T>::Connection( Motion<T> *motion, T *target ):
+  Control( motion ),
   _raw_target( target )
 {}
 

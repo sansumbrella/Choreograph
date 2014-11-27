@@ -40,77 +40,8 @@ namespace choreograph
 // Aliases.
 //=================================================
 
-template<typename T>
-class Motion;
-
-template<typename T>
-using MotionRef = std::shared_ptr<Motion<T>>;
-
-
-template<typename T>
-struct MotionGroupOptions
-{
-  explicit MotionGroupOptions( Motion<T> &motion ):
-    _motion( motion )
-  {}
-
-  /// Set a function to be called when we start the motion. Receives Motion as an argument.
-  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
-
-  /// Set a function to be called on Motion update. Receives target as an argument.
-  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
-
-  /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
-  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
-
-private:
-  Motion<T> &_motion;
-};
-///
-/// Groups together a number of Motions so they can be repeated
-/// and moved around together.
-/// Note that grouped Motions all share the group's speed and time.
-/// Assumes that the underlying Sequences won't change after adding.
-///
-class MotionGroup : public TimelineItem
-{
-public:
-  using Callback = std::function<void (MotionGroup&)>;
-
-  static std::unique_ptr<MotionGroup> create() { return std::unique_ptr<MotionGroup>( new MotionGroup ); }
-
-  /// Create and add a Motion to the group.
-  /// The Motion will apply \a sequence to \a output.
-  template<typename T>
-  MotionGroupOptions<T> add( const Sequence<T> &sequence, Output<T> *output );
-
-  /// Create and add a Motion to the group.
-  /// The Phrase is converted to a Sequence.
-  template<typename T>
-  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( Sequence<T>( phrase ), output ); }
-
-  /// Update all grouped motions.
-  void update() override;
-
-  /// Returns true if any grouped motions are invalid.
-  bool isInvalid() const override;
-
-  /// Returns the duration of the motion group (end time of last motion).
-  Time getDuration() const override { return _duration; }
-
-  void setFinishFn( const Callback &fn ) { _finish_fn = fn; }
-  void setStartFn( const Callback &fn ) { _start_fn = fn; }
-
-  void extendDuration( Time amount ) { _duration += amount; }
-
-private:
-  MotionGroup() = default;
-  Time                                _duration = 0;
-  std::vector<TimelineItemUniqueRef>  _motions;
-
-  Callback                            _start_fn = nullptr;
-  Callback                            _finish_fn = nullptr;
-};
+template<typename T> class Motion;
+template<typename T> using MotionRef = std::shared_ptr<Motion<T>>;
 
 ///
 /// Motion: Moves a playhead along a Sequence and sends its value to a user-defined output.
@@ -128,17 +59,17 @@ public:
   Motion() = delete;
 
   Motion( T *target, const SequenceT &sequence ):
-    _connection( target ),
+    _connection( this, target ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceT &sequence ):
-    _connection( target ),
+    _connection( this, target ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target ):
-    _connection( target ),
+    _connection( this, target ),
     _source( target->value() )
   {}
 
@@ -151,7 +82,6 @@ public:
   /// Returns the underlying Sequence sampled for this motion.
   SequenceT&  getSequence() { return _source; }
 
-  inline bool isInvalid() const override { return _connection.isDisconnected(); }
   const void* getTarget() const override { return _connection.targetPtr(); }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
@@ -188,24 +118,6 @@ private:
   DataCallback    _updateFn = nullptr;
   std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
 };
-
-//=================================================
-// MotionGroup Template Implementation.
-//=================================================
-
-template<typename T>
-MotionGroupOptions<T> MotionGroup::add( const Sequence<T> &sequence, Output<T> *output )
-{
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
-  auto motion_ptr = motion.get();
-
-
-  _motions.emplace_back( std::move( motion ) );
-
-  _duration = std::max( _duration, motion_ptr->getDuration() );
-
-  return MotionGroupOptions<T>( *motion_ptr );
-}
 
 //=================================================
 // Motion Template Implementation.

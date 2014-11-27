@@ -29,6 +29,32 @@
 
 using namespace choreograph;
 
+Control::Control( TimelineItem *item ):
+  _item( item )
+{}
+
+void Control::cancel()
+{
+  if( _item ){
+    _item->cancel();
+    _item = nullptr;
+  }
+}
+
+bool Control::isValid() const
+{
+  return _item && (! _item->cancelled());
+}
+
+bool Control::isInvalid() const
+{
+  return (_item == nullptr) || _item->cancelled();
+}
+
+///
+///
+///
+
 TimelineItem::~TimelineItem()
 {
   _control->cancel();

@@ -32,9 +32,39 @@
 namespace choreograph
 {
 
-using TimelineItemRef = std::shared_ptr<class TimelineItem>;
+class TimelineItem;
+using TimelineItemRef = std::shared_ptr<TimelineItem>;
+using TimelineItemUniqueRef = std::unique_ptr<TimelineItem>;
 
-using TimelineItemUniqueRef = std::unique_ptr<class TimelineItem>;
+/// Control struct for cancelling Cues if needed.
+/// Accessible through the CueOptions struct.
+class Control
+{
+public:
+  Control( TimelineItem *item );
+  virtual ~Control() = default; // might not need to be virtual with make_shared's handling of destructor.
+
+  /// Cancel the TimelineItem this belongs to.
+  void cancel();
+  /// Returns true if controlling a non-cancelled item.
+  bool isValid() const;
+
+  bool isInvalid() const;
+protected:
+  TimelineItem *_item = nullptr;
+};
+
+/// Struct that cancels a Cue when it falls out of scope.
+class ScopedCancel
+{
+public:
+  ScopedCancel( const std::shared_ptr<Control> &control ): _control( control ) {}
+  ~ScopedCancel() { _control->cancel(); }
+  ScopedCancel( const ScopedCancel &rhs ) = delete;
+  ScopedCancel( ScopedCancel &&rhs ): _control( std::move( rhs._control ) ) {}
+private:
+  std::shared_ptr<Control>  _control;
+};
 
 ///
 /// TimelineItem: non-templated base for polymorphic Motions.
@@ -46,29 +76,6 @@ public:
   TimelineItem() = default;
 
   virtual ~TimelineItem();
-
-  /// Control struct for cancelling Cues if needed.
-  /// Accessible through the CueOptions struct.
-  class Control
-  {
-  public:
-    /// Cancel the TimelineItem this belongs to.
-    void cancel() { _cancelled = true; }
-    /// Returns true iff this control was told to cancel.
-    bool cancelled() const { return _cancelled; }
-  private:
-    bool _cancelled = false;
-  };
-
-  /// Struct that cancels a Cue when it falls out of scope.
-  class ScopedCancel
-  {
-  public:
-    ScopedCancel( const std::shared_ptr<Control> &control ): _control( control ) {}
-    ~ScopedCancel() { _control->cancel(); }
-  private:
-    std::shared_ptr<Control>  _control;
-  };
 
   //=================================================
   // Common public interface.
@@ -98,7 +105,8 @@ public:
   virtual Time getDuration() const = 0;
 
   /// Returns true iff motion is no longer valid.
-  virtual bool isInvalid() const { return _control->cancelled(); }
+  [[deprecated("Use cancelled() instead.")]]
+  bool isInvalid() const { return _cancelled; }
 
   /// Returns target if TimelineItem has one.
   /// Used by Timeline when appending to Motions.
@@ -149,9 +157,11 @@ public:
   /// Returns true if the Motion should be removed from parent Timeline on finish.
   bool getRemoveOnFinish() const { return _remove_on_finish; }
 
-  /// Returns a shared_ptr to a control that allows you to cancel the Cue.
-  std::shared_ptr<Control> getControl() const { return _control; }
+  bool cancelled() const { return _cancelled; }
+  void cancel() { _cancelled = true; }
 
+  /// Returns a shared_ptr to a control that allows you to cancel the Cue.
+  const std::shared_ptr<Control>& getControl() { return _control; }
 private:
   /// True if this motion should be removed from Timeline on finish.
   bool       _remove_on_finish = true;
@@ -164,12 +174,13 @@ private:
   /// Animation start time in seconds. Time from which Sequence is evaluated.
   /// Use to apply a delay.
   Time       _start_time = 0;
-
-  std::shared_ptr<Control>  _control = std::make_shared<TimelineItem::Control>();
+  /// True iff this item was cancelled.
+  bool       _cancelled = false;
+  std::shared_ptr<Control>  _control = std::make_shared<Control>( this );
 };
 
-using TimelineItemControlRef = std::shared_ptr<TimelineItem::Control>;
+using TimelineItemControlRef = std::shared_ptr<Control>;
 /// Object that cancels TimelineItem when it falls out of scope.
-using ScopedCancelRef = std::shared_ptr<TimelineItem::ScopedCancel>;
+using ScopedCancelRef = std::shared_ptr<ScopedCancel>;
 
 } // namespace choreograph

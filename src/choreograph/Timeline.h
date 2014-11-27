@@ -158,7 +158,7 @@ public:
 
   /// Returns an object that cancels the Cue when it falls out of scope.
   /// You should store a ScopedCueRef in any class that captures [this] in a cued lambda.
-  ScopedCancelRef         getScopedControl() { return std::make_shared<Cue::ScopedCancel>( _cue.getControl() ); }
+  ScopedCancelRef         getScopedControl() { return std::make_shared<ScopedCancel>( _cue.getControl() ); }
 private:
   Cue  &_cue;
 };
