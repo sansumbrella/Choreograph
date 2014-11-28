@@ -345,12 +345,9 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const Sequence<T> &sequence
 template<typename T>
 MotionOptions<T> Timeline::append( Output<T> *output )
 {
-  if( output->isConnected() )
-  {
-    auto motion = find( output->valuePtr() );
-    if( motion ) {
-      return MotionOptions<T>( *motion, motion->getSequence(), *this );
-    }
+  auto motion = output->inputPtr();
+  if( motion ) {
+    return MotionOptions<T>( *motion, motion->getSequence(), *this );
   }
   return apply( output );
 }

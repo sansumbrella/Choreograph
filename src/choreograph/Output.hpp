@@ -90,6 +90,8 @@ public:
   /// Returns pointer to value.
   T*				valuePtr() { return &_value; }
 
+  Motion<T>*  inputPtr() { return _input; }
+
 private:
   T         _value;
   Motion<T> *_input = nullptr;
