@@ -57,7 +57,9 @@ bool Control::isInvalid() const
 
 TimelineItem::~TimelineItem()
 {
-  _control->cancel();
+  if( _control ) {
+    _control->cancel();
+  }
 }
 
 void TimelineItem::step( Time dt )
@@ -110,4 +112,12 @@ Time TimelineItem::getTimeUntilFinish() const
   else {
     return time() / getPlaybackSpeed();
   }
+}
+
+const std::shared_ptr<Control>& TimelineItem::getControl()
+{
+  if( ! _control ) {
+    _control = std::make_shared<Control>( this );
+  }
+  return _control;
 }
