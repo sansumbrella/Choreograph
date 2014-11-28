@@ -67,9 +67,6 @@ public:
   /// Returns true iff this Output has a Connection input.
   bool isConnected() const { return _input != nullptr; }
 
-  /// Returns true iff this Output has no Connection input.
-  bool isDisconnected() const { return _input == nullptr; }
-
   /// Value assignment operator.
   Output<T>& operator= ( T value ) { _value = value; return *this; }
   /// Value add-assign.
@@ -138,6 +135,7 @@ void Output<T>::disconnect()
 {
   if( _input ) {
     _input->cancel();
+    _input = nullptr;
   }
 }
 

@@ -134,7 +134,7 @@ private:
   DataCallback    _updateFn;
   std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
 
-  void setOutput( Output<T> *output ) { if( _output ) { _output->_input = nullptr; } _output = output; }
+  void setOutput( Output<T> *output );
   friend class Output<T>;
 };
 
@@ -209,6 +209,17 @@ void Motion<T>::sliceSequence( Time from, Time to )
   _source = _source.slice( from, to );
 
   setTime( this->time() - from );
+}
+
+template<typename T>
+void Motion<T>::setOutput( Output<T> *output )
+{
+   if( _output ) {
+     _output->_input = nullptr;
+   }
+
+  _output = output;
+  _target = _output->valuePtr();
 }
 
 } // namespace choreograph

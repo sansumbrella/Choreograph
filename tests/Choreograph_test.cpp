@@ -694,6 +694,18 @@ TEST_CASE( "Outputs" )
     REQUIRE( motion->isInvalid() );
   }
 
+  SECTION( "Disconnecting outputs works." )
+  {
+    Output<float> temp = 0.0f;
+    REQUIRE_FALSE( temp.isConnected() );
+    temp.disconnect();
+    Motion<float> m( &temp );
+    REQUIRE( temp.isConnected() );
+    temp.disconnect();
+    REQUIRE_FALSE( temp.isConnected() );
+
+  }
+
   SECTION( "Motion falling out of scope disconnects" )
   {
     { // hook up a motion to our output
