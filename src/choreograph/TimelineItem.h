@@ -52,7 +52,7 @@ public:
   bool isValid() const;
 
   bool isInvalid() const;
-protected:
+private:
   TimelineItem *_item = nullptr;
 };
 

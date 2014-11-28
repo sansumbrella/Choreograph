@@ -56,15 +56,15 @@ public:
   /// Move constructor takes value and any input Motion.
   Output( Output<T> &&rhs );
 
-  /// Delete copy assignment. Behavior was confusing due to relationship with Connection<T>.
+  /// Delete copy assignment. Confusing if we only copy value, lying if we steal input Motions.
   Output<T>& operator= ( const Output<T> &rhs ) = delete;
-  /// Delete copy constructor. Behavior was confusing due to relationship with Connection<T>.
+  /// Delete copy constructor. Confusing if we only copy value, lying if we steal input Motions.
   Output( const Output<T> &rhs ) = delete;
 
   /// Disconnect from Motion input.
   void disconnect();
 
-  /// Returns true iff this Output has a Connection input.
+  /// Returns true iff this Output has a Motion input.
   bool isConnected() const { return _input != nullptr; }
 
   /// Value assignment operator.
@@ -98,8 +98,6 @@ private:
 
   /// Replaces \a rhs in its relationship to a TimelineItem input.
   void supplant( Output<T> &&rhs );
-  /// Connects this output to a different Connection.
-  void connect( Connection<T> *input );
 
   friend class Motion<T>;
 };

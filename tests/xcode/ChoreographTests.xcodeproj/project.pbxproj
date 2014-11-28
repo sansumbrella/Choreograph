@@ -91,7 +91,6 @@
 		15609E0E19E190EC0053395A /* Ramp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ramp.hpp; sourceTree = "<group>"; };
 		15609E0F19E190EC0053395A /* Retime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Retime.hpp; sourceTree = "<group>"; };
 		15609E1719E210AE0053395A /* Sugar.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sugar.hpp; sourceTree = "<group>"; };
-		1597E20819D7061E00A049D4 /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F764E71A12F4690022B9AB /* CinderSpecialization.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CinderSpecialization.hpp; sourceTree = "<group>"; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch.hpp; path = ../catch.hpp; sourceTree = "<group>"; };
@@ -202,7 +201,6 @@
 				153607DB19D46195001ECD25 /* Timeline.cpp */,
 				153607DC19D46195001ECD25 /* Timeline.h */,
 				153607E919D4622D001ECD25 /* Phrase.hpp */,
-				1597E20819D7061E00A049D4 /* Connection.hpp */,
 				15609E0819E187AD0053395A /* TimeType.h */,
 				151E370719EC1930009C943E /* Cue.cpp */,
 				151E370819EC1930009C943E /* Cue.h */,

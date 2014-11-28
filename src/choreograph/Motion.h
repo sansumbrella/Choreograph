@@ -29,7 +29,6 @@
 
 #include "TimelineItem.h"
 #include "Sequence.hpp"
-#include "Connection.hpp"
 #include "Output.hpp"
 #include "detail/VectorManipulation.hpp"
 
