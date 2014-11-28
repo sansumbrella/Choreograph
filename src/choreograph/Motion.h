@@ -59,22 +59,34 @@ public:
   Motion() = delete;
 
   Motion( T *target, const SequenceT &sequence ):
-    TimelineItem( std::make_shared<Connection<T>>( this, target ) ),
-    _connection( *std::static_pointer_cast<Connection<T>>( getControl() ) ),
+    _target( target ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceT &sequence ):
-    TimelineItem( std::make_shared<Connection<T>>( this, target ) ),
-    _connection( *std::static_pointer_cast<Connection<T>>( getControl() ) ),
+    _target( target->valuePtr() ),
+    _output( target ),
     _source( sequence )
-  {}
+  {
+    _output->disconnect();
+    _output->_input = this;
+  }
 
   Motion( Output<T> *target ):
-    TimelineItem( std::make_shared<Connection<T>>( this, target ) ),
-    _connection( *std::static_pointer_cast<Connection<T>>( getControl() ) ),
+    _target( target->valuePtr() ),
+    _output( target ),
     _source( target->value() )
-  {}
+  {
+    _output->disconnect();
+    _output->_input = this;
+  }
+
+  ~Motion()
+  {
+    if( _output ) {
+      _output->_input = nullptr;
+    }
+  }
 
   /// Returns duration of the underlying sequence.
   Time getDuration() const override { return _source.getDuration(); }
@@ -85,7 +97,7 @@ public:
   /// Returns the underlying Sequence sampled for this motion.
   SequenceT&  getSequence() { return _source; }
 
-  const void* getTarget() const override { return _connection.targetPtr(); }
+  const void* getTarget() const override { return _target; }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   void setFinishFn( const Callback &c ) { _finishFn = c; }
@@ -114,12 +126,16 @@ public:
 
 private:
   SequenceT       _source;
-  Connection<T>   &_connection;
+  Output<T>       *_output = nullptr;
+  T               *_target = nullptr;
 
-  Callback        _finishFn = nullptr;
-  Callback        _startFn  = nullptr;
-  DataCallback    _updateFn = nullptr;
+  Callback        _finishFn;
+  Callback        _startFn;
+  DataCallback    _updateFn;
   std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
+
+  void setOutput( Output<T> *output ) { if( _output ) { _output->_input = nullptr; } _output = output; }
+  friend class Output<T>;
 };
 
 //=================================================
@@ -139,7 +155,7 @@ void Motion<T>::update()
     }
   }
 
-  _connection.target() = _source.getValue( time() );
+  *_target = _source.getValue( time() );
 
   if( ! _inflectionCallbacks.empty() )
   {
@@ -157,7 +173,7 @@ void Motion<T>::update()
 
   if( _updateFn )
   {
-    _updateFn( _connection.target() );
+    _updateFn( *_target );
   }
 
   if( _finishFn )

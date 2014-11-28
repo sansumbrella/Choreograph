@@ -30,8 +30,7 @@
 namespace choreograph
 {
 
-template<typename T>
-class Connection;
+template<typename T> class Motion;
 
 ///
 /// Safe type for Choreograph outputs.
@@ -95,15 +94,15 @@ public:
   T*				valuePtr() { return &_value; }
 
 private:
-  T               _value;
-  Connection<T>  *_input = nullptr;
+  T         _value;
+  Motion<T> *_input = nullptr;
 
   /// Replaces \a rhs in its relationship to a TimelineItem input.
   void supplant( Output<T> &&rhs );
   /// Connects this output to a different Connection.
   void connect( Connection<T> *input );
 
-  friend class    Connection<T>;
+  friend class Motion<T>;
 };
 
 //=================================================
@@ -113,9 +112,12 @@ private:
 // Move constructor takes value and any input Motion.
 template<typename T>
 Output<T>::Output( Output<T> &&rhs ):
-  _value( std::move( rhs._value ) )
+  _value( std::move( rhs._value ) ),
+  _input( std::move( rhs._input ) )
 {
-  supplant( std::move( rhs ) );
+  if( _input ) {
+    _input->setOutput( this );
+  }
 }
 
 // Move assignment takes value and any input Motion.
@@ -123,7 +125,10 @@ template<typename T>
 Output<T>& Output<T>::operator= ( Output<T> &&rhs ) {
   if( this != &rhs ) {
     _value = std::move( rhs._value );
-    supplant( std::move( rhs ) );
+    _input = std::move( rhs._input );
+    if( _input ) {
+      _input->setOutput( this );
+    }
   }
   return *this;
 }
@@ -132,22 +137,7 @@ template<typename T>
 void Output<T>::disconnect()
 {
   if( _input ) {
-    _input->disconnect( this );
-  }
-}
-
-template<typename T>
-void Output<T>::supplant( Output<T> &&rhs )
-{
-  disconnect();
-  connect( rhs._input );
-}
-
-template<typename T>
-void Output<T>::connect( Connection<T> *input )
-{
-  if( input ) {
-    input->connect( this );
+    _input->cancel();
   }
 }
 

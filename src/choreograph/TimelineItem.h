@@ -166,6 +166,7 @@ public:
   void cancel() { _cancelled = true; }
 
   /// Returns a shared_ptr to a control that allows you to cancel the Cue.
+  /// TODO: lazily instantiate control, since it is not needed for Motions.
   const std::shared_ptr<Control>& getControl() { return _control; }
 private:
   /// True if this motion should be removed from Timeline on finish.

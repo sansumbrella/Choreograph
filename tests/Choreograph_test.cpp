@@ -484,7 +484,7 @@ TEST_CASE( "Timeline" )
     // Use timeline to create Motion.
     timeline.apply( &target, sequence );
     // Motions on Output types will be disconnected when another is created.
-    REQUIRE( motion.isInvalid() == true );
+    REQUIRE( motion.cancelled() == true );
 
     timeline.jumpTo( 2.0f );
     REQUIRE( target == 10.0f );
