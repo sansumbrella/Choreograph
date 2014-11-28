@@ -32,7 +32,7 @@ using namespace choreograph;
 
 void Timeline::removeFinishedAndInvalidMotions()
 {
-  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
+  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->cancelled(); } );
 }
 
 void Timeline::step( Time dt )

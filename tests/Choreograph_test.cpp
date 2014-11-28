@@ -504,7 +504,7 @@ TEST_CASE( "Timeline" )
     // Use timeline to create Motion.
     timeline.applyRaw( &target, sequence );
     // Known issue with raw pointers, no management will have happened.
-    REQUIRE( motion.isInvalid() == false );
+    REQUIRE( motion.cancelled() == false );
 
     timeline.jumpTo( 2.0f );
     REQUIRE( target == 10.0f );
@@ -687,11 +687,11 @@ TEST_CASE( "Outputs" )
     { // create locally scoped output
       Output<float> temp = 0.0f;
       motion = make_shared<Motion<float>>( &temp );
-      REQUIRE( ! motion->isInvalid() );
+      REQUIRE( ! motion->cancelled() );
       REQUIRE( temp.isConnected() );
     }
 
-    REQUIRE( motion->isInvalid() );
+    REQUIRE( motion->cancelled() );
   }
 
   SECTION( "Disconnecting outputs works." )
@@ -712,7 +712,7 @@ TEST_CASE( "Outputs" )
       Motion<float> temp( &output );
 
       REQUIRE( output.isConnected() == true );
-      REQUIRE( temp.isInvalid() == false );
+      REQUIRE( temp.cancelled() == false );
     }
 
     REQUIRE( output.isConnected() == false );
