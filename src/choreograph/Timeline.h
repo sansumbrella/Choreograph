@@ -207,6 +207,11 @@ public:
   /// Use to pass in MotionGroups and other types that Timeline doesn't create.
   void add( TimelineItemUniqueRef item );
 
+  /// Add a timeline to the timeline.
+  /// Wraps the timeline in a MotionGroup item.
+  /// Note that this invalidates the passed-in timeline.
+  void add( Timeline &&timeline );
+
   //=================================================
   // Time manipulation.
   //=================================================
