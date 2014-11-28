@@ -88,7 +88,7 @@ public:
   }
 
   /// Returns duration of the underlying sequence.
-  Time getDuration() const override { return _source.getDuration(); }
+  Time getDuration() const final override { return _source.getDuration(); }
 
   /// Returns ratio of time elapsed, from [0,1] over duration.
   Time getProgress() const { return time() / _source.getDuration(); }
@@ -96,7 +96,7 @@ public:
   /// Returns the underlying Sequence sampled for this motion.
   SequenceT&  getSequence() { return _source; }
 
-  const void* getTarget() const override { return _target; }
+  const void* getTarget() const final override { return _target; }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   void setFinishFn( const Callback &c ) { _finishFn = c; }
@@ -113,7 +113,7 @@ public:
 
   /// Update the connected target with the current sequence value.
   /// Calls start/update/finish functions as appropriate if assigned.
-  void update() override;
+  void update() final override;
 
   /// Removes phrases from sequence before specified time.
   /// Note that you can safely share sequences if you add them to each motion as phrases.
@@ -133,6 +133,8 @@ private:
   DataCallback    _updateFn;
   std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
 
+  /// Sets the output to a different output.
+  /// Used by Output<T>'s move assignment and move constructor.
   void setOutput( Output<T> *output );
   friend class Output<T>;
 };

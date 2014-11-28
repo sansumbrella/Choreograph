@@ -96,7 +96,7 @@ public:
 
   /// Set time of item without updating state. Ignores playback speed.
   /// Safe to use from callbacks.
-  void setTime( Time time ) { _time = _previous_time = time; }
+  void setTime( Time time ) { _time = _previous_time = time; customSetTime( time ); }
 
   //=================================================
   // Virtual Interface.
@@ -167,6 +167,10 @@ public:
 
   /// Returns a shared_ptr to a control that allows you to cancel the Cue.
   const std::shared_ptr<Control>& getControl();
+protected:
+  /// Override to handle additional time setting as needed.
+  /// Used by MotionGroup to propagate setTime calls to timeline.
+  virtual void customSetTime( Time time ) {}
 private:
   /// True if this motion should be removed from Timeline on finish.
   bool       _remove_on_finish = true;

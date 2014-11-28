@@ -44,10 +44,10 @@ public:
   Cue( const std::function<void ()> &fn, Time delay );
 
   /// Calls cue function if time threshold has been crossed.
-  void update() override;
+  void update() final override;
 
   /// Cues are instantaneous.
-  Time getDuration() const override { return 0.0f; }
+  Time getDuration() const final override { return 0.0f; }
 
 private:
   std::function<void ()>    _cue;

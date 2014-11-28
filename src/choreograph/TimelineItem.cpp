@@ -95,10 +95,10 @@ bool TimelineItem::isFinished() const
 void TimelineItem::resetTime()
 {
   if( forward() ) {
-    _time = _previous_time = 0.0f;
+    setTime( 0.0f );
   }
   else {
-    _time = _previous_time = getEndTime();
+    setTime( getEndTime() );
   }
 }
 

@@ -38,6 +38,11 @@ MotionGroup::MotionGroup( Timeline &&timeline ):
   _timeline( std::move( timeline ) )
 {}
 
+void MotionGroup::customSetTime( Time time )
+{
+  _timeline.setTime( time );
+}
+
 void MotionGroup::update()
 {
   if( _start_fn ) {

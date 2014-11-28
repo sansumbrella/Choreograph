@@ -230,6 +230,8 @@ public:
   /// Do not call from a callback.
   void jumpTo( Time time );
 
+  /// Set all items to \a time without calling their update methods.
+  void setTime( Time time );
   //=================================================
   // Timeline querying methods and callbacks.
   //=================================================

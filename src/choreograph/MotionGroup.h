@@ -47,7 +47,10 @@ public:
 
   MotionGroup( const MotionGroup &rhs ) = delete;
 
-  void update() override;
+  //====================================
+  // TimelineItem Overrides
+  //====================================
+  void update() final override;
   Time getDuration() const override { return _timeline.getDuration(); }
 
   /// Returns a reference to the underlying timeline.
@@ -61,6 +64,10 @@ public:
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   void setUpdateFn( const Callback &c ) { _update_fn = c; }
+
+protected:
+  void customSetTime( Time time ) final override;
+
 private:
   Timeline  _timeline;
 

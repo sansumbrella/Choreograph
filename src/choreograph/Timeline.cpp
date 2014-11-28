@@ -80,6 +80,13 @@ void Timeline::postUpdate()
   }
 }
 
+void Timeline::setTime( Time time )
+{
+  for( auto &item : _items ) {
+    item->setTime( time );
+  }
+}
+
 Time Timeline::timeUntilFinish() const
 {
 	Time end = 0;
