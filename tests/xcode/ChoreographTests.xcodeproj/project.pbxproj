@@ -27,6 +27,7 @@
 		153607E619D46195001ECD25 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607DB19D46195001ECD25 /* Timeline.cpp */; };
 		153607E719D46195001ECD25 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607DB19D46195001ECD25 /* Timeline.cpp */; };
 		1590BDD11A28D3C800B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */; };
+		1590BDD51A29216300B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */; };
 		15E864B019C4AD1500B1DA73 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */; };
 		15E864B119C4AD2000B1DA73 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		15E864B219C4AD2000B1DA73 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
@@ -375,6 +376,7 @@
 				153607E719D46195001ECD25 /* Timeline.cpp in Sources */,
 				1515D28619C5D786002CB6A6 /* Benchmarks_test.cpp in Sources */,
 				151E370E19EC24E0009C943E /* Cue.cpp in Sources */,
+				1590BDD51A29216300B60050 /* MotionGroup.cpp in Sources */,
 				153607E119D46195001ECD25 /* Motion.cpp in Sources */,
 				151E370D19EC2358009C943E /* TimelineItem.cpp in Sources */,
 			);
