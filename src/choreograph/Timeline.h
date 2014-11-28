@@ -230,8 +230,6 @@ public:
   /// Do not call from a callback.
   void jumpTo( Time time );
 
-  /// Set all items to \a time without calling their update methods.
-  void setTime( Time time );
   //=================================================
   // Timeline querying methods and callbacks.
   //=================================================
@@ -284,6 +282,11 @@ public:
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
   MotionOptions<T> appendRaw( T *output );
+
+  auto begin() { return _items.begin(); }
+  auto end() { return _items.end(); }
+  auto begin() const { return _items.cbegin(); }
+  auto end() const { return _items.cend(); }
 
 private:
   // True if Motions should be removed from timeline when they reach their endTime.

@@ -40,7 +40,16 @@ MotionGroup::MotionGroup( Timeline &&timeline ):
 
 void MotionGroup::customSetTime( Time time )
 {
-  _timeline.setTime( time );
+  for( auto &item : _timeline ) {
+    item->setTime( time );
+  }
+}
+
+void MotionGroup::customSetPlaybackSpeed( Time s )
+{
+  for( auto &item : _timeline ) {
+    item->setPlaybackSpeed( s );
+  }
 }
 
 void MotionGroup::update()

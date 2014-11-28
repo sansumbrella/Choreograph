@@ -138,7 +138,7 @@ public:
   bool  isFinished() const;
 
   /// Set playback speed of motion. Use negative numbers to play in reverse.
-  void  setPlaybackSpeed( Time s ) { _speed = s; }
+  void  setPlaybackSpeed( Time s ) { _speed = s; customSetPlaybackSpeed( s ); }
 
   /// Returns the current playback speed of motion.
   Time getPlaybackSpeed() const { return _speed; }
@@ -171,6 +171,7 @@ protected:
   /// Override to handle additional time setting as needed.
   /// Used by MotionGroup to propagate setTime calls to timeline.
   virtual void customSetTime( Time time ) {}
+  virtual void customSetPlaybackSpeed( Time time ) {}
 private:
   /// True if this motion should be removed from Timeline on finish.
   bool       _remove_on_finish = true;

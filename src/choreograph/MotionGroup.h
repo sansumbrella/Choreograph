@@ -67,6 +67,7 @@ public:
 
 protected:
   void customSetTime( Time time ) final override;
+  void customSetPlaybackSpeed( Time s ) final override;
 
 private:
   Timeline  _timeline;

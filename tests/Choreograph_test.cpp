@@ -228,6 +228,75 @@ TEST_CASE( "Motions" )
   }
 }
 
+TEST_CASE( "Motion Groups" )
+{
+  auto group = std::make_unique<MotionGroup>();
+  auto &group_timeline = group->timeline();
+  Output<int> target = 0;
+  Timeline timeline;
+
+  SECTION( "Motion Group member callbacks are still called." )
+  {
+    int start_count = 0;
+    int update_count = 0;
+    int finish_count = 0;
+
+    group_timeline.apply( &target )
+      .then<RampTo>( 10, 1.0f )
+      .startFn( [&start_count] (Motion<int> &m) {
+        start_count += 1;
+      } )
+      .updateFn( [&update_count] (int &value) {
+        update_count += 1;
+      } )
+      .finishFn( [&finish_count] (Motion<int> &m) {
+        finish_count += 1;
+      } );
+
+    SECTION( "Sanity Check" )
+    {
+      REQUIRE( group->getDuration() == 1.0f );
+    }
+
+    SECTION( "Looping the group still calls child callbacks." )
+    {
+      group->setFinishFn( [] ( MotionGroup &g ) {
+        g.resetTime();
+      } );
+      timeline.setDefaultRemoveOnFinish( false );
+      timeline.add( std::move( group ) );
+
+      for( int i = 0; i < 32; i += 1 ) {
+        timeline.step( 0.1f );
+      }
+
+      REQUIRE( start_count == 4 );
+      REQUIRE( finish_count == 3 );
+      REQUIRE( update_count == 32 );
+    }
+
+    SECTION( "Ping-pong looping group works, too." )
+    {
+      group->setFinishFn( [] ( MotionGroup &g ) {
+        // MotionGroup overrides customSetPlaybackSpeed to inform children.
+        g.setPlaybackSpeed( -1 * g.getPlaybackSpeed() );
+        g.resetTime();
+      } );
+      timeline.setDefaultRemoveOnFinish( false );
+      timeline.add( std::move( group ) );
+
+      for( int i = 0; i < 32; i += 1 ) {
+        timeline.step( 0.1f );
+      }
+
+      REQUIRE( start_count == 4 );
+      REQUIRE( finish_count == 3 );
+      REQUIRE( update_count == 32 );
+    }
+
+  }
+}
+
 //==========================================
 // Slicing and dicing
 //==========================================
