@@ -25,6 +25,7 @@
 		15362C6519D8EB5D006BFAF1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3839DB7C4CB047F2BC061C67 /* CinderApp.icns */; };
 		15609E1219E1B81C0053395A /* Repetition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1019E1B81C0053395A /* Repetition.cpp */; };
 		15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1319E1CCA20053395A /* BezierConstruction.cpp */; };
+		1590BDD41A28D88400B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDD31A28D88400B60050 /* MotionGroup.cpp */; };
 		15BA7BBC19DF2799003E13A5 /* Quaternions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BBA19DF2799003E13A5 /* Quaternions.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -45,7 +46,6 @@
 		150037FB19E82B4E00960760 /* SlideAndBounce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SlideAndBounce.cpp; sourceTree = "<group>"; };
 		150037FC19E82B4E00960760 /* SlideAndBounce.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SlideAndBounce.h; sourceTree = "<group>"; };
 		151E371019EC258D009C943E /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
-		151E371119EC258D009C943E /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		151E371219EC258D009C943E /* Cue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cue.cpp; sourceTree = "<group>"; };
 		151E371319EC258D009C943E /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
 		151E371519EC258D009C943E /* VectorManipulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VectorManipulation.hpp; sourceTree = "<group>"; };
@@ -79,6 +79,8 @@
 		15609E1119E1B81C0053395A /* Repetition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Repetition.h; sourceTree = "<group>"; };
 		15609E1319E1CCA20053395A /* BezierConstruction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierConstruction.cpp; sourceTree = "<group>"; };
 		15609E1419E1CCA20053395A /* BezierConstruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierConstruction.h; sourceTree = "<group>"; };
+		1590BDD21A28D88400B60050 /* MotionGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionGroup.h; sourceTree = "<group>"; };
+		1590BDD31A28D88400B60050 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
 		15BA7BBA19DF2799003E13A5 /* Quaternions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quaternions.cpp; sourceTree = "<group>"; };
 		15BA7BBB19DF2799003E13A5 /* Quaternions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quaternions.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -160,8 +162,9 @@
 		151E370F19EC258D009C943E /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
+				1590BDD21A28D88400B60050 /* MotionGroup.h */,
+				1590BDD31A28D88400B60050 /* MotionGroup.cpp */,
 				151E371019EC258D009C943E /* Choreograph.h */,
-				151E371119EC258D009C943E /* Connection.hpp */,
 				151E371219EC258D009C943E /* Cue.cpp */,
 				151E371319EC258D009C943E /* Cue.h */,
 				151E371419EC258D009C943E /* detail */,
@@ -382,6 +385,7 @@
 				15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */,
 				151E372C19EC258D009C943E /* Timeline.cpp in Sources */,
 				15362C5919D8D97C006BFAF1 /* ConnectionManager.cpp in Sources */,
+				1590BDD41A28D88400B60050 /* MotionGroup.cpp in Sources */,
 				15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */,
 				151E372B19EC258D009C943E /* Motion.cpp in Sources */,
 				150037FD19E82B4E00960760 /* SlideAndBounce.cpp in Sources */,

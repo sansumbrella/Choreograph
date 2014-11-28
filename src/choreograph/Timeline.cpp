@@ -89,6 +89,15 @@ Time Timeline::timeUntilFinish() const
 	return end;
 }
 
+Time Timeline::getDuration() const
+{
+  Time duration = 0;
+  for( auto &item : _items ) {
+    duration = std::max( duration, item->getEndTime() );
+  }
+  return duration;
+}
+
 void Timeline::processQueue()
 {
   using namespace std;

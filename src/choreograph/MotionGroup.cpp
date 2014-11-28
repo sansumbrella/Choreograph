@@ -29,11 +29,39 @@
 
 using namespace choreograph;
 
+MotionGroup::MotionGroup()
+{
+  _timeline.setDefaultRemoveOnFinish( false );
+}
+
 MotionGroup::MotionGroup( Timeline &&timeline ):
   _timeline( std::move( timeline ) )
 {}
 
 void MotionGroup::update()
 {
+  if( _start_fn ) {
+    if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
+      _start_fn( *this );
+    }
+    else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
+      _start_fn( *this );
+    }
+  }
+
+  // Update the timeline
   _timeline.jumpTo( time() );
+
+  if( _update_fn ) {
+    _update_fn( *this );
+  }
+
+  if( _finish_fn ) {
+    if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
+      _finish_fn( *this );
+    }
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
+      _finish_fn( *this );
+    }
+  }
 }

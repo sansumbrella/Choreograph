@@ -23,7 +23,7 @@ private:
   pk::SceneRef            mPrevScene;
   ch::Timeline            mTimeline;
   ci::Timer               mTimer;
-  std::weak_ptr<ch::Cue::Control> mCueControl;
+  std::shared_ptr<ch::Control> mCueControl;
   int                     mSceneIndex = 0;
   string                  mSceneName;
   params::InterfaceGlRef  mParams;
@@ -103,9 +103,8 @@ void SamplesApp::loadSample( int index )
   }
 
   // If there was a previous cue lined up, cancel it.
-  auto control = mCueControl.lock();
-  if( control ) {
-    control->cancel();
+  if( mCueControl ) {
+    mCueControl->cancel();
   }
 
   // Load Next Sample Automatically.

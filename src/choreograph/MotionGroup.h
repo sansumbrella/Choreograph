@@ -38,17 +38,35 @@ namespace choreograph
 class MotionGroup : public TimelineItem
 {
 public:
-  MotionGroup() = default;
+  using Callback = std::function<void (MotionGroup&)>;
+
+  /// Construct with a Timeline that doesn't remove its items on finish.
+  MotionGroup();
   /// Construct a motion group from a Timeline
   MotionGroup( Timeline &&timeline );
 
+  MotionGroup( const MotionGroup &rhs ) = delete;
+
   void update() override;
-  Time getDuration() const override { return _timeline.timeUntilFinish(); }
+  Time getDuration() const override { return _timeline.getDuration(); }
 
   /// Returns a reference to the underlying timeline.
   Timeline& timeline() { return _timeline; }
+
+  /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
+  void setFinishFn( const Callback &c ) { _finish_fn = c; }
+
+  /// Set a function to be called when we start the sequence. Receives *this as an argument.
+  void setStartFn( const Callback &c ) { _start_fn = c; }
+
+  /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
+  void setUpdateFn( const Callback &c ) { _update_fn = c; }
 private:
-  Timeline _timeline;
+  Timeline  _timeline;
+
+  Callback  _finish_fn;
+  Callback  _start_fn;
+  Callback  _update_fn;
 };
 
 } // namespace choreograph

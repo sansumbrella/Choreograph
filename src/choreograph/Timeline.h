@@ -173,6 +173,9 @@ private:
 class Timeline
 {
 public:
+//  Timeline() = default;
+//  Timeline( const Timeline &rhs ) = delete;
+//  Timeline( Timeline &&rhs ) = default;
   //=================================================
   // Creating Motions. Output<T>* Versions
   //=================================================
@@ -245,6 +248,8 @@ public:
   /// Cannot take into account Cues or Callbacks that may change the Timeline before finish.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
   Time timeUntilFinish() const;
+
+  Time getDuration() const;
 
   //=================================================
   // Timeline element manipulation.
