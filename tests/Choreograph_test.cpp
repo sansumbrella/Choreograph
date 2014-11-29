@@ -54,6 +54,8 @@ TEST_CASE( "Phrases" )
       return sin( t * PI ) * 10.0f;
     } );
 
+    REQUIRE( proc->getValue( 0 ) == proc->getStartValue() );
+    REQUIRE( proc->getValue( 1 ) == proc->getEndValue() );
     REQUIRE( proc->getValue( 0.5 ) == 10 );
     REQUIRE( proc->getValue( 1 ) < 1.0e-14 );
   }
@@ -234,6 +236,23 @@ TEST_CASE( "Motion Groups" )
   auto &group_timeline = group->timeline();
   Output<int> target = 0;
   Timeline timeline;
+
+  SECTION( "Timelines are composable." )
+  {
+    Timeline t2;
+    int receiver = 0;
+    t2.apply( &target )
+      .then<RampTo>( 50, 1.0f );
+    t2.cue( [&receiver] {
+        receiver = 100;
+      }, 0.4f );
+
+    timeline.add( std::move( t2 ) );
+    timeline.step( 0.5f );
+
+    REQUIRE( target == 25 );
+    REQUIRE( receiver == 100 );
+  }
 
   SECTION( "Motion Group member callbacks are still called." )
   {
