@@ -57,16 +57,6 @@ public:
     return _value;
   }
 
-  T getStartValue() const override
-  {
-    return _value;
-  }
-
-  T getEndValue() const override
-  {
-    return _value;
-  }
-
 private:
   T       _value;
 };

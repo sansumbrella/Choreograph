@@ -55,9 +55,6 @@ public:
     return _function( this->normalizeTime( atTime ), this->getDuration() );
   }
 
-  T getStartValue() const override { return _function( 0, this->getDuration() ); }
-  T getEndValue() const override { return _function( 1, this->getDuration() ); }
-
 private:
   Function  _function;
 };
