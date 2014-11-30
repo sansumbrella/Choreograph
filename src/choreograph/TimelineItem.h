@@ -109,8 +109,7 @@ public:
   /// Returns the duration of the motion.
   virtual Time getDuration() const = 0;
 
-  /// Returns true iff motion is no longer valid.
-  [[deprecated("Use cancelled() instead.")]]
+  /// Returns true iff motion is no longer valid. Deprecated in favor of cancelled().
   bool isInvalid() const { return _cancelled; }
 
   /// Returns target if TimelineItem has one.

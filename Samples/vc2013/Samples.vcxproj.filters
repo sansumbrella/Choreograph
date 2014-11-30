@@ -69,6 +69,9 @@
     <ClCompile Include="..\src\samples\WormBuncher.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\MotionGroup.cpp">
+      <Filter>Blocks\Choreograph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="..\src\samples\WormBuncher.h">
       <Filter>Source Files\samples</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\MotionGroup.h">
+      <Filter>Blocks\Choreograph</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

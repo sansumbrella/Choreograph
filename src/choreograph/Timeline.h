@@ -170,12 +170,14 @@ private:
 /// Cues can be cancelled by using their control object.
 /// Public methods are safe to call from cues and motion callbacks unless otherwise noted.
 ///
+/// Timelines are move-only types because they contain unique_ptrs.
+///
 class Timeline
 {
 public:
-//  Timeline() = default;
-//  Timeline( const Timeline &rhs ) = delete;
-//  Timeline( Timeline &&rhs ) = default;
+  Timeline() = default;
+  Timeline( const Timeline &rhs ) = delete;
+  Timeline( Timeline &&rhs );
   //=================================================
   // Creating Motions. Output<T>* Versions
   //=================================================
@@ -283,10 +285,10 @@ public:
   template<typename T>
   MotionOptions<T> appendRaw( T *output );
 
-  auto begin() { return _items.begin(); }
-  auto end() { return _items.end(); }
-  auto begin() const { return _items.cbegin(); }
-  auto end() const { return _items.cend(); }
+  std::vector<TimelineItemUniqueRef>::iterator begin() { return _items.begin(); }
+  std::vector<TimelineItemUniqueRef>::iterator end( ) { return _items.end( ); }
+  std::vector<TimelineItemUniqueRef>::const_iterator begin( ) const { return _items.cbegin( ); }
+  std::vector<TimelineItemUniqueRef>::const_iterator end( ) const { return _items.cend( ); }
 
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
