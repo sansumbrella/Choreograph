@@ -29,17 +29,56 @@
 
 using namespace choreograph;
 
+Control::Control( TimelineItem *item ):
+  _item( item )
+{}
+
+void Control::cancel()
+{
+  if( _item ){
+    _item->cancel();
+    _item = nullptr;
+  }
+}
+
+bool Control::isValid() const
+{
+  return _item && (! _item->cancelled());
+}
+
+bool Control::isInvalid() const
+{
+  return (_item == nullptr) || _item->cancelled();
+}
+
+///
+///
+///
+
+TimelineItem::~TimelineItem()
+{
+  if( _control ) {
+    _control->cancel();
+  }
+}
+
 void TimelineItem::step( Time dt )
 {
   _time += dt * _speed;
-  update(); // update properties
+  if( ! cancelled() ) {
+    // update properties
+    update();
+  }
   _previous_time = _time;
 }
 
 void TimelineItem::jumpTo( Time time )
 {
   _time = time;
-  update(); // update properties
+  if( ! cancelled() ) {
+    // update properties
+    update();
+  }
   _previous_time = _time;
 }
 
@@ -55,13 +94,11 @@ bool TimelineItem::isFinished() const
 
 void TimelineItem::resetTime()
 {
-  if( forward() )
-  {
-    _time = _previous_time = 0.0f;
+  if( forward() ) {
+    setTime( 0.0f );
   }
-  else
-  {
-    _time = _previous_time = getEndTime();
+  else {
+    setTime( getEndTime() );
   }
 }
 
@@ -73,4 +110,12 @@ Time TimelineItem::getTimeUntilFinish() const
   else {
     return time() / getPlaybackSpeed();
   }
+}
+
+const std::shared_ptr<Control>& TimelineItem::getControl()
+{
+  if( ! _control ) {
+    _control = std::make_shared<Control>( this );
+  }
+  return _control;
 }

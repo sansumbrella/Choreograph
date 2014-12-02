@@ -27,12 +27,21 @@
 
 #include "Timeline.h"
 #include "detail/VectorManipulation.hpp"
+#include "MotionGroup.h"
 
 using namespace choreograph;
 
+Timeline::Timeline( Timeline &&rhs ):
+_default_remove_on_finish( std::move( rhs._default_remove_on_finish ) ),
+_items( std::move( rhs._items ) ),
+_queue( std::move( rhs._queue ) ),
+_finish_fn( std::move( rhs._finish_fn ) ),
+_updating( std::move( rhs._updating ) )
+{}
+
 void Timeline::removeFinishedAndInvalidMotions()
 {
-  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->isInvalid(); } );
+  detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->cancelled(); } );
 }
 
 void Timeline::step( Time dt )
@@ -88,6 +97,15 @@ Time Timeline::timeUntilFinish() const
 	return end;
 }
 
+Time Timeline::getDuration() const
+{
+  Time duration = 0;
+  for( auto &item : _items ) {
+    duration = std::max( duration, item->getEndTime() );
+  }
+  return duration;
+}
+
 void Timeline::processQueue()
 {
   using namespace std;
@@ -110,6 +128,11 @@ void Timeline::add( TimelineItemUniqueRef item )
   else {
     _items.emplace_back( std::move( item ) );
   }
+}
+
+void Timeline::add( Timeline &&timeline )
+{
+  add( std::move( std::make_unique<MotionGroup>( std::move( timeline ) ) ) );
 }
 
 CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )

@@ -135,9 +135,6 @@ public:
     return value;
   }
 
-  T getStartValue() const override { return getValue( 0 ); }
-  T getEndValue() const override { return getValue( this->getDuration() ); }
-
   /// Default reduce function sums all inputs.
   static T sum( const T &a, const T &b ) {
     return a + b;

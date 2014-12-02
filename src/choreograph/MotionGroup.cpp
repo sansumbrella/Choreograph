@@ -25,32 +25,57 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "MotionGroup.h"
 
-#include "TimelineItem.h"
+using namespace choreograph;
 
-namespace choreograph
+MotionGroup::MotionGroup()
 {
+  _timeline.setDefaultRemoveOnFinish( false );
+}
 
-///
-/// Calls a function after time has elapsed.
-///
-class Cue : public TimelineItem
+MotionGroup::MotionGroup( Timeline &&timeline ):
+  _timeline( std::move( timeline ) )
+{}
+
+void MotionGroup::customSetTime( Time time )
 {
-public:
-  Cue() = delete;
+  for( auto &item : _timeline ) {
+    item->setTime( time );
+  }
+}
 
-  /// Creates a cue from a function and a delay.
-  Cue( const std::function<void ()> &fn, Time delay );
+void MotionGroup::customSetPlaybackSpeed( Time s )
+{
+  for( auto &item : _timeline ) {
+    item->setPlaybackSpeed( s );
+  }
+}
 
-  /// Calls cue function if time threshold has been crossed.
-  void update() final override;
+void MotionGroup::update()
+{
+  if( _start_fn ) {
+    if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
+      _start_fn( *this );
+    }
+    else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
+      _start_fn( *this );
+    }
+  }
 
-  /// Cues are instantaneous.
-  Time getDuration() const final override { return 0.0f; }
+  // Update the timeline
+  _timeline.jumpTo( time() );
 
-private:
-  std::function<void ()>    _cue;
-};
+  if( _update_fn ) {
+    _update_fn( *this );
+  }
 
-} // namespace choreograph
+  if( _finish_fn ) {
+    if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
+      _finish_fn( *this );
+    }
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
+      _finish_fn( *this );
+    }
+  }
+}

@@ -33,6 +33,9 @@
     <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp">
       <Filter>Source Files\choreograph</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\MotionGroup.cpp">
+      <Filter>Source Files\choreograph</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\choreograph\Choreograph.h">
@@ -87,6 +90,9 @@
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\TimeType.h">
+      <Filter>Source Files\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\MotionGroup.h">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
   </ItemGroup>

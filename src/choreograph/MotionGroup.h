@@ -27,30 +27,54 @@
 
 #pragma once
 
-#include "TimelineItem.h"
+#include "Timeline.h"
 
 namespace choreograph
 {
 
 ///
-/// Calls a function after time has elapsed.
+/// MotionGroup composes a Timeline in a TimelineItem.
 ///
-class Cue : public TimelineItem
+class MotionGroup : public TimelineItem
 {
 public:
-  Cue() = delete;
+  using Callback = std::function<void (MotionGroup&)>;
 
-  /// Creates a cue from a function and a delay.
-  Cue( const std::function<void ()> &fn, Time delay );
+  /// Construct with a Timeline that doesn't remove its items on finish.
+  MotionGroup();
+  /// Construct a motion group from a Timeline
+  MotionGroup( Timeline &&timeline );
 
-  /// Calls cue function if time threshold has been crossed.
+  MotionGroup( const MotionGroup &rhs ) = delete;
+
+  //====================================
+  // TimelineItem Overrides
+  //====================================
   void update() final override;
+  Time getDuration() const override { return _timeline.getDuration(); }
 
-  /// Cues are instantaneous.
-  Time getDuration() const final override { return 0.0f; }
+  /// Returns a reference to the underlying timeline.
+  Timeline& timeline() { return _timeline; }
+
+  /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
+  void setFinishFn( const Callback &c ) { _finish_fn = c; }
+
+  /// Set a function to be called when we start the sequence. Receives *this as an argument.
+  void setStartFn( const Callback &c ) { _start_fn = c; }
+
+  /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
+  void setUpdateFn( const Callback &c ) { _update_fn = c; }
+
+protected:
+  void customSetTime( Time time ) final override;
+  void customSetPlaybackSpeed( Time s ) final override;
 
 private:
-  std::function<void ()>    _cue;
+  Timeline  _timeline;
+
+  Callback  _finish_fn;
+  Callback  _start_fn;
+  Callback  _update_fn;
 };
 
 } // namespace choreograph

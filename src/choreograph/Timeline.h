@@ -35,18 +35,59 @@ namespace choreograph
 class Timeline;
 
 ///
+/// Options for manipulating newly created TimelineItems.
+/// Uses CRTP so we don't lose the actual type when chaining methods.
+/// Do not store the TimelineOptions object, as it contains a non-owning reference.
+///
+template<typename SelfT>
+class TimelineOptions
+{
+public:
+  TimelineOptions( TimelineItem &item ):
+    _item( item )
+  {}
+
+  //=================================================
+  // TimelineItem Interface Mirroring.
+  //=================================================
+
+  /// Set whether the item should be removed from the timeline on finish.
+  SelfT& removeOnFinish( bool doRemove ) { _item.setRemoveOnFinish( doRemove ); return self(); }
+
+  /// Set the rate at which time advances for Motion.
+  SelfT& playbackSpeed( Time speed ) { _item.setPlaybackSpeed( speed ); return self(); }
+
+  /// Set the initial time offset of the TimelineItem.
+  /// For Cues, this sets the time in the future.
+  /// For Motions, this is akin to adding a hold at the beginning of the Sequence.
+  SelfT& setStartTime( Time t ) { _item.setStartTime( t ); return self(); }
+
+  /// Returns a shared_ptr to the control object for the Item. Allows you to cancel the Item later.
+  TimelineItemControlRef  getControl() { return _item.getControl(); }
+
+  /// Returns an object that cancels the Cue when it falls out of scope.
+  /// You should store a ScopedCueRef in any class that captures [this] in a cued lambda.
+  ScopedCancelRef         getScopedControl() { return std::make_shared<ScopedCancel>( _item.getControl() ); }
+
+private:
+  TimelineItem &_item;
+  SelfT& self() { return static_cast<SelfT&>( *this ); }
+};
+
+///
 /// MotionOptions provide a temporary facade for manipulating a timeline Motion and its underlying Sequence.
 /// All methods return a reference back to the MotionOptions object for chaining.
 /// Do not store the MotionOptions object, as it contains non-owning references.
 ///
 template<typename T>
-class MotionOptions
+class MotionOptions : public TimelineOptions<MotionOptions<T>>
 {
 public:
   using SelfT = MotionOptions<T>;
   using MotionCallback = typename Motion<T>::Callback;
 
   MotionOptions( Motion<T> &motion, Sequence<T> &sequence, const Timeline &timeline ):
+    TimelineOptions<MotionOptions<T>>( motion ),
     _motion( motion ),
     _sequence( sequence ),
     _timeline( timeline )
@@ -64,15 +105,6 @@ public:
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
   SelfT& finishFn( const MotionCallback &fn ) { _motion.setFinishFn( fn ); return *this; }
-
-  /// Set whether the motion should be removed from the timeline on finish.
-  SelfT& removeOnFinish( bool doRemove ) { _motion.setRemoveOnFinish( doRemove ); return *this; }
-
-  /// Set the Motion's start time. Only useful after an apply() call.
-  SelfT& setStartTime( Time t ) { _motion.setStartTime( t ); return *this; }
-
-  /// Set the rate at which time advances for Motion.
-  SelfT& playbackSpeed( Time speed ) { _motion.setPlaybackSpeed( speed ); return *this; }
 
   /// Set a function to be called when the current inflection point is crossed.
   /// An inflection occcurs when the Sequence moves from one Phrase to the next.
@@ -117,9 +149,6 @@ public:
   template<typename U>
   SelfT& after( U *other );
 
-  /// Offset the Motion's start time.
-  SelfT& shiftStartTime( Time t ) { _motion.setStartTime( _motion.getStartTime() + t ); return *this; }
-
   //=================================================
   // Accessors to Motion and Sequence.
   //=================================================
@@ -138,27 +167,14 @@ private:
 /// Non-get* methods return a reference back to the CueOptions object for chaining.
 /// Do not store the CueOptions object, as it contains a non-owning reference.
 ///
-class CueOptions
+class CueOptions : public TimelineOptions<CueOptions>
 {
 public:
   explicit CueOptions( Cue &cue ):
+    TimelineOptions<CueOptions>( cue ),
     _cue( cue )
   {}
-  /// Set the Cue to be removed from the timeline when finished.
-  CueOptions&       removeOnFinish( bool doRemove ) { _cue.setRemoveOnFinish( doRemove ); return *this; }
 
-  /// Change the time (from now) at which the Cue will be called.
-  CueOptions&       setStartTime( Time t ) { _cue.setStartTime( t ); return *this; }
-
-  /// Change the rate at which time flows toward the Cue's execution.
-  CueOptions&       playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
-
-  /// Returns a weak_ptr to the control object for the Cue. Allows you to cancel the Cue.
-  CueControlWeakRef getControl() { return _cue.getControl(); }
-
-  /// Returns an object that cancels the Cue when it falls out of scope.
-  /// You should store a ScopedCueRef in any class that captures [this] in a cued lambda.
-  ScopedCueRef      getScopedControl() { return std::make_shared<Cue::ScopedCancel>( _cue.getControl() ); }
 private:
   Cue  &_cue;
 };
@@ -170,9 +186,14 @@ private:
 /// Cues can be cancelled by using their control object.
 /// Public methods are safe to call from cues and motion callbacks unless otherwise noted.
 ///
+/// Timelines are move-only types because they contain unique_ptrs.
+///
 class Timeline
 {
 public:
+  Timeline() = default;
+  Timeline( const Timeline &rhs ) = delete;
+  Timeline( Timeline &&rhs );
   //=================================================
   // Creating Motions. Output<T>* Versions
   //=================================================
@@ -206,6 +227,11 @@ public:
   /// Add an item to the timeline. Called by append/apply/cue methods.
   /// Use to pass in MotionGroups and other types that Timeline doesn't create.
   void add( TimelineItemUniqueRef item );
+
+  /// Add a timeline to the timeline.
+  /// Wraps the timeline in a MotionGroup item.
+  /// Note that this invalidates the passed-in timeline.
+  void add( Timeline &&timeline );
 
   //=================================================
   // Time manipulation.
@@ -241,6 +267,8 @@ public:
   /// Useful information to cache when scrubbing Timelines with non-removed items.
   Time timeUntilFinish() const;
 
+  Time getDuration() const;
+
   //=================================================
   // Timeline element manipulation.
   //=================================================
@@ -272,6 +300,11 @@ public:
   /// Unless you have a strong need, prefer the use of append( Output<T> *output ) over this version.
   template<typename T>
   MotionOptions<T> appendRaw( T *output );
+
+  std::vector<TimelineItemUniqueRef>::iterator begin() { return _items.begin(); }
+  std::vector<TimelineItemUniqueRef>::iterator end( ) { return _items.end( ); }
+  std::vector<TimelineItemUniqueRef>::const_iterator begin( ) const { return _items.cbegin( ); }
+  std::vector<TimelineItemUniqueRef>::const_iterator end( ) const { return _items.cend( ); }
 
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
@@ -345,12 +378,9 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const Sequence<T> &sequence
 template<typename T>
 MotionOptions<T> Timeline::append( Output<T> *output )
 {
-  if( output->isConnected() )
-  {
-    auto motion = find( output->valuePtr() );
-    if( motion ) {
-      return MotionOptions<T>( *motion, motion->getSequence(), *this );
-    }
+  auto motion = output->inputPtr();
+  if( motion ) {
+    return MotionOptions<T>( *motion, motion->getSequence(), *this );
   }
   return apply( output );
 }

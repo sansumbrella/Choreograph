@@ -35,33 +35,15 @@ using namespace std;
 //=================================================
 
 Cue::Cue( const function<void ()> &fn, Time delay ):
-_cue( fn ),
-_control( make_shared<Cue::Control>() )
+_cue( fn )
 {
   setStartTime( delay );
 }
 
-bool Cue::isInvalid() const
-{
-  return _control->cancelled();
-}
-
 void Cue::update()
 {
-  if( Cue::isInvalid() ) {
-    return;
-  }
-
   if( forward() && time() >= 0.0f && previousTime() < 0.0f )
     _cue();
   else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
     _cue();
-}
-
-Cue::ScopedCancel::~ScopedCancel()
-{
-  auto control = _control.lock();
-  if( control ) {
-    control->cancel();
-  }
 }

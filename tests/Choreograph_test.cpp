@@ -54,6 +54,8 @@ TEST_CASE( "Phrases" )
       return sin( t * PI ) * 10.0f;
     } );
 
+    REQUIRE( proc->getValue( 0 ) == proc->getStartValue() );
+    REQUIRE( proc->getValue( 1 ) == proc->getEndValue() );
     REQUIRE( proc->getValue( 0.5 ) == 10 );
     REQUIRE( proc->getValue( 1 ) < 1.0e-14 );
   }
@@ -225,6 +227,92 @@ TEST_CASE( "Motions" )
       motion.jumpTo( t );
       REQUIRE( target() == sequence.getValue( t ) );
     }
+  }
+}
+
+TEST_CASE( "Motion Groups" )
+{
+  auto group = std::make_unique<MotionGroup>();
+  auto &group_timeline = group->timeline();
+  Output<int> target = 0;
+  Timeline timeline;
+
+  SECTION( "Timelines are composable." )
+  {
+    Timeline t2;
+    int receiver = 0;
+    t2.apply( &target )
+      .then<RampTo>( 50, 1.0f );
+    t2.cue( [&receiver] {
+        receiver = 100;
+      }, 0.4f );
+
+    timeline.add( std::move( t2 ) );
+    timeline.step( 0.5f );
+
+    REQUIRE( target == 25 );
+    REQUIRE( receiver == 100 );
+  }
+
+  SECTION( "Motion Group member callbacks are still called." )
+  {
+    int start_count = 0;
+    int update_count = 0;
+    int finish_count = 0;
+
+    group_timeline.apply( &target )
+      .then<RampTo>( 10, 1.0f )
+      .startFn( [&start_count] (Motion<int> &m) {
+        start_count += 1;
+      } )
+      .updateFn( [&update_count] (int &value) {
+        update_count += 1;
+      } )
+      .finishFn( [&finish_count] (Motion<int> &m) {
+        finish_count += 1;
+      } );
+
+    SECTION( "Sanity Check" )
+    {
+      REQUIRE( group->getDuration() == 1.0f );
+    }
+
+    SECTION( "Looping the group still calls child callbacks." )
+    {
+      group->setFinishFn( [] ( MotionGroup &g ) {
+        g.resetTime();
+      } );
+      timeline.setDefaultRemoveOnFinish( false );
+      timeline.add( std::move( group ) );
+
+      for( int i = 0; i < 32; i += 1 ) {
+        timeline.step( 0.1f );
+      }
+
+      REQUIRE( start_count == 4 );
+      REQUIRE( finish_count == 3 );
+      REQUIRE( update_count == 32 );
+    }
+
+    SECTION( "Ping-pong looping group works, too." )
+    {
+      group->setFinishFn( [] ( MotionGroup &g ) {
+        // MotionGroup overrides customSetPlaybackSpeed to inform children.
+        g.setPlaybackSpeed( -1 * g.getPlaybackSpeed() );
+        g.resetTime();
+      } );
+      timeline.setDefaultRemoveOnFinish( false );
+      timeline.add( std::move( group ) );
+
+      for( int i = 0; i < 32; i += 1 ) {
+        timeline.step( 0.1f );
+      }
+
+      REQUIRE( start_count == 4 );
+      REQUIRE( finish_count == 3 );
+      REQUIRE( update_count == 32 );
+    }
+
   }
 }
 
@@ -408,10 +496,7 @@ TEST_CASE( "Cues" )
   SECTION( "Cues can be cancelled by Handle." )
   {
     auto handle = options.getControl();
-    auto locked = handle.lock();
-    if( locked ) {
-      locked->cancel();
-    }
+    handle->cancel();
     timeline.jumpTo( 1.0f );
     REQUIRE( call_count == 0 );
   }
@@ -487,7 +572,7 @@ TEST_CASE( "Timeline" )
     // Use timeline to create Motion.
     timeline.apply( &target, sequence );
     // Motions on Output types will be disconnected when another is created.
-    REQUIRE( motion.isInvalid() == true );
+    REQUIRE( motion.cancelled() == true );
 
     timeline.jumpTo( 2.0f );
     REQUIRE( target == 10.0f );
@@ -507,7 +592,7 @@ TEST_CASE( "Timeline" )
     // Use timeline to create Motion.
     timeline.applyRaw( &target, sequence );
     // Known issue with raw pointers, no management will have happened.
-    REQUIRE( motion.isInvalid() == false );
+    REQUIRE( motion.cancelled() == false );
 
     timeline.jumpTo( 2.0f );
     REQUIRE( target == 10.0f );
@@ -690,11 +775,23 @@ TEST_CASE( "Outputs" )
     { // create locally scoped output
       Output<float> temp = 0.0f;
       motion = make_shared<Motion<float>>( &temp );
-      REQUIRE( ! motion->isInvalid() );
+      REQUIRE( ! motion->cancelled() );
       REQUIRE( temp.isConnected() );
     }
 
-    REQUIRE( motion->isInvalid() );
+    REQUIRE( motion->cancelled() );
+  }
+
+  SECTION( "Disconnecting outputs works." )
+  {
+    Output<float> temp = 0.0f;
+    REQUIRE_FALSE( temp.isConnected() );
+    temp.disconnect();
+    Motion<float> m( &temp );
+    REQUIRE( temp.isConnected() );
+    temp.disconnect();
+    REQUIRE_FALSE( temp.isConnected() );
+
   }
 
   SECTION( "Motion falling out of scope disconnects" )
@@ -703,7 +800,7 @@ TEST_CASE( "Outputs" )
       Motion<float> temp( &output );
 
       REQUIRE( output.isConnected() == true );
-      REQUIRE( temp.isInvalid() == false );
+      REQUIRE( temp.cancelled() == false );
     }
 
     REQUIRE( output.isConnected() == false );

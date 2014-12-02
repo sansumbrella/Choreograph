@@ -130,8 +130,6 @@ public:
   {}
 
   T getValue( Time atTime ) const override { return _source->getValue( clampTime( _begin + atTime ) ); }
-  T getStartValue() const override { return _source->getValue( clampTime( _begin ) ); }
-  T getEndValue() const override { return _source->getValue( clampTime( _end ) ); }
 
   Time clampTime( Time t ) const { return std::min( std::min( t, _source->getDuration() ), _end ); }
 private:

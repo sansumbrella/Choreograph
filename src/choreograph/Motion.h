@@ -29,7 +29,6 @@
 
 #include "TimelineItem.h"
 #include "Sequence.hpp"
-#include "Connection.hpp"
 #include "Output.hpp"
 #include "detail/VectorManipulation.hpp"
 
@@ -40,77 +39,8 @@ namespace choreograph
 // Aliases.
 //=================================================
 
-template<typename T>
-class Motion;
-
-template<typename T>
-using MotionRef = std::shared_ptr<Motion<T>>;
-
-
-template<typename T>
-struct MotionGroupOptions
-{
-  explicit MotionGroupOptions( Motion<T> &motion ):
-    _motion( motion )
-  {}
-
-  /// Set a function to be called when we start the motion. Receives Motion as an argument.
-  MotionGroupOptions& startFn( const typename Motion<T>::Callback &fn ) { _motion.setStartFn( fn ); return *this; }
-
-  /// Set a function to be called on Motion update. Receives target as an argument.
-  MotionGroupOptions& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
-
-  /// Set a function to be called when we reach the end of the motion. Receives Motion as an argument.
-  MotionGroupOptions& finishFn( const typename Motion<T>::Callback &fn ) { _motion.setFinishFn( fn ); return *this; }
-
-private:
-  Motion<T> &_motion;
-};
-///
-/// Groups together a number of Motions so they can be repeated
-/// and moved around together.
-/// Note that grouped Motions all share the group's speed and time.
-/// Assumes that the underlying Sequences won't change after adding.
-///
-class MotionGroup : public TimelineItem
-{
-public:
-  using Callback = std::function<void (MotionGroup&)>;
-
-  static std::unique_ptr<MotionGroup> create() { return std::unique_ptr<MotionGroup>( new MotionGroup ); }
-
-  /// Create and add a Motion to the group.
-  /// The Motion will apply \a sequence to \a output.
-  template<typename T>
-  MotionGroupOptions<T> add( const Sequence<T> &sequence, Output<T> *output );
-
-  /// Create and add a Motion to the group.
-  /// The Phrase is converted to a Sequence.
-  template<typename T>
-  MotionGroupOptions<T> add( const PhraseRef<T> &phrase, Output<T> *output ) { return add( Sequence<T>( phrase ), output ); }
-
-  /// Update all grouped motions.
-  void update() override;
-
-  /// Returns true if any grouped motions are invalid.
-  bool isInvalid() const override;
-
-  /// Returns the duration of the motion group (end time of last motion).
-  Time getDuration() const override { return _duration; }
-
-  void setFinishFn( const Callback &fn ) { _finish_fn = fn; }
-  void setStartFn( const Callback &fn ) { _start_fn = fn; }
-
-  void extendDuration( Time amount ) { _duration += amount; }
-
-private:
-  MotionGroup() = default;
-  Time                                _duration = 0;
-  std::vector<TimelineItemUniqueRef>  _motions;
-
-  Callback                            _start_fn = nullptr;
-  Callback                            _finish_fn = nullptr;
-};
+template<typename T> class Motion;
+template<typename T> using MotionRef = std::shared_ptr<Motion<T>>;
 
 ///
 /// Motion: Moves a playhead along a Sequence and sends its value to a user-defined output.
@@ -128,22 +58,35 @@ public:
   Motion() = delete;
 
   Motion( T *target, const SequenceT &sequence ):
-    _connection( target ),
+    _target( target ),
     _source( sequence )
   {}
 
   Motion( Output<T> *target, const SequenceT &sequence ):
-    _connection( target ),
+    _target( target->valuePtr() ),
+    _output( target ),
     _source( sequence )
-  {}
+  {
+    _output->disconnect();
+    _output->_input = this;
+  }
 
   Motion( Output<T> *target ):
-    _connection( target ),
+    _target( target->valuePtr() ),
+    _output( target ),
     _source( target->value() )
-  {}
+  {
+    _output->disconnect();
+    _output->_input = this;
+  }
+
+  ~Motion()
+  {
+    disconnect();
+  }
 
   /// Returns duration of the underlying sequence.
-  Time getDuration() const override { return _source.getDuration(); }
+  Time getDuration() const final override { return _source.getDuration(); }
 
   /// Returns ratio of time elapsed, from [0,1] over duration.
   Time getProgress() const { return time() / _source.getDuration(); }
@@ -151,25 +94,24 @@ public:
   /// Returns the underlying Sequence sampled for this motion.
   SequenceT&  getSequence() { return _source; }
 
-  inline bool isInvalid() const override { return _connection.isDisconnected(); }
-  const void* getTarget() const override { return _connection.targetPtr(); }
+  const void* getTarget() const final override { return _target; }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
-  void setFinishFn( const Callback &c ) { _finishFn = c; }
+  void setFinishFn( const Callback &c ) { _finish_fn = c; }
 
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
-  void setStartFn( const Callback &c ) { _startFn = c; }
+  void setStartFn( const Callback &c ) { _start_fn = c; }
 
   /// Set a function to be called when we cross the given inflection point. Receives *this as an argument.
   void addInflectionCallback( size_t inflection_point, const Callback &callback );
 
   /// Set a function to be called at each update step of the sequence.
   /// Function will be called immediately after setting the target value.
-  void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
+  void setUpdateFn( const DataCallback &c ) { _update_fn = c; }
 
   /// Update the connected target with the current sequence value.
   /// Calls start/update/finish functions as appropriate if assigned.
-  void update() override;
+  void update() final override;
 
   /// Removes phrases from sequence before specified time.
   /// Note that you can safely share sequences if you add them to each motion as phrases.
@@ -181,31 +123,24 @@ public:
 
 private:
   SequenceT       _source;
-  Connection<T>   _connection;
+  Output<T>       *_output = nullptr;
+  T               *_target = nullptr;
 
-  Callback        _finishFn = nullptr;
-  Callback        _startFn  = nullptr;
-  DataCallback    _updateFn = nullptr;
-  std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
+  Callback        _finish_fn;
+  Callback        _start_fn;
+  DataCallback    _update_fn;
+  std::vector<std::pair<int, Callback>>  _inflection_callbacks;
+
+  /// Sets the output to a different output.
+  /// Used by Output<T>'s move assignment and move constructor.
+  void setOutput( Output<T> *output );
+  /// Disconnects Motion from Output.
+  /// Used on destruction of either Motion or Output.
+  void disconnect();
+  /// Allow Outputs to call private methods.
+  /// Could probably do a song and dance with lambdas to avoid friendship, but this is fine.
+  friend class Output<T>;
 };
-
-//=================================================
-// MotionGroup Template Implementation.
-//=================================================
-
-template<typename T>
-MotionGroupOptions<T> MotionGroup::add( const Sequence<T> &sequence, Output<T> *output )
-{
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
-  auto motion_ptr = motion.get();
-
-
-  _motions.emplace_back( std::move( motion ) );
-
-  _duration = std::max( _duration, motion_ptr->getDuration() );
-
-  return MotionGroupOptions<T>( *motion_ptr );
-}
 
 //=================================================
 // Motion Template Implementation.
@@ -214,29 +149,25 @@ MotionGroupOptions<T> MotionGroup::add( const Sequence<T> &sequence, Output<T> *
 template<typename T>
 void Motion<T>::update()
 {
-  if( Motion<T>::isInvalid() ) {
-    return;
-  }
-
-  if( _startFn )
+  if( _start_fn )
   {
     if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
-      _startFn( *this );
+      _start_fn( *this );
     }
     else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
-      _startFn( *this );
+      _start_fn( *this );
     }
   }
 
-  _connection.target() = _source.getValue( time() );
+  *_target = _source.getValue( time() );
 
-  if( ! _inflectionCallbacks.empty() )
+  if( ! _inflection_callbacks.empty() )
   {
     auto points = _source.getInflectionPoints( previousTime(), time() );
     if( points.first != points.second ) {
       // We just crossed an inflection point...
       auto crossed = std::max( points.first, points.second );
-      for( const auto &fn : _inflectionCallbacks ) {
+      for( const auto &fn : _inflection_callbacks ) {
         if( fn.first == crossed ) {
           fn.second( *this );
         }
@@ -244,18 +175,18 @@ void Motion<T>::update()
     }
   }
 
-  if( _updateFn )
+  if( _update_fn )
   {
-    _updateFn( _connection.target() );
+    _update_fn( *_target );
   }
 
-  if( _finishFn )
+  if( _finish_fn )
   {
     if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
-      _finishFn( *this );
+      _finish_fn( *this );
     }
     else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
-      _finishFn( *this );
+      _finish_fn( *this );
     }
   }
 }
@@ -263,7 +194,7 @@ void Motion<T>::update()
 template<typename T>
 void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &callback )
 {
-  _inflectionCallbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
+  _inflection_callbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
 }
 
 template<typename T>
@@ -271,17 +202,40 @@ void Motion<T>::sliceSequence( Time from, Time to )
 {
   // Shift inflection point references
   const auto inflection = _source.getInflectionPoints( from, to ).first;
-  for( auto &fn : _inflectionCallbacks ) {
+  for( auto &fn : _inflection_callbacks ) {
     fn.first -= inflection;
   }
 
-  detail::erase_if( &_inflectionCallbacks, [] (const std::pair<int, Callback> &p) {
+  detail::erase_if( &_inflection_callbacks, [] (const std::pair<int, Callback> &p) {
     return p.first < 0;
   } );
 
   _source = _source.slice( from, to );
 
   setTime( this->time() - from );
+}
+
+template<typename T>
+void Motion<T>::setOutput( Output<T> *output )
+{
+   if( _output ) {
+     _output->_input = nullptr;
+   }
+
+  _output = output;
+  _target = _output->valuePtr();
+}
+
+template<typename T>
+void Motion<T>::disconnect()
+{
+  // Disconnect pointer.
+  if( _output ) {
+    _output->_input = nullptr;
+    _output = nullptr;
+  }
+  // Stop evaluation of TimelineItem.
+  cancel();
 }
 
 } // namespace choreograph

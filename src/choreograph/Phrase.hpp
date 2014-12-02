@@ -74,10 +74,10 @@ public:
   virtual T getValue( Time at_time ) const = 0;
 
   /// Override to provide value at start (and before).
-  virtual T getStartValue() const = 0;
+  virtual T getStartValue() const { return getValue( 0 ); }
 
   /// Override to provide value at end (and beyond).
-  virtual T getEndValue() const = 0;
+  virtual T getEndValue() const { return getValue( getDuration() ); }
 
   //=================================================
   // Time querying.
