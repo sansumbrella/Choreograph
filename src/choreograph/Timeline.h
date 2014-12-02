@@ -53,6 +53,12 @@ public:
   {}
 
   //=================================================
+  // TimelineItem Interface Mirroring.
+  //=================================================
+
+  void cancel() { _motion.cancel(); }
+
+  //=================================================
   // Motion Interface Mirroring.
   //=================================================
 
@@ -153,7 +159,7 @@ public:
   /// Change the rate at which time flows toward the Cue's execution.
   CueOptions&       playbackSpeed( Time speed ) { _cue.setPlaybackSpeed( speed ); return *this; }
 
-  /// Returns a weak_ptr to the control object for the Cue. Allows you to cancel the Cue.
+  /// Returns a shared_ptr to the control object for the Cue. Allows you to cancel the Cue.
   TimelineItemControlRef  getControl() { return _cue.getControl(); }
 
   /// Returns an object that cancels the Cue when it falls out of scope.
