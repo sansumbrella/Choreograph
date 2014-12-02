@@ -808,18 +808,16 @@ TEST_CASE( "Outputs" )
 
   SECTION( "Timeline Removes Invalid Connections" )
   {
-    Output<float> lasting = 5.0f;
     { // create locally scoped output
       Output<float> temp;
       timeline.apply( &temp ).then<RampTo>( 5.0f, 1.0f );
-      timeline.apply( &lasting ).hold( 10.0f ).cancel();
 
-      REQUIRE( timeline.size() == 2 );
+      REQUIRE( timeline.size() == 1 );
     }
 
     // Part of test is that nothing fails when stepping the timeline.
     timeline.step( 0.5f );
-    REQUIRE( timeline.empty() );
+    REQUIRE( timeline.empty() == true );
   }
 
   SECTION( "Vector of outputs can be moved." )
