@@ -82,9 +82,7 @@ public:
 
   ~Motion()
   {
-    if( _output ) {
-      _output->_input = nullptr;
-    }
+    disconnect();
   }
 
   /// Returns duration of the underlying sequence.
@@ -136,6 +134,11 @@ private:
   /// Sets the output to a different output.
   /// Used by Output<T>'s move assignment and move constructor.
   void setOutput( Output<T> *output );
+  /// Disconnects Motion from Output.
+  /// Used on destruction of either Motion or Output.
+  void disconnect();
+  /// Allow Outputs to call private methods.
+  /// Could probably do a song and dance with lambdas to avoid friendship, but this is fine.
   friend class Output<T>;
 };
 
@@ -221,6 +224,18 @@ void Motion<T>::setOutput( Output<T> *output )
 
   _output = output;
   _target = _output->valuePtr();
+}
+
+template<typename T>
+void Motion<T>::disconnect()
+{
+  // Disconnect pointer.
+  if( _output ) {
+    _output->_input = nullptr;
+    _output = nullptr;
+  }
+  // Stop evaluation of TimelineItem.
+  cancel();
 }
 
 } // namespace choreograph

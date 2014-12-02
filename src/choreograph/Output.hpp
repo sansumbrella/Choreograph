@@ -134,8 +134,9 @@ template<typename T>
 void Output<T>::disconnect()
 {
   if( _input ) {
-    _input->cancel();
-    _input = nullptr;
+    // Use Motion::disconnect, since TimelineItem::cancel only stops evaluation.
+    // Motion::disconnect also nullifies our pointer to the input.
+    _input->disconnect();
   }
 }
 
