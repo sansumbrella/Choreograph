@@ -97,17 +97,17 @@ public:
   const void* getTarget() const final override { return _target; }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
-  void setFinishFn( const Callback &c ) { _finishFn = c; }
+  void setFinishFn( const Callback &c ) { _finish_fn = c; }
 
   /// Set a function to be called when we start the sequence. Receives *this as an argument.
-  void setStartFn( const Callback &c ) { _startFn = c; }
+  void setStartFn( const Callback &c ) { _start_fn = c; }
 
   /// Set a function to be called when we cross the given inflection point. Receives *this as an argument.
   void addInflectionCallback( size_t inflection_point, const Callback &callback );
 
   /// Set a function to be called at each update step of the sequence.
   /// Function will be called immediately after setting the target value.
-  void setUpdateFn( const DataCallback &c ) { _updateFn = c; }
+  void setUpdateFn( const DataCallback &c ) { _update_fn = c; }
 
   /// Update the connected target with the current sequence value.
   /// Calls start/update/finish functions as appropriate if assigned.
@@ -126,10 +126,10 @@ private:
   Output<T>       *_output = nullptr;
   T               *_target = nullptr;
 
-  Callback        _finishFn;
-  Callback        _startFn;
-  DataCallback    _updateFn;
-  std::vector<std::pair<int, Callback>>  _inflectionCallbacks;
+  Callback        _finish_fn;
+  Callback        _start_fn;
+  DataCallback    _update_fn;
+  std::vector<std::pair<int, Callback>>  _inflection_callbacks;
 
   /// Sets the output to a different output.
   /// Used by Output<T>'s move assignment and move constructor.
@@ -149,25 +149,25 @@ private:
 template<typename T>
 void Motion<T>::update()
 {
-  if( _startFn )
+  if( _start_fn )
   {
     if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
-      _startFn( *this );
+      _start_fn( *this );
     }
     else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
-      _startFn( *this );
+      _start_fn( *this );
     }
   }
 
   *_target = _source.getValue( time() );
 
-  if( ! _inflectionCallbacks.empty() )
+  if( ! _inflection_callbacks.empty() )
   {
     auto points = _source.getInflectionPoints( previousTime(), time() );
     if( points.first != points.second ) {
       // We just crossed an inflection point...
       auto crossed = std::max( points.first, points.second );
-      for( const auto &fn : _inflectionCallbacks ) {
+      for( const auto &fn : _inflection_callbacks ) {
         if( fn.first == crossed ) {
           fn.second( *this );
         }
@@ -175,18 +175,18 @@ void Motion<T>::update()
     }
   }
 
-  if( _updateFn )
+  if( _update_fn )
   {
-    _updateFn( *_target );
+    _update_fn( *_target );
   }
 
-  if( _finishFn )
+  if( _finish_fn )
   {
     if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
-      _finishFn( *this );
+      _finish_fn( *this );
     }
     else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
-      _finishFn( *this );
+      _finish_fn( *this );
     }
   }
 }
@@ -194,7 +194,7 @@ void Motion<T>::update()
 template<typename T>
 void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &callback )
 {
-  _inflectionCallbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
+  _inflection_callbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
 }
 
 template<typename T>
@@ -202,11 +202,11 @@ void Motion<T>::sliceSequence( Time from, Time to )
 {
   // Shift inflection point references
   const auto inflection = _source.getInflectionPoints( from, to ).first;
-  for( auto &fn : _inflectionCallbacks ) {
+  for( auto &fn : _inflection_callbacks ) {
     fn.first -= inflection;
   }
 
-  detail::erase_if( &_inflectionCallbacks, [] (const std::pair<int, Callback> &p) {
+  detail::erase_if( &_inflection_callbacks, [] (const std::pair<int, Callback> &p) {
     return p.first < 0;
   } );
 
