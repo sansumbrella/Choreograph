@@ -44,7 +44,7 @@ Read the concepts section below and see the projects in Samples/ for more ideas 
 
 ### Phrase, Sequence
 
-A Phrase defines the behavior of a value over time. The built-in phrase RampTo linearly interpolates a value over time. Other built-in Phrases include Hold, which holds a value for an amount of time, and LoopPhrase, which takes an existing Phrase and repeats it a number of times. It is simple to add your own Phrases by extending `Phrase<T>`.
+A Phrase defines a change in value over time, like "bounce up and down for three seconds."" The built-in phrase RampTo linearly interpolates a value over time. Other built-in Phrases include Hold, which holds a value for an amount of time, and LoopPhrase, which takes an existing Phrase and repeats it a number of times. It is simple to add your own Phrases by extending `Phrase<T>`.
 
 A Sequence is a collection of Phrases. Sequences are the primary object you manipulate to build animations. Choreograph’s method-chaining syntax allows you to build up sophisticated Sequences by telling them to do one Phrase `then` another. Sequences can compose other Sequences, too, by either wrapping the Sequence in a Phrase or duplicating the other’s Phrases.
 
@@ -60,11 +60,7 @@ Outputs are values that can safely be animated with a Motion. The `Output<T>` te
 
 ![diagram-motion](https://cloud.githubusercontent.com/assets/81553/4703117/2268d490-5868-11e4-8435-789f83e07eee.jpg)
 
-Motions can also be connected to raw pointers using the `Timeline::applyRaw()` family of methods. If you go this route, you need to be very careful about object lifetime and memory management. The Motion has no way to know if the raw pointer becomes invalid, and the raw pointer won’t know anything about the Motion.
-
-A Connection object handles the lifetime management between the Motion and the Output. Every Motion object composes a Connection to its Output. When the Connection is broken, the Motion is considered invalid and will be discarded by its parent Timeline.
-
-Generally, you will not create Motions or Connections directly, but will receive an interface to them by creating a Motion with a Timeline.
+Generally, you will not create Motions directly, but will receive an interface to them from a Timeline.
 
 ```c++
 // Outputs can safely be animated by a choreograph::Timeline
@@ -77,6 +73,8 @@ timeline.apply( &target )
   .then<RampTo>( vec3( 100 ), 3.0 );
 timeline.step( 1.0 / 60.0 );
 ```
+
+Motions can also be connected to raw pointers using the `Timeline::applyRaw()` family of methods. If you go this route, you need to be very careful about object lifetime and memory management. The Motion has no way to know if the raw pointer becomes invalid, and the raw pointer won’t know anything about the Motion.
 
 If you cannot wrap your animation target in an Output template, consider creating a Sequence and assigning its value to your target manually. That way you aren’t storing raw pointers in a timeline.
 
@@ -93,6 +91,18 @@ target = sequence.getValue( animationTime );
 ### Cues
 
 Cues are functions that are called at a certain point in time. You can add them to a Timeline to trigger events in the future. They are useful for changing application state that isn’t strictly animatable. The sample application uses cues to manage transitions between each of the samples.
+
+You can use a Control to manage the lifetime of your Cue. Controls are also available for Motions, and can be used to manage Motions affecting raw pointers.
+```c++
+// Controls let you cancel the Cue.
+auto control = timeline.cue( [] { "do something..."; }, 10.0f ).getControl();
+// Stop the cue from firing by calling cancel().
+control.cancel();
+
+// Scoped controls cancel timeline items when they fall out of scope.
+// They are handy to store at the same scope as any variables captured by reference in your lambda.
+auto scoped_control = timeline.cue( [] { "do something else..."; }, 10.0f ).getScopedControl();
+```
 
 ### Timeline
 Timelines manage a collection of TimelineItems (Motions, Cues, &c). They provide a straightforward interface for connecting Sequences to Outputs and for building up Sequences in-place.
