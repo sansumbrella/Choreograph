@@ -25,7 +25,6 @@ private:
   pk::SceneRef            _previous_scene;
   ch::Timeline            _timeline;
   ci::Timer               _timer;
-  std::shared_ptr<ch::Control> _cue_control;
   int                     _scene_index = 0;
   string                  _scene_name;
   gl::TextureFontRef      _title_font;
@@ -115,16 +114,6 @@ void SamplesApp::loadSample( int index )
     } );
 
   }
-
-  // If there was a previous cue lined up, cancel it.
-  if( _cue_control ) {
-    _cue_control->cancel();
-  }
-
-  // Load Next Sample Automatically.
-  _cue_control = _timeline.cue( [this] {
-    loadSample( _scene_index + 1 );
-  }, 15.0f ).getControl();
 }
 
 void SamplesApp::update()
