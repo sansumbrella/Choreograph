@@ -1,6 +1,7 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 #include "cinder/gl/TextureFont.h"
 
 #include "samples/Samples.h"
@@ -40,7 +41,7 @@ void SamplesApp::prepareSettings( Settings *settings )
 
 void SamplesApp::setup()
 {
-  auto button_font = Font( "Arial Bold", toPixels( 18.0f ) );
+  auto button_font = Font( "Arial", toPixels( 18.0f ) );
 
   using namespace pockets;
   auto previous = cobweb::SimpleButton::createLabelButton( "PREVIOUS", button_font );

@@ -40,7 +40,7 @@ SimpleButtonRef SimpleButton::createLabelButton(const std::string &str, const ci
   layout.setBorder( font.getSize() / 8, font.getSize() / 8 );
   layout.addLine( str );
   Surface fg = layout.render( true, true );
-  Rectf bounds( 0, 0, app::toPoints(fg.getWidth() + font.getSize() * 0.5f), app::toPoints(fg.getHeight() + font.getSize() * 0.375f) );
+  Rectf bounds( 0, 0, app::toPoints(fg.getWidth() + 2), app::toPoints(fg.getHeight() + 2) );
 
   return SimpleButton::create( gl::Texture::create( fg ), bounds );
 }
