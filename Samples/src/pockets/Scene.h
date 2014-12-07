@@ -59,89 +59,63 @@ namespace pockets
     typedef std::function<void ()> Callback;
     Scene();
     virtual ~Scene();
-    //! Set up scene when OpenGL context is guaranteed to exist (in or after app::setup())
+    /// Set up scene when OpenGL context is guaranteed to exist (in or after app::setup())
     virtual void  setup() {}
 
-    //! connect to receive user interaction events (of subclasses' choosing)
-    //! Consider storing reference to the window for passing into potential subviews
+    /// connect to receive user interaction events (of subclasses' choosing)
+    /// Consider storing reference to the window for passing into potential subviews
     virtual void  connect( ci::app::WindowRef window ){}
 
-    //! stop receiving window UI events
-    void          disconnect(){ mUIConnections.disconnect(); customDisconnect(); }
+    /// stop receiving window UI events
+    void          disconnect(){ mUIConnections.disconnect(); }
 
-    //! disconnect any custom connections (non-stored ones)
-    virtual void  customDisconnect(){}
-
-    //! temporarily stop receiving UI events; useful if we want to present a different UI for a moment
-    void          block();
-
-    //! resume receiving UI events (if we were connected before block())
-    void          unblock();
-
-    //! temporarily freeze updates
+    /// temporarily freeze updates
     void          pause();
 
-    //! override to do any needed work when pausing
-    virtual void  customPause(){}
-
-    //! continue receiving updates
+    /// continue receiving updates
     void          resume();
 
-    //! override to do any needed work when resuming
-    virtual void  customResume(){}
-
-    //! update content
+    /// update content
     virtual void  update( ch::Time dt ){}
 
     void baseDraw();
 
-    //! render content
+    /// render content
     virtual void  draw() {}
 
-    //! adds this view to the specified window; override appear to control animation
-    void          show( ci::app::WindowRef window, bool useWindowBounds=true );
-
-    //! remove this view from render sequence; override vanish to control animation
-    void          hide( Callback finishFn=0 ){ vanish( vanishCompleteFn(finishFn) ); }
-
-    //! Returns a pointer to the Scene's offset for animation.
+    /// Returns a pointer to the Scene's offset for animation.
     ch::Output<ci::vec2>* getOffsetOutput() { return &_offset; }
 
     void setOffset( const ci::vec2 &offset ) { _offset = offset; }
 
     ch::Output<ch::Time>* getAnimationSpeedOutput() { return &_animation_speed; }
 
-    //! returns the bounds of the controller in points
-    ci::Area      getBounds() const { return mBounds; }
+    /// returns the bounds of the controller in points
+    ci::Area      getBounds() const { return _bounds; }
 
-    //! set the region of screen into which we should draw this view
-    void          setBounds( const ci::Area &points ){ mBounds = points; }
+    /// set the region of screen into which we should draw this view
+    void          setBounds( const ci::Area &points ){ _bounds = points; }
 
-    //! manage the lifetime of the given connection and control with block/unblock
+    /// manage the lifetime of the given connection and control with block/unblock
     void          storeConnection( const ci::signals::connection &c ) { mUIConnections.store( c ); }
 
+    void show( const ci::app::WindowRef &window, bool useWindowBounds = true );
     /// Returns a reference to our timeline.
-    choreograph::Timeline& timeline() { return mTimeline; }
-  protected:
-    //! called by show after adding view to widow
-    virtual void appear(){}
-    //! called by hide before removing from window; user must call removeFromDisplay when finished animating
-    virtual void vanish( Callback finishFn ){ finishFn(); }
+    choreograph::Timeline& timeline() { return _timeline; }
 
 	private:
     ch::Output<ci::vec2>    _offset = ci::vec2( 0 );
     ch::Output<ch::Time>    _animation_speed = 1;
-    ci::Area                mBounds;
-    ci::Timer               mTimer;
+    ci::Area                _bounds;
+    ci::Timer               _timer;
 
-    choreograph::Timeline   mTimeline;
-    //! UI connections
+    choreograph::Timeline   _timeline;
+    /// UI connections
     ConnectionManager       mUIConnections;
-    //! window update/display connections
+    /// window update/display connections
     ConnectionManager       mDisplayConnection;
     ConnectionManager       mUpdateConnection;
 
-    Callback  vanishCompleteFn( Callback finishFn );
     void      removeFromDisplay(){ mDisplayConnection.disconnect(); }
 	};
 }

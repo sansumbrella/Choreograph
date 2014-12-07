@@ -34,7 +34,7 @@ void BezierConstruction::setup()
 {
   float w = (float)app::getWindowWidth();
   float h = (float)app::getWindowHeight();
-  mCurvePoints = {
+  _curve_points = {
     vec2( w * 0.08f, h * 0.86f ),
     vec2( w * 0.08f, h * 0.14f ),
     vec2( w * 0.92f, h * 0.14f ),
@@ -44,9 +44,9 @@ void BezierConstruction::setup()
   const float duration = 1.5f;
 
   // Ramp from anchor point to control point.
-  auto ramp_a = makeRamp( mCurvePoints[0], mCurvePoints[1], duration );
+  auto ramp_a = makeRamp( _curve_points[0], _curve_points[1], duration );
   // Ramp from control point to anchor point.
-  auto ramp_b = makeRamp( mCurvePoints[2], mCurvePoints[3], duration );
+  auto ramp_b = makeRamp( _curve_points[2], _curve_points[3], duration );
 
   // Lerp between control ramps.
   auto bezier_point = makeBlend<vec2>( ramp_a, ramp_b, 0.0f );
@@ -55,24 +55,35 @@ void BezierConstruction::setup()
 
   auto group = std::make_unique<MotionGroup>();
   auto &tl = group->timeline();
-  tl.apply<vec2>( &mControlA, ramp_a );
-  tl.apply<vec2>( &mControlB, ramp_b );
+
+  // Animate our control points along their respective ramps.
+  tl.apply<vec2>( &_control_a, ramp_a );
+  tl.apply<vec2>( &_control_b, ramp_b );
+
+  // Animate the mix of the bezier point from a to b.
   tl.apply<float>( bezier_point->getMixOutput(), makeRamp( 0.0f, 1.0f, duration ) );
-  tl.apply<vec2>( &mCurvePoint, bezier_point )
+
+  // Apply the bezier_point animation to our curve point variable.
+  tl.apply<vec2>( &_curve_point, bezier_point )
     .startFn( [this] ( Motion<vec2> &m ) {
-      mSegments.clear();
-      mSegments.push_back( mCurvePoints[0] );
+      _segments.clear();
+      _segments.push_back( _curve_points[0] );
     } )
     .updateFn( [this] ( vec2 &pos ) {
-      mSegments.push_back( pos );
+      _segments.push_back( pos );
     } );
+
+  // When all our animations finish, cue the group to restart after a delay.
   group->setFinishFn( [this] ( MotionGroup &g ) {
-    timeline().cue( [&g] {
-      g.resetTime();
-    }, 0.5f )
+    timeline()
+      .cue( [&g] {
+        g.resetTime();
+      }, 0.5f )
       .removeOnFinish( true );
   } );
 
+  // Move our group onto our main timeline.
+  // This invalidates our pointer to the group,
   timeline().add( std::move( group ) );
 
   // place things at initial timelined values.
@@ -86,42 +97,42 @@ void BezierConstruction::update( Time dt )
 
 void BezierConstruction::draw()
 {
-  gl::ScopedColor color( Color::white() );
-  gl::ScopedAlphaBlend blend( false );
-  Color curveColor( 1.0f, 1.0f, 0.0f );
-  Color controlColor( 1.0f, 0.0f, 1.0f );
-  Color lineColor( 0.0f, 1.0f, 1.0f );
-  Color futureColor( 1.0f, 1.0f, 1.0f );
+  gl::ScopedColor       color( Color::white() );
+  gl::ScopedAlphaBlend  blend( false );
+  Color curve_color( 1.0f, 1.0f, 0.0f );
+  Color control_color( 1.0f, 0.0f, 1.0f );
+  Color line_color( 0.0f, 1.0f, 1.0f );
+  Color future_color( 1.0f, 1.0f, 1.0f );
 
   // Draw our curve.
-  gl::color( lineColor );
+  gl::color( line_color );
   gl::begin( GL_LINE_STRIP );
-  for( auto &segment : mSegments ) {
+  for( auto &segment : _segments ) {
     gl::vertex( segment );
   }
   gl::end();
 
   // Draw our curve's static control points.
-  for( auto &point : mCurvePoints ) {
+  for( auto &point : _curve_points ) {
     gl::drawSolidCircle( point, 6.0f );
   }
 
   // Draw the paths traveled by our animating control points.
-  gl::drawLine( mCurvePoints[0], mCurvePoints[1] );
-  gl::drawLine( mCurvePoints[2], mCurvePoints[3] );
+  gl::drawLine( _curve_points[0], _curve_points[1] );
+  gl::drawLine( _curve_points[2], _curve_points[3] );
 
   // Draw our animating control points.
-  gl::color( controlColor );
-  gl::drawStrokedCircle( mControlA, 10.0f );
-  gl::drawStrokedCircle( mControlB, 10.0f );
+  gl::color( control_color );
+  gl::drawStrokedCircle( _control_a, 10.0f );
+  gl::drawStrokedCircle( _control_b, 10.0f );
 
   // Draw our curve point's tangent line.
-  gl::color( futureColor );
-  gl::drawLine( mCurvePoint, mControlB );
-  gl::color( curveColor );
-  gl::drawLine( mControlA, mCurvePoint );
+  gl::color( future_color );
+  gl::drawLine( _curve_point, _control_b );
+  gl::color( curve_color );
+  gl::drawLine( _control_a, _curve_point );
   // And our leading curve point.
-  gl::drawStrokedCircle( mCurvePoint, 12.0f );
+  gl::drawStrokedCircle( _curve_point, 12.0f );
 
-  gl::drawString( "Bezier Path", mCurvePoint() - vec2( 0, 16 ) );
+  gl::drawString( "Bezier Path", _curve_point() - vec2( 0, 16 ) );
 }

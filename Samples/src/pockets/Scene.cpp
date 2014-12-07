@@ -34,11 +34,11 @@ Scene::Scene()
 { // start updating
   mUpdateConnection.store( app::App::get()->getSignalUpdate().connect( [this]()
   {
-    update( mTimer.getSeconds() * _animation_speed() );
-    mTimer.start();
+    update( _timer.getSeconds() * _animation_speed() );
+    _timer.start();
   } ) );
 
-  mTimer.start();
+  _timer.start();
 }
 
 Scene::~Scene()
@@ -57,39 +57,21 @@ void Scene::baseDraw()
   draw();
 }
 
-void Scene::block()
-{
-  mUIConnections.block();
-}
-
-void Scene::unblock()
-{
-  mUIConnections.resume();
-}
-
 void Scene::pause()
 {
-  mTimer.stop();
+  _timer.stop();
   mUpdateConnection.block();
-  customPause();
 }
 
 void Scene::resume()
 {
   mUpdateConnection.resume();
-  customResume();
-  mTimer.start();
+  _timer.start();
 }
 
-Scene::Callback Scene::vanishCompleteFn( Scene::Callback finishFn)
-{
-  return [this, finishFn](){ removeFromDisplay(); if( finishFn ){ finishFn(); } };
-}
-
-void Scene::show( app::WindowRef window, bool useWindowBounds )
+void Scene::show( const app::WindowRef &window, bool useWindowBounds )
 {
   mDisplayConnection.disconnect();
   mDisplayConnection.store( window->getSignalDraw().connect( 1, [this](){ baseDraw(); } ) );
   if( useWindowBounds ){ setBounds( window->getBounds() ); }
-  appear();
 }

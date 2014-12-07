@@ -15,13 +15,21 @@
 		151E374A19EC25E4009C943E /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E373619EC25E4009C943E /* Motion.cpp */; };
 		151E374B19EC25E4009C943E /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E374419EC25E4009C943E /* Timeline.cpp */; };
 		151E374C19EC25E4009C943E /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E374619EC25E4009C943E /* TimelineItem.cpp */; };
+		155F881A1A34D7EA009A05E3 /* ButtonBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88041A34D7EA009A05E3 /* ButtonBase.cpp */; };
+		155F881B1A34D7EA009A05E3 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88071A34D7EA009A05E3 /* Node.cpp */; };
+		155F881D1A34D7EA009A05E3 /* RootNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F880A1A34D7EA009A05E3 /* RootNode.cpp */; };
+		155F881E1A34D7EA009A05E3 /* SimpleButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F880C1A34D7EA009A05E3 /* SimpleButton.cpp */; };
+		155F881F1A34D7EA009A05E3 /* TextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F880E1A34D7EA009A05E3 /* TextureNode.cpp */; };
+		155F88201A34D7EA009A05E3 /* TypeNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88101A34D7EA009A05E3 /* TypeNode.cpp */; };
+		155F88211A34D7EA009A05E3 /* ConnectionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88131A34D7EA009A05E3 /* ConnectionManager.cpp */; };
+		155F88221A34D7EA009A05E3 /* Locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88151A34D7EA009A05E3 /* Locus.cpp */; };
+		155F88231A34D7EA009A05E3 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88181A34D7EA009A05E3 /* Scene.cpp */; };
+		155F88261A34D808009A05E3 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88251A34D808009A05E3 /* MotionGroup.cpp */; };
 		159FB4ED1A227975004FE9C1 /* BezierConstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 159FB4E81A227975004FE9C1 /* BezierConstruction.cpp */; };
 		159FB4EE1A227975004FE9C1 /* Quaternions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 159FB4E91A227975004FE9C1 /* Quaternions.cpp */; };
 		159FB4EF1A227975004FE9C1 /* Repetition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 159FB4EA1A227975004FE9C1 /* Repetition.cpp */; };
 		159FB4F01A227975004FE9C1 /* SlideAndBounce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 159FB4EB1A227975004FE9C1 /* SlideAndBounce.cpp */; };
 		159FB4F11A227975004FE9C1 /* WormBuncher.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 159FB4EC1A227975004FE9C1 /* WormBuncher.cpp */; };
-		15BA7BB319DF2131003E13A5 /* ConnectionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BA519DF2131003E13A5 /* ConnectionManager.cpp */; };
-		15BA7BB419DF2131003E13A5 /* Scene.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BA819DF2131003E13A5 /* Scene.cpp */; };
 		15BA7BB819DF2131003E13A5 /* SamplesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BB219DF2131003E13A5 /* SamplesApp.cpp */; };
 		184311972587400085A8A10D /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 61348FC845754FE9A2AF240B /* CinderApp_ios.png */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -46,7 +54,6 @@
 		00CFDF6A1138442D0091FFFF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		147F869E7FA44D658396D499 /* ChoreographSamples_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ChoreographSamples_Prefix.pch; sourceTree = "<group>"; };
 		151E372F19EC25E4009C943E /* Choreograph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Choreograph.h; sourceTree = "<group>"; };
-		151E373019EC25E4009C943E /* Connection.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Connection.hpp; sourceTree = "<group>"; };
 		151E373119EC25E4009C943E /* Cue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cue.cpp; sourceTree = "<group>"; };
 		151E373219EC25E4009C943E /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
 		151E373419EC25E4009C943E /* VectorManipulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VectorManipulation.hpp; sourceTree = "<group>"; };
@@ -68,6 +75,29 @@
 		151E374619EC25E4009C943E /* TimelineItem.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TimelineItem.cpp; sourceTree = "<group>"; };
 		151E374719EC25E4009C943E /* TimelineItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimelineItem.h; sourceTree = "<group>"; };
 		151E374819EC25E4009C943E /* TimeType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeType.h; sourceTree = "<group>"; };
+		155F88041A34D7EA009A05E3 /* ButtonBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ButtonBase.cpp; sourceTree = "<group>"; };
+		155F88051A34D7EA009A05E3 /* ButtonBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ButtonBase.h; sourceTree = "<group>"; };
+		155F88061A34D7EA009A05E3 /* CobWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CobWeb.h; sourceTree = "<group>"; };
+		155F88071A34D7EA009A05E3 /* Node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
+		155F88081A34D7EA009A05E3 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
+		155F880A1A34D7EA009A05E3 /* RootNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RootNode.cpp; sourceTree = "<group>"; };
+		155F880B1A34D7EA009A05E3 /* RootNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootNode.h; sourceTree = "<group>"; };
+		155F880C1A34D7EA009A05E3 /* SimpleButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleButton.cpp; sourceTree = "<group>"; };
+		155F880D1A34D7EA009A05E3 /* SimpleButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SimpleButton.h; sourceTree = "<group>"; };
+		155F880E1A34D7EA009A05E3 /* TextureNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TextureNode.cpp; sourceTree = "<group>"; };
+		155F880F1A34D7EA009A05E3 /* TextureNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextureNode.h; sourceTree = "<group>"; };
+		155F88101A34D7EA009A05E3 /* TypeNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TypeNode.cpp; sourceTree = "<group>"; };
+		155F88111A34D7EA009A05E3 /* TypeNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TypeNode.h; sourceTree = "<group>"; };
+		155F88121A34D7EA009A05E3 /* CollectionUtilities.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = CollectionUtilities.hpp; sourceTree = "<group>"; };
+		155F88131A34D7EA009A05E3 /* ConnectionManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionManager.cpp; sourceTree = "<group>"; };
+		155F88141A34D7EA009A05E3 /* ConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionManager.h; sourceTree = "<group>"; };
+		155F88151A34D7EA009A05E3 /* Locus.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Locus.cpp; sourceTree = "<group>"; };
+		155F88161A34D7EA009A05E3 /* Locus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Locus.h; sourceTree = "<group>"; };
+		155F88171A34D7EA009A05E3 /* Pockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pockets.h; sourceTree = "<group>"; };
+		155F88181A34D7EA009A05E3 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
+		155F88191A34D7EA009A05E3 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
+		155F88241A34D808009A05E3 /* MotionGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionGroup.h; sourceTree = "<group>"; };
+		155F88251A34D808009A05E3 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
 		159FB4E21A227975004FE9C1 /* BezierConstruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierConstruction.h; sourceTree = "<group>"; };
 		159FB4E31A227975004FE9C1 /* Quaternions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quaternions.h; sourceTree = "<group>"; };
 		159FB4E41A227975004FE9C1 /* Repetition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Repetition.h; sourceTree = "<group>"; };
@@ -79,11 +109,6 @@
 		159FB4EA1A227975004FE9C1 /* Repetition.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Repetition.cpp; sourceTree = "<group>"; };
 		159FB4EB1A227975004FE9C1 /* SlideAndBounce.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SlideAndBounce.cpp; sourceTree = "<group>"; };
 		159FB4EC1A227975004FE9C1 /* WormBuncher.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WormBuncher.cpp; sourceTree = "<group>"; };
-		15BA7BA519DF2131003E13A5 /* ConnectionManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConnectionManager.cpp; sourceTree = "<group>"; };
-		15BA7BA619DF2131003E13A5 /* ConnectionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConnectionManager.h; sourceTree = "<group>"; };
-		15BA7BA719DF2131003E13A5 /* Pockets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Pockets.h; sourceTree = "<group>"; };
-		15BA7BA819DF2131003E13A5 /* Scene.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Scene.cpp; sourceTree = "<group>"; };
-		15BA7BA919DF2131003E13A5 /* Scene.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Scene.h; sourceTree = "<group>"; };
 		15BA7BB219DF2131003E13A5 /* SamplesApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SamplesApp.cpp; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -178,8 +203,9 @@
 		151E372E19EC25E4009C943E /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
+				155F88241A34D808009A05E3 /* MotionGroup.h */,
+				155F88251A34D808009A05E3 /* MotionGroup.cpp */,
 				151E372F19EC25E4009C943E /* Choreograph.h */,
-				151E373019EC25E4009C943E /* Connection.hpp */,
 				151E373119EC25E4009C943E /* Cue.cpp */,
 				151E373219EC25E4009C943E /* Cue.h */,
 				151E373319EC25E4009C943E /* detail */,
@@ -230,27 +256,51 @@
 			path = specialization;
 			sourceTree = "<group>";
 		};
+		155F88021A34D7EA009A05E3 /* pockets */ = {
+			isa = PBXGroup;
+			children = (
+				155F88031A34D7EA009A05E3 /* cobweb */,
+				155F88121A34D7EA009A05E3 /* CollectionUtilities.hpp */,
+				155F88131A34D7EA009A05E3 /* ConnectionManager.cpp */,
+				155F88141A34D7EA009A05E3 /* ConnectionManager.h */,
+				155F88151A34D7EA009A05E3 /* Locus.cpp */,
+				155F88161A34D7EA009A05E3 /* Locus.h */,
+				155F88171A34D7EA009A05E3 /* Pockets.h */,
+				155F88181A34D7EA009A05E3 /* Scene.cpp */,
+				155F88191A34D7EA009A05E3 /* Scene.h */,
+			);
+			name = pockets;
+			path = ../src/pockets;
+			sourceTree = "<group>";
+		};
+		155F88031A34D7EA009A05E3 /* cobweb */ = {
+			isa = PBXGroup;
+			children = (
+				155F88041A34D7EA009A05E3 /* ButtonBase.cpp */,
+				155F88051A34D7EA009A05E3 /* ButtonBase.h */,
+				155F88061A34D7EA009A05E3 /* CobWeb.h */,
+				155F88071A34D7EA009A05E3 /* Node.cpp */,
+				155F88081A34D7EA009A05E3 /* Node.h */,
+				155F880A1A34D7EA009A05E3 /* RootNode.cpp */,
+				155F880B1A34D7EA009A05E3 /* RootNode.h */,
+				155F880C1A34D7EA009A05E3 /* SimpleButton.cpp */,
+				155F880D1A34D7EA009A05E3 /* SimpleButton.h */,
+				155F880E1A34D7EA009A05E3 /* TextureNode.cpp */,
+				155F880F1A34D7EA009A05E3 /* TextureNode.h */,
+				155F88101A34D7EA009A05E3 /* TypeNode.cpp */,
+				155F88111A34D7EA009A05E3 /* TypeNode.h */,
+			);
+			path = cobweb;
+			sourceTree = "<group>";
+		};
 		15BA7BA319DF2131003E13A5 /* src */ = {
 			isa = PBXGroup;
 			children = (
-				15BA7BA419DF2131003E13A5 /* pockets */,
 				15BA7BAA19DF2131003E13A5 /* samples */,
 				15BA7BB219DF2131003E13A5 /* SamplesApp.cpp */,
 			);
 			name = src;
 			path = ../src;
-			sourceTree = "<group>";
-		};
-		15BA7BA419DF2131003E13A5 /* pockets */ = {
-			isa = PBXGroup;
-			children = (
-				15BA7BA519DF2131003E13A5 /* ConnectionManager.cpp */,
-				15BA7BA619DF2131003E13A5 /* ConnectionManager.h */,
-				15BA7BA719DF2131003E13A5 /* Pockets.h */,
-				15BA7BA819DF2131003E13A5 /* Scene.cpp */,
-				15BA7BA919DF2131003E13A5 /* Scene.h */,
-			);
-			path = pockets;
 			sourceTree = "<group>";
 		};
 		15BA7BAA19DF2131003E13A5 /* samples */ = {
@@ -283,6 +333,7 @@
 		99692BD914FF149000DFFFFF /* Blocks */ = {
 			isa = PBXGroup;
 			children = (
+				155F88021A34D7EA009A05E3 /* pockets */,
 				C0FFD290C3464269A7016DEB /* Choreograph */,
 			);
 			name = Blocks;
@@ -372,14 +423,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				159FB4F01A227975004FE9C1 /* SlideAndBounce.cpp in Sources */,
+				155F881B1A34D7EA009A05E3 /* Node.cpp in Sources */,
 				15BA7BB819DF2131003E13A5 /* SamplesApp.cpp in Sources */,
-				15BA7BB319DF2131003E13A5 /* ConnectionManager.cpp in Sources */,
+				155F88201A34D7EA009A05E3 /* TypeNode.cpp in Sources */,
+				155F881F1A34D7EA009A05E3 /* TextureNode.cpp in Sources */,
+				155F88231A34D7EA009A05E3 /* Scene.cpp in Sources */,
 				151E374B19EC25E4009C943E /* Timeline.cpp in Sources */,
+				155F881E1A34D7EA009A05E3 /* SimpleButton.cpp in Sources */,
 				159FB4F11A227975004FE9C1 /* WormBuncher.cpp in Sources */,
+				155F88211A34D7EA009A05E3 /* ConnectionManager.cpp in Sources */,
 				159FB4EE1A227975004FE9C1 /* Quaternions.cpp in Sources */,
+				155F88221A34D7EA009A05E3 /* Locus.cpp in Sources */,
+				155F881D1A34D7EA009A05E3 /* RootNode.cpp in Sources */,
 				159FB4ED1A227975004FE9C1 /* BezierConstruction.cpp in Sources */,
-				15BA7BB419DF2131003E13A5 /* Scene.cpp in Sources */,
+				155F88261A34D808009A05E3 /* MotionGroup.cpp in Sources */,
 				151E374A19EC25E4009C943E /* Motion.cpp in Sources */,
+				155F881A1A34D7EA009A05E3 /* ButtonBase.cpp in Sources */,
 				151E374919EC25E4009C943E /* Cue.cpp in Sources */,
 				159FB4EF1A227975004FE9C1 /* Repetition.cpp in Sources */,
 				151E374C19EC25E4009C943E /* TimelineItem.cpp in Sources */,

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014 David Wicks, sansumbrella.com
+ * Copyright (c) 2013 David Wicks, sansumbrella.com
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or
@@ -25,46 +25,45 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#include "pockets/Locus.h"
 
-#include "pockets/Scene.h"
+using namespace pockets;
+using namespace cinder;
 
-struct WormSegment
+mat4 Locus2D::toMatrix() const
 {
-#if defined(CINDER_MSW)
-  WormSegment() = default;
-  // We need to provide a move constructor for VS2013 to use instead of copy construction.
-  // Clang auto-generates the move constructor for us, so it's not needed on OSX.
-  // We should be able to declare move-ctor as default, but VS2013 doesn't support this yet.
-  // http://msdn.microsoft.com/en-us/library/dn457344.aspx
-  // WormSegment( WormSegment &&rhs ) = default;
-  WormSegment( WormSegment &&rhs ):
-    color( std::move( rhs.color ) ),
-    alpha( std::move( rhs.alpha ) ),
-    position( std::move( rhs.position ) ),
-    orientation( std::move( rhs.orientation ) )
-  {}
-  WormSegment( const WormSegment &rhs ) = delete;
-#endif
+  mat4 mat;
+  mat = translate( mat, vec3( position + registration_point, 0.0f ) );
+  mat = rotate( mat, rotation, vec3( 0.0f, 0.0f, 1.0f ) );
+  mat = ci::scale( mat, vec3( scale, 1.0f ) );
+  mat = translate( mat, vec3( -registration_point, 0.0f ) );
+  if( parent ){ mat = parent->toMatrix() * mat; }
+  return mat;
+}
 
-  ci::Color             color;
-  ch::Output<float>     alpha = 0.0f;
-  ch::Output<ci::vec3>  position;
-  ch::Output<ci::quat>  orientation;
-};
-
-class WormBuncher : public pk::Scene
+ci::vec2 Locus2D::worldScale() const
 {
-public:
+  return parent ? parent->worldScale() * scale : scale;
+}
 
-  void setup() override;
+float Locus2D::worldRotation() const
+{
+  return parent ? parent->worldRotation() + rotation : rotation;
+}
 
-  void update( ch::Time dt ) override;
+vec2 Locus2D::worldPosition() const
+{
+  return parent ? vec2(parent->toMatrix() * vec4(position, 0.0f, 1.0f)) : position;
+}
 
-  void connect( ci::app::WindowRef window ) override;
+void Locus2D::detachFromParent()
+{
+  if( parent )
+  {
+    scale *= parent->worldScale();
+    rotation += parent->worldRotation();
+    position = vec2(parent->toMatrix() * vec4(position, 0.0f, 1.0f));
 
-  void draw() override;
-
-private:
-  std::vector<WormSegment>  _segments;
-};
+    parent.reset();
+  }
+}

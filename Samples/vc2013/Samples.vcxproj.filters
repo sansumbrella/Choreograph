@@ -19,11 +19,14 @@
     <Filter Include="Blocks\Choreograph">
       <UniqueIdentifier>{5E1E672A-6F5E-4AC5-BB83-F0A117F63EF9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\pockets">
-      <UniqueIdentifier>{4ff77185-5e0d-4fdf-bdd4-88eccea43ba1}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\samples">
       <UniqueIdentifier>{44289b45-3777-43bf-bd14-153bee590cc1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\pockets">
+      <UniqueIdentifier>{933421df-31d8-4992-9850-440b7a019f05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\pockets\cobweb">
+      <UniqueIdentifier>{aca829cf-0ac3-4f02-8ff4-cfc01b6cc63f}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -36,12 +39,6 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\src\pockets\ConnectionManager.cpp">
-      <Filter>Source Files\pockets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\pockets\Scene.cpp">
-      <Filter>Source Files\pockets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\choreograph\Cue.cpp">
       <Filter>Blocks\Choreograph</Filter>
     </ClCompile>
@@ -72,19 +69,37 @@
     <ClCompile Include="..\..\src\choreograph\MotionGroup.cpp">
       <Filter>Blocks\Choreograph</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\pockets\ConnectionManager.cpp">
+      <Filter>Blocks\pockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\Locus.cpp">
+      <Filter>Blocks\pockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\Scene.cpp">
+      <Filter>Blocks\pockets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\cobweb\Node.cpp">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\cobweb\RootNode.cpp">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\cobweb\SimpleButton.cpp">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\cobweb\TextureNode.cpp">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\cobweb\TypeNode.cpp">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\pockets\cobweb\ButtonBase.cpp">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\pockets\ConnectionManager.h">
-      <Filter>Source Files\pockets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\pockets\Pockets.h">
-      <Filter>Source Files\pockets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\pockets\Scene.h">
-      <Filter>Source Files\pockets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Choreograph.h">
       <Filter>Blocks\Choreograph</Filter>
@@ -163,6 +178,42 @@
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\MotionGroup.h">
       <Filter>Blocks\Choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\CollectionUtilities.hpp">
+      <Filter>Blocks\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\ConnectionManager.h">
+      <Filter>Blocks\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\Locus.h">
+      <Filter>Blocks\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\Pockets.h">
+      <Filter>Blocks\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\Scene.h">
+      <Filter>Blocks\pockets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\CobWeb.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\Node.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\RootNode.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\SimpleButton.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\TextureNode.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\TypeNode.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\pockets\cobweb\ButtonBase.h">
+      <Filter>Blocks\pockets\cobweb</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

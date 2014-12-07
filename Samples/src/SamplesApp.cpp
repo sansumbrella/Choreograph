@@ -1,9 +1,11 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/params/Params.h"
+#include "cinder/Log.h"
+#include "cinder/gl/TextureFont.h"
 
 #include "samples/Samples.h"
+#include "pockets/cobweb/CobWeb.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -19,14 +21,14 @@ public:
 
   void loadSample( int index );
 private:
-  pk::SceneRef            mCurrentScene;
-  pk::SceneRef            mPrevScene;
-  ch::Timeline            mTimeline;
-  ci::Timer               mTimer;
-  std::shared_ptr<ch::Control> mCueControl;
-  int                     mSceneIndex = 0;
-  string                  mSceneName;
-  params::InterfaceGlRef  mParams;
+  pk::SceneRef            _current_scene;
+  pk::SceneRef            _previous_scene;
+  ch::Timeline            _timeline;
+  ci::Timer               _timer;
+  int                     _scene_index = 0;
+  string                  _scene_name;
+  gl::TextureFontRef      _title_font;
+  pk::cw::RootNode        _gui;
 };
 
 void SamplesApp::prepareSettings( Settings *settings )
@@ -38,90 +40,91 @@ void SamplesApp::prepareSettings( Settings *settings )
 
 void SamplesApp::setup()
 {
-#ifndef CINDER_COCOA_TOUCH
-  mParams = params::InterfaceGl::create( "Choreograph Samples", ivec2( 240, 100 ) );
-  mParams->setPosition( ivec2( getWindowWidth() - 250, 10 ) );
-  mParams->addParam( "Sample", SampleNames, &mSceneIndex );
-  mParams->addButton( "Next", [this] { loadSample( mSceneIndex + 1 ); } );
-  mParams->addButton( "Prev", [this] { loadSample( mSceneIndex - 1 ); } );
-  mParams->addButton( "Restart Current", [this] { loadSample( mSceneIndex ); } );
-#endif
+  auto button_font = Font( "Arial", toPixels( 18.0f ) );
+
+  using namespace pockets;
+  auto previous = cobweb::SimpleButton::createLabelButton( "PREVIOUS", button_font );
+  previous->setSelectFn( [this] { loadSample( _scene_index - 1 ); } );
+  previous->setPosition( vec2( 10, 20 ) );
+  previous->setHitPadding( 10.0f, 10.0f );
+
+  auto next = cobweb::SimpleButton::createLabelButton( "NEXT", button_font );
+  next->setSelectFn( [this] { loadSample( _scene_index + 1 ); } );
+  next->setPosition( previous->getPosition() + vec2( previous->getWidth() + 10.0f, 0.0f ) );
+  next->setHitPadding( 10.0f, 10.0f );
+
+  _gui.appendChild( previous );
+  _gui.appendChild( next );
+  _gui.connect( getWindow() );
+
   // Draw our app first, so samples show up over top.
   getWindow()->getSignalDraw().connect( 0, [this] {
     gl::clear( Color::black() );
-#ifndef CINDER_COCOA_TOUCH
-    mParams->draw();
-#endif
+    _gui.deepDraw();
   } );
 
   loadSample( 0 );
-  mTimer.start();
+  _timer.start();
 }
 
 void SamplesApp::loadSample( int index )
 {
-  bool do_animate = (index != mSceneIndex);
-  const int start_x = (index < mSceneIndex) ? - getWindowWidth() : getWindowWidth();
+  bool do_animate = (index != _scene_index);
+  const int start_x = (index < _scene_index) ? - getWindowWidth() : getWindowWidth();
   const int vanish_x = - start_x;
 
-  float cooldown = ( mCurrentScene && mCurrentScene->timeline().empty() ) ? 0 : 0.33f;
+  float cooldown = ( _current_scene && _current_scene->timeline().empty() ) ? 0 : 0.25f;
 
   if( index < 0 ) { index = SampleList.size() - 1; }
   index %= SampleList.size();
 
-  mSceneIndex = index;
-  mSceneName = SampleNames[mSceneIndex];
+  _scene_index = index;
+  _scene_name = SampleNames[_scene_index];
 
-  console() << "Loading Sample: " << mSceneName << endl;
+  console() << "Loading Sample: " << _scene_name << endl;
 
-  if( mCurrentScene && do_animate ) {
-    mPrevScene = mCurrentScene;
-    // animate off
-    mTimeline.apply( mPrevScene->getOffsetOutput() ).hold( cooldown ).then<RampTo>( vec2( vanish_x, 0.0f ), 0.4f, EaseInQuad() )
-    .finishFn( [this] ( Motion<vec2> &m ) {
-      mPrevScene.reset(); // get rid of previous scene
-    } );
-    mTimeline.apply( mPrevScene->getAnimationSpeedOutput() ).then<RampTo>( 0, 0.4f );
+  if( _current_scene && do_animate ) {
+    _previous_scene = _current_scene;
+    // Decelerate animation of previous scene down to zero.
+    _timeline.apply( _previous_scene->getAnimationSpeedOutput() ).then<RampTo>( 0, 0.4f );
+
+    // Slide previous scene off screen after/during deceleration.
+    _timeline.apply( _previous_scene->getOffsetOutput() )
+      .hold( cooldown )
+      .then<RampTo>( vec2( vanish_x, 0.0f ), 0.4f, EaseInQuad() )
+      .finishFn( [this] ( Motion<vec2> &m ) {
+        _previous_scene.reset(); // get rid of previous scene
+      } );
   }
 
-  mCurrentScene = SampleList[mSceneIndex].second();
+  _current_scene = SampleList[_scene_index].second();
 
-  mCurrentScene->setup();
-  mCurrentScene->connect( getWindow() );
-  mCurrentScene->show( getWindow() );
+  _current_scene->setup();
+  _current_scene->connect( getWindow() );
+  _current_scene->show( getWindow() );
+
   // animate current on.
   if( do_animate ) {
+    _current_scene->setOffset( vec2( start_x, 0.0f ) );
+    _current_scene->pause();
 
-    mCurrentScene->setOffset( vec2( start_x, 0.0f ) );
-    mCurrentScene->pause();
-
-    mTimeline.apply( mCurrentScene->getOffsetOutput() ).hold( 0.2f + cooldown ).then<RampTo>( vec2( 0 ), 0.66f, EaseOutQuint() )
+    _timeline.apply( _current_scene->getOffsetOutput() ).hold( 0.2f + cooldown ).then<RampTo>( vec2( 0 ), 0.66f, EaseOutQuint() )
     .finishFn( [this] ( Motion<vec2> &m ) {
-      mCurrentScene->resume();
+      _current_scene->resume();
     } );
 
   }
-
-  // If there was a previous cue lined up, cancel it.
-  if( mCueControl ) {
-    mCueControl->cancel();
-  }
-
-  // Load Next Sample Automatically.
-  mCueControl = mTimeline.cue( [this] {
-    loadSample( mSceneIndex + 1 );
-  }, 15.0f ).getControl();
 }
 
 void SamplesApp::update()
 {
-  if( mSceneName != SampleNames[mSceneIndex] ) {
-    loadSample( mSceneIndex );
+  if( _scene_name != SampleNames[_scene_index] ) {
+    loadSample( _scene_index );
   }
 
-  ch::Time dt = (Time)mTimer.getSeconds();
-  mTimer.start();
-  mTimeline.step( dt );
+  ch::Time dt = (Time)_timer.getSeconds();
+  _timer.start();
+  _timeline.step( dt );
 }
 
 CINDER_APP_NATIVE( SamplesApp, RendererGl )
