@@ -67,28 +67,13 @@ namespace pockets
     virtual void  connect( ci::app::WindowRef window ){}
 
     //! stop receiving window UI events
-    void          disconnect(){ mUIConnections.disconnect(); customDisconnect(); }
-
-    //! disconnect any custom connections (non-stored ones)
-    virtual void  customDisconnect(){}
-
-    //! temporarily stop receiving UI events; useful if we want to present a different UI for a moment
-    void          block();
-
-    //! resume receiving UI events (if we were connected before block())
-    void          unblock();
+    void          disconnect(){ mUIConnections.disconnect(); }
 
     //! temporarily freeze updates
     void          pause();
 
-    //! override to do any needed work when pausing
-    virtual void  customPause(){}
-
     //! continue receiving updates
     void          resume();
-
-    //! override to do any needed work when resuming
-    virtual void  customResume(){}
 
     //! update content
     virtual void  update( ch::Time dt ){}
@@ -97,12 +82,6 @@ namespace pockets
 
     //! render content
     virtual void  draw() {}
-
-    //! adds this view to the specified window; override appear to control animation
-    void          show( ci::app::WindowRef window, bool useWindowBounds=true );
-
-    //! remove this view from render sequence; override vanish to control animation
-    void          hide( Callback finishFn=0 ){ vanish( vanishCompleteFn(finishFn) ); }
 
     //! Returns a pointer to the Scene's offset for animation.
     ch::Output<ci::vec2>* getOffsetOutput() { return &_offset; }
@@ -120,13 +99,9 @@ namespace pockets
     //! manage the lifetime of the given connection and control with block/unblock
     void          storeConnection( const ci::signals::connection &c ) { mUIConnections.store( c ); }
 
+    void show( const ci::app::WindowRef &window, bool useWindowBounds = true );
     /// Returns a reference to our timeline.
     choreograph::Timeline& timeline() { return mTimeline; }
-  protected:
-    //! called by show after adding view to widow
-    virtual void appear(){}
-    //! called by hide before removing from window; user must call removeFromDisplay when finished animating
-    virtual void vanish( Callback finishFn ){ finishFn(); }
 
 	private:
     ch::Output<ci::vec2>    _offset = ci::vec2( 0 );
@@ -141,7 +116,6 @@ namespace pockets
     ConnectionManager       mDisplayConnection;
     ConnectionManager       mUpdateConnection;
 
-    Callback  vanishCompleteFn( Callback finishFn );
     void      removeFromDisplay(){ mDisplayConnection.disconnect(); }
 	};
 }

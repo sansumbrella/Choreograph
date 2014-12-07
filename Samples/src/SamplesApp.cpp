@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
+#include "cinder/gl/TextureFont.h"
 
 #include "samples/Samples.h"
 
@@ -27,6 +28,7 @@ private:
   int                     mSceneIndex = 0;
   string                  mSceneName;
   params::InterfaceGlRef  mParams;
+  gl::TextureFontRef      _title_font;
 };
 
 void SamplesApp::prepareSettings( Settings *settings )
@@ -38,6 +40,9 @@ void SamplesApp::prepareSettings( Settings *settings )
 
 void SamplesApp::setup()
 {
+
+  _title_font = gl::TextureFont::create( Font( "Arial Bold", 14.0f ) );
+
 #ifndef CINDER_COCOA_TOUCH
   mParams = params::InterfaceGl::create( "Choreograph Samples", ivec2( 240, 100 ) );
   mParams->setPosition( ivec2( getWindowWidth() - 250, 10 ) );

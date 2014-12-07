@@ -57,39 +57,21 @@ void Scene::baseDraw()
   draw();
 }
 
-void Scene::block()
-{
-  mUIConnections.block();
-}
-
-void Scene::unblock()
-{
-  mUIConnections.resume();
-}
-
 void Scene::pause()
 {
   mTimer.stop();
   mUpdateConnection.block();
-  customPause();
 }
 
 void Scene::resume()
 {
   mUpdateConnection.resume();
-  customResume();
   mTimer.start();
 }
 
-Scene::Callback Scene::vanishCompleteFn( Scene::Callback finishFn)
-{
-  return [this, finishFn](){ removeFromDisplay(); if( finishFn ){ finishFn(); } };
-}
-
-void Scene::show( app::WindowRef window, bool useWindowBounds )
+void Scene::show( const app::WindowRef &window, bool useWindowBounds )
 {
   mDisplayConnection.disconnect();
   mDisplayConnection.store( window->getSignalDraw().connect( 1, [this](){ baseDraw(); } ) );
   if( useWindowBounds ){ setBounds( window->getBounds() ); }
-  appear();
 }
