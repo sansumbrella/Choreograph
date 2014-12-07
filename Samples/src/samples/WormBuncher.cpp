@@ -43,16 +43,16 @@ void WormBuncher::setup()
 
   for( int i = 0; i < count; ++i )
   {
-    Thing thing;
+    WormSegment segment;
 
     vec3 pos( 0 );
     pos.x = lmap<float>( i, 0, count - 1, 50, app::getWindowWidth() - 50 );
     pos.y = app::getWindowHeight() / 2 + sin( pos.x * 0.01f ) * 80.0f;
 
-    thing.position().x = pos.x - 150.0f;
-    thing.position().y = pos.y + 150.0f;
+    segment.position().x = pos.x - 150.0f;
+    segment.position().y = pos.y + 150.0f;
 
-    thing.color = Color( CM_HSV, mix( 0.3f, 0.7f, randFloat() ), 1.0f, 0.95f );
+    segment.color = Color( CM_HSV, mix( 0.3f, 0.7f, randFloat() ), 1.0f, 0.95f );
 
     quat back = normalize( glm::angleAxis<float>( M_PI / 2.0f, vec3( 1, 0, 0 ) ) * glm::angleAxis<float>( M_PI / 4.0f, vec3( 0, 1, 0 ) ) );
     quat front;
@@ -60,11 +60,11 @@ void WormBuncher::setup()
     // Delay Motions by offsetting their start times.
     // Their values will be clamped to the start value until start time.
     float delay = (i * 0.05f);
-    timeline().apply( &thing.position ).then<RampTo3>( pos, 0.44f, EaseOutCubic(), EaseOutQuad() ).setStartTime( delay );
-    timeline().apply( &thing.orientation ).set( back ).then<RampTo>( front, 0.44f, EaseInOutAtan() ).setStartTime( delay );
-    timeline().apply( &thing.alpha ).setStartTime( delay ).then<RampTo>( 1.0f, 0.16f );
+    timeline().apply( &segment.position ).then<RampTo3>( pos, 0.44f, EaseOutCubic(), EaseOutQuad() ).setStartTime( delay );
+    timeline().apply( &segment.orientation ).set( back ).then<RampTo>( front, 0.44f, EaseInOutAtan() ).setStartTime( delay );
+    timeline().apply( &segment.alpha ).setStartTime( delay ).then<RampTo>( 1.0f, 0.16f );
 
-    mThings.emplace_back( std::move( thing ) );
+    _segments.emplace_back( std::move( segment ) );
   }
 
 }
@@ -75,23 +75,24 @@ void WormBuncher::connect( app::WindowRef window )
     vec3 center( point, 0.0f );
     vec3 bounds( 100 );
     float delay = 0.0f;
-    for( auto &thing : mThings ) {
+    for( auto &segment : _segments ) {
       vec3 pos = randVec3f() * bounds + center;
-      timeline().append( &thing.position ).hold( delay ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
+      timeline().append( &segment.position ).hold( delay ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
 
       delay += 0.005f;
     }
   };
 
-  storeConnection( window->getSignalMouseDown().connect( [seekPoint] ( const app::MouseEvent &event ) {
-    seekPoint( event.getPos() );
-  } ) );
 
 #if defined( CINDER_COCOA_TOUCH )
   storeConnection( window->getSignalTouchesBegan().connect( [seekPoint] ( const app::TouchEvent &event ) {
     for( auto &touch : event.getTouches() ) {
       seekPoint( touch.getPos() );
     }
+  } ) );
+#else
+  storeConnection( window->getSignalMouseDown().connect( [seekPoint] ( const app::MouseEvent &event ) {
+    seekPoint( event.getPos() );
   } ) );
 #endif
 }
@@ -107,13 +108,13 @@ void WormBuncher::draw()
 
   gl::drawString( "Worm Buncher. Click/touch to interact.", vec2( 10, 30 ) );
 
-  for( auto &thing : mThings )
+  for( auto &segment : _segments )
   {
     gl::ScopedModelMatrix matrix;
-    gl::translate( thing.position );
-    gl::rotate( thing.orientation );
+    gl::translate( segment.position );
+    gl::rotate( segment.orientation );
 
-    gl::ScopedColor color( ColorA( thing.color, thing.alpha ) );
+    gl::ScopedColor color( ColorA( segment.color, segment.alpha ) );
     gl::drawSolidCircle( vec2( 0 ), 20.0f );
   }
 }

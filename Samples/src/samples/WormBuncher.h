@@ -29,22 +29,22 @@
 
 #include "pockets/Scene.h"
 
-struct Thing
+struct WormSegment
 {
 #if defined(CINDER_MSW)
-  Thing() = default;
-  /// We need to provide a move constructor for VS2013 to use instead of copy construction.
-  /// Clang auto-generates the move constructor for us, so it's not needed on OSX.
-  Thing( Thing &&rhs ):
+  WormSegment() = default;
+  // We need to provide a move constructor for VS2013 to use instead of copy construction.
+  // Clang auto-generates the move constructor for us, so it's not needed on OSX.
+  // We should be able to declare move-ctor as default, but VS2013 doesn't support this yet.
+  // http://msdn.microsoft.com/en-us/library/dn457344.aspx
+  // WormSegment( WormSegment &&rhs ) = default;
+  WormSegment( WormSegment &&rhs ):
     color( std::move( rhs.color ) ),
     alpha( std::move( rhs.alpha ) ),
     position( std::move( rhs.position ) ),
     orientation( std::move( rhs.orientation ) )
   {}
-  // In C++11, we should be able to declare move-ctor as default, but VS2013 doesn't support this yet.
-  // http://msdn.microsoft.com/en-us/library/dn457344.aspx
-  // Thing( Thing &&rhs ) = default;
-  Thing( const Thing &rhs ) = delete;
+  WormSegment( const WormSegment &rhs ) = delete;
 #endif
 
   ci::Color             color;
@@ -66,5 +66,5 @@ public:
   void draw() override;
 
 private:
-  std::vector<Thing>  mThings;
+  std::vector<WormSegment>  _segments;
 };

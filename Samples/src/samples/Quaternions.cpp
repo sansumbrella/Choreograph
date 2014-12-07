@@ -35,12 +35,13 @@ using namespace choreograph;
 
 void Quaternions::setup()
 {
+  // Apply a ramp to the continous orientation.
   timeline().apply( &_continuous_orientation )
     .then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() )
     .finishFn( [this] (Motion<quat> &m) {
-      // create a future for yourself.
+      // Extend this sequence into the future.
       m.getSequence().then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
-      // erase the past
+      // Erase all completed phrases from this sequence.
       m.cutPhrasesBefore( m.time() );
     } );
 }
@@ -52,8 +53,9 @@ void Quaternions::rotateMore( ch::MotionOptions<ci::quat> &options )
   // since any previous motion will have been cancelled.
   auto end = normalize( options.getSequence().getEndValue() );
 
-  auto axis = vec3( 1, 0, 0 );
+  // Flip a coin to determine what axis we rotate about.
   float coin = randFloat( 1.0f );
+  auto axis = vec3( 1, 0, 0 );
   if( coin < 0.33f ) {
     axis = vec3( 0, 1, 0 );
   }
@@ -76,7 +78,7 @@ void Quaternions::connect( ci::app::WindowRef window )
     auto append_options = timeline( ).append( &_append_orientation );
     rotateMore( append_options );
   };
-  
+
   storeConnection( window->getSignalTouchesBegan().connect( [=] ( app::TouchEvent &event ) {
     change_orientations();
   } ) );

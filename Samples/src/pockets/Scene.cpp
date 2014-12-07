@@ -34,11 +34,11 @@ Scene::Scene()
 { // start updating
   mUpdateConnection.store( app::App::get()->getSignalUpdate().connect( [this]()
   {
-    update( mTimer.getSeconds() * _animation_speed() );
-    mTimer.start();
+    update( _timer.getSeconds() * _animation_speed() );
+    _timer.start();
   } ) );
 
-  mTimer.start();
+  _timer.start();
 }
 
 Scene::~Scene()
@@ -59,14 +59,14 @@ void Scene::baseDraw()
 
 void Scene::pause()
 {
-  mTimer.stop();
+  _timer.stop();
   mUpdateConnection.block();
 }
 
 void Scene::resume()
 {
   mUpdateConnection.resume();
-  mTimer.start();
+  _timer.start();
 }
 
 void Scene::show( const app::WindowRef &window, bool useWindowBounds )

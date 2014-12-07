@@ -34,8 +34,8 @@ using namespace std;
 void SlideAndBounce::setup()
 {
 
-  // Create a procedural phrase that moves on a sine wave.
-  // Procedural phrases can run any function you like.
+  // Create a procedural phrase that moves vertically on a sine wave.
+  // Procedural phrases can evaluate any function you like.
   PhraseRef<vec2> bounce = makeProcedure<vec2>( 2.0, [] ( Time t, Time duration ) {
     return vec2( 0, sin( easeInOutQuad(t) * 6 * M_PI ) * 100.0f );
   } );
@@ -49,20 +49,21 @@ void SlideAndBounce::setup()
   // Combine the slide and bounce phrases using an AccumulatePhrase.
   // By default, the accumulation operation sums all the phrase values with an initial value.
   float center_y = app::getWindowHeight() / 2.0f;
-  PhraseRef<vec2> combined = makeAccumulator( vec2( 0, center_y ), bounce, slide );
+  PhraseRef<vec2> bounce_and_slide = makeAccumulator( vec2( 0, center_y ), bounce, slide );
 
   // Provide an explicit combine function.
   // In this case, we subtract each value from the initial value.
-  PhraseRef<vec2> combined_explicit = makeAccumulator( vec2( w, center_y ), bounce, slide, [] (const vec2 &a, const vec2 &b) {
+  PhraseRef<vec2> bounce_and_slide_negative = makeAccumulator( vec2( w, center_y ), bounce, slide, [] (const vec2 &a, const vec2 &b) {
     return a - b;
   } );
 
-  timeline().apply( &_position_a, combined );
-  timeline().apply( &_position_b, combined_explicit );
+  // Apply our Sequences to Outputs.
+  timeline().apply( &_position_a, bounce_and_slide );
+  timeline().apply( &_position_b, bounce_and_slide_negative );
   timeline().apply( &_reference_bounce, bounce );
   timeline().apply( &_reference_slide, slide );
 
-  // place things at initial timelined values.
+  // Place Outputs at initial sequence values.
   timeline().jumpTo( 0 );
 }
 

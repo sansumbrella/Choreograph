@@ -43,17 +43,17 @@ class ConnectionManager
 {
 public:
   ConnectionManager() = default;
-  //! disconnects all stored connections
+  /// disconnects all stored connections
   ~ConnectionManager();
-  //! store a signal in manager
+  /// store a signal in manager
   inline void store( const ci::signals::connection &connection )
   { mConnections.push_back( connection ); }
-  //! disconnect all stored connections permanently
-  //! use block to temporarily block connections
+  /// disconnect all stored connections permanently
+  /// use block to temporarily block connections
   void        disconnect();
-  //! temporarily stop receiving signals
+  /// temporarily stop receiving signals
   void        block();
-  //! resume receiving blocked signals
+  /// resume receiving blocked signals
   void        resume();
 private:
   std::vector<ci::signals::connection>              mConnections;
