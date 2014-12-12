@@ -36,6 +36,11 @@ template<typename T> class Motion;
 /// Safe type for Choreograph outputs.
 /// Disconnects applied Motion on destruction so you don't accidentally modify stale pointers.
 ///
+/// Output is a move-only type. To pass it around, do the following:
+/// Output<T> new_output = std::move( previous_output );
+/// This avoids ambiguity around what copying would mean, and since the STL is move-aware,
+/// std::vectors of Outputs (or types containing them) just work.
+///
 template<typename T>
 class Output
 {
