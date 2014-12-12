@@ -12,7 +12,6 @@
 		00A66A361965AC8800B17EB3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00A66A351965AC8800B17EB3 /* Accelerate.framework */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		151E374919EC25E4009C943E /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E373119EC25E4009C943E /* Cue.cpp */; };
-		151E374A19EC25E4009C943E /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E373619EC25E4009C943E /* Motion.cpp */; };
 		151E374B19EC25E4009C943E /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E374419EC25E4009C943E /* Timeline.cpp */; };
 		151E374C19EC25E4009C943E /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E374619EC25E4009C943E /* TimelineItem.cpp */; };
 		155F881A1A34D7EA009A05E3 /* ButtonBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88041A34D7EA009A05E3 /* ButtonBase.cpp */; };
@@ -58,8 +57,6 @@
 		151E373219EC25E4009C943E /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
 		151E373419EC25E4009C943E /* VectorManipulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VectorManipulation.hpp; sourceTree = "<group>"; };
 		151E373519EC25E4009C943E /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
-		151E373619EC25E4009C943E /* Motion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Motion.cpp; sourceTree = "<group>"; };
-		151E373719EC25E4009C943E /* Motion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Motion.h; sourceTree = "<group>"; };
 		151E373819EC25E4009C943E /* Output.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Output.hpp; sourceTree = "<group>"; };
 		151E373A19EC25E4009C943E /* Combine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Combine.hpp; sourceTree = "<group>"; };
 		151E373B19EC25E4009C943E /* Hold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hold.hpp; sourceTree = "<group>"; };
@@ -210,8 +207,6 @@
 				151E373219EC25E4009C943E /* Cue.h */,
 				151E373319EC25E4009C943E /* detail */,
 				151E373519EC25E4009C943E /* Easing.h */,
-				151E373619EC25E4009C943E /* Motion.cpp */,
-				151E373719EC25E4009C943E /* Motion.h */,
 				151E373819EC25E4009C943E /* Output.hpp */,
 				151E373919EC25E4009C943E /* phrase */,
 				151E374019EC25E4009C943E /* Phrase.hpp */,
@@ -437,7 +432,6 @@
 				155F881D1A34D7EA009A05E3 /* RootNode.cpp in Sources */,
 				159FB4ED1A227975004FE9C1 /* BezierConstruction.cpp in Sources */,
 				155F88261A34D808009A05E3 /* MotionGroup.cpp in Sources */,
-				151E374A19EC25E4009C943E /* Motion.cpp in Sources */,
 				155F881A1A34D7EA009A05E3 /* ButtonBase.cpp in Sources */,
 				151E374919EC25E4009C943E /* Cue.cpp in Sources */,
 				159FB4EF1A227975004FE9C1 /* Repetition.cpp in Sources */,

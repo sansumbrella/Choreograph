@@ -31,12 +31,12 @@
 
 using namespace choreograph;
 
-Timeline::Timeline( Timeline &&rhs ):
-_default_remove_on_finish( std::move( rhs._default_remove_on_finish ) ),
+Timeline::Timeline( Timeline &&rhs )
+: _default_remove_on_finish( std::move( rhs._default_remove_on_finish ) ),
 _items( std::move( rhs._items ) ),
 _queue( std::move( rhs._queue ) ),
-_finish_fn( std::move( rhs._finish_fn ) ),
-_updating( std::move( rhs._updating ) )
+_updating( std::move( rhs._updating ) ),
+_finish_fn( std::move( rhs._finish_fn ) )
 {}
 
 void Timeline::removeFinishedAndInvalidMotions()
@@ -113,9 +113,19 @@ void Timeline::processQueue()
   _queue.clear();
 }
 
-void Timeline::remove( void *output )
+void Timeline::cancel( void *output )
 {
-  detail::erase_if( &_items, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
+  for( auto &item : _items ) {
+    if( item->getTarget() == output ) {
+      item->cancel();
+    }
+  }
+
+  for( auto &item : _queue ) {
+    if( item->getTarget() == output ) {
+      item->cancel();
+    }
+  }
 }
 
 void Timeline::add( TimelineItemUniqueRef item )

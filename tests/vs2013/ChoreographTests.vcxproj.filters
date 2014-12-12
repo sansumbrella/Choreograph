@@ -24,9 +24,6 @@
     <ClCompile Include="..\..\src\choreograph\Cue.cpp">
       <Filter>Source Files\choreograph</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
-      <Filter>Source Files\choreograph</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
       <Filter>Source Files\choreograph</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp">
-      <Filter>Source Files\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Motion.h">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Output.hpp">

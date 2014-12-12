@@ -38,15 +38,19 @@ namespace choreograph
 
 ///
 /// Choreograph uses float to measure Time by default.
-/// We use an alias so it's easier to change out if needed.
-/// Float loses precision pretty quickly, but is fast and doesn't take up much space.
-/// Double works nicely when adding together lots of little bits or if you need long sequences (over 8 hours).
-/// To use double for time instead, #define CHOREOGRAPH_USE_DOUBLE_TIME before any inclusion of Choreograph.
+/// This is set up as an alias so it's easier to change out if needed.
+/// Floats lose precision pretty quickly, but they're fast and don't take up much space.
 ///
-#if defined( CHOREOGRAPH_USE_DOUBLE_TIME )
-  using Time = double;
-#else
+/// To use a different type for choreograph::Time, define CHOREOGRAPH_TIME_TYPE
+/// before including Choreograph in your program.
+///
+/// For example, the following definition would cause Choreograph to use double throughout:
+/// #define CHOREOGRAPH_TIME_TYPE double
+///
+#if ! defined( CHOREOGRAPH_TIME_TYPE )
   using Time = float;
+#else
+  using Time = CHOREOGRAPH_TIME_TYPE;
 #endif
 
 /// Wrap \a time past \a duration around \a inflectionPoint.

@@ -66,9 +66,9 @@ public:
     _initial_value( value )
   {}
 
-  /// Construct a Sequence with and initial \a value.
+  /// Construct a Sequence with an initial \a value.
   explicit Sequence( T &&value ):
-    _initial_value( std::forward<T>( value ) )
+    _initial_value( std::move( value ) )
   {}
 
   // Default copy and move assignment and construction work fine.

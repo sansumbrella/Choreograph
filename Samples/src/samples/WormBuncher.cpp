@@ -36,7 +36,7 @@ void WormBuncher::setup()
   const int count = 64;
   Sequence<quat> spin{ quat() };
   // would be easier as a floating point angle
-  spin.then<RampTo>( glm::angleAxis<float>( M_PI / 2, vec3( 0, 1, 0 ) ), 0.5f )
+  spin.then<RampTo>( glm::angleAxis<float>( M_PI / 2.0f, vec3( 0, 1, 0 ) ), 0.5f )
     .then<RampTo>( glm::angleAxis<float>( M_PI, vec3( 0, 1, 0 ) ), 0.5f )
     .then<RampTo>( glm::angleAxis<float>( M_PI * 3 / 2, vec3( 0, 1, 0 ) ), 0.5f )
     .then<RampTo>( glm::angleAxis<float>( 0, vec3( 0, 1, 0 ) ), 0.5f );

@@ -42,9 +42,6 @@
     <ClCompile Include="..\..\src\choreograph\Cue.cpp">
       <Filter>Blocks\Choreograph</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\choreograph\Motion.cpp">
-      <Filter>Blocks\Choreograph</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
       <Filter>Blocks\Choreograph</Filter>
     </ClCompile>
@@ -114,9 +111,6 @@
       <Filter>Blocks\Choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Easing.h">
-      <Filter>Blocks\Choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\Motion.h">
       <Filter>Blocks\Choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\Output.hpp">

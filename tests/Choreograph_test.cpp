@@ -5,7 +5,8 @@
 #include <array>
 
 // If true, will test vec2 and vec3 animation.
-#define INCLUDE_CINDER_HEADERS 1
+// You must have GLM in the search path for this to work.
+#define TEST_WITH_GLM_VECTORS 1
 
 using namespace std;
 using namespace choreograph;
@@ -887,11 +888,13 @@ TEST_CASE( "Time and Infinity" )
 // Separate Component Interpolation (with glm::vec types)
 //========================================================
 
-#if INCLUDE_CINDER_HEADERS
+#if TEST_WITH_GLM_VECTORS
 
-#include "cinder/Vector.h"
+#include "glm/glm.hpp"
 #include <array>
-using namespace cinder;
+using vec2 = glm::vec2;
+using vec3 = glm::vec3;
+using vec4 = glm::vec4;
 
 TEST_CASE( "Separate component interpolation", "[sequence]" )
 {
