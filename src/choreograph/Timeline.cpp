@@ -105,9 +105,19 @@ void Timeline::processQueue()
   _queue.clear();
 }
 
-void Timeline::remove( void *output )
+void Timeline::cancel( void *output )
 {
-  detail::erase_if( &_items, [=] (const TimelineItemUniqueRef &m) { return m->getTarget() == output; } );
+  for( auto &item : _items ) {
+    if( item->getTarget() == output ) {
+      item->cancel();
+    }
+  }
+
+  for( auto &item : _queue ) {
+    if( item->getTarget() == output ) {
+      item->cancel();
+    }
+  }
 }
 
 void Timeline::add( TimelineItemUniqueRef item )

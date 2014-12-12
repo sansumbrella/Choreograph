@@ -35,8 +35,9 @@ namespace choreograph
 ///
 /// Timeline holds a collection of TimelineItems and updates them through time.
 /// TimelineItems include Motions and Cues.
-/// Motions can be cancelled by disconnecting their Output<T>.
-/// Cues can be cancelled by using their control object.
+///
+/// TimelineItems can be canceled using a control object retrieved from TimelineOptions.
+/// Additionally, Motions can be cancelled by disconnecting their Output<T>.
 /// Public methods are safe to call from cues and motion callbacks unless otherwise noted.
 ///
 /// Timelines are move-only because they contain unique_ptrs.
@@ -183,9 +184,9 @@ private:
   template<typename T>
   Motion<T>* find( T *output ) const;
 
-  /// Remove motion associated with specific output. Do not call from Callbacks.
-  /// Used internally for raw pointer animation.
-  void remove( void *output );
+  /// Remove motion associated with specific output.
+  /// Used internally to manage raw pointer animation.
+  void cancel( void *output );
 };
 
 //=================================================
@@ -239,7 +240,7 @@ template<typename T>
 MotionOptions<T> Timeline::applyRaw( T *output )
 { // Remove any existing motions that affect the same variable.
   // This is a raw pointer, so we don't know about any prior relationships.
-  remove( output );
+  cancel( output );
 
   auto motion = std::make_unique<Motion<T>>( output );
 
@@ -252,7 +253,7 @@ MotionOptions<T> Timeline::applyRaw( T *output )
 template<typename T>
 MotionOptions<T> Timeline::applyRaw( T *output, const Sequence<T> &sequence )
 { // Remove any existing motions that affect the same variable.
-  remove( output );
+  cancel( output );
   auto motion = std::make_unique<Motion<T>>( output, sequence );
 
   auto &m = *motion;
