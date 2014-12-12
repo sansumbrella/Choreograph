@@ -16,7 +16,6 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		150037FD19E82B4E00960760 /* SlideAndBounce.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 150037FB19E82B4E00960760 /* SlideAndBounce.cpp */; };
 		151E372A19EC258D009C943E /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E371219EC258D009C943E /* Cue.cpp */; };
-		151E372B19EC258D009C943E /* Motion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E371719EC258D009C943E /* Motion.cpp */; };
 		151E372C19EC258D009C943E /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E372519EC258D009C943E /* Timeline.cpp */; };
 		151E372D19EC258D009C943E /* TimelineItem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E372719EC258D009C943E /* TimelineItem.cpp */; };
 		15362C5919D8D97C006BFAF1 /* ConnectionManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15362C5419D8D97C006BFAF1 /* ConnectionManager.cpp */; };
@@ -58,8 +57,6 @@
 		151E371319EC258D009C943E /* Cue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cue.h; sourceTree = "<group>"; };
 		151E371519EC258D009C943E /* VectorManipulation.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = VectorManipulation.hpp; sourceTree = "<group>"; };
 		151E371619EC258D009C943E /* Easing.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Easing.h; sourceTree = "<group>"; };
-		151E371719EC258D009C943E /* Motion.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Motion.cpp; sourceTree = "<group>"; };
-		151E371819EC258D009C943E /* Motion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Motion.h; sourceTree = "<group>"; };
 		151E371919EC258D009C943E /* Output.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Output.hpp; sourceTree = "<group>"; };
 		151E371B19EC258D009C943E /* Combine.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Combine.hpp; sourceTree = "<group>"; };
 		151E371C19EC258D009C943E /* Hold.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Hold.hpp; sourceTree = "<group>"; };
@@ -193,8 +190,6 @@
 				151E371319EC258D009C943E /* Cue.h */,
 				151E371419EC258D009C943E /* detail */,
 				151E371619EC258D009C943E /* Easing.h */,
-				151E371719EC258D009C943E /* Motion.cpp */,
-				151E371819EC258D009C943E /* Motion.h */,
 				151E371919EC258D009C943E /* Output.hpp */,
 				151E371A19EC258D009C943E /* phrase */,
 				151E372119EC258D009C943E /* Phrase.hpp */,
@@ -441,7 +436,6 @@
 				1590BDD41A28D88400B60050 /* MotionGroup.cpp in Sources */,
 				155F87F81A34D53A009A05E3 /* Node.cpp in Sources */,
 				15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */,
-				151E372B19EC258D009C943E /* Motion.cpp in Sources */,
 				155F87FA1A34D53A009A05E3 /* RootNode.cpp in Sources */,
 				155F87FD1A34D53A009A05E3 /* TextureNode.cpp in Sources */,
 				150037FD19E82B4E00960760 /* SlideAndBounce.cpp in Sources */,
