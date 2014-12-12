@@ -186,14 +186,11 @@ private:
 /// Cues can be cancelled by using their control object.
 /// Public methods are safe to call from cues and motion callbacks unless otherwise noted.
 ///
-/// Timelines are move-only types because they contain unique_ptrs.
+/// Timelines are move-only because they contain unique_ptrs.
 ///
 class Timeline
 {
 public:
-  Timeline() = default;
-  Timeline( const Timeline &rhs ) = delete;
-  Timeline( Timeline &&rhs );
   //=================================================
   // Creating Motions. Output<T>* Versions
   //=================================================

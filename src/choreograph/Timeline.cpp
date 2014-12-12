@@ -31,14 +31,6 @@
 
 using namespace choreograph;
 
-Timeline::Timeline( Timeline &&rhs ):
-_default_remove_on_finish( std::move( rhs._default_remove_on_finish ) ),
-_items( std::move( rhs._items ) ),
-_queue( std::move( rhs._queue ) ),
-_finish_fn( std::move( rhs._finish_fn ) ),
-_updating( std::move( rhs._updating ) )
-{}
-
 void Timeline::removeFinishedAndInvalidMotions()
 {
   detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->cancelled(); } );
