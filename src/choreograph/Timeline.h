@@ -45,6 +45,9 @@ namespace choreograph
 class Timeline
 {
 public:
+  Timeline() = default;
+  /// VS2013 requires us to define the default move constructor.
+  Timeline( Timeline &&rhs );
   //=================================================
   // Creating Motions. Output<T>* Versions
   //=================================================
