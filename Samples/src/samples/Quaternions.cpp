@@ -63,7 +63,7 @@ void Quaternions::rotateMore( ch::MotionOptions<ci::quat> &options )
     axis = vec3( 0, 0, 1 );
   }
 
-  quat step = glm::angleAxis<float>( M_PI / 2, axis );
+  quat step = glm::angleAxis<float>( M_PI / 2.0f, axis );
   quat target = end * step;
 
   options.then<RampTo>( normalize( target ), 0.5f, EaseOutQuad() );
