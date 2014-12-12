@@ -27,41 +27,10 @@
 
 #pragma once
 
-#include <cmath>
-#include <memory>
-#include <functional>
-#include <vector>
-#include <array>
-
-namespace choreograph
+class TimelineOptions
 {
-
-///
-/// Choreograph uses float to measure Time by default.
-/// This is set up as an alias so it's easier to change out if needed.
-/// Floats lose precision pretty quickly, but they're fast and don't take up much space.
-///
-/// To use a different type for choreograph::Time, define CHOREOGRAPH_TIME_TYPE
-/// before including Choreograph in your program.
-///
-/// For example, the following definition would cause Choreograph to use double throughout:
-/// #define CHOREOGRAPH_TIME_TYPE double
-///
-#if ! defined( CHOREOGRAPH_TIME_TYPE )
-  using Time = float;
-#else
-  using Time = CHOREOGRAPH_TIME_TYPE;
-#endif
-
-/// Wrap \a time past \a duration around \a inflectionPoint.
-inline Time wrapTime( Time time, Time duration, Time inflectionPoint=0.0f )
-{
-  if( time > duration ) {
-    return inflectionPoint + std::fmod( time, duration - inflectionPoint );
-  }
-  else {
-    return time;
-  }
-}
-
-} // namespace choreograph
+public:
+  TimelineOptions();
+  ~TimelineOptions();
+private:
+};
