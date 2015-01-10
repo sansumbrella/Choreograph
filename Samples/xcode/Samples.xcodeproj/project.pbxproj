@@ -24,7 +24,6 @@
 		15362C6519D8EB5D006BFAF1 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 3839DB7C4CB047F2BC061C67 /* CinderApp.icns */; };
 		155F87F71A34D53A009A05E3 /* ButtonBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F87E71A34D53A009A05E3 /* ButtonBase.cpp */; };
 		155F87F81A34D53A009A05E3 /* Node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F87EA1A34D53A009A05E3 /* Node.cpp */; };
-		155F87F91A34D53A009A05E3 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = 155F87EC1A34D53A009A05E3 /* README.md */; };
 		155F87FA1A34D53A009A05E3 /* RootNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F87ED1A34D53A009A05E3 /* RootNode.cpp */; };
 		155F87FC1A34D53A009A05E3 /* SimpleButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F87F11A34D53A009A05E3 /* SimpleButton.cpp */; };
 		155F87FD1A34D53A009A05E3 /* TextureNode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F87F31A34D53A009A05E3 /* TextureNode.cpp */; };
@@ -85,7 +84,6 @@
 		155F87E91A34D53A009A05E3 /* CobWeb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CobWeb.h; sourceTree = "<group>"; };
 		155F87EA1A34D53A009A05E3 /* Node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Node.cpp; sourceTree = "<group>"; };
 		155F87EB1A34D53A009A05E3 /* Node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Node.h; sourceTree = "<group>"; };
-		155F87EC1A34D53A009A05E3 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		155F87ED1A34D53A009A05E3 /* RootNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = RootNode.cpp; sourceTree = "<group>"; };
 		155F87EE1A34D53A009A05E3 /* RootNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RootNode.h; sourceTree = "<group>"; };
 		155F87F11A34D53A009A05E3 /* SimpleButton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SimpleButton.cpp; sourceTree = "<group>"; };
@@ -277,7 +275,6 @@
 				155F87E91A34D53A009A05E3 /* CobWeb.h */,
 				155F87EA1A34D53A009A05E3 /* Node.cpp */,
 				155F87EB1A34D53A009A05E3 /* Node.h */,
-				155F87EC1A34D53A009A05E3 /* README.md */,
 				155F87ED1A34D53A009A05E3 /* RootNode.cpp */,
 				155F87EE1A34D53A009A05E3 /* RootNode.h */,
 				155F87F11A34D53A009A05E3 /* SimpleButton.cpp */,
@@ -429,7 +426,6 @@
 				155F87F71A34D53A009A05E3 /* ButtonBase.cpp in Sources */,
 				15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */,
 				155F87FE1A34D53A009A05E3 /* TypeNode.cpp in Sources */,
-				155F87F91A34D53A009A05E3 /* README.md in Sources */,
 				151E372C19EC258D009C943E /* Timeline.cpp in Sources */,
 				155F88011A34D56C009A05E3 /* Locus.cpp in Sources */,
 				15362C5919D8D97C006BFAF1 /* ConnectionManager.cpp in Sources */,

@@ -69,8 +69,8 @@ void BezierConstruction::setup()
       _segments.clear();
       _segments.push_back( _curve_points[0] );
     } )
-    .updateFn( [this] ( vec2 &pos ) {
-      _segments.push_back( pos );
+    .updateFn( [this] ( Motion<vec2> &m ) {
+      _segments.push_back( m.getCurrentValue() );
     } );
 
   // When all our animations finish, cue the group to restart after a delay.
