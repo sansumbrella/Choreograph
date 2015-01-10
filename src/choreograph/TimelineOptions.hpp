@@ -102,7 +102,7 @@ public:
   SelfT& startFn( const MotionCallback &fn ) { _motion.setStartFn( fn ); return *this; }
 
   /// Set function to be called when Motion updates. Receives current target value.
-  SelfT& updateFn( const typename Motion<T>::DataCallback &fn ) { _motion.setUpdateFn( fn ); return *this; }
+  SelfT& updateFn( const typename Motion<T>::Callback &fn ) { _motion.setUpdateFn( fn ); return *this; }
 
   /// Set function to be called when Motion finishes. Receives reference to motion.
   SelfT& finishFn( const MotionCallback &fn ) { _motion.setFinishFn( fn ); return *this; }

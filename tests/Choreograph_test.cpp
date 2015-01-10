@@ -266,7 +266,7 @@ TEST_CASE( "Motion Groups" )
       .startFn( [&start_count] (Motion<int> &m) {
         start_count += 1;
       } )
-      .updateFn( [&update_count] (int &value) {
+      .updateFn( [&update_count] (Motion<int> &m) {
         update_count += 1;
       } )
       .finishFn( [&finish_count] (Motion<int> &m) {
@@ -642,7 +642,7 @@ TEST_CASE( "Callbacks" )
     float         updateTarget = 0;
 
     options.startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
-      .updateFn( [&updateTarget, &updateCount] ( float value ) { updateTarget = value / 2.0f; updateCount++; } )
+      .updateFn( [&updateTarget, &target, &updateCount] ( Motion<float> &m ) { updateTarget = target() / 2.0f; updateCount++; } )
       .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
 
     const float step = timeline.timeUntilFinish() / 10.0f;

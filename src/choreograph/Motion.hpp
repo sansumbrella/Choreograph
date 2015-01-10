@@ -52,7 +52,6 @@ class Motion : public TimelineItem
 public:
   using MotionT       = Motion<T>;
   using SequenceT     = Sequence<T>;
-  using DataCallback  = std::function<void (T&)>;
   using Callback      = std::function<void (MotionT&)>;
 
   Motion() = delete;
@@ -96,6 +95,9 @@ public:
 
   const void* getTarget() const final override { return _target; }
 
+  /// Returns the current value of the target.
+  T getCurrentValue() const { return *_target; }
+
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   void setFinishFn( const Callback &c ) { _finish_fn = c; }
 
@@ -107,7 +109,7 @@ public:
 
   /// Set a function to be called at each update step of the sequence.
   /// Function will be called immediately after setting the target value.
-  void setUpdateFn( const DataCallback &c ) { _update_fn = c; }
+  void setUpdateFn( const Callback &c ) { _update_fn = c; }
 
   /// Update the connected target with the current sequence value.
   /// Calls start/update/finish functions as appropriate if assigned.
@@ -128,7 +130,7 @@ private:
 
   Callback        _finish_fn;
   Callback        _start_fn;
-  DataCallback    _update_fn;
+  Callback        _update_fn;
   std::vector<std::pair<int, Callback>>  _inflection_callbacks;
 
   /// Sets the output to a different output.
@@ -177,7 +179,7 @@ void Motion<T>::update()
 
   if( _update_fn )
   {
-    _update_fn( *_target );
+    _update_fn( *this );
   }
 
   if( _finish_fn )
