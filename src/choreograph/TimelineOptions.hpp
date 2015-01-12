@@ -41,10 +41,10 @@ class Timeline;
 /// Do not store the TimelineOptions object, as it contains a non-owning reference.
 ///
 template<typename Derived>
-class TimelineOptions
+class TimelineOptionsBase
 {
 public:
-  TimelineOptions( TimelineItem &item ):
+  TimelineOptionsBase( TimelineItem &item ):
   _item( item )
   {}
 
@@ -81,14 +81,14 @@ private:
 /// Do not store the MotionOptions object, as it contains non-owning references.
 ///
 template<typename T>
-class MotionOptions : public TimelineOptions<MotionOptions<T>>
+class MotionOptions : public TimelineOptionsBase<MotionOptions<T>>
 {
 public:
   using SelfT = MotionOptions<T>;
   using MotionCallback = typename Motion<T>::Callback;
 
   MotionOptions( Motion<T> &motion, Sequence<T> &sequence, const Timeline &timeline ):
-  TimelineOptions<MotionOptions<T>>( motion ),
+  TimelineOptionsBase<MotionOptions<T>>( motion ),
   _motion( motion ),
   _sequence( sequence ),
   _timeline( timeline )
@@ -160,20 +160,14 @@ private:
 };
 
 ///
-/// CueOptions provide a facade for manipulating a timeline Cue.
-/// Non-get* methods return a reference back to the CueOptions object for chaining.
-/// Do not store the CueOptions object, as it contains a non-owning reference.
+/// TimelineOptions with no additional behaviors beyond base.
+/// Returned when creating cues.
+/// Do not store the TimelineOptions object, as it contains a non-owning reference.
 ///
-class CueOptions : public TimelineOptions<CueOptions>
+class TimelineOptions : public TimelineOptionsBase<TimelineOptions>
 {
 public:
-  explicit CueOptions( Cue &cue ):
-  TimelineOptions<CueOptions>( cue ),
-  _cue( cue )
-  {}
-
-private:
-  Cue  &_cue;
+	using TimelineOptionsBase<TimelineOptions>::TimelineOptionsBase;
 };
 
 } // namespace choreograph

@@ -145,10 +145,10 @@ void Timeline::add( Timeline &&timeline )
   add( std::move( std::make_unique<MotionGroup>( std::move( timeline ) ) ) );
 }
 
-CueOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
+TimelineOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
   auto cue = std::make_unique<Cue>( fn, delay );
-  CueOptions options( *cue );
+  TimelineOptions options( *cue );
 
   add( std::move( cue ) );
 
