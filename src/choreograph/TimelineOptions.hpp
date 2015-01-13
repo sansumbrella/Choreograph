@@ -76,6 +76,17 @@ private:
 };
 
 ///
+/// TimelineOptions with no additional behaviors beyond base.
+/// Returned when creating cues.
+/// Do not store the TimelineOptions object, as it contains a non-owning reference.
+///
+class TimelineOptions : public TimelineOptionsBase<TimelineOptions>
+{
+public:
+	using TimelineOptionsBase<TimelineOptions>::TimelineOptionsBase;
+};
+
+///
 /// MotionOptions provide a temporary facade for manipulating a timeline Motion and its underlying Sequence.
 /// All methods return a reference back to the MotionOptions object for chaining.
 /// Do not store the MotionOptions object, as it contains non-owning references.
@@ -157,17 +168,6 @@ private:
   Motion<T>       &_motion;
   Sequence<T>     &_sequence;
   const Timeline  &_timeline;
-};
-
-///
-/// TimelineOptions with no additional behaviors beyond base.
-/// Returned when creating cues.
-/// Do not store the TimelineOptions object, as it contains a non-owning reference.
-///
-class TimelineOptions : public TimelineOptionsBase<TimelineOptions>
-{
-public:
-	using TimelineOptionsBase<TimelineOptions>::TimelineOptionsBase;
 };
 
 } // namespace choreograph

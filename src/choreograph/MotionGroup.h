@@ -77,4 +77,27 @@ private:
   Callback  _update_fn;
 };
 
+class MotionGroupOptions : public TimelineOptionsBase<MotionGroupOptions>
+{
+public:
+	using Callback = MotionGroup::Callback;
+
+	MotionGroupOptions( MotionGroup &group ):
+	TimelineOptionsBase<MotionGroupOptions>( group ),
+	_group( group )
+	{}
+
+	/// Set function to be called when Motion starts. Receives reference to motion.
+	MotionGroupOptions& startFn( const Callback &fn ) { _group.setStartFn( fn ); return *this; }
+
+	/// Set function to be called when Motion updates. Receives current target value.
+	MotionGroupOptions& updateFn( const Callback &fn ) { _group.setUpdateFn( fn ); return *this; }
+
+	/// Set function to be called when Motion finishes. Receives reference to motion.
+	MotionGroupOptions& finishFn( const Callback &fn ) { _group.setFinishFn( fn ); return *this; }
+
+private:
+	MotionGroup &_group;
+};
+
 } // namespace choreograph
