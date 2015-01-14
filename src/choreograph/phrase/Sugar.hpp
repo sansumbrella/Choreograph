@@ -88,8 +88,10 @@ inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_va
     return std::make_shared<AccumulatePhrase<T>>( initial_value, a, b, fn );
 }
 
+/// Create an AccumulatedPhrase that sums a phrase with an initial value.
+/// You can change the reduce function after creation; providing it as a function parameter caused ambiguity for VS2013.
 template<typename T>
-inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_value, const PhraseRef<T> &a, const typename AccumulatePhrase<T>::CombineFunction &fn = &AccumulatePhrase<T>::sum, Time duration=0 )
+inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_value, const PhraseRef<T> &a, Time duration=0 )
 {
 if( duration > 0 )
   return std::make_shared<AccumulatePhrase<T>>( duration, initial_value, a, fn );

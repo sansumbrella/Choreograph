@@ -98,7 +98,7 @@ public:
 
   AccumulatePhrase( const T &initial_value, const PhraseRef<T> &phrase, const CombineFunction &fn = sum ):
     Phrase<T>( phrase->getDuration() ),
-    _reduceFn( fn ),
+    _reduce_fn( fn ),
     _initial_value( initial_value )
   {
     add( phrase );
@@ -107,7 +107,7 @@ public:
   // Sequence::then-friendly constructor.
   AccumulatePhrase( Time duration, const T &initial_value, const PhraseRef<T> &phrase, const CombineFunction &fn = sum ):
     Phrase<T>( duration ),
-    _reduceFn( fn ),
+    _reduce_fn( fn ),
     _initial_value( initial_value )
   {
     add( phrase );
@@ -115,7 +115,7 @@ public:
 
   AccumulatePhrase( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const CombineFunction &fn = sum ):
     Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
-    _reduceFn( fn ),
+    _reduce_fn( fn ),
     _initial_value( initial_value )
   {
     add( a, b );
@@ -124,7 +124,7 @@ public:
   // Sequence::then-friendly constructor.
   AccumulatePhrase( Time duration, const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const CombineFunction &fn = sum ):
     Phrase<T>( duration ),
-    _reduceFn( fn ),
+    _reduce_fn( fn ),
     _initial_value( initial_value )
   {
     add( a, b );
@@ -144,11 +144,14 @@ public:
     add( std::forward<Args>( args )... );
   }
 
+  /// Set the function used to reduce inputs to a single value.
+  void setReduceFn( const CombineFunction &fn ) { _reduce_fn = fn; }
+
   T getValue( Time atTime ) const override
   {
     T value = _initial_value;
     for( const auto &source : _sources ) {
-      value = _reduceFn( value, source->getValue( atTime ) );
+      value = _reduce_fn( value, source->getValue( atTime ) );
     }
     return value;
   }
@@ -160,7 +163,7 @@ public:
 
 private:
   // Function to apply to values.
-  CombineFunction           _reduceFn;
+  CombineFunction           _reduce_fn;
   // Phrases to reduce.
   std::vector<PhraseRef<T>> _sources;
   T                         _initial_value;
