@@ -78,22 +78,22 @@ public:
   Output<T>& operator+= ( T value ) { _value += value; return *this; }
 
   /// Returns value of output.
-  const T& 	value() const { return _value; }
+  const T&   value() const { return _value; }
 
   /// Returns value of output.
-  const T& 	operator() () const { return _value; }
+  const T&   operator() () const { return _value; }
 
   /// Returns value of output for manipulating.
-  T&				operator() () { return _value; }
+  T&        operator() () { return _value; }
 
   /// Enable cast to value type.
-  operator const T&()	{ return _value; }
+  operator const T&()  { return _value; }
 
   /// Returns pointer to value.
-  const T* 	valuePtr() const { return &_value; }
+  const T*   valuePtr() const { return &_value; }
 
   /// Returns pointer to value.
-  T*				valuePtr() { return &_value; }
+  T*        valuePtr() { return &_value; }
 
   Motion<T>*  inputPtr() { return _input; }
 

@@ -90,11 +90,11 @@ void Timeline::postUpdate()
 
 Time Timeline::timeUntilFinish() const
 {
-	Time end = 0;
-	for( auto &item : _items ) {
-		end = std::max( end, item->getTimeUntilFinish() );
-	}
-	return end;
+  Time end = 0;
+  for( auto &item : _items ) {
+    end = std::max( end, item->getTimeUntilFinish() );
+  }
+  return end;
 }
 
 Time Timeline::getDuration() const

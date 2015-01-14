@@ -96,22 +96,22 @@ class AccumulatePhrase : public Phrase<T>
 public:
   using CombineFunction = std::function<T (const T&, const T&)>;
 
-	AccumulatePhrase( const T &initial_value, const PhraseRef<T> &phrase, const CombineFunction &fn = sum ):
-		Phrase<T>( phrase->getDuration() ),
-		_reduceFn( fn ),
-		_initial_value( initial_value )
-	{
-		add( phrase );
-	}
+  AccumulatePhrase( const T &initial_value, const PhraseRef<T> &phrase, const CombineFunction &fn = sum ):
+    Phrase<T>( phrase->getDuration() ),
+    _reduceFn( fn ),
+    _initial_value( initial_value )
+  {
+    add( phrase );
+  }
 
-	// Sequence::then-friendly constructor.
-	AccumulatePhrase( Time duration, const T &initial_value, const PhraseRef<T> &phrase, const CombineFunction &fn = sum ):
-		Phrase<T>( duration ),
-		_reduceFn( fn ),
-		_initial_value( initial_value )
-	{
-		add( phrase );
-	}
+  // Sequence::then-friendly constructor.
+  AccumulatePhrase( Time duration, const T &initial_value, const PhraseRef<T> &phrase, const CombineFunction &fn = sum ):
+    Phrase<T>( duration ),
+    _reduceFn( fn ),
+    _initial_value( initial_value )
+  {
+    add( phrase );
+  }
 
   AccumulatePhrase( const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const CombineFunction &fn = sum ):
     Phrase<T>( std::max( a->getDuration(), b->getDuration() ) ),
@@ -121,7 +121,7 @@ public:
     add( a, b );
   }
 
-	// Sequence::then-friendly constructor.
+  // Sequence::then-friendly constructor.
   AccumulatePhrase( Time duration, const T &initial_value, const PhraseRef<T> &a, const PhraseRef<T> &b, const CombineFunction &fn = sum ):
     Phrase<T>( duration ),
     _reduceFn( fn ),

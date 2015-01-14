@@ -92,9 +92,9 @@ template<typename T>
 inline std::shared_ptr<AccumulatePhrase<T>> makeAccumulator( const T &initial_value, const PhraseRef<T> &a, const typename AccumulatePhrase<T>::CombineFunction &fn = &AccumulatePhrase<T>::sum, Time duration=0 )
 {
 if( duration > 0 )
-	return std::make_shared<AccumulatePhrase<T>>( duration, initial_value, a, fn );
+  return std::make_shared<AccumulatePhrase<T>>( duration, initial_value, a, fn );
 else
-	return std::make_shared<AccumulatePhrase<T>>( initial_value, a, fn );
+  return std::make_shared<AccumulatePhrase<T>>( initial_value, a, fn );
 }
 
 ///

@@ -83,7 +83,7 @@ private:
 class TimelineOptions : public TimelineOptionsBase<TimelineOptions>
 {
 public:
-	using TimelineOptionsBase<TimelineOptions>::TimelineOptionsBase;
+  using TimelineOptionsBase<TimelineOptions>::TimelineOptionsBase;
 };
 
 ///

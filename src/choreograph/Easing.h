@@ -33,9 +33,9 @@
  the following conditions are met:
 
     * Redistributions of source code must retain the above copyright notice, this list of conditions and
-	the following disclaimer.
+  the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
-	the following disclaimer in the documentation and/or other materials provided with the distribution.
+  the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -57,9 +57,9 @@ All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-	* Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
-	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
-	* Neither the name of the author nor the names of contributors may be used to endorse or promote products derived from this software without specific prior written permission.
+  * Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+  * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  * Neither the name of the author nor the names of contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
@@ -78,7 +78,7 @@ const double PI = 3.14159265358979323846;
 //! Easing equation for a simple linear tweening with no easing.
 inline float easeNone( float t )
 {
-	return t;
+  return t;
 }
 
 //! Easing equation for a simple linear tweening with no easing. Functor edition.
@@ -91,7 +91,7 @@ struct EaseNone{ float operator()( float t ) const { return easeNone( t ); } };
 //! Easing equation for a quadratic (t^2) ease-in, accelerating from zero velocity.
 inline float easeInQuad( float t )
 {
-	return t*t;
+  return t*t;
 }
 
 //! Easing equation for a quadratic (t^2) ease-in, accelerating from zero velocity. Functor edition.
@@ -100,7 +100,7 @@ struct EaseInQuad{ float operator()( float t ) const { return easeInQuad( t ); }
 //! Easing equation for a quadratic (t^2) ease-out, decelerating to zero velocity.
 inline float easeOutQuad( float t )
 {
-	return -t * ( t - 2 );
+  return -t * ( t - 2 );
 }
 
 //! Easing equation for a quadratic (t^2) ease-out, decelerating to zero velocity. Functor edition.
@@ -109,11 +109,11 @@ struct EaseOutQuad{ float operator()( float t ) const { return easeOutQuad( t );
 //! Easing equation for a quadratic (t^2) ease-in/out, accelerating until halfway, then decelerating.
 inline float easeInOutQuad( float t )
 {
-	t *= 2;
-	if( t < 1 ) return 0.5f * t * t;
+  t *= 2;
+  if( t < 1 ) return 0.5f * t * t;
 
-	t -= 1;
-	return -0.5f * ((t)*(t-2) - 1);
+  t -= 1;
+  return -0.5f * ((t)*(t-2) - 1);
 }
 
 //! Easing equation for a quadratic (t^2) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
@@ -123,7 +123,7 @@ struct EaseInOutQuad{ float operator()( float t ) const { return easeInOutQuad( 
 inline float easeOutInQuad( float t )
 {
     if( t < 0.5f) return easeOutQuad( t*2 ) * 0.5f;
-	return easeInQuad( (2*t)-1 ) * 0.5f + 0.5f;
+  return easeInQuad( (2*t)-1 ) * 0.5f + 0.5f;
 }
 
 //! Easing equation for a quadratic (t^2) ease-out/in, decelerating until halfway, then accelerating. Functor edition.
@@ -135,7 +135,7 @@ struct EaseOutInQuad{ float operator()( float t ) const { return easeOutInQuad( 
 //! Easing equation function for a cubic (t^3) ease-in, accelerating from zero velocity.
 inline float easeInCubic( float t )
 {
-	return t*t*t;
+  return t*t*t;
 }
 
 //! Easing equation function for a cubic (t^3) ease-in, accelerating from zero velocity. Functor edition.
@@ -144,8 +144,8 @@ struct EaseInCubic{ float operator()( float t ) const { return easeInCubic( t );
 //! Easing equation for a cubic (t^3) ease-out, decelerating to zero velocity.
 inline float easeOutCubic( float t )
 {
-	t -= 1;
-	return t*t*t + 1;
+  t -= 1;
+  return t*t*t + 1;
 }
 
 //! Easing equation for a cubic (t^3) ease-out, decelerating to zero velocity. Functor edition.
@@ -154,11 +154,11 @@ struct EaseOutCubic{ float operator()( float t ) const { return easeOutCubic( t 
 //! Easing equation for a cubic (t^3) ease-in/out, accelerating until halfway, then decelerating.
 inline float easeInOutCubic( float t )
 {
-	t *= 2;
-	if( t < 1 )
-		return 0.5f * t*t*t;
-	t -= 2;
-	return 0.5f*(t*t*t + 2);
+  t *= 2;
+  if( t < 1 )
+    return 0.5f * t*t*t;
+  t -= 2;
+  return 0.5f*(t*t*t + 2);
 }
 
 //! Easing equation for a cubic (t^3) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
@@ -180,7 +180,7 @@ struct EaseOutInCubic{ float operator()( float t ) const { return easeOutInCubic
 //! Easing equation for a quartic (t^4) ease-in, accelerating from zero velocity.
 inline float easeInQuart( float t )
 {
-	return t*t*t*t;
+  return t*t*t*t;
 }
 
 //! Easing equation for a quartic (t^4) ease-in, accelerating from zero velocity. Functor edition.
@@ -189,8 +189,8 @@ struct EaseInQuart{ float operator()( float t ) const { return easeInQuart( t );
 //! Easing equation for a quartic (t^4) ease-out, decelerating to zero velocity.
 inline float easeOutQuart( float t )
 {
-	t -= 1;
-	return -(t*t*t*t - 1);
+  t -= 1;
+  return -(t*t*t*t - 1);
 }
 
 //! Easing equation for a quartic (t^4) ease-out, decelerating to zero velocity. Functor edition;
@@ -226,7 +226,7 @@ struct EaseOutInQuart{ float operator()( float t ) const { return easeOutInQuart
 //! Easing equation function for a quintic (t^5) ease-in, accelerating from zero velocity.
 inline float easeInQuint( float t )
 {
-	return t*t*t*t*t;
+  return t*t*t*t*t;
 }
 
 //! Easing equation function for a quintic (t^5) ease-in, accelerating from zero velocity. Functor edition.
@@ -235,8 +235,8 @@ struct EaseInQuint{ float operator()( float t ) const { return easeInQuint( t );
 //! Easing equation for a quintic (t^5) ease-out, decelerating to zero velocity.
 inline float easeOutQuint( float t )
 {
-	t -= 1;
-	return t*t*t*t*t + 1;
+  t -= 1;
+  return t*t*t*t*t + 1;
 }
 
 //! Easing equation function for a quintic (t^5) ease-in, accelerating from zero velocity. Functor edition.
@@ -245,12 +245,12 @@ struct EaseOutQuint{ float operator()( float t ) const { return easeOutQuint( t 
 //! Easing equation for a quintic (t^5) ease-in/out, accelerating until halfway, then decelerating.
 inline float easeInOutQuint( float t )
 {
-	t *= 2;
-	if( t < 1 ) return 0.5f*t*t*t*t*t;
-	else {
-		t -= 2;
-		return 0.5f*(t*t*t*t*t + 2);
-	}
+  t *= 2;
+  if( t < 1 ) return 0.5f*t*t*t*t*t;
+  else {
+    t -= 2;
+    return 0.5f*(t*t*t*t*t + 2);
+  }
 }
 
 //! Easing equation for a quintic (t^5) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
@@ -272,7 +272,7 @@ struct EaseOutInQuint{ float operator()( float t ) const { return easeOutInQuint
 //! Easing equation for a sinusoidal (sin(t)) ease-in, accelerating from zero velocity.
 inline float easeInSine( float t )
 {
-	return -std::cos( t * (float)PI / 2 ) + 1;
+  return -std::cos( t * (float)PI / 2 ) + 1;
 }
 
 //! Easing equation for a sinusoidal (sin(t)) ease-in, accelerating from zero velocity. Functor edition.
@@ -281,7 +281,7 @@ struct EaseInSine{ float operator()( float t ) const { return easeInSine( t ); }
 //! Easing equation for a sinusoidal (sin(t)) ease-out, decelerating from zero velocity.
 inline float easeOutSine( float t )
 {
-	return std::sin( t * (float)PI / 2 );
+  return std::sin( t * (float)PI / 2 );
 }
 
 //! Easing equation for a sinusoidal (sin(t)) easing out, decelerating from zero velocity. Functor edition.
@@ -290,7 +290,7 @@ struct EaseOutSine{ float operator()( float t ) const { return easeOutSine( t );
 //! Easing equation for a sinusoidal (sin(t)) ease-in/out, accelerating until halfway, then decelerating.
 inline float easeInOutSine( float t )
 {
-	return -0.5f * ( std::cos( (float)PI * t ) - 1 );
+  return -0.5f * ( std::cos( (float)PI * t ) - 1 );
 }
 
 //! Easing equation for a sinusoidal (sin(t)) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
@@ -312,7 +312,7 @@ struct EaseOutInSine{ float operator()( float t ) const { return easeOutInSine( 
 //! Easing equation for an exponential (2^t) ease-in, accelerating from zero velocity.
 inline float easeInExpo( float t )
 {
-	return t == 0 ? 0.0f : std::pow( 2.0f, 10 * (t - 1) );
+  return t == 0 ? 0.0f : std::pow( 2.0f, 10 * (t - 1) );
 }
 
 //! Easing equation for an exponential (2^t) ease-in, accelerating from zero velocity. Functor edition.
@@ -321,7 +321,7 @@ struct EaseInExpo{ float operator()( float t ) const { return easeInExpo( t ); }
 //! Easing equation for an exponential (2^t) ease-out, decelerating from zero velocity.
 inline float easeOutExpo( float t )
 {
-	return t == 1 ? 1 : -std::pow( 2.0f, -10 * t ) + 1;
+  return t == 1 ? 1 : -std::pow( 2.0f, -10 * t ) + 1;
 }
 
 //! Easing equation for an exponential (2^t) ease-out, decelerating from zero velocity. Functor edition.
@@ -330,11 +330,11 @@ struct EaseOutExpo{ float operator()( float t ) const { return easeOutExpo( t );
 //! Easing equation for an exponential (2^t) ease-in/out, accelerating until halfway, then decelerating.
 inline float easeInOutExpo( float t )
 {
-	if( t == 0 ) return 0;
-	if( t == 1 ) return 1;
-	t *= 2;
-	if( t < 1 ) return 0.5f * std::pow( 2.0f, 10 * (t - 1) );
-	return 0.5f * ( - std::pow( 2.0f, -10 * (t - 1)) + 2);
+  if( t == 0 ) return 0;
+  if( t == 1 ) return 1;
+  t *= 2;
+  if( t < 1 ) return 0.5f * std::pow( 2.0f, 10 * (t - 1) );
+  return 0.5f * ( - std::pow( 2.0f, -10 * (t - 1)) + 2);
 }
 
 //! Easing equation for an exponential (2^t) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
@@ -343,8 +343,8 @@ struct EaseInOutExpo{ float operator()( float t ) const { return easeInOutExpo( 
 //! Easing equation for an exponential (2^t) ease-out/in, decelerating until halfway, then accelerating.
 inline float easeOutInExpo( float t )
 {
-	if( t < 0.5f ) return easeOutExpo( 2 * t ) / 2;
-	return easeInExpo( 2 * t - 1 ) / 2 + 0.5f;
+  if( t < 0.5f ) return easeOutExpo( 2 * t ) / 2;
+  return easeInExpo( 2 * t - 1 ) / 2 + 0.5f;
 }
 
 //! Easing equation for an exponential (2^t) ease-out/in, decelerating until halfway, then accelerating. Functor edition.
@@ -356,7 +356,7 @@ struct EaseOutInExpo{ float operator()( float t ) const { return easeOutInExpo( 
 //! Easing equation for a circular (sqrt(1-t^2)) ease-in, accelerating from zero velocity.
 inline float easeInCirc( float t )
 {
-	return -( std::sqrt( 1 - t*t ) - 1);
+  return -( std::sqrt( 1 - t*t ) - 1);
 }
 
 //! Easing equation for a circular (sqrt(1-t^2)) ease-in, accelerating from zero velocity. Functor edition.
@@ -365,8 +365,8 @@ struct EaseInCirc{ float operator()( float t ) const { return easeInCirc( t ); }
 //! Easing equation for a circular (sqrt(1-t^2)) ease-out, decelerating from zero velocity.
 inline float easeOutCirc( float t )
 {
-	t -= 1;
-	return std::sqrt( 1 - t*t );
+  t -= 1;
+  return std::sqrt( 1 - t*t );
 }
 
 //! Easing equation for a circular (sqrt(1-t^2)) ease-out, decelerating from zero velocity. Functor edition.
@@ -379,7 +379,7 @@ inline float easeInOutCirc( float t )
     if( t < 1 ) {
         return -0.5f * (std::sqrt( 1 - t*t ) - 1);
     }
-	else {
+  else {
         t -= 2;
         return 0.5f * (std::sqrt( 1 - t*t ) + 1);
     }
@@ -391,8 +391,8 @@ struct EaseInOutCirc{ float operator()( float t ) const { return easeInOutCirc( 
 //! Easing equation for a circular (sqrt(1-t^2)) ease-out/in, decelerating until halfway, then accelerating.
 inline float easeOutInCirc( float t )
 {
-	if( t < 0.5f ) return easeOutCirc( 2*t ) / 2;
-	return easeInCirc( 2*t - 1 ) / 2 + 0.5f;
+  if( t < 0.5f ) return easeOutCirc( 2*t ) / 2;
+  return easeInCirc( 2*t - 1 ) / 2 + 0.5f;
 }
 
 //! Easing equation for a circular (sqrt(1-t^2)) ease-out/in, decelerating until halfway, then accelerating. Functor edition.
@@ -404,63 +404,63 @@ struct EaseOutInCirc{ float operator()( float t ) const { return easeOutInCirc( 
 //! \cond
 inline float easeOutBounceHelper_( float t, float c, float a )
 {
-	if( t == 1 ) return c;
-	if( t < (4/11.0f) ) {
-		return c*( 7.5625f*t*t);
-	}
-	else if( t < (8/11.0f) ) {
-		t -= (6/11.0f);
-		return -a * (1 - (7.5625f*t*t + 0.75f)) + c;
-	}
-	else if( t < (10/11.0f) ) {
-		t -= (9/11.0f);
-		return -a * (1 - (7.5625f*t*t + 0.9375f)) + c;
-	}
-	else {
-		t -= (21/22.0f);
-		return -a * (1 - (7.5625f*t*t + 0.984375f)) + c;
-	}
+  if( t == 1 ) return c;
+  if( t < (4/11.0f) ) {
+    return c*( 7.5625f*t*t);
+  }
+  else if( t < (8/11.0f) ) {
+    t -= (6/11.0f);
+    return -a * (1 - (7.5625f*t*t + 0.75f)) + c;
+  }
+  else if( t < (10/11.0f) ) {
+    t -= (9/11.0f);
+    return -a * (1 - (7.5625f*t*t + 0.9375f)) + c;
+  }
+  else {
+    t -= (21/22.0f);
+    return -a * (1 - (7.5625f*t*t + 0.984375f)) + c;
+  }
 }
 //! \endcond
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-in, accelerating from zero velocity. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 inline float easeInBounce( float t, float a = 1.70158f )
 {
-	 return 1 - easeOutBounceHelper_( 1-t, 1, a );
+   return 1 - easeOutBounceHelper_( 1-t, 1, a );
 }
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-in, accelerating from zero velocity. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseInBounce {
-	EaseInBounce( float a = 1.70158f ) : mA( a ) {}
-	float operator()( float t ) { return easeInBounce( t, mA ); }
-	float mA;
+  EaseInBounce( float a = 1.70158f ) : mA( a ) {}
+  float operator()( float t ) { return easeInBounce( t, mA ); }
+  float mA;
 };
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-out, decelerating from zero velocity. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 inline float easeOutBounce( float t, float a = 1.70158f )
 {
-	return easeOutBounceHelper_( t, 1, a );
+  return easeOutBounceHelper_( t, 1, a );
 }
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-out, decelerating from zero velocity. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseOutBounce {
-	EaseOutBounce( float a = 1.70158f ) : mA( a ) {}
-	float operator()( float t ) { return easeOutBounce( t, mA ); }
-	float mA;
+  EaseOutBounce( float a = 1.70158f ) : mA( a ) {}
+  float operator()( float t ) { return easeOutBounce( t, mA ); }
+  float mA;
 };
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-in/out, accelerating until halfway, then decelerating. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 inline float easeInOutBounce( float t, float a = 1.70158f )
 {
-	if( t < 0.5f ) return easeInBounce( 2*t, a ) / 2;
-	else return ( t == 1 ) ? 1 : easeOutBounce( 2*t - 1, a )/2 + 0.5f;
+  if( t < 0.5f ) return easeInBounce( 2*t, a ) / 2;
+  else return ( t == 1 ) ? 1 : easeOutBounce( 2*t - 1, a )/2 + 0.5f;
 }
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-in/out, accelerating until halfway, then decelerating. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseInOutBounce {
-	EaseInOutBounce( float a = 1.70158f ) : mA( a ) {}
-	float operator()( float t ) { return easeInOutBounce( t, mA ); }
-	float mA;
+  EaseInOutBounce( float a = 1.70158f ) : mA( a ) {}
+  float operator()( float t ) { return easeInOutBounce( t, mA ); }
+  float mA;
 };
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-out/in, decelerating until halfway, then accelerating. The \a a parameter controls overshoot, the default producing a 10% overshoot.
@@ -472,9 +472,9 @@ inline float easeOutInBounce( float t, float a = 1.70158f )
 
 //! Easing equation for a bounce (exponentially decaying parabolic bounce) ease-out/in, decelerating until halfway, then accelerating. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseOutInBounce {
-	EaseOutInBounce( float a = 1.70158f ) : mA( a ) {}
-	float operator()( float t ) { return easeOutInBounce( t, mA ); }
-	float mA;
+  EaseOutInBounce( float a = 1.70158f ) : mA( a ) {}
+  float operator()( float t ) { return easeOutInBounce( t, mA ); }
+  float mA;
 };
 
 
@@ -484,28 +484,28 @@ struct EaseOutInBounce {
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-in, accelerating from zero velocity. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 inline float easeInBack( float t, float s = 1.70158f )
 {
-	return t * t * ((s+1)*t - s);
+  return t * t * ((s+1)*t - s);
 }
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-in, accelerating from zero velocity. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseInBack {
-	EaseInBack( float s = 1.70158f ) : mS( s ) {}
-	float operator()( float t ) { return easeInBack( t, mS ); }
-	float mS;
+  EaseInBack( float s = 1.70158f ) : mS( s ) {}
+  float operator()( float t ) { return easeInBack( t, mS ); }
+  float mS;
 };
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-out, decelerating from zero velocity. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 inline float easeOutBack( float t, float s = 1.70158f )
 {
-	t -= 1;
-	return (t*t*((s+1)*t + s) + 1);
+  t -= 1;
+  return (t*t*((s+1)*t + s) + 1);
 }
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-out, decelerating from zero velocity. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseOutBack {
-	EaseOutBack( float s = 1.70158f ) : mS( s ) {}
-	float operator()( float t ) { return easeOutBack( t, mS ); }
-	float mS;
+  EaseOutBack( float s = 1.70158f ) : mS( s ) {}
+  float operator()( float t ) { return easeOutBack( t, mS ); }
+  float mS;
 };
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-in/out, accelerating until halfway, then decelerating. The \a a parameter controls overshoot, the default producing a 10% overshoot.
@@ -516,7 +516,7 @@ inline float easeInOutBack( float t, float s = 1.70158f )
         s *= 1.525f;
         return 0.5f*(t*t*((s+1)*t - s));
     }
-	else {
+  else {
         t -= 2;
         s *= 1.525f;
         return 0.5f*(t*t*((s+1)*t+ s) + 2);
@@ -525,9 +525,9 @@ inline float easeInOutBack( float t, float s = 1.70158f )
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-in/out, accelerating until halfway, then decelerating. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseInOutBack {
-	EaseInOutBack( float s = 1.70158f ) : mS( s ) {}
-	float operator()( float t ) { return easeInOutBack( t, mS ); }
-	float mS;
+  EaseInOutBack( float s = 1.70158f ) : mS( s ) {}
+  float operator()( float t ) { return easeInOutBack( t, mS ); }
+  float mS;
 };
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-out/in, decelerating until halfway, then accelerating. The \a a parameter controls overshoot, the default producing a 10% overshoot.
@@ -539,9 +539,9 @@ inline float easeOutInBack( float t, float s )
 
 //! Easing equation for a back (overshooting cubic easing: (s+1)*t^3 - s*t^2) ease-out/in, decelerating until halfway, then accelerating. Functor edition. The \a a parameter controls overshoot, the default producing a 10% overshoot.
 struct EaseOutInBack {
-	EaseOutInBack( float s = 1.70158f ) : mS( s ) {}
-	float operator()( float t ) { return easeOutInBack( t, mS ); }
-	float mS;
+  EaseOutInBack( float s = 1.70158f ) : mS( s ) {}
+  float operator()( float t ) { return easeOutInBack( t, mS ); }
+  float mS;
 };
 
 
@@ -560,7 +560,7 @@ inline float easeInElasticHelper_( float t, float b, float c, float d, float a, 
         a = c;
         s = p / 4.0f;
     }
-	else {
+  else {
         s = p / (2 * (float)PI) * std::asin( c / a );
     }
 
@@ -578,7 +578,7 @@ inline float easeOutElasticHelper_( float t, float /*b*/, float c, float /*d*/, 
         a = c;
         s = p / 4;
     }
-	else {
+  else {
         s = p / ( 2 * (float)PI ) * std::asin( c / a );
     }
 
@@ -589,27 +589,27 @@ inline float easeOutElasticHelper_( float t, float /*b*/, float c, float /*d*/, 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-in, accelerating from zero velocity.
 inline float easeInElastic( float t, float amplitude, float period )
 {
-	return easeInElasticHelper_( t, 0, 1, 1, amplitude, period );
+  return easeInElasticHelper_( t, 0, 1, 1, amplitude, period );
 }
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-in, accelerating from zero velocity. Functor edition.
 struct EaseInElastic {
-	EaseInElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
-	float operator()( float t ) { return easeInElastic( t, mA, mP ); }
-	float mA, mP;
+  EaseInElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
+  float operator()( float t ) { return easeInElastic( t, mA, mP ); }
+  float mA, mP;
 };
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-out, decelerating from zero velocity.
 inline float easeOutElastic( float t, float amplitude, float period )
 {
-	return easeOutElasticHelper_( t, 0, 1, 1, amplitude, period );
+  return easeOutElasticHelper_( t, 0, 1, 1, amplitude, period );
 }
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-out, decelerating from zero velocity. Functor edition.
 struct EaseOutElastic {
-	EaseOutElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
-	float operator()( float t ) { return easeOutElastic( t, mA, mP ); }
-	float mA, mP;
+  EaseOutElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
+  float operator()( float t ) { return easeOutElastic( t, mA, mP ); }
+  float mA, mP;
 };
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-in/out, accelerating until halfway, then decelerating.
@@ -624,7 +624,7 @@ inline float easeInOutElastic( float t, float amplitude, float period )
         amplitude = 1;
         s = period / 4;
     }
-	else {
+  else {
         s = period / (2 * (float)PI) * std::asin( 1 / amplitude );
     }
 
@@ -634,9 +634,9 @@ inline float easeInOutElastic( float t, float amplitude, float period )
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-in/out, accelerating until halfway, then decelerating. Functor edition.
 struct EaseInOutElastic {
-	EaseInOutElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
-	float operator()( float t ) { return easeInOutElastic( t, mA, mP ); }
-	float mA, mP;
+  EaseInOutElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
+  float operator()( float t ) { return easeInOutElastic( t, mA, mP ); }
+  float mA, mP;
 };
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-out/in, decelerating until halfway, then accelerating.
@@ -648,9 +648,9 @@ inline float easeOutInElastic( float t, float amplitude, float period )
 
 //! Easing equation for an elastic (exponentially decaying sine wave) ease-out/in, decelerating until halfway, then accelerating. Functor edition.
 struct EaseOutInElastic {
-	EaseOutInElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
-	float operator()( float t ) { return easeOutInElastic( t, mA, mP ); }
-	float mA, mP;
+  EaseOutInElastic( float amplitude, float period ) : mA( amplitude ), mP( period ) {}
+  float operator()( float t ) { return easeOutInElastic( t, mA, mP ); }
+  float mA, mP;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -659,43 +659,43 @@ struct EaseOutInElastic {
 //! Easing equation for an atan ease-in, accelerating from zero velocity. Used by permssion from Chris McKenzie.
 inline float easeInAtan( float t, float a = 15 )
 {
-	float m = std::atan( a );
-	return ( std::atan( (t - 1)*a ) / m ) + 1;
+  float m = std::atan( a );
+  return ( std::atan( (t - 1)*a ) / m ) + 1;
 }
 
 //! Easing equation for an atan ease-in, accelerating from zero velocity. Functor edition. Used by permssion from Chris McKenzie.
 struct EaseInAtan {
-	EaseInAtan( float a = 15 ) : mInvM( 1.0f / std::atan( a ) ), mA( a ) {}
-	float operator()( float t ) const { return ( std::atan( (t - 1) * mA ) * mInvM ) + 1; }
-	float mA, mInvM;
+  EaseInAtan( float a = 15 ) : mInvM( 1.0f / std::atan( a ) ), mA( a ) {}
+  float operator()( float t ) const { return ( std::atan( (t - 1) * mA ) * mInvM ) + 1; }
+  float mA, mInvM;
 };
 
 //! Easing equation for an atan ease-out, decelerating from zero velocity. Used by permssion from Chris McKenzie.
 inline float easeOutAtan( float t, float a = 15 )
 {
-	float m = std::atan( a );
-	return std::atan( t*a ) / m;
+  float m = std::atan( a );
+  return std::atan( t*a ) / m;
 }
 
 //! Easing equation for an atan ease-out, decelerating from zero velocity. Functor edition. Used by permssion from Chris McKenzie.
 struct EaseOutAtan {
-	EaseOutAtan( float a = 15 ) : mInvM( 1.0f / std::atan( a ) ), mA( a ) {}
-	float operator()( float t ) const { return std::atan( t * mA ) * mInvM; }
-	float mA, mInvM;
+  EaseOutAtan( float a = 15 ) : mInvM( 1.0f / std::atan( a ) ), mA( a ) {}
+  float operator()( float t ) const { return std::atan( t * mA ) * mInvM; }
+  float mA, mInvM;
 };
 
 //! Easing equation for an atan ease-in/out, accelerating until halfway, then decelerating. Used by permssion from Chris McKenzie.
 inline float easeInOutAtan( float t, float a = 15 )
 {
-	float m = std::atan( 0.5f * a );
-	return ( std::atan((t - 0.5f)*a) / (2*m) ) + 0.5f;
+  float m = std::atan( 0.5f * a );
+  return ( std::atan((t - 0.5f)*a) / (2*m) ) + 0.5f;
 }
 
 //! Easing equation for an atan ease-in/out, accelerating until halfway, then decelerating. Functor edition. Used by permssion from Chris McKenzie.
 struct EaseInOutAtan {
-	EaseInOutAtan( float a = 15 ) : mInv2M( 1.0f / ( 2 * std::atan( 0.5f * a ) ) ), mA( a ) {}
-	float operator()( float t ) const { return ( std::atan((t - 0.5f)*mA) * mInv2M ) + 0.5f; }
-	float mA, mInv2M;
+  EaseInOutAtan( float a = 15 ) : mInv2M( 1.0f / ( 2 * std::atan( 0.5f * a ) ) ), mA( a ) {}
+  float operator()( float t ) const { return ( std::atan((t - 0.5f)*mA) * mInv2M ) + 0.5f; }
+  float mA, mInv2M;
 };
 
 } // namespace choreograph
