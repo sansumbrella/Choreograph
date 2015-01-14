@@ -82,11 +82,14 @@ TEST_CASE( "Phrases" )
   {
     auto accumulate = makeAccumulator<float>( 0.0f, ramp, other );
 
+    auto sum = makeAccumulator<float>( 10.0f, ramp );
+
     auto decumulate = makeAccumulator<float>( 0.0f, ramp, other, [] (float a, float b) {
       return a - b;
     } );
 
     REQUIRE( accumulate->getValue( 1.0 ) == 110 );
+    REQUIRE( sum->getValue( 1.0 ) == 20 );
     REQUIRE( decumulate->getValue( 1.0 ) == -110 );
   }
 
