@@ -78,31 +78,32 @@ public:
   Output<T>& operator+= ( T value ) { _value += value; return *this; }
 
   /// Returns value of output.
-  const T&   value() const { return _value; }
+  const T&    value() const { return _value; }
 
   /// Returns value of output.
-  const T&   operator() () const { return _value; }
+  const T&    operator() () const { return _value; }
 
   /// Returns value of output for manipulating.
-  T&        operator() () { return _value; }
+  T&          operator() () { return _value; }
+
+  /// Returns the value this output will have at the end of its connected motion.
+  /// Returns current value if no motion attached.
+  T           endValue() const;
 
   /// Enable cast to value type.
   operator const T&()  { return _value; }
 
   /// Returns pointer to value.
-  const T*   valuePtr() const { return &_value; }
+  const T*    valuePtr() const { return &_value; }
 
   /// Returns pointer to value.
-  T*        valuePtr() { return &_value; }
+  T*          valuePtr() { return &_value; }
 
   Motion<T>*  inputPtr() { return _input; }
 
 private:
   T         _value;
   Motion<T> *_input = nullptr;
-
-  /// Replaces \a rhs in its relationship to a TimelineItem input.
-  void supplant( Output<T> &&rhs );
 
   friend class Motion<T>;
 };
@@ -143,6 +144,15 @@ void Output<T>::disconnect()
     // Motion::disconnect also nullifies our pointer to the input.
     _input->disconnect();
   }
+}
+
+template<typename T>
+T Output<T>::endValue() const
+{
+  if( _input ) {
+    return _input->getSequence().getEndValue();
+  }
+  return _value;
 }
 
 } // namespace choreograph
