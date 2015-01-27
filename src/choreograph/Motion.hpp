@@ -96,7 +96,7 @@ public:
   const void* getTarget() const final override { return _target; }
 
   /// Returns the current value of the target.
-  T getCurrentValue() const { return *_target; }
+  const T& getCurrentValue() const { return *_target; }
 
   /// Set a function to be called when we reach the end of the sequence. Receives *this as an argument.
   void setFinishFn( const Callback &c ) { _finish_fn = c; }

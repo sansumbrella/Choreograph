@@ -90,6 +90,7 @@
 		15609E0E19E190EC0053395A /* Ramp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ramp.hpp; sourceTree = "<group>"; };
 		15609E0F19E190EC0053395A /* Retime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Retime.hpp; sourceTree = "<group>"; };
 		15609E1719E210AE0053395A /* Sugar.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sugar.hpp; sourceTree = "<group>"; };
+		157752701A774C31002EC71D /* SimpleMotion.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SimpleMotion.hpp; sourceTree = "<group>"; };
 		1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
 		1590BDD01A28D3C800B60050 /* MotionGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionGroup.h; sourceTree = "<group>"; };
 		159C0E711A3B5D2300727C93 /* TimelineOptions.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TimelineOptions.hpp; sourceTree = "<group>"; };
@@ -211,6 +212,7 @@
 				1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */,
 				1590BDD01A28D3C800B60050 /* MotionGroup.h */,
 				159C0E711A3B5D2300727C93 /* TimelineOptions.hpp */,
+				157752701A774C31002EC71D /* SimpleMotion.hpp */,
 			);
 			path = choreograph;
 			sourceTree = "<group>";
