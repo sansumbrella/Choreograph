@@ -34,6 +34,8 @@ namespace choreograph
 {
 
 /// Adds knowledge of the current time to a Sequence, making it steppable.
+/// I think this will be useful for things like entity systems where we are avoiding pointer chasing.
+/// Can then describe animations in terms of components without pointing into other components (making easily serializable).
 template<typename T>
 class SimpleMotion : public TimelineItem
 {
