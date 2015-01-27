@@ -192,7 +192,7 @@ template<typename T>
 template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
-  _phrases.emplace_back( std::make_unique<PhraseT<T>>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) );
+  _phrases.emplace_back( std::make_shared<PhraseT<T>>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) );
   _duration += duration;
 
   return *this;
