@@ -39,6 +39,11 @@ class SimpleMotion : public TimelineItem
 {
   SimpleMotion() = default;
 
+  explicit SimpleMotion( const T &value )
+  : _value( value ),
+    _source( value )
+  {}
+
   /// Create a SimpleMotion from a Sequence.
   explicit SimpleMotion( const Sequence<T> &source )
   : _value( source.getStartValue() ),
@@ -49,7 +54,9 @@ class SimpleMotion : public TimelineItem
 
   Time getDuration() const final override { return _source.getDuration(); }
 
-  const T& value() const { return _value; }
+
+  const T&      value() const { return _value; }
+  Sequence<T>&  sequence() { return _source; }
 
 private:
   T           _value;
