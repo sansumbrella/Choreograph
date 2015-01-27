@@ -335,22 +335,6 @@ Sequence<T> Sequence<T>::slice( Time from, Time to )
 }
 
 //=================================================
-// Convenience functions.
-//=================================================
-
-template<typename T>
-SequenceRef<T> createSequence( T &&initialValue )
-{
-  return std::make_shared<Sequence<T>>( std::forward<T>( initialValue ) );
-}
-
-template<typename T>
-SequenceRef<T> createSequence( const T &initialValue )
-{
-  return std::make_shared<Sequence<T>>( initialValue );
-}
-
-//=================================================
 // Sequence Decorator Phrase.
 //=================================================
 
