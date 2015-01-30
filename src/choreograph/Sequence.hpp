@@ -192,7 +192,7 @@ template<typename T>
 template<template <typename> class PhraseT, typename... Args>
 Sequence<T>& Sequence<T>::then( const T &value, Time duration, Args&&... args )
 {
-  _phrases.emplace_back( std::make_unique<PhraseT<T>>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) );
+  _phrases.emplace_back( std::make_shared<PhraseT<T>>( duration, this->getEndValue(), value, std::forward<Args>(args)... ) );
   _duration += duration;
 
   return *this;
@@ -332,22 +332,6 @@ Sequence<T> Sequence<T>::slice( Time from, Time to )
     Time t = getTimeAtInflection( points.first );
     return Sequence<T>( PhraseRef<T>( std::make_shared<ClipPhrase<T>>( first, from - t, to - t ) ) );
   }
-}
-
-//=================================================
-// Convenience functions.
-//=================================================
-
-template<typename T>
-SequenceRef<T> createSequence( T &&initialValue )
-{
-  return std::make_shared<Sequence<T>>( std::forward<T>( initialValue ) );
-}
-
-template<typename T>
-SequenceRef<T> createSequence( const T &initialValue )
-{
-  return std::make_shared<Sequence<T>>( initialValue );
 }
 
 //=================================================
