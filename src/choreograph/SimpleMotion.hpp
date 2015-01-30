@@ -37,7 +37,7 @@ namespace choreograph
 /// I think this will be useful for things like entity systems where we are avoiding pointer chasing.
 /// Can then describe animations in terms of components without pointing into other components (making easily serializable).
 template<typename T>
-class SimpleMotion : public TimelineItem
+class SimpleMotion
 {
   SimpleMotion() = default;
 
@@ -52,16 +52,23 @@ class SimpleMotion : public TimelineItem
     _source( source )
   {}
 
-  void update() final override { _value = _source( time() ); }
+  void step( Time t ) { _time += t; update(); }
+  void jumpTo( Time t ) { _time = t; update(); }
 
-  Time getDuration() const final override { return _source.getDuration(); }
+  void update() { _value = _source.getValue( time() ); }
 
+  Time duration() const { return _source.getDuration(); }
+
+  bool finished() const { return time() > duration(); }
+
+  Time time() const { return _time; }
 
   const T&      value() const { return _value; }
   Sequence<T>&  sequence() { return _source; }
 
 private:
   T           _value;
+  Time        _time = 0;
   Sequence<T> _source = Sequence<T>( _value );
 };
 
