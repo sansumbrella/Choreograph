@@ -27,6 +27,8 @@
 
 #pragma once
 
+#include <algorithm>
+
 namespace choreograph
 {
 namespace detail
