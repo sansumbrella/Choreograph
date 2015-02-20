@@ -42,6 +42,8 @@ Read the concepts section below and see the projects in Samples/ for more ideas 
 
 ## Concepts
 
+Choreograph breaks the task of animation into two parts: motion description and motion application. Description of motion is handled by `Phrases` and `Sequences`. The application of motion is handled by `Timelines` that manage `TimelineItems`: `Motions` (`Sequences` bound to an `Output`) and `Cues` (Functions bound to a point in time).
+
 ### Phrase, Sequence
 
 A Phrase defines a change in value over time, like "bounce up and down for three seconds."" The built-in phrase RampTo linearly interpolates a value over time. Other built-in Phrases include Hold, which holds a value for an amount of time, and LoopPhrase, which takes an existing Phrase and repeats it a number of times. It is simple to add your own Phrases by extending `Phrase<T>`.
