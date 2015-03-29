@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
@@ -13,9 +13,8 @@ using namespace pockets;
 using namespace choreograph;
 using namespace std;
 
-class SamplesApp : public AppNative {
+class SamplesApp : public App {
 public:
-  void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 
@@ -30,13 +29,6 @@ private:
   gl::TextureFontRef      _title_font;
   pk::cw::RootNode        _gui;
 };
-
-void SamplesApp::prepareSettings( Settings *settings )
-{
-  settings->setWindowSize( 1280, 720 );
-  settings->enableMultiTouch();
-  settings->disableFrameRate();
-}
 
 void SamplesApp::setup()
 {
@@ -127,4 +119,7 @@ void SamplesApp::update()
   _timeline.step( dt );
 }
 
-CINDER_APP_NATIVE( SamplesApp, RendererGl )
+CINDER_APP( SamplesApp, RendererGl( RendererGl::Options().msaa( 0 ) ), []( App::Settings *settings ) {
+  settings->setWindowSize( 1280, 720 );
+  settings->disableFrameRate();
+} )

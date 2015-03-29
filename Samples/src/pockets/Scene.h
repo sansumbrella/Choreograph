@@ -97,7 +97,7 @@ namespace pockets
     void          setBounds( const ci::Area &points ){ _bounds = points; }
 
     /// manage the lifetime of the given connection and control with block/unblock
-    void          storeConnection( const ci::signals::connection &c ) { mUIConnections.store( c ); }
+    void          storeConnection( const ci::signals::Connection &c ) { mUIConnections.store( c ); }
 
     void show( const ci::app::WindowRef &window, bool useWindowBounds = true );
     /// Returns a reference to our timeline.

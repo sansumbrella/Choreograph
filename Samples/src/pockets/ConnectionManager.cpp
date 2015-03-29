@@ -47,11 +47,14 @@ void ConnectionManager::block()
 {
   for( auto &c : mConnections )
   { // constructs a block around the given connection
-    mBlocks.emplace_back( c );
+    c.block();
   }
 }
 
 void ConnectionManager::resume()
 {
-  mBlocks.clear();
+  for( auto &c : mConnections )
+  { // constructs a block around the given connection
+    c.unblock();
+  }
 }
