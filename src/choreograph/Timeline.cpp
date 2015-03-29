@@ -142,12 +142,12 @@ void Timeline::add( TimelineItemUniqueRef item )
 
 void Timeline::add( Timeline &&timeline )
 {
-  add( std::move( std::make_unique<MotionGroup>( std::move( timeline ) ) ) );
+  add( std::move( detail::make_unique<MotionGroup>( std::move( timeline ) ) ) );
 }
 
 TimelineOptions Timeline::cue( const std::function<void ()> &fn, Time delay )
 {
-  auto cue = std::make_unique<Cue>( fn, delay );
+  auto cue = detail::make_unique<Cue>( fn, delay );
   TimelineOptions options( *cue );
 
   add( std::move( cue ) );

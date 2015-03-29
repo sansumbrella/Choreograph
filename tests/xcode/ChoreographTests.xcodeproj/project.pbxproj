@@ -93,6 +93,7 @@
 		1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
 		1590BDD01A28D3C800B60050 /* MotionGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionGroup.h; sourceTree = "<group>"; };
 		159C0E711A3B5D2300727C93 /* TimelineOptions.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TimelineOptions.hpp; sourceTree = "<group>"; };
+		15CCF2B51AC84A6100B16625 /* MakeUnique.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = MakeUnique.hpp; path = detail/MakeUnique.hpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		15F764E71A12F4690022B9AB /* CinderSpecialization.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = CinderSpecialization.hpp; sourceTree = "<group>"; };
 		15F905A119C498C3003C06A4 /* catch.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = catch.hpp; path = ../catch.hpp; sourceTree = "<group>"; };
@@ -218,6 +219,7 @@
 		1560075C19D72C4A00247022 /* detail */ = {
 			isa = PBXGroup;
 			children = (
+				15CCF2B51AC84A6100B16625 /* MakeUnique.hpp */,
 				1560075D19D72C5000247022 /* VectorManipulation.hpp */,
 			);
 			name = detail;
@@ -466,7 +468,7 @@
 		15F905CB19C49F72003C06A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -502,7 +504,7 @@
 		15F905CC19C49F72003C06A4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;

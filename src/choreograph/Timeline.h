@@ -28,6 +28,7 @@
 #pragma once
 
 #include "TimelineOptions.hpp"
+#include "detail/MakeUnique.hpp"
 
 namespace choreograph
 {
@@ -199,7 +200,7 @@ private:
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output )
 {
-  auto motion = std::make_unique<Motion<T>>( output );
+  auto motion = detail::make_unique<Motion<T>>( output );
 
   auto &motion_ref = *motion;
   add( std::move( motion ) );
@@ -210,7 +211,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output )
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase )
 {
-  auto motion = std::make_unique<Motion<T>>( output, Sequence<T>( phrase ) );
+  auto motion = detail::make_unique<Motion<T>>( output, Sequence<T>( phrase ) );
 
   auto &motion_ref = *motion;
   add( std::move( motion ) );
@@ -221,7 +222,7 @@ MotionOptions<T> Timeline::apply( Output<T> *output, const PhraseRef<T> &phrase 
 template<typename T>
 MotionOptions<T> Timeline::apply( Output<T> *output, const Sequence<T> &sequence )
 {
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = detail::make_unique<Motion<T>>( output, sequence );
 
   auto &motion_ref = *motion;
   add( std::move( motion ) );
@@ -245,7 +246,7 @@ MotionOptions<T> Timeline::applyRaw( T *output )
   // This is a raw pointer, so we don't know about any prior relationships.
   cancel( output );
 
-  auto motion = std::make_unique<Motion<T>>( output );
+  auto motion = detail::make_unique<Motion<T>>( output );
 
   auto &m = *motion;
   add( std::move( motion ) );
@@ -257,7 +258,7 @@ template<typename T>
 MotionOptions<T> Timeline::applyRaw( T *output, const Sequence<T> &sequence )
 { // Remove any existing motions that affect the same variable.
   cancel( output );
-  auto motion = std::make_unique<Motion<T>>( output, sequence );
+  auto motion = detail::make_unique<Motion<T>>( output, sequence );
 
   auto &m = *motion;
   add( std::move( motion ) );
