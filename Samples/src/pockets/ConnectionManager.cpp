@@ -47,7 +47,7 @@ void ConnectionManager::block()
 {
   for( auto &c : mConnections )
   { // constructs a block around the given connection
-    c.block();
+    c.disable();
   }
 }
 
@@ -55,6 +55,6 @@ void ConnectionManager::resume()
 {
   for( auto &c : mConnections )
   { // constructs a block around the given connection
-    c.unblock();
+    c.enable();
   }
 }
