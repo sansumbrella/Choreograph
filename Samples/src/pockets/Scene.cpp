@@ -72,6 +72,6 @@ void Scene::resume()
 void Scene::show( const app::WindowRef &window, bool useWindowBounds )
 {
   mDisplayConnection.disconnect();
-  mDisplayConnection.store( window->getSignalDraw().connect( 1, [this](){ baseDraw(); } ) );
+  mDisplayConnection.store( window->getSignalDraw().connect( 0, [this](){ baseDraw(); } ) );
   if( useWindowBounds ){ setBounds( window->getBounds() ); }
 }

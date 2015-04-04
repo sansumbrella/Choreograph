@@ -46,18 +46,19 @@ public:
   /// disconnects all stored connections
   ~ConnectionManager();
   /// store a signal in manager
-  inline void store( const ci::signals::connection &connection )
+  inline void store( const ci::signals::Connection &connection )
   { mConnections.push_back( connection ); }
   /// disconnect all stored connections permanently
   /// use block to temporarily block connections
   void        disconnect();
+
   /// temporarily stop receiving signals
   void        block();
   /// resume receiving blocked signals
   void        resume();
+
 private:
-  std::vector<ci::signals::connection>              mConnections;
-  std::vector<ci::signals::shared_connection_block> mBlocks;
+  std::vector<ci::signals::Connection>              mConnections;
 };
 
 } // namespace pockets

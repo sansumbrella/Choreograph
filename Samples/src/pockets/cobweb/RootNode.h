@@ -46,7 +46,7 @@ namespace pockets
     void            unblock() { mConnectionManager.resume(); }
   private:
     //! store a connection so it can be blocked/unblocked/disconnected later
-    void            storeConnection( const ci::signals::connection &connection ){ mConnectionManager.store( connection ); }
+    void            storeConnection( const ci::signals::Connection &connection ){ mConnectionManager.store( connection ); }
     ConnectionManager       mConnectionManager;
   };
 

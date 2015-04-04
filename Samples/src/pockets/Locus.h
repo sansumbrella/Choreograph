@@ -28,7 +28,6 @@
 #pragma once
 #include "Pockets.h"
 #include "cinder/Vector.h"
-#include "cinder/MatrixAffine2.h"
 #include "cinder/Matrix.h"
 #include "cinder/Quaternion.h"
 
