@@ -50,7 +50,7 @@ void SamplesApp::setup()
   _gui.connect( getWindow() );
 
   // Draw our app first, so samples show up over top.
-  getWindow()->getSignalDraw().connect( 0, [this] {
+  getWindow()->getSignalDraw().connect( 1, [this] {
     gl::clear( Color::black() );
     _gui.deepDraw();
   } );
