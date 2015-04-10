@@ -123,9 +123,7 @@ Include the headers in your search path and add the .cpp files to your project (
 
 Choreograph itself has no third-party dependencies.
 
-You do need a modern C++ compiler. Choreograph is known to work with Apple LLVM 6.0 (Clang 600), and Visual Studio 2013.
-
-On Clang, make sure you specify C++14 or C++1y as your language dialect (-std=c++14), as std::make_unique didn’t make it in the standard until just after C++11.
+You do need a modern C++ compiler, since Choreograph takes advantage of a number of C++11 features. Choreograph is known to work with Apple LLVM 6.0 (Clang 600), and Visual Studio 2013.
 
 ### Building the Tests
 
