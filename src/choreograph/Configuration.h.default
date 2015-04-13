@@ -25,29 +25,19 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma onced
+#pragma once
 
 namespace choreograph
 {
-namespace detail
-{
-/*
-// Xcode Version 6.3 (6D570) breaks template aliases.
-#if __cplusplus < 201402L
-*/
-  // If you aren't using C++14, we define our own make_unique for choreograph::detail
-  template<typename T, typename ...Args>
-  std::unique_ptr<T> make_unique( Args&& ...args )
-  {
-    return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
-  }
-/*
-#else
-  // Use std::make_unique in the choreograph::detail namespace.
-  template<typename T>
-  using make_unique = std::make_unique<T>;
-#endif
-*/
 
-} // namespace detail
+///
+/// Choreograph uses float to measure Time by default.
+/// Add this file to your project include path as Configuration.h
+/// This is set up as an alias so it's easier to change out if needed.
+/// Floats lose precision pretty quickly, but they're fast and don't take up much space.
+/// Switch to double if you need more precision.
+///
+
+using Time = float;
+
 } // namespace choreograph
