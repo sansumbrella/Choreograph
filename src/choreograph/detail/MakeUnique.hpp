@@ -25,25 +25,29 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
+#pragma onced
 
 namespace choreograph
 {
 namespace detail
 {
-
+/*
+// Xcode Version 6.3 (6D570) breaks template aliases.
 #if __cplusplus < 201402L
+*/
   // If you aren't using C++14, we define our own make_unique for choreograph::detail
   template<typename T, typename ...Args>
   std::unique_ptr<T> make_unique( Args&& ...args )
   {
     return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
   }
+/*
 #else
   // Use std::make_unique in the choreograph::detail namespace.
   template<typename T>
   using make_unique = std::make_unique<T>;
 #endif
+*/
 
 } // namespace detail
 } // namespace choreograph
