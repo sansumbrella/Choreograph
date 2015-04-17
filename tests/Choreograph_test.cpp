@@ -217,6 +217,8 @@ TEST_CASE( "Sequences" )
 
     phrase->setEndValue( 500.0f );
     REQUIRE( sequence.getValue( 2.0 ) == 500.0f );
+    REQUIRE( sequence.getPhraseAtTime( 1.8 ) == phrase );
+    REQUIRE( sequence.getPhraseAtIndex( 2 ) == another );
   }
 
   SECTION( "Sequences prevent incorrect splicing." )

@@ -134,6 +134,14 @@ public:
   /// Removes elements from.
   void splice( size_t start_index, size_t elements_to_remove, const std::vector<PhraseRef<T>> &phrases_to_insert );
 
+  /// Returns a shared_ptr to the phrase at the requested index.
+  /// Throws an exception if the index provided is out of bounds.
+  PhraseRef<T> getPhraseAtIndex( size_t index ) { return _phrases.at( index ); }
+  /// Returns the phrase at the requested time.
+  /// If the time is past duration, returns the last phrase in the Sequence.
+  /// If there are no phrases in the sequence, behavior is undefined (asserts in debug builds).
+  PhraseRef<T> getPhraseAtTime( Time time );
+
   //
   // Phrase<T> Equivalents.
   //
@@ -221,6 +229,33 @@ Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
   _duration = calcDuration();
 
   return *this;
+}
+
+template<typename T>
+PhraseRef<T> Sequence<T>::getPhraseAtTime( Time time )
+{
+  assert( ! _phrases.empty() );
+  if( time < 0 )
+  {
+    return _phrases.front();
+  }
+  else if ( time > this->getDuration() )
+  {
+    return _phrases.back();
+  }
+
+  for( const auto &phrase : _phrases )
+  {
+    if( phrase->getDuration() < time ) {
+      time -= phrase->getDuration();
+    }
+    else {
+      return phrase;
+    }
+  }
+
+  // Should be unreachable.
+  return _phrases.back();
 }
 
 template<typename T>
