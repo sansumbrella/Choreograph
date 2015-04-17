@@ -219,6 +219,10 @@ TEST_CASE( "Sequences" )
     REQUIRE( sequence.getValue( 2.0 ) == 500.0f );
     REQUIRE( sequence.getPhraseAtTime( 1.8 ) == phrase );
     REQUIRE( sequence.getPhraseAtIndex( 2 ) == another );
+
+    sequence.replacePhraseAtIndex( 2, sequence.getPhraseAtIndex( 1 ) );
+    REQUIRE( sequence.size() == 4 );
+    REQUIRE( sequence.getPhraseAtIndex( 1 ) == sequence.getPhraseAtIndex( 2 ) );
   }
 
   SECTION( "Sequences prevent incorrect splicing." )

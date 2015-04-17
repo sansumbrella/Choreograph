@@ -131,8 +131,10 @@ public:
   Sequence slice( Time from, Time to ) const;
 
   /// Splices a collection of Phrases into the sequence at \a start_index.
-  /// Removes elements from.
-  void splice( size_t start_index, size_t elements_to_remove, const std::vector<PhraseRef<T>> &phrases_to_insert );
+  /// Removes the specified number of Phrases starting with the phrase at start_index.
+  void splice( size_t start_index, size_t phrases_to_remove, const std::vector<PhraseRef<T>> &phrases_to_insert );
+  /// Replaces a single Phrase in this Sequence.
+  void replacePhraseAtIndex( size_t index, const PhraseRef<T> &phrase ) { splice( index, 1, { phrase } ); }
 
   /// Returns a shared_ptr to the phrase at the requested index.
   /// Throws an exception if the index provided is out of bounds.
@@ -376,11 +378,11 @@ Sequence<T> Sequence<T>::slice( Time from, Time to ) const
 }
 
 template<typename T>
-void Sequence<T>::splice( size_t start_index, size_t elements_to_remove, const std::vector<PhraseRef<T> > &phrases_to_insert )
+void Sequence<T>::splice( size_t start_index, size_t phrases_to_remove, const std::vector<PhraseRef<T> > &phrases_to_insert )
 {
   start_index = std::min( start_index, _phrases.size() );
-  auto last_index = std::min( start_index + elements_to_remove, _phrases.size() );
-  if( elements_to_remove > 0 ) {
+  auto last_index = std::min( start_index + phrases_to_remove, _phrases.size() );
+  if( last_index > start_index ) {
     auto begin = _phrases.begin() + start_index;
     auto end = _phrases.begin() + last_index;
     _phrases.erase( begin, end );
