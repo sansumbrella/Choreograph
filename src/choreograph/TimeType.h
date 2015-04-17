@@ -43,7 +43,7 @@ namespace choreograph
 /// Switch to double if you need more precision.
 ///
 
-using Time = float;
+using Time = double;
 
 /// Wrap \a time past \a duration around \a inflectionPoint.
 inline Time wrapTime( Time time, Time duration, Time inflectionPoint=0.0f )
