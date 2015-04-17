@@ -74,8 +74,12 @@ public:
   }
 
   T getStartValue() const override { return _start_value; }
-
   T getEndValue() const override { return _end_value; }
+
+  void setStartValue( const T &value ) { _start_value = value; }
+  void setEndValue( const T &value ) { _end_value = value; }
+
+  void setLerpFn( const LerpFn &lerp_fn ) { _lerp_fn = lerp_fn; }
 
 private:
   T       _start_value;
