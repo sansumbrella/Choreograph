@@ -128,7 +128,19 @@ public:
 
   /// Returns a Sequence containing the phrases between Times from and to.
   /// Partial phrases at the beginning and end are wrapped in ClipPhrases.
-  Sequence slice( Time from, Time to );
+  Sequence slice( Time from, Time to ) const;
+
+  /// Splices a collection of Phrases into the sequence at \a start_index.
+  /// Removes elements from.
+  void splice( size_t start_index, size_t elements_to_remove, const std::vector<PhraseRef<T>> &phrases_to_insert );
+
+  /// Returns a shared_ptr to the phrase at the requested index.
+  /// Throws an exception if the index provided is out of bounds.
+  PhraseRef<T> getPhraseAtIndex( size_t index ) { return _phrases.at( index ); }
+  /// Returns the phrase at the requested time.
+  /// If the time is past duration, returns the last phrase in the Sequence.
+  /// If there are no phrases in the sequence, behavior is undefined (asserts in debug builds).
+  PhraseRef<T> getPhraseAtTime( Time time );
 
   //
   // Phrase<T> Equivalents.
@@ -161,6 +173,8 @@ public:
 
   /// Returns the number of phrases in the Sequence.
   size_t getPhraseCount() const { return _phrases.size(); }
+  size_t size() const { return _phrases.size(); }
+  bool   empty() const { return _phrases.empty(); }
 
   /// Calculate and return the Sequence duration.
   Time calcDuration() const;
@@ -218,9 +232,36 @@ Sequence<T>& Sequence<T>::then( const Sequence<T> &next )
 }
 
 template<typename T>
+PhraseRef<T> Sequence<T>::getPhraseAtTime( Time time )
+{
+  assert( ! _phrases.empty() );
+  if( time < 0 )
+  {
+    return _phrases.front();
+  }
+  else if ( time > this->getDuration() )
+  {
+    return _phrases.back();
+  }
+
+  for( const auto &phrase : _phrases )
+  {
+    if( phrase->getDuration() < time ) {
+      time -= phrase->getDuration();
+    }
+    else {
+      return phrase;
+    }
+  }
+
+  // Should be unreachable.
+  return _phrases.back();
+}
+
+template<typename T>
 T Sequence<T>::getValue( Time atTime ) const
 {
-  if( atTime < 0.0f )
+  if( atTime < 0 )
   {
     return _initial_value;
   }
@@ -303,7 +344,7 @@ Time Sequence<T>::getTimeAtInflection( size_t inflection ) const
 }
 
 template<typename T>
-Sequence<T> Sequence<T>::slice( Time from, Time to )
+Sequence<T> Sequence<T>::slice( Time from, Time to ) const
 {
   if( _phrases.empty() ) {
     return Sequence<T>( PhraseRef<T>( std::make_shared<Hold<T>>( to - from, _initial_value ) ) );
@@ -332,6 +373,22 @@ Sequence<T> Sequence<T>::slice( Time from, Time to )
     Time t = getTimeAtInflection( points.first );
     return Sequence<T>( PhraseRef<T>( std::make_shared<ClipPhrase<T>>( first, from - t, to - t ) ) );
   }
+}
+
+template<typename T>
+void Sequence<T>::splice( size_t start_index, size_t elements_to_remove, const std::vector<PhraseRef<T> > &phrases_to_insert )
+{
+  start_index = std::min( start_index, _phrases.size() );
+  auto last_index = std::min( start_index + elements_to_remove, _phrases.size() );
+  if( elements_to_remove > 0 ) {
+    auto begin = _phrases.begin() + start_index;
+    auto end = _phrases.begin() + last_index;
+    _phrases.erase( begin, end );
+  }
+
+  auto begin = _phrases.begin() + start_index;
+  _phrases.insert( begin, phrases_to_insert.begin(), phrases_to_insert.end() );
+  _duration = calcDuration();
 }
 
 //=================================================

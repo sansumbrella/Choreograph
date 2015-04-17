@@ -202,6 +202,34 @@ TEST_CASE( "Sequences" )
     REQUIRE( sequence.getValue( 1.0f ) == sequence.getValue( 4.0f ) );
   }
 
+  SECTION( "Phrases can be spliced into sequences." )
+  {
+    REQUIRE( sequence.size() == 3 );
+    sequence.splice( 1, 1, {} ); // 0-1, 10-100
+    REQUIRE( sequence.size() == 2 );
+
+    auto phrase = makeRamp( 10.0f, 50.0f, 1.0 );
+    auto another = makeReverse<float>( phrase );
+    sequence.splice( 1, 0, { phrase, another } ); // 0-1, 10-50, 50-10, 10-100
+    REQUIRE( sequence.size() == 4 );
+    REQUIRE( sequence.getDuration() == 4.0 );
+    REQUIRE( sequence.getValue( 2.0 ) == 50.0f );
+
+    phrase->setEndValue( 500.0f );
+    REQUIRE( sequence.getValue( 2.0 ) == 500.0f );
+    REQUIRE( sequence.getPhraseAtTime( 1.8 ) == phrase );
+    REQUIRE( sequence.getPhraseAtIndex( 2 ) == another );
+  }
+
+  SECTION( "Sequences prevent incorrect splicing." )
+  {
+    sequence.splice( 100, 100, {} );
+    REQUIRE( sequence.size() == 3 );
+
+    sequence.splice( 0, 100, {} );
+    REQUIRE( sequence.size() == 0 );
+  }
+
 }
 
 //==========================================
@@ -669,19 +697,19 @@ TEST_CASE( "Callbacks" )
       .updateFn( [&updateTarget, &target, &updateCount] ( Motion<float> &m ) { updateTarget = target() / 2.0f; updateCount++; } )
       .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
 
-    const float step = timeline.timeUntilFinish() / 10.0f;
+    const float step = timeline.timeUntilFinish() / 10.0;
     timeline.step( step );
     REQUIRE( startCalled );
     REQUIRE( updateCount == 1 );
-    REQUIRE( updateTarget == (target / 2.0f) );
+    REQUIRE( updateTarget == (target / 2.0) );
 
-    for( int i = 0; i < 10; i += 1 ) {
+    for( int i = 0; i < 9; i += 1 ) {
       REQUIRE_FALSE( endCalled );
       timeline.step( step );
     }
 
     REQUIRE( endCalled );
-    REQUIRE( updateCount == 11 );
+    REQUIRE( updateCount == 10 );
   }
 
   SECTION( "Functions can be cued by sequence inflection points." )
