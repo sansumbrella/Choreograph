@@ -27,7 +27,6 @@
 
 #include "Timeline.h"
 #include "detail/VectorManipulation.hpp"
-#include "MotionGroup.h"
 
 using namespace choreograph;
 
@@ -125,11 +124,6 @@ void Timeline::add( TimelineItemUniqueRef item )
   else {
     _items.emplace_back( std::move( item ) );
   }
-}
-
-void Timeline::add( Timeline &&timeline )
-{
-  add( std::move( detail::make_unique<MotionGroup>( std::move( timeline ) ) ) );
 }
 
 TimelineOptions Timeline::cue( const std::function<void ()> &fn, Time delay )

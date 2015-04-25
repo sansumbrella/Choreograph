@@ -30,7 +30,6 @@
 // Timeline.h includes most of Choreograph.
 #include "Timeline.h"
 
-#include "MotionGroup.h"
 #include "phrase/Ramp.hpp"
 #include "phrase/Hold.hpp"
 #include "phrase/Retime.hpp"

@@ -268,22 +268,22 @@ TEST_CASE( "Motions" )
 
 TEST_CASE( "Motion Groups" )
 {
-  auto group = detail::make_unique<MotionGroup>();
-  auto &group_timeline = group->timeline();
+  auto group = std::make_shared<Timeline>();
+  auto &group_timeline = *group;
   Output<int> target = 0;
   Timeline timeline;
 
   SECTION( "Timelines are composable." )
   {
-    Timeline t2;
+    auto t2 = std::make_shared<Timeline>();
     int receiver = 0;
-    t2.apply( &target )
+    t2->apply( &target )
       .then<RampTo>( 50, 1.0f );
-    t2.cue( [&receiver] {
+    t2->cue( [&receiver] {
         receiver = 100;
       }, 0.4f );
 
-    timeline.add( std::move( t2 ) );
+    timeline.add( t2 );
     timeline.step( 0.5f );
 
     REQUIRE( target == 25 );
@@ -315,8 +315,8 @@ TEST_CASE( "Motion Groups" )
 
     SECTION( "Looping the group still calls child callbacks." )
     {
-      group->setFinishFn( [] ( MotionGroup &g ) {
-        g.resetTime();
+      group->setFinishFn( [group] () {
+        group->resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
       timeline.add( std::move( group ) );
@@ -332,10 +332,10 @@ TEST_CASE( "Motion Groups" )
 
     SECTION( "Ping-pong looping group works, too." )
     {
-      group->setFinishFn( [] ( MotionGroup &g ) {
+      group->setFinishFn( [group] () {
         // MotionGroup overrides customSetPlaybackSpeed to inform children.
-        g.setPlaybackSpeed( -1 * g.getPlaybackSpeed() );
-        g.resetTime();
+        group->setPlaybackSpeed( -1 * group->getPlaybackSpeed() );
+        group->resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
       timeline.add( std::move( group ) );
