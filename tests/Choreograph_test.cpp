@@ -268,14 +268,15 @@ TEST_CASE( "Motions" )
 
 TEST_CASE( "Motion Groups" )
 {
-  auto group = std::make_shared<Timeline>();
+  auto group = ch::detail::make_unique<Timeline>();
+  group->setDefaultRemoveOnFinish( false );
   auto &group_timeline = *group;
   Output<int> target = 0;
   Timeline timeline;
 
   SECTION( "Timelines are composable." )
   {
-    auto t2 = std::make_shared<Timeline>();
+    auto t2 = ch::detail::make_unique<Timeline>();
     int receiver = 0;
     t2->apply( &target )
       .then<RampTo>( 50, 1.0f );
@@ -283,10 +284,10 @@ TEST_CASE( "Motion Groups" )
         receiver = 100;
       }, 0.4f );
 
-    timeline.add( t2 );
+    timeline.add( std::move( t2 ) );
     timeline.step( 0.5f );
 
-    REQUIRE( target == 25 );
+    REQUIRE( target() == 25 );
     REQUIRE( receiver == 100 );
   }
 
@@ -315,8 +316,8 @@ TEST_CASE( "Motion Groups" )
 
     SECTION( "Looping the group still calls child callbacks." )
     {
-      group->setFinishFn( [group] () {
-        group->resetTime();
+      group->setFinishFn( [&group_timeline] () {
+        group_timeline.resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
       timeline.add( std::move( group ) );
@@ -326,16 +327,16 @@ TEST_CASE( "Motion Groups" )
       }
 
       REQUIRE( start_count == 4 );
-      REQUIRE( finish_count == 3 );
       REQUIRE( update_count == 32 );
+      REQUIRE( finish_count == 3 );
     }
 
-    SECTION( "Ping-pong looping group works, too." )
+    SECTION( "Ping-pong looping a group works, too." )
     {
-      group->setFinishFn( [group] () {
+      group->setFinishFn( [&group_timeline] () {
         // MotionGroup overrides customSetPlaybackSpeed to inform children.
-        group->setPlaybackSpeed( -1 * group->getPlaybackSpeed() );
-        group->resetTime();
+        group_timeline.setPlaybackSpeed( -1 * group_timeline.getPlaybackSpeed() );
+        group_timeline.resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
       timeline.add( std::move( group ) );
@@ -344,9 +345,11 @@ TEST_CASE( "Motion Groups" )
         timeline.step( 0.1f );
       }
 
-      REQUIRE( start_count == 4 );
-      REQUIRE( finish_count == 3 );
+      // We only pass the start and finish of our motion going forward twice.
+      // We also pass them each going backward, but that doesn't trigger our functions.
+      REQUIRE( start_count == 2 );
       REQUIRE( update_count == 32 );
+      REQUIRE( finish_count == 2 );
     }
 
   }
@@ -804,11 +807,11 @@ TEST_CASE( "Callbacks" )
     }
   }
 
-  SECTION( "It is safe to destroy a Timeline from the Timeline finish fn." )
+  SECTION( "It is safe to destroy a Timeline from its clearFn." )
   {
     auto self_destructing_timeline = detail::make_unique<Timeline>();
     self_destructing_timeline->apply( &target, sequence );
-    self_destructing_timeline->setFinishFn( [&self_destructing_timeline] {
+    self_destructing_timeline->setClearedFn( [&self_destructing_timeline] {
       self_destructing_timeline.reset();
     } );
 

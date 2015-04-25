@@ -43,6 +43,13 @@ void Timeline::removeFinishedAndInvalidMotions()
   detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->cancelled(); } );
 }
 
+void Timeline::customSetTime( Time time )
+{
+  for( auto &item : _items ) {
+    item->setTime( time );
+  }
+}
+
 void Timeline::update()
 {
   _updating = true;
@@ -62,15 +69,23 @@ void Timeline::postUpdate()
 
   processQueue();
 
-  bool is_empty = empty();
-
-  // Call finish function last if provided.
-  // We do this here so it's safe to destroy the timeline from the callback.
-  if( _finish_fn ) {
-    if( is_empty && ! was_empty ) {
+  if( _finish_fn )
+  {
+    if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
       _finish_fn();
     }
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
+      _finish_fn();
+    }
+  }
 
+  // Call cleared function last if provided.
+  // We do this here so it's safe to destroy the timeline from the callback.
+  bool is_empty = empty();
+  if( _cleared_fn ) {
+    if( is_empty && ! was_empty ) {
+      _cleared_fn();
+    }
   }
 }
 

@@ -100,9 +100,11 @@ public:
   /// Returns the number of items on this timeline.
   size_t size() const { return _items.size(); }
 
+  /// Sets a function to be called when this timeline reaches its end, but is not necessarily empty.
+  void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
   /// Sets a function to be called when this timeline becomes empty.
   /// It is safe to destroy the timeline from this callback, unlike any Cue.
-  void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
+  void setClearedFn( const std::function<void ()> &fn ) { _cleared_fn = fn; }
 
   /// Returns the time (from now) at which all TimelineItems on this timeline will be finished.
   /// Cannot take into account Cues or Callbacks that may change the Timeline before finish.
@@ -118,7 +120,7 @@ public:
   /// Set whether motions should be removed when finished. Default is true.
   /// This value will be passed to all future TimelineItems created by the timeline.
   /// Does not affect TimelineItems already on the Timeline.
-  void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
+  void setDefaultRemoveOnFinish( bool doRemove ) { _default_remove_on_finish = doRemove; }
 
   /// Remove all items from this timeline.
   /// Do not call from a callback.
@@ -148,6 +150,9 @@ public:
   std::vector<TimelineItemUniqueRef>::const_iterator begin( ) const { return _items.cbegin( ); }
   std::vector<TimelineItemUniqueRef>::const_iterator end( ) const { return _items.cend( ); }
 
+protected:
+  void customSetTime( Time time ) override;
+
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
@@ -157,6 +162,7 @@ private:
   std::vector<TimelineItemUniqueRef>  _queue;
   bool                                _updating = false;
   std::function<void ()>              _finish_fn = nullptr;
+  std::function<void ()>        _cleared_fn = nullptr;
 
 
   // Clean up finished motions and add queued motions after update.
