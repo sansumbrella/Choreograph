@@ -44,24 +44,11 @@ void Timeline::removeFinishedAndInvalidMotions()
   detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->cancelled(); } );
 }
 
-void Timeline::step( Time dt )
+void Timeline::update()
 {
-  // Update all animation outputs.
   _updating = true;
-  for( auto &c : _items ) {
-    c->step( dt );
-  }
-  _updating = false;
-
-  postUpdate();
-}
-
-void Timeline::jumpTo( Time time )
-{
-  // Update all animation outputs.
-  _updating = true;
-  for( auto &c : _items ) {
-    c->jumpTo( time );
+  for( auto &item : _items ) {
+    item->step( time() - previousTime() );
   }
   _updating = false;
 

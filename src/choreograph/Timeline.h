@@ -43,7 +43,7 @@ namespace choreograph
 ///
 /// Timelines are move-only because they contain unique_ptrs.
 ///
-class Timeline
+class Timeline : public TimelineItem
 {
 public:
   Timeline() = default;
@@ -92,16 +92,8 @@ public:
   // Time manipulation.
   //=================================================
 
-  /// Advance all current items by \a dt time.
-  /// Recommended method of updating the timeline.
-  /// Do not call from a callback.
-  void step( Time dt );
-
-  /// Set all motions to \a time.
-  /// Useful for scrubbing Timelines with non-removed items.
-  /// Ignores the playback speed of TimelineItems, as it calls TimelineItem::jumpTo.
-  /// Do not call from a callback.
-  void jumpTo( Time time );
+  /// Updates all timeline items to the current time.
+  void update() override;
 
   //=================================================
   // Timeline querying methods and callbacks.
