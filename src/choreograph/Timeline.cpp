@@ -71,7 +71,8 @@ void Timeline::postUpdate()
 
   if( _finish_fn )
   {
-    if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
+    auto d = getDuration();
+    if( forward() && time() >= d && previousTime() < d ) {
       _finish_fn();
     }
     else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {

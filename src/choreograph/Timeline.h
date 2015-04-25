@@ -164,7 +164,6 @@ private:
   std::function<void ()>              _finish_fn = nullptr;
   std::function<void ()>        _cleared_fn = nullptr;
 
-
   // Clean up finished motions and add queued motions after update.
   // Calls finish function if we went from having items to no items this iteration.
   void postUpdate();
