@@ -591,9 +591,9 @@ TEST_CASE( "Cues" )
     {
       options.playbackSpeed( -1 );
 
-      timeline.jumpTo( 1.1f );
-      timeline.jumpTo( 0.5f );
-      timeline.jumpTo( 1.1f );
+      timeline.jumpTo( -1.1f );
+      timeline.jumpTo( -0.5f );
+      timeline.jumpTo( -1.1f );
 
       REQUIRE( call_count == 1 );
     }
