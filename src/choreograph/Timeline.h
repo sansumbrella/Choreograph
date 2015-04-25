@@ -114,7 +114,7 @@ public:
   /// Useful information to cache when scrubbing Timelines with non-removed items.
   Time timeUntilFinish() const;
 
-  Time getDuration() const;
+  Time getDuration() const override;
 
   //=================================================
   // Timeline element manipulation.
