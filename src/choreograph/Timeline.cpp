@@ -30,6 +30,26 @@
 
 using namespace choreograph;
 
+namespace
+{
+
+// A single-item timeline for wrapping shared TimelineItems.
+class PassthroughTimelineItem : public TimelineItem
+{
+public:
+  explicit PassthroughTimelineItem( const TimelineItemRef &item )
+  : _item( item )
+  {}
+
+  void update() override { _item->step( deltaTime() ); }
+  Time getDuration() const override { return _item->getDuration(); }
+  const void* getTarget() const override { return _item->getTarget(); }
+private:
+  TimelineItemRef _item;
+};
+
+} // namespace
+
 Timeline::Timeline( Timeline &&rhs )
 : _default_remove_on_finish( std::move( rhs._default_remove_on_finish ) ),
 _items( std::move( rhs._items ) ),
@@ -54,7 +74,7 @@ void Timeline::update()
 {
   _updating = true;
   for( auto &item : _items ) {
-    item->step( time() - previousTime() );
+    item->step( deltaTime() );
   }
   _updating = false;
 
@@ -130,7 +150,7 @@ void Timeline::cancel( void *output )
   }
 }
 
-void Timeline::add( TimelineItemUniqueRef item )
+void Timeline::add( TimelineItemUniqueRef &&item )
 {
   item->setRemoveOnFinish( _default_remove_on_finish );
 
@@ -140,6 +160,22 @@ void Timeline::add( TimelineItemUniqueRef item )
   else {
     _items.emplace_back( std::move( item ) );
   }
+}
+
+TimelineOptions Timeline::addShared( const TimelineItemRef &shared )
+{
+  auto item = detail::make_unique<PassthroughTimelineItem>( shared );
+  item->setRemoveOnFinish( _default_remove_on_finish );
+  auto &ref = *shared;
+
+  if( _updating ) {
+    _queue.emplace_back( std::move( item ) );
+  }
+  else {
+    _items.emplace_back( std::move( item ) );
+  }
+
+  return TimelineOptions( ref );
 }
 
 TimelineOptions Timeline::cue( const std::function<void ()> &fn, Time delay )

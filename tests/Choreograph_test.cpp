@@ -268,7 +268,7 @@ TEST_CASE( "Motions" )
 
 TEST_CASE( "Motion Groups" )
 {
-  auto group = ch::detail::make_unique<Timeline>();
+  auto group = std::make_shared<Timeline>();
   group->setDefaultRemoveOnFinish( false );
   auto &group_timeline = *group;
   Output<int> target = 0;
@@ -320,7 +320,7 @@ TEST_CASE( "Motion Groups" )
         group_timeline.resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
-      timeline.add( std::move( group ) );
+      timeline.addShared( group );
 
       for( int i = 0; i < 32; i += 1 ) {
         timeline.step( 0.1f );
@@ -339,7 +339,7 @@ TEST_CASE( "Motion Groups" )
         group_timeline.resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
-      timeline.add( std::move( group ) );
+      timeline.addShared( group );
 
       for( int i = 0; i < 32; i += 1 ) {
         timeline.step( 0.1f );

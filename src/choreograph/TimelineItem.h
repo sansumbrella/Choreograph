@@ -127,6 +127,9 @@ public:
   /// Returns previous step's animation time in seconds.
   Time previousTime() const { return _previous_time - _start_time; }
 
+  /// Returns the delta time this animation step in seconds.
+  Time deltaTime() const { return _time - _previous_time; }
+
   /// Returns true if animation plays forward with positive time steps.
   bool  forward() const { return _speed >= 0.0f; }
 

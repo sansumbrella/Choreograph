@@ -81,7 +81,11 @@ public:
 
   /// Add an item to the timeline. Called by append/apply/cue methods.
   /// Use to pass in MotionGroups and other types that Timeline doesn't create.
-  void add( TimelineItemUniqueRef item );
+  void add( TimelineItemUniqueRef &&item );
+
+  /// Add a shared item to the timeline.
+  /// Use in advanced cases when you want to maintain the TimelineItem outside the Timeline.
+  TimelineOptions addShared( const TimelineItemRef &item );
 
   //=================================================
   // Time manipulation.
