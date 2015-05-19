@@ -38,6 +38,6 @@ namespace choreograph
 /// Switch to double if you need more precision.
 ///
 
-using Time = float;
+using Time = double;
 
 } // namespace choreograph

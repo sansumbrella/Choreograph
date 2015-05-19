@@ -720,7 +720,7 @@ TEST_CASE( "Callbacks" )
   {
     int c1 = 0;
     int c2 = 0;
-    bool triggered = false;
+    int trigger_count = 0;
 
     timeline.apply( &target )
       .hold( 0.5f )
@@ -734,7 +734,9 @@ TEST_CASE( "Callbacks" )
       .then<RampTo>( 2.0f, 1.0f );
 
     timeline.append( &target )
-      .onInflection( [&triggered] (Motion<float> &m) { triggered = true; } )
+      .onInflection( [&trigger_count] (Motion<float> &m) { trigger_count += 1; } )
+      .hold( 0.001 )
+      .onInflection( [&trigger_count] (Motion<float> &m) { trigger_count += 1; } )
       .hold( 1.0 );
 
     timeline.step( 0.49f );
@@ -750,7 +752,7 @@ TEST_CASE( "Callbacks" )
     REQUIRE( c1 == 1 );
 
     timeline.step( 2.0f );
-    REQUIRE( triggered );
+    REQUIRE( trigger_count == 2 );
   }
 
   SECTION( "It is safe to add and cancel motions from Cues and Motion callbacks." )
