@@ -6,7 +6,7 @@
 
 // If true, will test vec2 and vec3 animation.
 // You must have GLM in the search path for this to work.
-#define TEST_WITH_GLM_VECTORS 1
+#define TEST_WITH_GLM_VECTORS 0
 
 using namespace std;
 using namespace choreograph;
@@ -720,6 +720,7 @@ TEST_CASE( "Callbacks" )
   {
     int c1 = 0;
     int c2 = 0;
+    int trigger_count = 0;
 
     timeline.apply( &target )
       .hold( 0.5f )
@@ -732,6 +733,12 @@ TEST_CASE( "Callbacks" )
       } )
       .then<RampTo>( 2.0f, 1.0f );
 
+    timeline.append( &target )
+      .onInflection( [&trigger_count] (Motion<float> &m) { trigger_count += 1; } )
+      .hold( 0.001 )
+      .onInflection( [&trigger_count] (Motion<float> &m) { trigger_count += 1; } )
+      .hold( 1.0 );
+
     timeline.step( 0.49f );
     timeline.step( 0.02f );
     REQUIRE( c1 == 1 );
@@ -743,6 +750,9 @@ TEST_CASE( "Callbacks" )
     timeline.jumpTo( 1.49f );
     REQUIRE( c2 == 2 );
     REQUIRE( c1 == 1 );
+
+    timeline.step( 2.0f );
+    REQUIRE( trigger_count == 2 );
   }
 
   SECTION( "It is safe to add and cancel motions from Cues and Motion callbacks." )
