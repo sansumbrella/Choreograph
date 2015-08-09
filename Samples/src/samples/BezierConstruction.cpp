@@ -98,7 +98,7 @@ void BezierConstruction::update( Time dt )
 void BezierConstruction::draw()
 {
   gl::ScopedColor       color( Color::white() );
-  gl::ScopedAlphaBlend  blend( false );
+  gl::ScopedBlendAlpha  blend;
   Color curve_color( 1.0f, 1.0f, 0.0f );
   Color control_color( 1.0f, 0.0f, 1.0f );
   Color line_color( 0.0f, 1.0f, 1.0f );

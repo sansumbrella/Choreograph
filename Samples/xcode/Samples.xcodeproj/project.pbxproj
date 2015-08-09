@@ -33,6 +33,8 @@
 		15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1319E1CCA20053395A /* BezierConstruction.cpp */; };
 		1590BDD41A28D88400B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDD31A28D88400B60050 /* MotionGroup.cpp */; };
 		15BA7BBC19DF2799003E13A5 /* Quaternions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BBA19DF2799003E13A5 /* Quaternions.cpp */; };
+		15C9C2A21B76D76300C38ABF /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C9C2A11B76D76300C38ABF /* IOSurface.framework */; };
+		15C9C2A41B76D76C00C38ABF /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C9C2A31B76D76C00C38ABF /* IOKit.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		734B27ABC09048BA95ABD6C6 /* SamplesApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 97D5B20D41E04ADB9573CB6A /* SamplesApp.cpp */; };
@@ -102,6 +104,8 @@
 		1590BDD31A28D88400B60050 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
 		15BA7BBA19DF2799003E13A5 /* Quaternions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quaternions.cpp; sourceTree = "<group>"; };
 		15BA7BBB19DF2799003E13A5 /* Quaternions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quaternions.h; sourceTree = "<group>"; };
+		15C9C2A11B76D76300C38ABF /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		15C9C2A31B76D76C00C38ABF /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		2F3A6B0BE73D4A6984B10405 /* Samples_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = Samples_Prefix.pch; sourceTree = "<group>"; };
@@ -118,6 +122,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15C9C2A41B76D76C00C38ABF /* IOKit.framework in Frameworks */,
+				15C9C2A21B76D76300C38ABF /* IOSurface.framework in Frameworks */,
 				006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */,
 				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -332,6 +338,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				15C9C2A31B76D76C00C38ABF /* IOKit.framework */,
+				15C9C2A11B76D76300C38ABF /* IOSurface.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -503,12 +511,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = ../../../..;
+				CINDER_PATH = "$(CINDER_PATH_IN_BLOCKS)";
+				CINDER_PATH_ADJACENT = ../../../cinder/master;
+				CINDER_PATH_IN_BLOCKS = ../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -520,12 +530,14 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = ../../../..;
+				CINDER_PATH = "$(CINDER_PATH_IN_BLOCKS)";
+				CINDER_PATH_ADJACENT = ../../../cinder/master;
+				CINDER_PATH_IN_BLOCKS = ../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../../src";

@@ -76,7 +76,7 @@ void WormBuncher::connect( app::WindowRef window )
     vec3 bounds( 100 );
     float delay = 0.0f;
     for( auto &segment : _segments ) {
-      vec3 pos = randVec3f() * bounds + center;
+      vec3 pos = randVec3() * bounds + center;
       timeline().append( &segment.position ).hold( delay ).then<RampTo3>( pos, 0.5f, EaseInOutQuad(), EaseInOutCubic(), EaseInOutAtan() );
 
       delay += 0.005f;
@@ -104,7 +104,7 @@ void WormBuncher::update( Time dt )
 
 void WormBuncher::draw()
 {
-  gl::ScopedAlphaBlend blend( false );
+  gl::ScopedBlendAlpha blend;
 
   gl::drawString( "Worm Buncher. Click/touch to interact.", vec2( 10, 30 ) );
 
