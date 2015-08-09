@@ -37,10 +37,10 @@ void Quaternions::setup()
 {
   // Apply a ramp to the continous orientation.
   timeline().apply( &_continuous_orientation )
-    .then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() )
+    .then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3() ), 1.0f, EaseInOutCubic() )
     .finishFn( [this] (Motion<quat> &m) {
       // Extend this sequence into the future.
-      m.getSequence().then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3f() ), 1.0f, EaseInOutCubic() );
+      m.getSequence().then<RampTo>( glm::angleAxis( (float)(randFloat() * M_PI * 2), randVec3() ), 1.0f, EaseInOutCubic() );
       // Erase all completed phrases from this sequence.
       m.cutPhrasesBefore( m.time() );
     } );

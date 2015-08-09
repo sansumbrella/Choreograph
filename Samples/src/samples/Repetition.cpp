@@ -130,7 +130,7 @@ void Repetition::update( Time dt )
 void Repetition::draw()
 {
   gl::ScopedModelMatrix matrix;
-  gl::ScopedAlphaBlend blend( false );
+  gl::ScopedBlendAlpha blend;
 
   {
     gl::ScopedModelMatrix singleDotMatrix;
