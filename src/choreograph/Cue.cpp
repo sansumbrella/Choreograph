@@ -26,6 +26,7 @@
  */
 
 #include "Cue.h"
+#include <limits>
 
 using namespace choreograph;
 using namespace std;
