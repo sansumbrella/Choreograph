@@ -159,6 +159,8 @@ public:
   /// Append a Hold to the end of the Sequence. Assumes you want to hold using the Sequence's current end value.
   SelfT& hold( Time duration ) { _sequence.template then<Hold>( _sequence.getEndValue(), duration ); return *this; }
 
+	SelfT& holdUntil( Time time ) { _sequence.template then<Hold>( _sequence.getEndValue(), std::max<Time>( time - _sequence.getDuration(), 0 ) ); return *this; }
+
   //=================================================
   // Accessors to Motion and Sequence.
   //=================================================
