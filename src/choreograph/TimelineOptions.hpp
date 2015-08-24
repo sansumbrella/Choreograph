@@ -63,6 +63,8 @@ public:
   /// For Motions, this is akin to adding a hold at the beginning of the Sequence.
   Derived& setStartTime( Time t ) { _item.setStartTime( t ); return self(); }
 
+	TimelineItem& getItem() { return _item; }
+
   /// Returns a shared_ptr to the control object for the Item. Allows you to cancel the Item later.
   TimelineItemControlRef  getControl() { return _item.getControl(); }
 
