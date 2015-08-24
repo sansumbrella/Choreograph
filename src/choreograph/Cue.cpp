@@ -37,13 +37,30 @@ using namespace std;
 Cue::Cue( const function<void ()> &fn, Time delay ):
 _cue( fn )
 {
-  setStartTime( delay );
+  if( delay > numeric_limits<Time>::epsilon() )
+  {
+    setStartTime( delay );
+  }
+  else
+  {
+    setStartTime( numeric_limits<Time>::epsilon() );
+  }
 }
 
 void Cue::update()
 {
-  if( forward() && time() >= 0.0f && previousTime() < 0.0f )
-    _cue();
-  else if( backward() && time() <= 0.0f && previousTime() > 0.0f )
-    _cue();
+  if( forward() )
+  {
+    if( time() >= 0.0f && previousTime() < 0.0f )
+    {
+      _cue();
+    }
+  }
+  else if ( backward() )
+  {
+    if( time() <= 0.0f && previousTime() > 0.0f )
+    {
+      _cue();
+    }
+  }
 }

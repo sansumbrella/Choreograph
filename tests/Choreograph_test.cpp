@@ -550,6 +550,15 @@ TEST_CASE( "Cues" )
     REQUIRE( call_count == 1 );
   }
 
+  SECTION( "Cues at time zero are called." )
+  {
+    auto cc = 0;
+    timeline.cue( [&cc] { cc += 1; }, 0 );
+    timeline.step( 0.1 );
+
+    REQUIRE( cc == 1 );
+  }
+
   SECTION( "Cues can be cancelled by Handle." )
   {
     auto handle = options.getControl();
