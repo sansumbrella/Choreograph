@@ -455,6 +455,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CINDER_PATH = "$(CINDER_PATH_ADJACENT)";
+				CINDER_PATH_ADJACENT = ../../../cinder/;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -483,6 +484,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CINDER_PATH = "$(CINDER_PATH_ADJACENT)";
+				CINDER_PATH_ADJACENT = ../../../cinder/;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;

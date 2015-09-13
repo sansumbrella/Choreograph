@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		15067F4F1BA5D7CA00F7957C /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15067F4E1BA5D7CA00F7957C /* IOSurface.framework */; };
+		15067F511BA5D83300F7957C /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15067F501BA5D83300F7957C /* IOKit.framework */; };
 		1515D27719C5D774002CB6A6 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		1515D27819C5D774002CB6A6 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		1515D27919C5D774002CB6A6 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */; };
@@ -69,6 +71,8 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		15067F4E1BA5D7CA00F7957C /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		15067F501BA5D83300F7957C /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = Benchmarks_test.cpp; path = ../Benchmarks_test.cpp; sourceTree = "<group>"; };
 		1515D28519C5D774002CB6A6 /* BenchmarkTests */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = BenchmarkTests; sourceTree = BUILT_PRODUCTS_DIR; };
 		151E370719EC1930009C943E /* Cue.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Cue.cpp; sourceTree = "<group>"; };
@@ -115,6 +119,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				15067F511BA5D83300F7957C /* IOKit.framework in Frameworks */,
+				15067F4F1BA5D7CA00F7957C /* IOSurface.framework in Frameworks */,
 				1515D27719C5D774002CB6A6 /* AudioToolbox.framework in Frameworks */,
 				1515D27819C5D774002CB6A6 /* AudioUnit.framework in Frameworks */,
 				1515D27919C5D774002CB6A6 /* CoreVideo.framework in Frameworks */,
@@ -283,6 +289,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				15067F501BA5D83300F7957C /* IOKit.framework */,
+				15067F4E1BA5D7CA00F7957C /* IOSurface.framework */,
 				15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */,
 				15F905D919C4A31B003C06A4 /* OpenGL.framework */,
 				15F905D719C4A316003C06A4 /* Cocoa.framework */,
@@ -538,7 +546,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = ../../../..;
+				CINDER_PATH = "$(CINDER_PATH_ADJACENT)";
+				CINDER_PATH_ADJACENT = ../../../cinder/;
+				CINDER_PATH_IN_BLOCKS = ../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -555,7 +565,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CINDER_PATH = ../../../..;
+				CINDER_PATH = "$(CINDER_PATH_ADJACENT)";
+				CINDER_PATH_ADJACENT = ../../../cinder/;
+				CINDER_PATH_IN_BLOCKS = ../../../..;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
