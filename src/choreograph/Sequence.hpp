@@ -30,6 +30,7 @@
 #include "Phrase.hpp"
 #include "phrase/Hold.hpp"
 #include "phrase/Retime.hpp"
+#include <assert.h>
 
 namespace choreograph
 {
