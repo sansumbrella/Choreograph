@@ -27,9 +27,28 @@
 
 #include "Timeline.h"
 #include "detail/VectorManipulation.hpp"
-#include "MotionGroup.h"
 
 using namespace choreograph;
+
+namespace
+{
+
+// A single-item timeline for wrapping shared TimelineItems.
+class PassthroughTimelineItem : public TimelineItem
+{
+public:
+  explicit PassthroughTimelineItem( const TimelineItemRef &item )
+  : _item( item )
+  {}
+
+  void update() override { _item->step( deltaTime() ); }
+  Time getDuration() const override { return _item->getDuration(); }
+  const void* getTarget() const override { return _item->getTarget(); }
+private:
+  TimelineItemRef _item;
+};
+
+} // namespace
 
 Timeline::Timeline( Timeline &&rhs )
 : _default_remove_on_finish( std::move( rhs._default_remove_on_finish ) ),
@@ -44,24 +63,18 @@ void Timeline::removeFinishedAndInvalidMotions()
   detail::erase_if( &_items, [] ( const TimelineItemUniqueRef &motion ) { return (motion->getRemoveOnFinish() && motion->isFinished()) || motion->cancelled(); } );
 }
 
-void Timeline::step( Time dt )
+void Timeline::customSetTime( Time time )
 {
-  // Update all animation outputs.
-  _updating = true;
-  for( auto &c : _items ) {
-    c->step( dt );
+  for( auto &item : _items ) {
+    item->setTime( time );
   }
-  _updating = false;
-
-  postUpdate();
 }
 
-void Timeline::jumpTo( Time time )
+void Timeline::update()
 {
-  // Update all animation outputs.
   _updating = true;
-  for( auto &c : _items ) {
-    c->jumpTo( time );
+  for( auto &item : _items ) {
+    item->step( deltaTime() );
   }
   _updating = false;
 
@@ -76,15 +89,24 @@ void Timeline::postUpdate()
 
   processQueue();
 
-  bool is_empty = empty();
-
-  // Call finish function last if provided.
-  // We do this here so it's safe to destroy the timeline from the callback.
-  if( _finish_fn ) {
-    if( is_empty && ! was_empty ) {
+  if( _finish_fn )
+  {
+    auto d = getDuration();
+    if( forward() && time() >= d && previousTime() < d ) {
       _finish_fn();
     }
+    else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
+      _finish_fn();
+    }
+  }
 
+  // Call cleared function last if provided.
+  // We do this here so it's safe to destroy the timeline from the callback.
+  bool is_empty = empty();
+  if( _cleared_fn ) {
+    if( is_empty && ! was_empty ) {
+      _cleared_fn();
+    }
   }
 }
 
@@ -128,7 +150,7 @@ void Timeline::cancel( void *output )
   }
 }
 
-void Timeline::add( TimelineItemUniqueRef item )
+void Timeline::add( TimelineItemUniqueRef &&item )
 {
   item->setRemoveOnFinish( _default_remove_on_finish );
 
@@ -140,9 +162,20 @@ void Timeline::add( TimelineItemUniqueRef item )
   }
 }
 
-void Timeline::add( Timeline &&timeline )
+TimelineOptions Timeline::addShared( const TimelineItemRef &shared )
 {
-  add( std::move( detail::make_unique<MotionGroup>( std::move( timeline ) ) ) );
+  auto item = detail::make_unique<PassthroughTimelineItem>( shared );
+  item->setRemoveOnFinish( _default_remove_on_finish );
+  auto &ref = *shared;
+
+  if( _updating ) {
+    _queue.emplace_back( std::move( item ) );
+  }
+  else {
+    _items.emplace_back( std::move( item ) );
+  }
+
+  return TimelineOptions( ref );
 }
 
 TimelineOptions Timeline::cue( const std::function<void ()> &fn, Time delay )

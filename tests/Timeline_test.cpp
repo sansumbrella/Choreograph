@@ -215,7 +215,9 @@ TEST_CASE( "Callbacks" )
   {
     auto self_destructing_timeline = detail::make_unique<Timeline>();
     self_destructing_timeline->apply( &target, sequence );
-    self_destructing_timeline->setFinishFn( [&self_destructing_timeline] {
+    // Note, cleared has different semantics from finished.
+    // TODO: add a test for the finish fn (or remove that fn).
+    self_destructing_timeline->setClearedFn( [&self_destructing_timeline] {
       self_destructing_timeline.reset();
     } );
 

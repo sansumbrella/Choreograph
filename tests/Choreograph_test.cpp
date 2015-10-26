@@ -18,25 +18,26 @@ using namespace choreograph;
 
 TEST_CASE( "Motion Groups" )
 {
-  auto group = detail::make_unique<MotionGroup>();
-  auto &group_timeline = group->timeline();
+  auto group = std::make_shared<Timeline>();
+  group->setDefaultRemoveOnFinish( false );
+  auto &group_timeline = *group;
   Output<int> target = 0;
   Timeline timeline;
 
   SECTION( "Timelines are composable." )
   {
-    Timeline t2;
+    auto t2 = ch::detail::make_unique<Timeline>();
     int receiver = 0;
-    t2.apply( &target )
+    t2->apply( &target )
       .then<RampTo>( 50, 1.0f );
-    t2.cue( [&receiver] {
+    t2->cue( [&receiver] {
         receiver = 100;
       }, 0.4f );
 
     timeline.add( std::move( t2 ) );
     timeline.step( 0.5f );
 
-    REQUIRE( target == 25 );
+    REQUIRE( target() == 25 );
     REQUIRE( receiver == 100 );
   }
 
@@ -65,38 +66,40 @@ TEST_CASE( "Motion Groups" )
 
     SECTION( "Looping the group still calls child callbacks." )
     {
-      group->setFinishFn( [] ( MotionGroup &g ) {
-        g.resetTime();
+      group->setFinishFn( [&group_timeline] () {
+        group_timeline.resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
-      timeline.add( std::move( group ) );
+      timeline.addShared( group );
 
       for( int i = 0; i < 32; i += 1 ) {
         timeline.step( 0.1f );
       }
 
       REQUIRE( start_count == 4 );
-      REQUIRE( finish_count == 3 );
       REQUIRE( update_count == 32 );
+      REQUIRE( finish_count == 3 );
     }
 
-    SECTION( "Ping-pong looping group works, too." )
+    SECTION( "Ping-pong looping a group works, too." )
     {
-      group->setFinishFn( [] ( MotionGroup &g ) {
+      group->setFinishFn( [&group_timeline] () {
         // MotionGroup overrides customSetPlaybackSpeed to inform children.
-        g.setPlaybackSpeed( -1 * g.getPlaybackSpeed() );
-        g.resetTime();
+        group_timeline.setPlaybackSpeed( -1 * group_timeline.getPlaybackSpeed() );
+        group_timeline.resetTime();
       } );
       timeline.setDefaultRemoveOnFinish( false );
-      timeline.add( std::move( group ) );
+      timeline.addShared( group );
 
       for( int i = 0; i < 32; i += 1 ) {
         timeline.step( 0.1f );
       }
 
-      REQUIRE( start_count == 4 );
-      REQUIRE( finish_count == 3 );
+      // We only pass the start and finish of our motion going forward twice.
+      // We also pass them each going backward, but that doesn't trigger our functions.
+      REQUIRE( start_count == 2 );
       REQUIRE( update_count == 32 );
+      REQUIRE( finish_count == 2 );
     }
 
   }
