@@ -5,11 +5,12 @@
 //
 //
 
-
-#if TEST_WITH_GLM_VECTORS
-
 #include "catch.hpp"
 #include "choreograph/Choreograph.h"
+
+#define TEST_WITH_GLM_VECTORS 0
+#if TEST_WITH_GLM_VECTORS
+
 #include "glm/glm.hpp"
 #include <array>
 

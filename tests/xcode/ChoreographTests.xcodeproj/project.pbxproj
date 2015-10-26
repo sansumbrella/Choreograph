@@ -44,6 +44,8 @@
 		9CC02E731BDE630800B5058A /* Cue_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E721BDE630800B5058A /* Cue_test.cpp */; };
 		9CC02E751BDE632800B5058A /* Timeline_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E741BDE632800B5058A /* Timeline_test.cpp */; };
 		9CC02E771BDE641400B5058A /* Ease_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E761BDE641400B5058A /* Ease_test.cpp */; };
+		9CC02E791BDE6D0D00B5058A /* ForumMiscellany_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */; };
+		9CC02E7B1BDE6D6A00B5058A /* Numbers_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -122,6 +124,8 @@
 		9CC02E721BDE630800B5058A /* Cue_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cue_test.cpp; path = ../Cue_test.cpp; sourceTree = "<group>"; };
 		9CC02E741BDE632800B5058A /* Timeline_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timeline_test.cpp; path = ../Timeline_test.cpp; sourceTree = "<group>"; };
 		9CC02E761BDE641400B5058A /* Ease_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ease_test.cpp; path = ../Ease_test.cpp; sourceTree = "<group>"; };
+		9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ForumMiscellany_test.cpp; path = ../ForumMiscellany_test.cpp; sourceTree = "<group>"; };
+		9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Numbers_test.cpp; path = ../Numbers_test.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -265,6 +269,8 @@
 				9CC02E721BDE630800B5058A /* Cue_test.cpp */,
 				9CC02E741BDE632800B5058A /* Timeline_test.cpp */,
 				9CC02E761BDE641400B5058A /* Ease_test.cpp */,
+				9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */,
+				9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */,
 			);
 			name = src;
 			path = ../src;
@@ -413,10 +419,12 @@
 				153607E619D46195001ECD25 /* Timeline.cpp in Sources */,
 				151E370C19EC2358009C943E /* TimelineItem.cpp in Sources */,
 				151E370919EC1930009C943E /* Cue.cpp in Sources */,
+				9CC02E791BDE6D0D00B5058A /* ForumMiscellany_test.cpp in Sources */,
 				9CC02E751BDE632800B5058A /* Timeline_test.cpp in Sources */,
 				9CC02E771BDE641400B5058A /* Ease_test.cpp in Sources */,
 				9CC02E6F1BDE627B00B5058A /* Motion_test.cpp in Sources */,
 				15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */,
+				9CC02E7B1BDE6D6A00B5058A /* Numbers_test.cpp in Sources */,
 				9CC02E6D1BDE622F00B5058A /* Sequence_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
