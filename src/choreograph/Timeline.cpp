@@ -166,7 +166,7 @@ TimelineOptions Timeline::addShared( const TimelineItemRef &shared )
 {
   auto item = detail::make_unique<PassthroughTimelineItem>( shared );
   item->setRemoveOnFinish( _default_remove_on_finish );
-  auto &ref = *shared;
+  auto &ref = *item;
 
   if( _updating ) {
     _queue.emplace_back( std::move( item ) );
