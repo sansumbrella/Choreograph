@@ -47,7 +47,7 @@ public:
   void  hold() { _type = Hold; }
   BezierInterpolant& bezier() { _type = Bezier; return _bezier; }
 private:
-  Type              _type = Bezier;
+  Type              _type = Linear;
   BezierInterpolant _bezier;
 };
 
