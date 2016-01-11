@@ -29,7 +29,7 @@ TEST_CASE("Channel")
       REQUIRE(channel.index(5.5) == 1);
     }
 
-    SECTION("Inserting into channel")
+    SECTION("Keys inserted into channels")
     {
       channel.insertKey(0.5f, 0.5);
       REQUIRE(channel.index(0.6) == 1);
@@ -37,7 +37,15 @@ TEST_CASE("Channel")
       REQUIRE(channel.value(0.25) == Approx(0.25));
     }
 
-    SECTION("Value calculation is roughly linear by default.")
+    SECTION("Inserting a key between two keys calculates a split between them.")
+    {
+      // Will make adding keys to tweak transition between values easier.
+      // auto &key = channel.insertKey(0.5);
+      // key.curveIn();
+      // key.curveOut();
+    }
+
+    SECTION("Value calculation is linear by default.")
     {
       REQUIRE(channel.value(0.5) == Approx(5.0f)); // 0.5 is not exact enough, though it still prints as 0.5.
       REQUIRE(channel.value(1.5) == 7.5f);
