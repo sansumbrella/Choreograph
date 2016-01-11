@@ -92,6 +92,13 @@ private:
 
 template <typename T>
 T Channel<T>::value(Time at_time) const {
+  if (at_time >= duration()) {
+    return _keys.back().value;
+  }
+  else if (at_time <= 0.0) {
+    return _keys.front().value;
+  }
+
   return interpolatedValue(index(at_time), at_time);
 }
 

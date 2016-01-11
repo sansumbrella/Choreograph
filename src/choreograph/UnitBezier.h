@@ -29,6 +29,7 @@
  */
 
 #pragma once
+#include <limits>
 
 namespace choreograph {
 
@@ -56,7 +57,7 @@ public:
   }
 
   /// Given a value x, solve for y on the curve.
-  double solve(double x, double epsilon) const {
+  double solve(double x, double epsilon = std::numeric_limits<float>::epsilon() * 100.0f) const {
     return curveY(timeAtX(x, epsilon));
   }
 
