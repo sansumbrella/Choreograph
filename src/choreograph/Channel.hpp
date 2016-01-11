@@ -74,7 +74,13 @@ float Curve::solve(float t) const
 /// Goals:
 /// - Easy serialization
 /// - Easy to create graphical manipulation tools.
-/// - Flexible enough for doing an AfterEffects-style
+///   - Support direct manipulation of animation data.
+///   - Avoid deeply nested information. Flat hierarchy.
+/// - Flexible enough to create an AfterEffects-style timeline.
+///
+/// Good for animating single values, like floats or quaternions.
+/// For vector types, use a channel per component (and maybe add a group type to associate them).
+/// Grouping type could be a manipulator/animator type class that reads/writes multiple channels.
 ///
 template <typename T>
 class Channel
