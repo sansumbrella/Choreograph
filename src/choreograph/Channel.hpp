@@ -34,6 +34,48 @@
 namespace choreograph
 {
 
+class Curve
+{
+public:
+  enum Type {
+    Bezier,
+    Hold,
+    Linear
+  };
+  float solve(float t) const;
+  void  setType(Type type) { _type = type; }
+  void  hold() { _type = Hold; }
+  BezierInterpolant& bezier() { _type = Bezier; return _bezier; }
+private:
+  Type              _type = Bezier;
+  BezierInterpolant _bezier;
+};
+
+float Curve::solve(float t) const
+{
+  switch (_type) {
+    case Bezier:
+      return _bezier.solve(t);
+    break;
+    case Hold:
+      return 0.0f;
+    break;
+    case Linear:
+      return t;
+    break;
+    default:
+      return t;
+    break;
+  }
+}
+
+///
+/// Simple channel concept with bezier interpolation between keys.
+/// Goals:
+/// - Easy serialization
+/// - Easy to create graphical manipulation tools.
+/// - Flexible enough for doing an AfterEffects-style
+///
 template <typename T>
 class Channel
 {
@@ -73,10 +115,10 @@ public:
   Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
 
 private:
-  std::vector<Key>               _keys;
+  std::vector<Key>   _keys;
   // may make polymorphic in future (like phrases are). Basically just an ease fn.
   // Compare std::function<float (float)> for max flexibility against custom class.
-  std::vector<BezierInterpolant> _curves;
+  std::vector<Curve> _curves;
 };
 
 #pragma mark - Channel Template Implementation
@@ -118,7 +160,7 @@ T Channel<T>::interpolatedValue(size_t curve_index, Time at_time) const {
   auto &c = _curves[curve_index];
 
   auto x = (at_time - a.time) / (b.time - a.time);
-  auto t = c.solve(x, std::numeric_limits<float>::epsilon());
+  auto t = c.solve(x);
   return lerpT(a.value, b.value, t);
 }
 
