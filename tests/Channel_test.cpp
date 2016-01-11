@@ -34,7 +34,7 @@ TEST_CASE("Channel")
       channel.insertKey(0.5f, 0.5);
       REQUIRE(channel.index(0.6) == 1);
       REQUIRE(channel.value(0.5) == 0.5);
-      REQUIRE(channel.value(0.25) == 0.25);
+      REQUIRE(channel.value(0.25) == Approx(0.25));
     }
 
     SECTION("Value calculation is roughly linear by default.")
