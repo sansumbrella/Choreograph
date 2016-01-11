@@ -53,18 +53,19 @@ void BezierConstruction::setup()
 
   timeline().setDefaultRemoveOnFinish( false );
 
-  auto group = std::make_unique<MotionGroup>();
-  auto &tl = group->timeline();
+  auto group = std::make_shared<ch::Timeline>();
+  group->setDefaultRemoveOnFinish( false );
+  group->setRemoveOnFinish( false );
 
   // Animate our control points along their respective ramps.
-  tl.apply<vec2>( &_control_a, ramp_a );
-  tl.apply<vec2>( &_control_b, ramp_b );
+  group->apply<vec2>( &_control_a, ramp_a );
+  group->apply<vec2>( &_control_b, ramp_b );
 
   // Animate the mix of the bezier point from a to b.
-  tl.apply<float>( bezier_point->getMixOutput(), makeRamp( 0.0f, 1.0f, duration ) );
+  group->apply<float>( bezier_point->getMixOutput(), makeRamp( 0.0f, 1.0f, duration ) );
 
   // Apply the bezier_point animation to our curve point variable.
-  tl.apply<vec2>( &_curve_point, bezier_point )
+  group->apply<vec2>( &_curve_point, bezier_point )
     .startFn( [this] ( Motion<vec2> &m ) {
       _segments.clear();
       _segments.push_back( _curve_points[0] );
@@ -74,17 +75,17 @@ void BezierConstruction::setup()
     } );
 
   // When all our animations finish, cue the group to restart after a delay.
-  group->setFinishFn( [this] ( MotionGroup &g ) {
+  group->setFinishFn( [this, group] () {
     timeline()
-      .cue( [&g] {
-        g.resetTime();
+      .cue( [group] {
+        group->resetTime();
       }, 0.5f )
       .removeOnFinish( true );
   } );
 
-  // Move our group onto our main timeline.
-  // This invalidates our pointer to the group,
-  timeline().add( std::move( group ) );
+  // Move our grouping timeline onto our main timeline.
+  // This will update our group as the main timeline progresses.
+  timeline().addShared( group );
 
   // place things at initial timelined values.
   timeline().jumpTo( 0 );

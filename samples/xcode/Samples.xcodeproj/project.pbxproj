@@ -31,7 +31,6 @@
 		155F88011A34D56C009A05E3 /* Locus.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 155F88001A34D56C009A05E3 /* Locus.cpp */; };
 		15609E1219E1B81C0053395A /* Repetition.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1019E1B81C0053395A /* Repetition.cpp */; };
 		15609E1519E1CCA20053395A /* BezierConstruction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15609E1319E1CCA20053395A /* BezierConstruction.cpp */; };
-		1590BDD41A28D88400B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDD31A28D88400B60050 /* MotionGroup.cpp */; };
 		15BA7BBC19DF2799003E13A5 /* Quaternions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15BA7BBA19DF2799003E13A5 /* Quaternions.cpp */; };
 		15C9C2A21B76D76300C38ABF /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C9C2A11B76D76300C38ABF /* IOSurface.framework */; };
 		15C9C2A41B76D76C00C38ABF /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15C9C2A31B76D76C00C38ABF /* IOKit.framework */; };
@@ -100,8 +99,6 @@
 		15609E1119E1B81C0053395A /* Repetition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Repetition.h; sourceTree = "<group>"; };
 		15609E1319E1CCA20053395A /* BezierConstruction.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BezierConstruction.cpp; sourceTree = "<group>"; };
 		15609E1419E1CCA20053395A /* BezierConstruction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierConstruction.h; sourceTree = "<group>"; };
-		1590BDD21A28D88400B60050 /* MotionGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionGroup.h; sourceTree = "<group>"; };
-		1590BDD31A28D88400B60050 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
 		15BA7BBA19DF2799003E13A5 /* Quaternions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Quaternions.cpp; sourceTree = "<group>"; };
 		15BA7BBB19DF2799003E13A5 /* Quaternions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Quaternions.h; sourceTree = "<group>"; };
 		15C9C2A11B76D76300C38ABF /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
@@ -187,8 +184,6 @@
 		151E370F19EC258D009C943E /* choreograph */ = {
 			isa = PBXGroup;
 			children = (
-				1590BDD21A28D88400B60050 /* MotionGroup.h */,
-				1590BDD31A28D88400B60050 /* MotionGroup.cpp */,
 				151E371019EC258D009C943E /* Choreograph.h */,
 				151E371219EC258D009C943E /* Cue.cpp */,
 				151E371319EC258D009C943E /* Cue.h */,
@@ -437,7 +432,6 @@
 				151E372C19EC258D009C943E /* Timeline.cpp in Sources */,
 				155F88011A34D56C009A05E3 /* Locus.cpp in Sources */,
 				15362C5919D8D97C006BFAF1 /* ConnectionManager.cpp in Sources */,
-				1590BDD41A28D88400B60050 /* MotionGroup.cpp in Sources */,
 				155F87F81A34D53A009A05E3 /* Node.cpp in Sources */,
 				15362C5A19D8D97C006BFAF1 /* Scene.cpp in Sources */,
 				155F87FA1A34D53A009A05E3 /* RootNode.cpp in Sources */,
@@ -454,7 +448,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CINDER_PATH = "$(CINDER_PATH_ADJACENT)";
+				CINDER_PATH = "$(CINDER_PATH_IN_BLOCKS)";
 				CINDER_PATH_ADJACENT = ../../../cinder/;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				COMBINE_HIDPI_IMAGES = YES;
@@ -483,7 +477,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CINDER_PATH = "$(CINDER_PATH_ADJACENT)";
+				CINDER_PATH = "$(CINDER_PATH_IN_BLOCKS)";
 				CINDER_PATH_ADJACENT = ../../../cinder/;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				COMBINE_HIDPI_IMAGES = YES;
