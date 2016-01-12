@@ -26,7 +26,17 @@ TEST_CASE("Channel")
       REQUIRE(channel.index(0.6) == 0);
       REQUIRE(channel.index(1.0) == 0);
       REQUIRE(channel.index(1.1) == 1);
-      REQUIRE(channel.index(5.5) == 1);
+      REQUIRE(channel.index(5.5) == 2);
+    }
+
+    SECTION("Keys can be inserted at specific times.")
+    {
+      auto channel = Channel<float>();
+      channel.insertKey(10.0f, 0);
+      channel.insertKey(20.0f, 1);
+      channel.insertKey(30.0f, 3);
+
+      REQUIRE(channel.duration() == 3);
     }
 
     SECTION("Keys inserted into channels")
@@ -35,6 +45,7 @@ TEST_CASE("Channel")
       REQUIRE(channel.index(0.6) == 1);
       REQUIRE(channel.value(0.5) == 0.5);
       REQUIRE(channel.value(0.25) == Approx(0.25));
+
     }
 
     SECTION("Inserting a key between two keys calculates a split between them.")

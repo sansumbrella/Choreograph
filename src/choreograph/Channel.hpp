@@ -103,9 +103,10 @@ public:
   /// If you keep track of keys yourself, this is faster.
   T interpolatedValue(size_t curve_index, Time at_time) const;
 
-  /// Returns the index of the curve for the current time.
+  /// Returns the index of the starting key for the current time.
   /// The curve lies between two keys.
   size_t index(Time at_time) const;
+  size_t lastIndex() const { return _keys.empty() ? 0 : _keys.size() - 1; }
 
   /// Append a key to the list of keys, positioned at \offset time after the previous key.
   Channel& appendKeyAfter(T value, Time offset) {
@@ -119,6 +120,8 @@ public:
   Channel& insertKey(T value, Time at_time);
 
   Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
+  const std::vector<Key>&   keys() const { return _keys; }
+  const std::vector<Curve>& curves() const { return _curves; }
 
 private:
   std::vector<Key>   _keys;
@@ -131,11 +134,12 @@ private:
 
 template <typename T>
 size_t Channel<T>::index(Time at_time) const {
+
   if( at_time <= 0 ) {
     return 0;
   }
   else if ( at_time >= this->duration() ) {
-    return _curves.size() - 1;
+    return lastIndex();
   }
 
   for (auto i = 0; i < _keys.size() - 1; i += 1) {
@@ -144,7 +148,7 @@ size_t Channel<T>::index(Time at_time) const {
       return i;
     }
   }
-  return _curves.size() - 1;
+  return lastIndex();
 }
 
 template <typename T>
@@ -174,10 +178,12 @@ template <typename T>
 Channel<T>& Channel<T>::insertKey(T value, Time at_time) {
   if (_keys.empty()) {
     _keys.emplace_back(value, at_time);
+    return *this;
   }
-  else {
-    _keys.insert(_keys.begin() + (index(at_time) + 1), {value, at_time});
-  }
+
+  auto i = index(at_time);
+  _curves.insert(_curves.begin() + i, {});
+  _keys.insert(_keys.begin() + i + 1, {value, at_time});
 
   return *this;
 }
