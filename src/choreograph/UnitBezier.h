@@ -33,33 +33,60 @@
 
 namespace choreograph {
 
-/// Some bezier control values.
-/// May get smarter in future, with reference to host channel so you can walk the animation.
-/// But perhaps that would be a separate convenience class, so we only store bezier values.
-/// May be templated in future, so a channel could have separate interpolation across components (e.g. a vec3 channel with xyz easing separately).
+/// UnitBezier modified from WebKit’s implementation.
 /// Implicit first and last control points are (0,0) and (1,1).
 class BezierInterpolant {
 public:
+  #ifdef CINDER_CINDER
+  using vec2 = cinder::vec2;
+  #else
+  struct vec2 {
+    vec2() = default;
+    explicit vec2(double fill):
+      x(fill),
+      y(fill)
+    {}
+    explicit vec2(double x, double y):
+      x(x),
+      y(y)
+    {}
+    double x = 0.0;
+    double y = 0.0;
+  };
+  #endif // ! CINDER_CINDER
+
   BezierInterpolant():
-    _x1(0.3333333), _y1(0.3333333), _x2(0.6666666), _y2(0.6666666)
+    _control_1(0.3333333),
+    _control_2(0.6666666)
   {
-    calculateXCoefficients();
-    calculateYCoefficients();
+    calculateCoefficients();
   }
+
   BezierInterpolant(double x1, double y1, double x2, double y2):
-    _x1(x1),
-    _y1(y1),
-    _x2(x2),
-    _y2(y2)
+    _control_1(x1, y1),
+    _control_2(x2, y2)
   {
-    calculateXCoefficients();
-    calculateYCoefficients();
+    calculateCoefficients();
   }
 
   /// Given a value x, solve for y on the curve.
   double solve(double x, double epsilon = std::numeric_limits<float>::epsilon() * 100.0f) const {
     return curveY(timeAtX(x, epsilon));
   }
+
+  vec2 control1() const { return _control_1; }
+  vec2 control2() const { return _control_2; }
+
+  /// Direct manipulation of control point.
+  /// You could also use an immutable style and reassign a newly-constructed bezier.
+  void setControlPoints(const vec2 &control_1, const vec2 &control_2) {
+    _control_1 = control_1;
+    _control_2 = control_2;
+    calculateCoefficients();
+  }
+
+  void setControlPoint1(const vec2 &control) { setControlPoints(control, control2()); }
+  void setControlPoint2(const vec2 &control) { setControlPoints(control1(), control); }
 
   double curveX(double t) const {
     // at^3 + bt^2 + ct expanded using Horner's rule.
@@ -79,19 +106,17 @@ public:
   double timeAtX(double x, double epsilon) const;
 
 private:
-  double _x1, _y1;
-  double _x2, _y2;
+  vec2 _control_1, _control_2;
   double ax, bx, cx;
   double ay, by, cy;
 
-  void calculateXCoefficients() {
-    cx = 3 * _x1;
-    bx = 3 * (_x2 - _x1) - cx;
+  void calculateCoefficients() {
+    cx = 3 * _control_1.x;
+    bx = 3 * (_control_2.x - _control_1.x) - cx;
     ax = 1 - cx - bx;
-  }
-  void calculateYCoefficients() {
-    cy = 3 * _y1;
-    by = 3 * (_y2 - _y1) - cy;
+
+    cy = 3 * _control_1.y;
+    by = 3 * (_control_2.y - _control_1.y) - cy;
     ay = 1 - cy - by;
   }
 };

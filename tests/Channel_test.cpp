@@ -72,4 +72,15 @@ TEST_CASE("Channel")
     REQUIRE(solution == Approx(0.5));
   }
 
+  SECTION("Bezier control points can be accessed and modified.")
+  {
+    auto bezier = BezierInterpolant();
+    CHECK(bezier.solve(0.5) == Approx(0.5));
+
+    auto c1 = bezier.control1();
+    c1.x = 0.2f;
+    c1.y = 1.0f;
+    bezier.setControlPoint1(c1);
+    CHECK(bezier.solve(0.5) != 0.5);
+  }
 }
