@@ -14,42 +14,24 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+void drawChannelGui(ch::Channel<float> &channel) {
+  for (auto i = 0; i < channel.keys().size(); i += 1) {
 
-bool drawChannelGui(const ch::Channel<float> &channel) {
-  using namespace ImGui;
-  ImGuiWindow* window = GetCurrentWindow();
-  if (window->SkipItems)
-      return false;
+    ui::SliderFloat(("Value " + to_string(i)).c_str(), &channel.mutableKeys()[i].value, 0.0f, 100.0f);
 
-  auto label = "channel";
-  ImGuiState& g = *GImGui;
-  const ImGuiStyle& style = g.Style;
-  const ImGuiID id = window->GetID(label);
-  const ImVec2 label_size = ImGui::CalcTextSize(label, NULL, true);
-
-  auto size_arg = ImVec2(0, 0);
-  ImVec2 pos = window->DC.CursorPos;
-  if (style.FramePadding.y < window->DC.CurrentLineTextBaseOffset)
-      pos.y += window->DC.CurrentLineTextBaseOffset - style.FramePadding.y;
-  ImVec2 size = CalcItemSize(size_arg, label_size.x + style.FramePadding.x * 2.0f, label_size.y + style.FramePadding.y * 2.0f);
-
-  const ImRect bb(pos, ImVec2(pos.x + size.x, pos.y + size.y));
-  ItemSize(bb, style.FramePadding.y);
-  if (!ItemAdd(bb, &id))
-      return false;
-
-  bool hovered, held;
-  bool pressed = ButtonBehavior(bb, id, &hovered, &held);
-
-  // Render
-  const ImU32 col = GetColorU32((hovered && held) ? ImGuiCol_ButtonActive : hovered ? ImGuiCol_ButtonHovered : ImGuiCol_Button);
-  RenderFrame(bb.Min, bb.Max, col, true, style.FrameRounding);
-  RenderTextClipped(bb.Min, bb.Max, label, NULL, &label_size, ImGuiAlign_Center | ImGuiAlign_VCenter);
-
-  return pressed;
+    if (i > 0 && i < channel.keys().size() - 1) {
+      auto *previous = &channel.mutableKeys()[i - 1];
+      auto *current = &channel.mutableKeys()[i];
+      auto *next = &channel.mutableKeys()[i + 1];
+      auto timef = (float)current->time;
+      if (ui::SliderFloat(("Time " + to_string(i)).c_str(), &timef, previous->time, next->time)) {
+        current->time = timef;
+      }
+    }
+  }
 }
 
-void drawChannel(const ch::Channel<float> &channel) {
+void drawChannel(ch::Channel<float> &channel) {
   auto inner_size = vec2(200, 50);
   auto padding = vec2(10);
   auto outer_size = inner_size + padding * 2.0f;
@@ -71,6 +53,10 @@ void drawChannel(const ch::Channel<float> &channel) {
   } ());
 
   gl::color(Color::gray(1.0f));
+  for (auto &curve: channel.curves()) {
+    curve.solve(0.5f);
+  }
+
   for (auto &key: channel.keys()) {
     auto x = key.time / channel.duration();
     auto y = (key.value - range.x) / (range.y - range.x);
@@ -78,6 +64,7 @@ void drawChannel(const ch::Channel<float> &channel) {
 
     gl::drawSolidCircle(pos, 8.0f);
   }
+
 }
 
 class TimelineEditorApp : public App {
