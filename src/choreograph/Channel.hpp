@@ -45,7 +45,7 @@ public:
   float solve(float t) const;
   void  setType(Type type) { _type = type; }
   void  hold() { _type = Hold; }
-  BezierInterpolant& bezier() { _type = Bezier; return _bezier; }
+  BezierInterpolant&       bezier() { _type = Bezier; return _bezier; }
 private:
   Type              _type = Linear;
   BezierInterpolant _bezier;
@@ -122,6 +122,9 @@ public:
   Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
   const std::vector<Key>&   keys() const { return _keys; }
   const std::vector<Curve>& curves() const { return _curves; }
+
+  std::vector<Key>&   mutableKeys() { return _keys; }
+  std::vector<Curve>& mutableCurves() { return _curves; }
 
 private:
   std::vector<Key>   _keys;
