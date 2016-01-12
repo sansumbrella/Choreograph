@@ -7,6 +7,7 @@
 //
 
 #include "TextureNode.h"
+#include "cinder/gl/draw.h"
 
 using namespace cinder;
 using namespace pockets;

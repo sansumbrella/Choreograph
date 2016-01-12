@@ -8,6 +8,7 @@
 
 #include "TypeNode.h"
 #include "cinder/gl/TextureFont.h"
+#include "cinder/gl/gl.h"
 
 using namespace std;
 using namespace cinder;
@@ -35,8 +36,9 @@ void TypeNode::setText( const string &text )
 
 void TypeNode::draw()
 {
-  if( mFlipped )
-  { gl::scale( 1.0f, -1.0f ); }
+  if( mFlipped ) {
+    gl::scale( 1.0f, -1.0f );
+  }
 
   mFont->drawGlyphs( mGlyphs, vec2( 0 ) );
 }

@@ -108,7 +108,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\choreograph\Cue.cpp" />
-    <ClCompile Include="..\..\src\choreograph\MotionGroup.cpp" />
     <ClCompile Include="..\..\src\choreograph\Timeline.cpp" />
     <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp" />
     <ClCompile Include="..\src\pockets\cobweb\ButtonBase.cpp" />
@@ -133,7 +132,6 @@
     <ClInclude Include="..\..\src\choreograph\Cue.h" />
     <ClInclude Include="..\..\src\choreograph\detail\VectorManipulation.hpp" />
     <ClInclude Include="..\..\src\choreograph\Easing.h" />
-    <ClInclude Include="..\..\src\choreograph\MotionGroup.h" />
     <ClInclude Include="..\..\src\choreograph\Output.hpp" />
     <ClInclude Include="..\..\src\choreograph\Phrase.hpp" />
     <ClInclude Include="..\..\src\choreograph\phrase\Combine.hpp" />

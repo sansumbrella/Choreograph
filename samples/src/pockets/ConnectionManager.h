@@ -29,6 +29,7 @@
 
 #include "Pockets.h"
 #include "cinder/Function.h"
+#include "cinder/Signals.h"
 
 namespace pockets
 {
