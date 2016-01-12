@@ -8,6 +8,7 @@
 
 #include "SimpleButton.h"
 #include "cinder/Text.h"
+#include "cinder/gl/gl.h"
 
 using namespace std;
 using namespace cinder;

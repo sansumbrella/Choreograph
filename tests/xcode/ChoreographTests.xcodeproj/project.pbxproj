@@ -26,8 +26,6 @@
 		151E370E19EC24E0009C943E /* Cue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 151E370719EC1930009C943E /* Cue.cpp */; };
 		153607E619D46195001ECD25 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607DB19D46195001ECD25 /* Timeline.cpp */; };
 		153607E719D46195001ECD25 /* Timeline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 153607DB19D46195001ECD25 /* Timeline.cpp */; };
-		1590BDD11A28D3C800B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */; };
-		1590BDD51A29216300B60050 /* MotionGroup.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */; };
 		15E864B019C4AD1500B1DA73 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */; };
 		15E864B119C4AD2000B1DA73 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		15E864B219C4AD2000B1DA73 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
@@ -39,6 +37,15 @@
 		15F905D819C4A316003C06A4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D719C4A316003C06A4 /* Cocoa.framework */; };
 		15F905DA19C4A31B003C06A4 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 15F905D919C4A31B003C06A4 /* OpenGL.framework */; };
 		15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F905A319C49A05003C06A4 /* Choreograph_test.cpp */; };
+		9CC02E6B1BDE61C600B5058A /* Phrase_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E6A1BDE61C600B5058A /* Phrase_test.cpp */; };
+		9CC02E6D1BDE622F00B5058A /* Sequence_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E6C1BDE622F00B5058A /* Sequence_test.cpp */; };
+		9CC02E6F1BDE627B00B5058A /* Motion_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E6E1BDE627B00B5058A /* Motion_test.cpp */; };
+		9CC02E711BDE62AA00B5058A /* Grouping_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E701BDE62AA00B5058A /* Grouping_test.cpp */; };
+		9CC02E731BDE630800B5058A /* Cue_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E721BDE630800B5058A /* Cue_test.cpp */; };
+		9CC02E751BDE632800B5058A /* Timeline_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E741BDE632800B5058A /* Timeline_test.cpp */; };
+		9CC02E771BDE641400B5058A /* Ease_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E761BDE641400B5058A /* Ease_test.cpp */; };
+		9CC02E791BDE6D0D00B5058A /* ForumMiscellany_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */; };
+		9CC02E7B1BDE6D6A00B5058A /* Numbers_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -94,8 +101,6 @@
 		15609E0E19E190EC0053395A /* Ramp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Ramp.hpp; sourceTree = "<group>"; };
 		15609E0F19E190EC0053395A /* Retime.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Retime.hpp; sourceTree = "<group>"; };
 		15609E1719E210AE0053395A /* Sugar.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Sugar.hpp; sourceTree = "<group>"; };
-		1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MotionGroup.cpp; sourceTree = "<group>"; };
-		1590BDD01A28D3C800B60050 /* MotionGroup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MotionGroup.h; sourceTree = "<group>"; };
 		159C0E711A3B5D2300727C93 /* TimelineOptions.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = TimelineOptions.hpp; sourceTree = "<group>"; };
 		15CCF2B51AC84A6100B16625 /* MakeUnique.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; name = MakeUnique.hpp; path = detail/MakeUnique.hpp; sourceTree = "<group>"; };
 		15E864AF19C4AD1500B1DA73 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -112,6 +117,15 @@
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
+		9CC02E6A1BDE61C600B5058A /* Phrase_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Phrase_test.cpp; path = ../Phrase_test.cpp; sourceTree = "<group>"; };
+		9CC02E6C1BDE622F00B5058A /* Sequence_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Sequence_test.cpp; path = ../Sequence_test.cpp; sourceTree = "<group>"; };
+		9CC02E6E1BDE627B00B5058A /* Motion_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Motion_test.cpp; path = ../Motion_test.cpp; sourceTree = "<group>"; };
+		9CC02E701BDE62AA00B5058A /* Grouping_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Grouping_test.cpp; path = ../Grouping_test.cpp; sourceTree = "<group>"; };
+		9CC02E721BDE630800B5058A /* Cue_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Cue_test.cpp; path = ../Cue_test.cpp; sourceTree = "<group>"; };
+		9CC02E741BDE632800B5058A /* Timeline_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Timeline_test.cpp; path = ../Timeline_test.cpp; sourceTree = "<group>"; };
+		9CC02E761BDE641400B5058A /* Ease_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ease_test.cpp; path = ../Ease_test.cpp; sourceTree = "<group>"; };
+		9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ForumMiscellany_test.cpp; path = ../ForumMiscellany_test.cpp; sourceTree = "<group>"; };
+		9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Numbers_test.cpp; path = ../Numbers_test.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -215,8 +229,6 @@
 				151E370A19EC2358009C943E /* TimelineItem.cpp */,
 				151E370B19EC2358009C943E /* TimelineItem.h */,
 				15F764E61A12F4690022B9AB /* specialization */,
-				1590BDCF1A28D3C800B60050 /* MotionGroup.cpp */,
-				1590BDD01A28D3C800B60050 /* MotionGroup.h */,
 				159C0E711A3B5D2300727C93 /* TimelineOptions.hpp */,
 			);
 			path = choreograph;
@@ -248,8 +260,17 @@
 			isa = PBXGroup;
 			children = (
 				15F905A119C498C3003C06A4 /* catch.hpp */,
-				15F905A319C49A05003C06A4 /* Choreograph_test.cpp */,
 				1515D26F19C5D6DD002CB6A6 /* Benchmarks_test.cpp */,
+				15F905A319C49A05003C06A4 /* Choreograph_test.cpp */,
+				9CC02E6A1BDE61C600B5058A /* Phrase_test.cpp */,
+				9CC02E6C1BDE622F00B5058A /* Sequence_test.cpp */,
+				9CC02E6E1BDE627B00B5058A /* Motion_test.cpp */,
+				9CC02E701BDE62AA00B5058A /* Grouping_test.cpp */,
+				9CC02E721BDE630800B5058A /* Cue_test.cpp */,
+				9CC02E741BDE632800B5058A /* Timeline_test.cpp */,
+				9CC02E761BDE641400B5058A /* Ease_test.cpp */,
+				9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */,
+				9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */,
 			);
 			name = src;
 			path = ../src;
@@ -384,7 +405,6 @@
 				153607E719D46195001ECD25 /* Timeline.cpp in Sources */,
 				1515D28619C5D786002CB6A6 /* Benchmarks_test.cpp in Sources */,
 				151E370E19EC24E0009C943E /* Cue.cpp in Sources */,
-				1590BDD51A29216300B60050 /* MotionGroup.cpp in Sources */,
 				151E370D19EC2358009C943E /* TimelineItem.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,11 +413,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CC02E6B1BDE61C600B5058A /* Phrase_test.cpp in Sources */,
+				9CC02E731BDE630800B5058A /* Cue_test.cpp in Sources */,
+				9CC02E711BDE62AA00B5058A /* Grouping_test.cpp in Sources */,
 				153607E619D46195001ECD25 /* Timeline.cpp in Sources */,
 				151E370C19EC2358009C943E /* TimelineItem.cpp in Sources */,
 				151E370919EC1930009C943E /* Cue.cpp in Sources */,
-				1590BDD11A28D3C800B60050 /* MotionGroup.cpp in Sources */,
+				9CC02E791BDE6D0D00B5058A /* ForumMiscellany_test.cpp in Sources */,
+				9CC02E751BDE632800B5058A /* Timeline_test.cpp in Sources */,
+				9CC02E771BDE641400B5058A /* Ease_test.cpp in Sources */,
+				9CC02E6F1BDE627B00B5058A /* Motion_test.cpp in Sources */,
 				15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */,
+				9CC02E7B1BDE6D6A00B5058A /* Numbers_test.cpp in Sources */,
+				9CC02E6D1BDE622F00B5058A /* Sequence_test.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

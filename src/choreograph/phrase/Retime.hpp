@@ -138,4 +138,22 @@ private:
   Time          _end;
 };
 
+template<typename T>
+class SquashPhrase : public Phrase<T>
+{
+public:
+  SquashPhrase( const PhraseRef<T> &source, Time duration ):
+    Phrase<T>( duration ),
+    _source_duration( _source->getDuration() ),
+    _new_duration( duration )
+  {}
+
+  T getValue( Time atTime ) const override { return _source->getValue( stretchTime( atTime ) ); }
+  Time stretchTime( Time t ) const { return (t / _source_duration) * _new_duration; }
+private:
+  PhraseRef<T> _source;
+  Time         _new_duration;
+  Time         _source_duration;
+};
+
 } // namespace choreograph

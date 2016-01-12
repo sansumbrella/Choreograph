@@ -63,9 +63,6 @@
     <ClCompile Include="..\src\samples\WormBuncher.cpp">
       <Filter>Source Files\samples</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\choreograph\MotionGroup.cpp">
-      <Filter>Blocks\Choreograph</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\pockets\ConnectionManager.cpp">
       <Filter>Blocks\pockets</Filter>
     </ClCompile>
@@ -169,9 +166,6 @@
     </ClInclude>
     <ClInclude Include="..\src\samples\WormBuncher.h">
       <Filter>Source Files\samples</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\MotionGroup.h">
-      <Filter>Blocks\Choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\src\pockets\CollectionUtilities.hpp">
       <Filter>Blocks\pockets</Filter>

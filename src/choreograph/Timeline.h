@@ -43,7 +43,7 @@ namespace choreograph
 ///
 /// Timelines are move-only because they contain unique_ptrs.
 ///
-class Timeline
+class Timeline : public TimelineItem
 {
 public:
   Timeline() = default;
@@ -81,27 +81,18 @@ public:
 
   /// Add an item to the timeline. Called by append/apply/cue methods.
   /// Use to pass in MotionGroups and other types that Timeline doesn't create.
-  void add( TimelineItemUniqueRef item );
+  void add( TimelineItemUniqueRef &&item );
 
-  /// Add a timeline to the timeline.
-  /// Wraps the timeline in a MotionGroup item.
-  /// Note that this invalidates the passed-in timeline.
-  void add( Timeline &&timeline );
+  /// Add a shared item to the timeline.
+  /// Use in advanced cases when you want to maintain the TimelineItem outside the Timeline.
+  TimelineOptions addShared( const TimelineItemRef &item );
 
   //=================================================
   // Time manipulation.
   //=================================================
 
-  /// Advance all current items by \a dt time.
-  /// Recommended method of updating the timeline.
-  /// Do not call from a callback.
-  void step( Time dt );
-
-  /// Set all motions to \a time.
-  /// Useful for scrubbing Timelines with non-removed items.
-  /// Ignores the playback speed of TimelineItems, as it calls TimelineItem::jumpTo.
-  /// Do not call from a callback.
-  void jumpTo( Time time );
+  /// Updates all timeline items to the current time.
+  void update() override;
 
   //=================================================
   // Timeline querying methods and callbacks.
@@ -113,16 +104,18 @@ public:
   /// Returns the number of items on this timeline.
   size_t size() const { return _items.size(); }
 
+  /// Sets a function to be called when this timeline reaches its end, but is not necessarily empty.
+  void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
   /// Sets a function to be called when this timeline becomes empty.
   /// It is safe to destroy the timeline from this callback, unlike any Cue.
-  void setFinishFn( const std::function<void ()> &fn ) { _finish_fn = fn; }
+  void setClearedFn( const std::function<void ()> &fn ) { _cleared_fn = fn; }
 
   /// Returns the time (from now) at which all TimelineItems on this timeline will be finished.
   /// Cannot take into account Cues or Callbacks that may change the Timeline before finish.
   /// Useful information to cache when scrubbing Timelines with non-removed items.
   Time timeUntilFinish() const;
 
-  Time getDuration() const;
+  Time getDuration() const override;
 
   //=================================================
   // Timeline element manipulation.
@@ -131,7 +124,7 @@ public:
   /// Set whether motions should be removed when finished. Default is true.
   /// This value will be passed to all future TimelineItems created by the timeline.
   /// Does not affect TimelineItems already on the Timeline.
-  void setDefaultRemoveOnFinish( bool doRemove = true ) { _default_remove_on_finish = doRemove; }
+  void setDefaultRemoveOnFinish( bool doRemove ) { _default_remove_on_finish = doRemove; }
 
   /// Remove all items from this timeline.
   /// Do not call from a callback.
@@ -161,6 +154,9 @@ public:
   std::vector<TimelineItemUniqueRef>::const_iterator begin( ) const { return _items.cbegin( ); }
   std::vector<TimelineItemUniqueRef>::const_iterator end( ) const { return _items.cend( ); }
 
+protected:
+  void customSetTime( Time time ) override;
+
 private:
   // True if Motions should be removed from timeline when they reach their endTime.
   bool                                _default_remove_on_finish = true;
@@ -170,7 +166,7 @@ private:
   std::vector<TimelineItemUniqueRef>  _queue;
   bool                                _updating = false;
   std::function<void ()>              _finish_fn = nullptr;
-
+  std::function<void ()>        _cleared_fn = nullptr;
 
   // Clean up finished motions and add queued motions after update.
   // Calls finish function if we went from having items to no items this iteration.

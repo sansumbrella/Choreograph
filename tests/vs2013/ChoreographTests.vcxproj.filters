@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Choreograph_test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\choreograph\Cue.cpp">
       <Filter>Source Files\choreograph</Filter>
     </ClCompile>
@@ -30,8 +27,35 @@
     <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp">
       <Filter>Source Files\choreograph</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\choreograph\MotionGroup.cpp">
-      <Filter>Source Files\choreograph</Filter>
+    <ClCompile Include="..\Choreograph_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Cue_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Ease_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ForumMiscellany_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Grouping_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Motion_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Numbers_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Phrase_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Sequence_test.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Timeline_test.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -84,9 +108,6 @@
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\choreograph\TimeType.h">
-      <Filter>Source Files\choreograph</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\choreograph\MotionGroup.h">
       <Filter>Source Files\choreograph</Filter>
     </ClInclude>
   </ItemGroup>

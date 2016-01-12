@@ -84,18 +84,18 @@ void Repetition::setup()
   rotationSequence.then<RampTo>( vec3( 4 * M_PI, 2 * M_PI, 0 ), 1.0f, EaseOutQuint() );
   positionSequence.then<RampTo>( vec2( app::getWindowSize() ) * vec2( 0.66, 0.5 ), 0.5f, EaseOutAtan() );
 
-  auto group = std::make_unique<MotionGroup>();
-  auto &t = group->timeline();
-  t.apply( &_position, positionSequence );
-  t.apply( &_rotation, rotationSequence );
+  auto group = std::make_shared<ch::Timeline>();
+  group->setDefaultRemoveOnFinish( false );
+  group->apply( &_position, positionSequence );
+  group->apply( &_rotation, rotationSequence );
   // start grouped motions after a 0.5 second hold on their start values.
   group->setStartTime( 0.5f );
-  group->setFinishFn( [] ( MotionGroup &group ) {
-    group.setPlaybackSpeed( group.getPlaybackSpeed() * -1 );
-    group.resetTime();
+  group->setFinishFn( [group] {
+    group->setPlaybackSpeed( group->getPlaybackSpeed() * -1 );
+    group->resetTime();
   } );
 
-  timeline().add( std::move( group ) );
+  timeline().addShared( group );
 
   //=====================================================
   // Looping Phrases. Use for a finite number of Repetition.
