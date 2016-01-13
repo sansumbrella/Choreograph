@@ -63,18 +63,13 @@ void drawChannelGui(ch::Channel<float> &channel) {
 
     // Use an invisible button to handle interaction with circles.
     ui::SetCursorScreenPos(pos - vec2(radius));
-    ui::PushID("temp_key");
+    ui::PushID(("temp_key" + to_string(id)).c_str());
     ui::InvisibleButton("", vec2(radius * 2.0f));
     ui::SetCursorScreenPos(cursor_position);
-    if (ui::IsItemHovered()) {
-      // Maybe use DragBehavior to handle changing value? Mapping back from space to value
-//      ui::DragBehavior(<#const ImRect &frame_bb#>, <#ImGuiID id#>, <#float *v#>, <#float v_speed#>, <#float v_min#>, <#float v_max#>, <#int decimal_precision#>, <#float power#>)
-      // Or use is mouse dragging and handle change more directly?
-
-      if (ui::IsMouseDragging()) {
-        auto delta = vec2(ui::GetIO().MouseDelta);
-        auto value = space_to_value(pos + delta);
-        console() << "Changing value of " << id << " with deltas: " << delta << ", new value: " << value << " mouse: " << vec2(ui::GetMousePos()) << endl;
+    if (ui::IsItemActive()) {
+      if (ui::IsMouseDown(0)) {
+        auto value = space_to_value(ui::GetMousePos());
+        console() << "Changing value of " << id << ", new value: " << value << " mouse: " << vec2(ui::GetMousePos()) << endl;
         key.time = value.x;
         key.value = value.y;
       }
