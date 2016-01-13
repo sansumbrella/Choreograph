@@ -43,14 +43,30 @@ void drawChannelGui(ch::Channel<float> &channel) {
   auto position = vec2(ui::GetCursorScreenPos());
 
   draw_list->AddRectFilled(position + top_left, position + bottom_right, background_color);
+  auto id = 0;
   for (auto &key: channel.keys()) {
     auto x = key.time / channel.duration();
     auto y = (key.value - range.x) / (range.y - range.x);
     auto pos = mix(top_left, bottom_right, vec2(x, y)) + position;
+    auto radius = 4.0f;
 
-    draw_list->AddCircle(pos, 4.0, color32);
+    // Maybe use invisible button to grab circles.
+    ui::SetCursorScreenPos(pos - vec2(radius));
+    ui::PushID("temp_key");
+    ui::InvisibleButton("", vec2(radius * 2.0f));
+    ui::SetCursorScreenPos(position);
+    if (ui::IsItemHovered()) {
+      console() << "Hovering over " << id << endl;
+    }
+    else {
+      console() << "Ignoring " << id << endl;
+    }
+
+    ui::PopID();
+    id += 1;
+    draw_list->AddCircle(pos, radius, color32);
   }
-  ImGui::Dummy(outer_size);
+  ui::Dummy(outer_size);
 }
 
 class TimelineEditorApp : public App {
