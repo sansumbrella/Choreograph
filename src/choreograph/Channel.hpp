@@ -185,7 +185,12 @@ Channel<T>& Channel<T>::insertKey(T value, Time at_time) {
   }
 
   auto i = index(at_time);
-  _curves.insert(_curves.begin() + i, {});
+  if (_curves.empty()) {
+    _curves.emplace_back();
+  }
+  else {
+    _curves.insert(_curves.begin() + i, {});
+  }
   _keys.insert(_keys.begin() + i + 1, {value, at_time});
 
   return *this;
