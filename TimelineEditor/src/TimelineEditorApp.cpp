@@ -32,34 +32,51 @@ void drawChannelGui(ch::Channel<float> &channel) {
     }
   }
 
-  auto outer_size = vec2(ui::GetWindowWidth(), 100.0f);
-  auto padding = vec2(20, 10);
-  auto top_left = vec2(0);
-  auto bottom_right = outer_size - padding;
-  auto range = vec2(-100.0f, 100.0f);
+  auto const outer_size = vec2(ui::GetWindowWidth(), 100.0f);
+  auto const padding = vec2(20, 10);
+  auto const top_left = vec2(0);
+  auto const bottom_right = outer_size - padding;
+  auto const value_range = vec2(-100.0f, 100.0f);
+  auto const time_range = vec2(0, channel.duration());
+  auto const cursor_position = vec2(ui::GetCursorScreenPos());
   auto color = vec4(1.0f,1.0f,0.4f,1.0f);
   auto color32 = ImColor(color);
-  auto background_color = ImColor(vec4(vec3(0.1f), 1.0f));
-  auto position = vec2(ui::GetCursorScreenPos());
+  auto background_color = ImColor(vec4(1.0f, 0.5f, 0.0f, 1.0f));
 
-  draw_list->AddRectFilled(position + top_left, position + bottom_right, background_color);
+  auto const value_to_space = [=] (const ci::vec2 &values) {
+    auto x = values.x / channel.duration();
+    auto y = (values.y - value_range.x) / (value_range.y - value_range.x);
+    return mix(top_left, bottom_right, vec2(x, y)) + cursor_position;
+  };
+
+  auto const space_to_value = [=] (const ci::vec2 &space) {
+    auto normalized = space / (bottom_right - top_left);
+    return mix(vec2(time_range.x, value_range.x), vec2(time_range.y, value_range.y), normalized);
+  };
+
+  draw_list->AddRectFilled(cursor_position + top_left, cursor_position + bottom_right, background_color);
   auto id = 0;
-  for (auto &key: channel.keys()) {
-    auto x = key.time / channel.duration();
-    auto y = (key.value - range.x) / (range.y - range.x);
-    auto pos = mix(top_left, bottom_right, vec2(x, y)) + position;
-    auto radius = 4.0f;
+  for (auto &key: channel.mutableKeys()) {
+    auto pos = value_to_space(vec2(key.time, key.value));
+    auto radius = 16.0f;
 
-    // Maybe use invisible button to grab circles.
+    // Use an invisible button to handle interaction with circles.
     ui::SetCursorScreenPos(pos - vec2(radius));
     ui::PushID("temp_key");
     ui::InvisibleButton("", vec2(radius * 2.0f));
-    ui::SetCursorScreenPos(position);
+    ui::SetCursorScreenPos(cursor_position);
     if (ui::IsItemHovered()) {
-      console() << "Hovering over " << id << endl;
-    }
-    else {
-      console() << "Ignoring " << id << endl;
+      // Maybe use DragBehavior to handle changing value? Mapping back from space to value
+//      ui::DragBehavior(<#const ImRect &frame_bb#>, <#ImGuiID id#>, <#float *v#>, <#float v_speed#>, <#float v_min#>, <#float v_max#>, <#int decimal_precision#>, <#float power#>)
+      // Or use is mouse dragging and handle change more directly?
+      if (ui::IsMouseDragging()) {
+        // Problem: delta is cumulative; need to store starting position, too.
+        auto delta = vec2(ui::GetMouseDragDelta());
+        auto value_delta = space_to_value(delta);
+        console() << "Changing value of " << id << " with deltas: " << delta << ", " << value_delta << " mouse: " << vec2(ui::GetMousePos()) << endl;
+        key.value += value_delta.y;
+        key.time += value_delta.x;
+      }
     }
 
     ui::PopID();
