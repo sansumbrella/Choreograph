@@ -34,6 +34,7 @@ void drawChannelGui(ch::Channel<float> &channel) {
 void drawChannel(ch::Channel<float> &channel) {
   auto inner_size = vec2(200, 50);
   auto padding = vec2(10);
+  auto range = vec2(-100.0f, 100.0f);
   auto outer_size = inner_size + padding * 2.0f;
   gl::ScopedColor color_scope;
   gl::ScopedModelMatrix matrix_scope;
@@ -41,16 +42,6 @@ void drawChannel(ch::Channel<float> &channel) {
   gl::color(Color::gray(0.5f));
   gl::drawSolidRect(Rectf(vec2(0), outer_size));
   gl::translate(padding);
-
-  auto range = ([&] {
-    auto range = vec2(std::numeric_limits<float>::infinity(), -std::numeric_limits<float>::infinity());
-    for (auto &key: channel.keys()) {
-      range.x = min(range.x, key.value);
-      range.y = max(range.x, key.value);
-    }
-
-    return range;
-  } ());
 
   gl::color(Color::gray(1.0f));
   for (auto &curve: channel.curves()) {
