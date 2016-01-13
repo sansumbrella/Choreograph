@@ -41,7 +41,7 @@ void drawChannelGui(ch::Channel<float> &channel) {
   auto const cursor_position = vec2(ui::GetCursorScreenPos());
   auto color = vec4(1.0f,1.0f,0.4f,1.0f);
   auto color32 = ImColor(color);
-  auto background_color = ImColor(vec4(1.0f, 0.5f, 0.0f, 1.0f));
+  auto background_color = ImColor(vec4(0.3, 0.3, 0.3f, 1.0f));
 
   auto const value_to_space = [=] (const ci::vec2 &values) {
     auto x = values.x / channel.duration();
@@ -59,7 +59,7 @@ void drawChannelGui(ch::Channel<float> &channel) {
   auto id = 0;
   for (auto &key: channel.mutableKeys()) {
     auto pos = value_to_space(vec2(key.time, key.value));
-    auto radius = 16.0f;
+    auto radius = 12.0f;
 
     // Use an invisible button to handle interaction with circles.
     ui::SetCursorScreenPos(pos - vec2(radius));
@@ -121,6 +121,9 @@ void TimelineEditorApp::update()
 void TimelineEditorApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
+
+  auto t = std::fmod(getElapsedSeconds(), _channel.duration());
+  gl::drawSolidCircle(getWindowCenter() + vec2(0, _channel.value(t)), 24.0f);
 }
 
 CINDER_APP( TimelineEditorApp, RendererGl )
