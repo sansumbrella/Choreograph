@@ -50,7 +50,8 @@ void drawChannelGui(ch::Channel<float> &channel) {
   };
 
   auto const space_to_value = [=] (const ci::vec2 &space) {
-    auto normalized = space / (bottom_right - top_left);
+    auto pos = space - cursor_position;
+    auto normalized = pos / (bottom_right - top_left);
     return mix(vec2(time_range.x, value_range.x), vec2(time_range.y, value_range.y), normalized);
   };
 
@@ -69,13 +70,13 @@ void drawChannelGui(ch::Channel<float> &channel) {
       // Maybe use DragBehavior to handle changing value? Mapping back from space to value
 //      ui::DragBehavior(<#const ImRect &frame_bb#>, <#ImGuiID id#>, <#float *v#>, <#float v_speed#>, <#float v_min#>, <#float v_max#>, <#int decimal_precision#>, <#float power#>)
       // Or use is mouse dragging and handle change more directly?
+
       if (ui::IsMouseDragging()) {
-        // Problem: delta is cumulative; need to store starting position, too.
-        auto delta = vec2(ui::GetMouseDragDelta());
-        auto value_delta = space_to_value(delta);
-        console() << "Changing value of " << id << " with deltas: " << delta << ", " << value_delta << " mouse: " << vec2(ui::GetMousePos()) << endl;
-        key.value += value_delta.y;
-        key.time += value_delta.x;
+        auto delta = vec2(ui::GetIO().MouseDelta);
+        auto value = space_to_value(pos + delta);
+        console() << "Changing value of " << id << " with deltas: " << delta << ", new value: " << value << " mouse: " << vec2(ui::GetMousePos()) << endl;
+        key.time = value.x;
+        key.value = value.y;
       }
     }
 
