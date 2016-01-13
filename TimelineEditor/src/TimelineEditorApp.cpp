@@ -15,9 +15,11 @@ using namespace ci::app;
 using namespace std;
 
 void drawChannelGui(ch::Channel<float> &channel) {
+  ImDrawList* draw_list = ImGui::GetWindowDrawList();
+
   for (auto i = 0; i < channel.keys().size(); i += 1) {
 
-    ui::SliderFloat(("Value " + to_string(i)).c_str(), &channel.mutableKeys()[i].value, 0.0f, 100.0f);
+    ui::SliderFloat(("Value " + to_string(i)).c_str(), &channel.mutableKeys()[i].value, -100.0f, 100.0f);
 
     if (i > 0 && i < channel.keys().size() - 1) {
       auto *previous = &channel.mutableKeys()[i - 1];
@@ -29,33 +31,26 @@ void drawChannelGui(ch::Channel<float> &channel) {
       }
     }
   }
-}
 
-void drawChannel(ch::Channel<float> &channel) {
-  auto inner_size = vec2(200, 50);
-  auto padding = vec2(10);
+  auto outer_size = vec2(ui::GetWindowWidth(), 100.0f);
+  auto padding = vec2(20, 10);
+  auto top_left = vec2(0);
+  auto bottom_right = outer_size - padding;
   auto range = vec2(-100.0f, 100.0f);
-  auto outer_size = inner_size + padding * 2.0f;
-  gl::ScopedColor color_scope;
-  gl::ScopedModelMatrix matrix_scope;
+  auto color = vec4(1.0f,1.0f,0.4f,1.0f);
+  auto color32 = ImColor(color);
+  auto background_color = ImColor(vec4(vec3(0.1f), 1.0f));
+  auto position = vec2(ui::GetCursorScreenPos());
 
-  gl::color(Color::gray(0.5f));
-  gl::drawSolidRect(Rectf(vec2(0), outer_size));
-  gl::translate(padding);
-
-  gl::color(Color::gray(1.0f));
-  for (auto &curve: channel.curves()) {
-    curve.solve(0.5f);
-  }
-
+  draw_list->AddRectFilled(position + top_left, position + bottom_right, background_color);
   for (auto &key: channel.keys()) {
     auto x = key.time / channel.duration();
     auto y = (key.value - range.x) / (range.y - range.x);
-    auto pos = vec2(x, y) * inner_size;
+    auto pos = mix(top_left, bottom_right, vec2(x, y)) + position;
 
-    gl::drawSolidCircle(pos, 8.0f);
+    draw_list->AddCircle(pos, 4.0, color32);
   }
-
+  ImGui::Dummy(outer_size);
 }
 
 class TimelineEditorApp : public App {
@@ -92,7 +87,6 @@ void TimelineEditorApp::update()
 void TimelineEditorApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-  drawChannel(_channel);
 }
 
 CINDER_APP( TimelineEditorApp, RendererGl )
