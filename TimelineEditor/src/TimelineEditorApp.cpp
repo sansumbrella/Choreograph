@@ -70,8 +70,12 @@ void drawChannelGui(ch::Channel<float> &channel) {
       if (ui::IsMouseDown(0)) {
         auto value = space_to_value(ui::GetMousePos());
         console() << "Changing value of " << id << ", new value: " << value << " mouse: " << vec2(ui::GetMousePos()) << endl;
-        key.time = value.x;
-        key.value = value.y;
+
+        auto control = channel.keyControl(id);
+        if (! control.isFirst()) {
+          control.setTime(value.x);
+        }
+        control.setValue(value.y);
       }
     }
 
