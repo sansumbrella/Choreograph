@@ -88,6 +88,14 @@ TEST_CASE("Channel")
       REQUIRE(c.curves().size() == 2);
       REQUIRE(c.value(2) == 75);
     }
+
+    SECTION("Channels can be safely manipulated using KeyManipulators")
+    {
+      REQUIRE(channel.value(1) == 10.0f);
+      auto ctl = channel.keyControl(1);
+      ctl.setValue(50.0f);
+      REQUIRE(channel.value(1) == 50.0f);
+    }
   }
 
   SECTION("Default bezier handles result in effectively linear interpolation.")
