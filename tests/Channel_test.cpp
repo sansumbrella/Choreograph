@@ -98,6 +98,20 @@ TEST_CASE("Channel")
     }
   }
 
+  SECTION("Channel key control")
+  {
+    auto c = Channel<float>();
+    c.insertKey(10.0f, 0);
+    c.appendKeyAfter(20.0f, 0.5);
+    c.insertKey(120.0f, 1);
+    c.insertKey(30.0f, 3);
+
+    CHECK(c.keyControl(0).isFirst());
+    CHECK_FALSE(c.keyControl(1).isFirst());
+    CHECK_FALSE(c.keyControl(c.keys().size() - 2).isLast());
+    CHECK(c.keyControl(c.keys().size() - 1).isLast());
+  }
+
   SECTION("Default bezier handles result in effectively linear interpolation.")
   {
     auto bezier = BezierInterpolant();

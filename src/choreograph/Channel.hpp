@@ -143,6 +143,8 @@ public:
     void setTime(Time t) {
       _current.time = std::min(std::max(t, previousTime()), nextTime());
     }
+    bool isFirst() const { return _previous == nullptr; }
+    bool isLast() const { return _next == nullptr; }
 
     Curve* curveOut() { return _curve_out; }
     Curve* curveIn() { return _curve_in; }
@@ -263,7 +265,7 @@ template <typename T>
 typename Channel<T>::KeyManipulator Channel<T>::keyControl(size_t desired_index) {
   auto index = std::min(desired_index, _keys.size() - 1);
   auto &current = _keys[index];
-  auto *previous = (index > 1) ? &_keys[index - 1] : nullptr;
+  auto *previous = (index > 0) ? &_keys[index - 1] : nullptr;
   auto *next = (index < _keys.size() - 1) ? &_keys[index + 1] : nullptr;
   auto *c1 = (index > 0) ? &_curves[index - 1] : nullptr;
   auto *c2 = (index < _curves.size()) ? &_curves[index] : nullptr;
