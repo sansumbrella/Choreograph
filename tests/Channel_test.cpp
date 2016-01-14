@@ -20,6 +20,15 @@ TEST_CASE("Channel")
       .appendKeyAfter(10.0f, 1.0)
       .appendKeyAfter(5.0f, 1.0);
 
+    SECTION("Channels always have keys - 1 curves.")
+    {
+      REQUIRE(channel.keys().size() == 3);
+      REQUIRE(channel.curves().size() == (channel.keys().size() - 1));
+
+      channel.insertKey(500.0f, 2.0);
+      REQUIRE(channel.curves().size() == (channel.keys().size() - 1));
+    }
+
     SECTION("Index calculating returns the curve index at time.")
     {
       REQUIRE(channel.index(-0.5) == 0);
@@ -45,7 +54,7 @@ TEST_CASE("Channel")
       REQUIRE(channel.index(0.6) == 1);
       REQUIRE(channel.value(0.5) == 0.5);
       REQUIRE(channel.value(0.25) == Approx(0.25));
-
+      REQUIRE(channel.value(1.5) == 7.5f);
     }
 
     SECTION("Inserting a key between two keys calculates a split between them.")
@@ -67,6 +76,17 @@ TEST_CASE("Channel")
       REQUIRE(channel.value(2.2) == 5.0f);
       REQUIRE(channel.value(-0.1) == 0.0f);
       REQUIRE(channel.value(0.0) == 0.0f);
+    }
+
+    SECTION("Channels created only by inserting work.")
+    {
+      auto c = Channel<float>();
+      c.insertKey(10.0f, 0);
+      c.insertKey(120.0f, 1);
+      c.insertKey(30.0f, 3);
+
+      REQUIRE(c.curves().size() == 2);
+      REQUIRE(c.value(2) == 75);
     }
   }
 
@@ -92,6 +112,6 @@ TEST_CASE("Channel")
     c1.x = 0.2f;
     c1.y = 1.0f;
     bezier.setControlPoint1(c1);
-    CHECK(bezier.solve(0.5) != 0.5);
+    CHECK(bezier.solve(0.5) != Approx(0.5));
   }
 }
