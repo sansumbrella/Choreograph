@@ -42,6 +42,16 @@ public:
     Hold,
     Linear
   };
+
+  Curve() = default;
+  explicit Curve(Type t):
+    _type(t)
+  {}
+  explicit Curve(const BezierInterpolant &bezier):
+    _type(Bezier),
+    _bezier(bezier)
+  {}
+
   float solve(float t) const;
   void  setType(Type type) { _type = type; }
   void  hold() { _type = Hold; }
@@ -77,6 +87,9 @@ float Curve::solve(float t) const
 ///   - Support direct manipulation of animation data.
 ///   - Avoid deeply nested information. Flat hierarchy.
 /// - Flexible enough to create an AfterEffects-style timeline.
+///   - Separate motion path with bezier interpolation for full effect.
+///   - Get time along section with channel, calculate value using path.
+///   - Channel for timing, with key values corresponding to control points on spatial curve.
 ///
 /// Good for animating single values, like floats or quaternions.
 /// For vector types, use a channel per component (and maybe add a group type to associate them).
@@ -186,10 +199,10 @@ Channel<T>& Channel<T>::insertKey(T value, Time at_time) {
 
   auto i = index(at_time);
   if (_curves.empty()) {
-    _curves.emplace_back();
+    _curves.emplace_back(Curve::Linear);
   }
   else {
-    _curves.insert(_curves.begin() + i, {});
+    _curves.insert(_curves.begin() + i, Curve(Curve::Linear));
   }
   _keys.insert(_keys.begin() + i + 1, {value, at_time});
 
