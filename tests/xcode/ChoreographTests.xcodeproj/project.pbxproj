@@ -46,6 +46,8 @@
 		9CC02E771BDE641400B5058A /* Ease_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E761BDE641400B5058A /* Ease_test.cpp */; };
 		9CC02E791BDE6D0D00B5058A /* ForumMiscellany_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */; };
 		9CC02E7B1BDE6D6A00B5058A /* Numbers_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */; };
+		9CC5C5391C440FFF007DE6AC /* Channel_test.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC5C5381C440FFF007DE6AC /* Channel_test.cpp */; };
+		9CC5C53C1C4427D9007DE6AC /* UnitBezier.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9CC5C53A1C4427D9007DE6AC /* UnitBezier.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -126,6 +128,11 @@
 		9CC02E761BDE641400B5058A /* Ease_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ease_test.cpp; path = ../Ease_test.cpp; sourceTree = "<group>"; };
 		9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ForumMiscellany_test.cpp; path = ../ForumMiscellany_test.cpp; sourceTree = "<group>"; };
 		9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Numbers_test.cpp; path = ../Numbers_test.cpp; sourceTree = "<group>"; };
+		9CC5C5361C440EAC007DE6AC /* Channel.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Channel.hpp; sourceTree = "<group>"; };
+		9CC5C5381C440FFF007DE6AC /* Channel_test.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Channel_test.cpp; path = ../Channel_test.cpp; sourceTree = "<group>"; };
+		9CC5C53A1C4427D9007DE6AC /* UnitBezier.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = UnitBezier.cpp; sourceTree = "<group>"; };
+		9CC5C53B1C4427D9007DE6AC /* UnitBezier.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UnitBezier.h; sourceTree = "<group>"; };
+		9CC5C53E1C4434AE007DE6AC /* BezierEase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BezierEase.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +237,10 @@
 				151E370B19EC2358009C943E /* TimelineItem.h */,
 				15F764E61A12F4690022B9AB /* specialization */,
 				159C0E711A3B5D2300727C93 /* TimelineOptions.hpp */,
+				9CC5C5361C440EAC007DE6AC /* Channel.hpp */,
+				9CC5C53A1C4427D9007DE6AC /* UnitBezier.cpp */,
+				9CC5C53B1C4427D9007DE6AC /* UnitBezier.h */,
+				9CC5C53E1C4434AE007DE6AC /* BezierEase.h */,
 			);
 			path = choreograph;
 			sourceTree = "<group>";
@@ -271,6 +282,7 @@
 				9CC02E761BDE641400B5058A /* Ease_test.cpp */,
 				9CC02E781BDE6D0D00B5058A /* ForumMiscellany_test.cpp */,
 				9CC02E7A1BDE6D6A00B5058A /* Numbers_test.cpp */,
+				9CC5C5381C440FFF007DE6AC /* Channel_test.cpp */,
 			);
 			name = src;
 			path = ../src;
@@ -413,6 +425,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9CC5C53C1C4427D9007DE6AC /* UnitBezier.cpp in Sources */,
 				9CC02E6B1BDE61C600B5058A /* Phrase_test.cpp in Sources */,
 				9CC02E731BDE630800B5058A /* Cue_test.cpp in Sources */,
 				9CC02E711BDE62AA00B5058A /* Grouping_test.cpp in Sources */,
@@ -424,6 +437,7 @@
 				9CC02E771BDE641400B5058A /* Ease_test.cpp in Sources */,
 				9CC02E6F1BDE627B00B5058A /* Motion_test.cpp in Sources */,
 				15F905DB19C4A3CF003C06A4 /* Choreograph_test.cpp in Sources */,
+				9CC5C5391C440FFF007DE6AC /* Channel_test.cpp in Sources */,
 				9CC02E7B1BDE6D6A00B5058A /* Numbers_test.cpp in Sources */,
 				9CC02E6D1BDE622F00B5058A /* Sequence_test.cpp in Sources */,
 			);

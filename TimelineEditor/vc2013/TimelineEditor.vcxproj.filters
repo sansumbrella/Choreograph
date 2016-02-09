@@ -1,0 +1,154 @@
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{168B8301-280E-48AB-B2B8-E6D8FE8DD955}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Choreograph">
+      <UniqueIdentifier>{021916F7-C48D-4B9A-BBEF-999F6C637971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Choreograph\src">
+      <UniqueIdentifier>{8D5F3347-7BE8-4389-B065-51E69C86F887}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Choreograph\src\choreograph">
+      <UniqueIdentifier>{DC1957DC-F8D5-4B73-877A-CF62AD8C8433}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Choreograph\src\choreograph\specialization">
+      <UniqueIdentifier>{7BD13C4A-DC37-4D90-B6C7-3C21942A884F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\ImGui">
+      <UniqueIdentifier>{19607C03-11EE-4E02-89BA-5A32C0173ABF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\ImGui\include">
+      <UniqueIdentifier>{B1A553E1-16E9-4A1E-80B3-D5A484F9CA0D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\ImGui\lib">
+      <UniqueIdentifier>{AE9E4144-E4C5-49F4-8946-99E4844B58C2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\ImGui\lib\imgui">
+      <UniqueIdentifier>{55F2B34D-A734-477E-B1F6-90AD7F2E3F8F}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\ImGui\src">
+      <UniqueIdentifier>{1108E647-C4FD-46C7-94AD-6A6B408043BB}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\TimelineEditorApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\TimelineEditorApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Channel.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Motion.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Output.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Phrase.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Sequence.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\TimelineOptions.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\BezierEase.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Choreograph.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Cue.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Easing.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\Timeline.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\TimelineItem.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\TimeType.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\choreograph\UnitBezier.h">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\src\choreograph\Cue.cpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\Timeline.cpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\TimelineItem.cpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\choreograph\UnitBezier.cpp">
+      <Filter>Blocks\Choreograph\src\choreograph</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\src\choreograph\specialization\CinderSpecialization.hpp">
+      <Filter>Blocks\Choreograph\src\choreograph\specialization</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Cinder-ImGui\include\CinderImGui.h">
+      <Filter>Blocks\ImGui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Cinder-ImGui\include\imgui_user.h">
+      <Filter>Blocks\ImGui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Cinder-ImGui\include\imgui_user.inl">
+      <Filter>Blocks\ImGui\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Cinder-ImGui\lib\imgui\imconfig.h">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Cinder-ImGui\lib\imgui\imgui.h">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Cinder-ImGui\lib\imgui\imgui_internal.h">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\Cinder-ImGui\src\CinderImGui.cpp">
+      <Filter>Blocks\ImGui\src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Cinder-ImGui\lib\imgui\imgui.cpp">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Cinder-ImGui\lib\imgui\imgui_draw.cpp">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\Cinder-ImGui\lib\imgui\imgui_demo.cpp">
+      <Filter>Blocks\ImGui\lib\imgui</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
