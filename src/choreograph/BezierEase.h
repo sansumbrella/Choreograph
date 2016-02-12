@@ -10,13 +10,14 @@
 
 namespace choreograph {
 
-const auto createBezierEase(double x1, double y1, double x2, double y2) -> std::function<float (float)> {
-  auto bezier = BezierInterpolant(x1, y1, x2, y2);
-  auto epsilon = std::numeric_limits<float>() * 100;
+auto createBezierEase(double x1, double y1, double x2, double y2) -> std::function<float(float)>
+{
+    auto bezier = BezierInterpolant(x1, y1, x2, y2);
+    auto epsilon = std::numeric_limits<float>::epsilon() * 100.0f;
 
-  return [bezier, epsilon] (float t) {
-    return bezier.solve(t, epsilon);
-  };
+    return [bezier, epsilon](float t) {
+        return bezier.solve(t, epsilon);
+    };
 }
 
 } // namespace choreograph
