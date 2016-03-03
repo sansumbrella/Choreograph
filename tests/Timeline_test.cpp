@@ -21,6 +21,23 @@ TEST_CASE( "Timeline" )
     .then<RampTo>( 10.0f, 1.0f )
     .then<RampTo>( 100.0f, 1.0f );
 
+  SECTION( "Convenience methods create equivalent timeline to explicit methods" )
+  {
+    Output<float> a, b;
+    timeline.apply(&a)
+      .set(0.0f)
+      .rampTo(5.0f, 1.0, EaseOutQuad());
+
+    timeline.apply(&b)
+      .set(0.0f)
+      .then<RampTo>(5.0f, 1.0, EaseOutQuad());
+
+    for (auto t = 0.0; t < 1.0; t += 0.2) {
+      timeline.jumpTo(t);
+      REQUIRE(a == b);
+    }
+  }
+
   SECTION( "Output<T> pointers can be controlled via Timeline." )
   {
     Output<float> target = 0.0f;
