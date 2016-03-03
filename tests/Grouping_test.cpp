@@ -44,13 +44,13 @@ TEST_CASE( "Motion Groups" )
 
     group_timeline.apply( &target )
       .then<RampTo>( 10, 1.0f )
-      .startFn( [&start_count] (Motion<int> &m) {
+      .startFn( [&start_count] () {
         start_count += 1;
       } )
-      .updateFn( [&update_count] (Motion<int> &m) {
+      .updateFn( [&update_count] () {
         update_count += 1;
       } )
-      .finishFn( [&finish_count] (Motion<int> &m) {
+      .finishFn( [&finish_count] () {
         finish_count += 1;
       } );
 

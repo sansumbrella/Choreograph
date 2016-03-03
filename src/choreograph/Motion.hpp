@@ -52,7 +52,7 @@ class Motion : public TimelineItem
 public:
   using MotionT       = Motion<T>;
   using SequenceT     = Sequence<T>;
-  using Callback      = std::function<void (MotionT&)>;
+  using Callback      = std::function<void ()>;
 
   Motion() = delete;
 
@@ -154,10 +154,10 @@ void Motion<T>::update()
   if( _start_fn )
   {
     if( forward() && time() > 0.0f && previousTime() <= 0.0f ) {
-      _start_fn( *this );
+      _start_fn();
     }
     else if( backward() && time() < getDuration() && previousTime() >= getDuration() ) {
-      _start_fn( *this );
+      _start_fn();
     }
   }
 
@@ -175,7 +175,7 @@ void Motion<T>::update()
       {
         auto inflection = fn.first;
         if( inflection > bottom && inflection <= top ) {
-          fn.second( *this );
+          fn.second();
         }
       }
     }
@@ -183,16 +183,16 @@ void Motion<T>::update()
 
   if( _update_fn )
   {
-    _update_fn( *this );
+    _update_fn();
   }
 
   if( _finish_fn )
   {
     if( forward() && time() >= getDuration() && previousTime() < getDuration() ) {
-      _finish_fn( *this );
+      _finish_fn();
     }
     else if( backward() && time() <= 0.0f && previousTime() > 0.0f ) {
-      _finish_fn( *this );
+      _finish_fn();
     }
   }
 }
