@@ -112,7 +112,7 @@ TEST_CASE( "Choreograph Timeline Basic Performance" )
   }
   Timer create_in_place( true );
   for( auto &target : targets ) {
-    choreograph_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).startFn( [] (Motion<vec2> &) {} ).updateFn( [] ( Motion<vec2> &m ) { m.getCurrentValue() + vec2(1); } ).finishFn( [] (Motion<vec2> &) {} );
+    choreograph_timeline.apply( &target ).then<RampTo>( vec2( 10.0f ), 1.0f ).startFn( [] {} ).updateFn( [&m = *target.inputPtr()] { m.getCurrentValue() + vec2(1); } ).finishFn( [] {} );
   }
   create_in_place.stop();
   printTiming( "Creating Motions with Callbacks in place", create_in_place.getSeconds() * 1000 );
@@ -142,7 +142,7 @@ TEST_CASE( "Choreograph Timeline Basic Performance" )
   Sequence<vec2> sequence( vec2( 1.0f ) );
   sequence.then<RampTo>( vec2( 5.0f ), 1.0f ).then<RampTo>( vec2( 10.0f, 6.0f ), 0.5f );
   for( auto &target : targets ) {
-    choreograph_timeline.apply( &target, sequence ).startFn( [] (Motion<vec2> &) {} ).updateFn( [] ( Motion<vec2> &m ) { m.getCurrentValue() + vec2(1); } ).finishFn( [] (Motion<vec2> &) {} );
+    choreograph_timeline.apply( &target, sequence ).startFn( [] {} ).updateFn( [&m = *target.inputPtr()] { m.getCurrentValue() + vec2(1); } ).finishFn( [] {} );
   }
 
   create_copy.stop();

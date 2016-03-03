@@ -66,12 +66,12 @@ void BezierConstruction::setup()
 
   // Apply the bezier_point animation to our curve point variable.
   group->apply<vec2>( &_curve_point, bezier_point )
-    .startFn( [this] ( Motion<vec2> &m ) {
+    .startFn( [this] {
       _segments.clear();
       _segments.push_back( _curve_points[0] );
     } )
-    .updateFn( [this] ( Motion<vec2> &m ) {
-      _segments.push_back( m.getCurrentValue() );
+    .updateFn( [this] {
+      _segments.push_back( _curve_point );
     } );
 
   // When all our animations finish, cue the group to restart after a delay.

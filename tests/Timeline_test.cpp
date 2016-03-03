@@ -104,9 +104,9 @@ TEST_CASE( "Callbacks" )
     int           updateCount = 0;
     float         updateTarget = 0;
 
-    options.startFn( [&startCalled] (Motion<float> &) { startCalled = true; } )
-      .updateFn( [&updateTarget, &target, &updateCount] ( Motion<float> &m ) { updateTarget = target() / 2.0f; updateCount++; } )
-      .finishFn( [&endCalled] (Motion<float> &) { endCalled = true; } );
+    options.startFn( [&startCalled] () { startCalled = true; } )
+      .updateFn( [&updateTarget, &target, &updateCount] () { updateTarget = target() / 2.0f; updateCount++; } )
+      .finishFn( [&endCalled] () { endCalled = true; } );
 
     const float step = timeline.timeUntilFinish() / 10.0;
     timeline.step( step );
@@ -132,18 +132,18 @@ TEST_CASE( "Callbacks" )
     timeline.apply( &target )
       .hold( 0.5f )
       // inflects around 0.5
-      .onInflection( [&c1] (Motion<float> &m) { c1 += 1; } )
+      .onInflection( [&c1] () { c1 += 1; } )
       .then<RampTo>( 3.0f, 1.0f )
       // inflects around 1.5
-      .onInflection( [&c2] (Motion<float> &m) {
+      .onInflection( [&c2] () {
         c2 += 1;
       } )
       .then<RampTo>( 2.0f, 1.0f );
 
     timeline.append( &target )
-      .onInflection( [&trigger_count] (Motion<float> &m) { trigger_count += 1; } )
+      .onInflection( [&trigger_count] () { trigger_count += 1; } )
       .hold( 0.001 )
-      .onInflection( [&trigger_count] (Motion<float> &m) { trigger_count += 1; } )
+      .onInflection( [&trigger_count] () { trigger_count += 1; } )
       .hold( 1.0 );
 
     timeline.step( 0.49f );
@@ -168,7 +168,7 @@ TEST_CASE( "Callbacks" )
 
     SECTION( "Add Motion from Motion callback." )
     {
-      options.startFn( [&] (Motion<float> &) {
+      options.startFn( [&] () {
         timeline.apply( &t2, sequence );
       } );
 
@@ -183,7 +183,7 @@ TEST_CASE( "Callbacks" )
       // Play t2 motion twice as fast as previous, disconnect target on finish.
       timeline.apply( &t2, sequence )
         .playbackSpeed( 2.0f )
-        .finishFn( [&target] (Motion<float> &) {
+        .finishFn( [&target] () {
           target.disconnect();
       } );
 
