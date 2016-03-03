@@ -44,14 +44,14 @@ void Repetition::setup()
 
   Output<vec2>  loopTarget;
   timeline().apply( &loopTarget, leftToRight )
-    .finishFn( [] ( Motion<vec2> &m ) {
+    .finishFn( [&m = *loopTarget.inputPtr()] {
       m.resetTime();
     } );  // Motion should play forever.
 
 
   Output<vec2>  pingPongTarget;
   timeline().apply( &pingPongTarget, leftToRight )
-    .finishFn( [] ( Motion<vec2> &m ) {
+    .finishFn( [&m = *pingPongTarget.inputPtr()] {
       // reverse Motion direction on finish.
       m.setPlaybackSpeed( m.getPlaybackSpeed() * -1 );
       // Start each cycle from "zero" to keep in sync with loopTarget timing.
@@ -60,12 +60,12 @@ void Repetition::setup()
 
   Output<vec2>  pingPongSlowerTarget;
   timeline().apply( &pingPongSlowerTarget, leftToRight )
-    .finishFn( [] ( Motion<vec2> &m ) {
+    .finishFn( [&m = *pingPongSlowerTarget.inputPtr()] {
       // Reverse and slow Motion on finish.
       m.setPlaybackSpeed( m.getPlaybackSpeed() * -0.9f );
       // If we're unbearably slow, stop looping.
       if( std::abs( m.getPlaybackSpeed() ) < 0.2f ) {
-        m.setFinishFn( [] ( Motion<vec2> &m ) {} );
+        m.setFinishFn( [] {} );
       }
       else {
         m.resetTime();

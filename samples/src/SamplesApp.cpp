@@ -84,7 +84,7 @@ void SamplesApp::loadSample( int index )
     _timeline.apply( _previous_scene->getOffsetOutput() )
       .hold( cooldown )
       .then<RampTo>( vec2( vanish_x, 0.0f ), 0.4f, EaseInQuad() )
-      .finishFn( [this] ( Motion<vec2> &m ) {
+      .finishFn( [this] {
         _previous_scene.reset(); // get rid of previous scene
       } );
   }
@@ -101,7 +101,7 @@ void SamplesApp::loadSample( int index )
     _current_scene->pause();
 
     _timeline.apply( _current_scene->getOffsetOutput() ).hold( 0.2f + cooldown ).then<RampTo>( vec2( 0 ), 0.66f, EaseOutQuint() )
-    .finishFn( [this] ( Motion<vec2> &m ) {
+    .finishFn( [this] {
       _current_scene->resume();
     } );
 
