@@ -28,6 +28,7 @@
 #pragma once
 
 #include "Motion.hpp"
+#include "phrase/Ramp.hpp"
 #include "Cue.h"
 
 namespace choreograph
@@ -162,6 +163,9 @@ public:
   SelfT& hold( Time duration ) { _sequence.template then<Hold>( _sequence.getEndValue(), duration ); return *this; }
 
 	SelfT& holdUntil( Time time ) { _sequence.template then<Hold>( _sequence.getEndValue(), std::max<Time>( time - _sequence.getDuration(), 0 ) ); return *this; }
+
+  template<typename... Args>
+  SelfT& rampTo( const T &value, Time duration, Args&&... args ) { _sequence.template then<RampTo>( value, duration, std::forward<Args>(args)... ); return *this; }
 
   //=================================================
   // Accessors to Motion and Sequence.
