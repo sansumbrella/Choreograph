@@ -61,7 +61,7 @@ private:
   BezierInterpolant _bezier;
 };
 
-float Curve::solve(float t) const
+inline float Curve::solve(float t) const
 {
   switch (_type) {
     case Bezier:
