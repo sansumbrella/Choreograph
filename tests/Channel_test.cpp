@@ -20,13 +20,13 @@ TEST_CASE("Channel")
       .appendKeyAfter(10.0f, 1.0)
       .appendKeyAfter(5.0f, 1.0);
 
-    SECTION("Channels always have keys - 1 curves.")
+    SECTION("Channels always have one curve per key, which is used to interpolate to the following key (if any).")
     {
       REQUIRE(channel.keys().size() == 3);
-      REQUIRE(channel.curves().size() == (channel.keys().size() - 1));
+      REQUIRE(channel.curves().size() == channel.keys().size());
 
       channel.insertKey(500.0f, 2.0);
-      REQUIRE(channel.curves().size() == (channel.keys().size() - 1));
+      REQUIRE(channel.curves().size() == channel.keys().size());
     }
 
     SECTION("Index calculating returns the curve index at time.")
@@ -85,7 +85,7 @@ TEST_CASE("Channel")
       c.insertKey(120.0f, 1);
       c.insertKey(30.0f, 3);
 
-      REQUIRE(c.curves().size() == 2);
+      REQUIRE(c.curves().size() == 3);
       REQUIRE(c.value(2) == 75);
     }
 

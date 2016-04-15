@@ -187,18 +187,16 @@ public:
   size_t lastIndex() const { return _keys.empty() ? 0 : _keys.size() - 1; }
 
   /// Append a key to the list of keys, positioned at \offset time after the previous key.
-  Channel& appendKeyAfter(T value, Time offset) {
-    if (! _keys.empty()) {
-      _curves.emplace_back();
-    }
+  Channel& appendKeyAfter(T value, Time offset, Curve::Type curve_type = Curve::Linear) {
     _keys.emplace_back(value, duration() + offset);
+    _curves.emplace_back(curve_type);
     return *this;
   }
   /// Insert a key at the given time.
-  Channel& insertKey(T value, Time at_time);
+  Channel& insertKey(T value, Time at_time, Curve::Type curve_type = Curve::Linear);
   /// Insert multiple keys.
   template <typename ... Keys>
-  Channel& insertKey(T value, Time at_time, Keys... keys);
+  Channel& insertKey(T value, Time at_time, Curve::Type curve_type, Keys... keys);
 
   Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
   const std::vector<Key>&   keys() const { return _keys; }
@@ -265,29 +263,30 @@ T Channel<T>::interpolatedValue(size_t curve_index, Time at_time) const {
 }
 
 template <typename T>
-Channel<T>& Channel<T>::insertKey(T value, Time at_time) {
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type) {
+  auto i = index(at_time);
   if (_keys.empty()) {
     _keys.emplace_back(value, at_time);
-    return *this;
-  }
-
-  auto i = index(at_time);
-  if (_curves.empty()) {
-    _curves.emplace_back(Curve::Linear);
   }
   else {
-    _curves.insert(_curves.begin() + i, Curve(Curve::Linear));
+    _keys.insert(_keys.begin() + i + 1, {value, at_time});
   }
-  _keys.insert(_keys.begin() + i + 1, {value, at_time});
+
+  if (_curves.empty()) {
+    _curves.emplace_back(curve_type);
+  }
+  else {
+    _curves.insert(_curves.begin() + i + 1, Curve(curve_type));
+  }
 
   return *this;
 }
 
 template <typename T>
 template <typename ... Keys>
-Channel<T>& Channel<T>::insertKey(T value, Time at_time, Keys... keys)
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type, Keys... keys)
 {
-    insertKey(value, at_time);
+    insertKey(value, at_time, curve_type);
     insertKey(std::forward<Keys>(keys)...);
     return *this;
 }
