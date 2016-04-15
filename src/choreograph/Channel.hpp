@@ -179,6 +179,9 @@ public:
   }
   /// Insert a key at the given time.
   Channel& insertKey(T value, Time at_time);
+  /// Insert multiple keys.
+  template <typename ... Keys>
+  Channel& insertKey(T value, Time at_time, Keys... keys);
 
   Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
   const std::vector<Key>&   keys() const { return _keys; }
@@ -259,6 +262,15 @@ Channel<T>& Channel<T>::insertKey(T value, Time at_time) {
   _keys.insert(_keys.begin() + i + 1, {value, at_time});
 
   return *this;
+}
+
+template <typename T>
+template <typename ... Keys>
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Keys... keys)
+{
+    insertKey(value, at_time);
+    insertKey(std::forward<Keys>(keys)...);
+    return *this;
 }
 
 template <typename T>
