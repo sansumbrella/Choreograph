@@ -109,10 +109,10 @@ public:
     Time time;
   };
 
-  class KeyManipulator
+  class KeyInfo
   {
   public:
-    KeyManipulator(Key &current, Key *previous, Key *next, Curve *c1, Curve *c2):
+    KeyInfo(Key &current, Key *previous, Key *next, Curve *c1, Curve *c2):
       _current(current),
       _previous(previous),
       _next(next),
@@ -120,9 +120,6 @@ public:
       _curve_out(c2)
     {}
 
-    void setValue(const T &value) {
-      _current.value = value;
-    }
     T    value() const {
       return _current.value;
     }
@@ -141,20 +138,39 @@ public:
     Time previousTime() const {
       return _previous ? _previous->time : 0;
     }
-    void setTime(Time t) {
-      _current.time = std::min(std::max(t, previousTime()), nextTime());
-    }
+
     bool isFirst() const { return _previous == nullptr; }
     bool isLast() const { return _next == nullptr; }
 
-    Curve* curveOut() { return _curve_out; }
-    Curve* curveIn() { return _curve_in; }
-  private:
+    const Curve* curveOut() const { return _curve_out; }
+    const Curve* curveIn() const { return _curve_in; }
+
+  protected:
     Key   &_current;
-    Key   *_previous = nullptr;
-    Key   *_next = nullptr;
     Curve *_curve_in = nullptr;
     Curve *_curve_out = nullptr;
+  private:
+    Key   *_previous = nullptr;
+    Key   *_next = nullptr;
+  };
+
+  class KeyManipulator : public KeyInfo
+  {
+  public:
+    KeyManipulator(Key &current, Key *previous, Key *next, Curve *c1, Curve *c2):
+      KeyInfo(current, previous, next, c1, c2)
+    {}
+
+    void setValue(const T &value) {
+      this->_current.value = value;
+    }
+
+    void setTime(Time t) {
+      this->_current.time = std::min(std::max(t, this->previousTime()), this->nextTime());
+    }
+
+    Curve* curveOut() { return this->_curve_out; }
+    Curve* curveIn() { return this->_curve_in; }
   };
 
   Channel() = default;
@@ -190,6 +206,8 @@ public:
 
   /// Returns a manipulator to adjust properties of the requested key.
   KeyManipulator keyControl(size_t key_index);
+  /// Returns an object allowing easier observation of a key and its neighbors.
+  const KeyInfo  keyInfo(size_t key_index) const;
 
   // TODO: remove general mutability from keys/curves in favor of KeyManipulators.
   std::vector<Key>&   mutableKeys() { return _keys; }
@@ -283,6 +301,18 @@ typename Channel<T>::KeyManipulator Channel<T>::keyControl(size_t desired_index)
   auto *c1 = (index > 0) ? &_curves[index - 1] : nullptr;
   auto *c2 = (index < _curves.size()) ? &_curves[index] : nullptr;
   return KeyManipulator(current, previous, next, c1, c2);
+}
+
+template <typename T>
+const typename Channel<T>::KeyInfo Channel<T>::keyInfo(size_t desired_index) const
+{
+  auto index = std::min(desired_index, _keys.size() - 1);
+  auto &current = const_cast<Key&>(_keys[index]);
+  auto *previous = (index > 0) ? &const_cast<Key&>(_keys[index - 1]) : nullptr;
+  auto *next = (index < _keys.size() - 1) ? &const_cast<Key&>(_keys[index + 1]) : nullptr;
+  auto *c1 = (index > 0) ? &const_cast<Curve&>(_curves[index - 1]) : nullptr;
+  auto *c2 = (index < _curves.size()) ? &const_cast<Curve&>(_curves[index]) : nullptr;
+  return KeyInfo(current, previous, next, c1, c2);
 }
 
 } // namepsace choreograph
