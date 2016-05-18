@@ -198,7 +198,8 @@ public:
   template <typename ... Keys>
   Channel& insertKey(T value, Time at_time, Curve::Type curve_type, Keys... keys);
 
-  Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
+  bool     empty() const { return _keys.empty(); }
+  Time     duration() const { return empty() ? 0 : _keys.back().time; }
   const std::vector<Key>&   keys() const { return _keys; }
   const std::vector<Curve>& curves() const { return _curves; }
 
