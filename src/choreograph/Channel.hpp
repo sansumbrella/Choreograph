@@ -237,7 +237,7 @@ size_t Channel<T>::index(Time at_time) const {
 
   for (auto i = 0; i < _keys.size() - 1; i += 1) {
     auto &a = _keys[i], &b = _keys[i + 1];
-    if (a.time <= at_time && b.time >= at_time) {
+    if (a.time <= at_time && b.time > at_time) {
       return i;
     }
   }

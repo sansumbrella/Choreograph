@@ -49,7 +49,7 @@ TEST_CASE("Channel")
     {
       REQUIRE(channel.index(-0.5) == 0);
       REQUIRE(channel.index(0.6) == 0);
-      REQUIRE(channel.index(1.0) == 0);
+      REQUIRE(channel.index(1.0) == 1);
       REQUIRE(channel.index(1.1) == 1);
       REQUIRE(channel.index(5.5) == 2);
     }
