@@ -10,6 +10,22 @@
 
 using namespace choreograph;
 
+TEST_CASE("Channel Creation")
+{
+  SECTION("Channels can be created in a single line")
+  {
+    auto channel = Channel<float>{
+      0.0f, 0.0, Curve::Hold,
+      10.0f, 1.0, Curve::Linear,
+      20.0f, 2.0
+    };
+
+    CHECK(channel.value(1.0) == 10.0f);
+    CHECK(channel.value(0.5) == 0.0f);
+    CHECK(channel.value(1.5) == 15.0f);
+  }
+}
+
 TEST_CASE("Channel")
 {
 
