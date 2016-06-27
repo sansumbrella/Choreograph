@@ -56,12 +56,13 @@ public:
   void               setType(Type type) { _type = type; }
   void               hold() { _type = Hold; }
   BezierInterpolant& bezier() { _type = Bezier; return _bezier; }
+  Type               type() const { return _type; }
 private:
   Type              _type = Linear;
   BezierInterpolant _bezier;
 };
 
-float Curve::solve(float t) const
+inline float Curve::solve(float t) const
 {
   switch (_type) {
     case Bezier:
@@ -108,10 +109,10 @@ public:
     Time time;
   };
 
-  class KeyManipulator
+  class KeyInfo
   {
   public:
-    KeyManipulator(Key &current, Key *previous, Key *next, Curve *c1, Curve *c2):
+    KeyInfo(Key &current, Key *previous, Key *next, Curve *c1, Curve *c2):
       _current(current),
       _previous(previous),
       _next(next),
@@ -119,9 +120,6 @@ public:
       _curve_out(c2)
     {}
 
-    void setValue(const T &value) {
-      _current.value = value;
-    }
     T    value() const {
       return _current.value;
     }
@@ -140,20 +138,39 @@ public:
     Time previousTime() const {
       return _previous ? _previous->time : 0;
     }
-    void setTime(Time t) {
-      _current.time = std::min(std::max(t, previousTime()), nextTime());
-    }
+
     bool isFirst() const { return _previous == nullptr; }
     bool isLast() const { return _next == nullptr; }
 
-    Curve* curveOut() { return _curve_out; }
-    Curve* curveIn() { return _curve_in; }
-  private:
+    const Curve* curveOut() const { return _curve_out; }
+    const Curve* curveIn() const { return _curve_in; }
+
+  protected:
     Key   &_current;
-    Key   *_previous = nullptr;
-    Key   *_next = nullptr;
     Curve *_curve_in = nullptr;
     Curve *_curve_out = nullptr;
+  private:
+    Key   *_previous = nullptr;
+    Key   *_next = nullptr;
+  };
+
+  class KeyManipulator : public KeyInfo
+  {
+  public:
+    KeyManipulator(Key &current, Key *previous, Key *next, Curve *c1, Curve *c2):
+      KeyInfo(current, previous, next, c1, c2)
+    {}
+
+    void setValue(const T &value) {
+      this->_current.value = value;
+    }
+
+    void setTime(Time t) {
+      this->_current.time = std::min(std::max(t, this->previousTime()), this->nextTime());
+    }
+
+    Curve* curveOut() { return this->_curve_out; }
+    Curve* curveIn() { return this->_curve_in; }
   };
 
   Channel() = default;
@@ -170,22 +187,26 @@ public:
   size_t lastIndex() const { return _keys.empty() ? 0 : _keys.size() - 1; }
 
   /// Append a key to the list of keys, positioned at \offset time after the previous key.
-  Channel& appendKeyAfter(T value, Time offset) {
-    if (! _keys.empty()) {
-      _curves.emplace_back();
-    }
+  Channel& appendKeyAfter(T value, Time offset, Curve::Type curve_type = Curve::Linear) {
     _keys.emplace_back(value, duration() + offset);
+    _curves.emplace_back(curve_type);
     return *this;
   }
   /// Insert a key at the given time.
-  Channel& insertKey(T value, Time at_time);
+  Channel& insertKey(T value, Time at_time, Curve::Type curve_type = Curve::Linear);
+  /// Insert multiple keys.
+  template <typename ... Keys>
+  Channel& insertKey(T value, Time at_time, Curve::Type curve_type, Keys... keys);
 
-  Time     duration() const { return _keys.empty() ? 0 : _keys.back().time; }
+  bool     empty() const { return _keys.empty(); }
+  Time     duration() const { return empty() ? 0 : _keys.back().time; }
   const std::vector<Key>&   keys() const { return _keys; }
   const std::vector<Curve>& curves() const { return _curves; }
 
   /// Returns a manipulator to adjust properties of the requested key.
   KeyManipulator keyControl(size_t key_index);
+  /// Returns an object allowing easier observation of a key and its neighbors.
+  const KeyInfo  keyInfo(size_t key_index) const;
 
   // TODO: remove general mutability from keys/curves in favor of KeyManipulators.
   std::vector<Key>&   mutableKeys() { return _keys; }
@@ -243,22 +264,32 @@ T Channel<T>::interpolatedValue(size_t curve_index, Time at_time) const {
 }
 
 template <typename T>
-Channel<T>& Channel<T>::insertKey(T value, Time at_time) {
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type) {
+  auto i = index(at_time);
   if (_keys.empty()) {
     _keys.emplace_back(value, at_time);
-    return *this;
-  }
-
-  auto i = index(at_time);
-  if (_curves.empty()) {
-    _curves.emplace_back(Curve::Linear);
   }
   else {
-    _curves.insert(_curves.begin() + i, Curve(Curve::Linear));
+    _keys.insert(_keys.begin() + i + 1, {value, at_time});
   }
-  _keys.insert(_keys.begin() + i + 1, {value, at_time});
+
+  if (_curves.empty()) {
+    _curves.emplace_back(curve_type);
+  }
+  else {
+    _curves.insert(_curves.begin() + i + 1, Curve(curve_type));
+  }
 
   return *this;
+}
+
+template <typename T>
+template <typename ... Keys>
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type, Keys... keys)
+{
+    insertKey(value, at_time, curve_type);
+    insertKey(std::forward<Keys>(keys)...);
+    return *this;
 }
 
 template <typename T>
@@ -270,6 +301,18 @@ typename Channel<T>::KeyManipulator Channel<T>::keyControl(size_t desired_index)
   auto *c1 = (index > 0) ? &_curves[index - 1] : nullptr;
   auto *c2 = (index < _curves.size()) ? &_curves[index] : nullptr;
   return KeyManipulator(current, previous, next, c1, c2);
+}
+
+template <typename T>
+const typename Channel<T>::KeyInfo Channel<T>::keyInfo(size_t desired_index) const
+{
+  auto index = std::min(desired_index, _keys.size() - 1);
+  auto &current = const_cast<Key&>(_keys[index]);
+  auto *previous = (index > 0) ? &const_cast<Key&>(_keys[index - 1]) : nullptr;
+  auto *next = (index < _keys.size() - 1) ? &const_cast<Key&>(_keys[index + 1]) : nullptr;
+  auto *c1 = (index > 0) ? &const_cast<Curve&>(_curves[index - 1]) : nullptr;
+  auto *c2 = (index < _curves.size()) ? &const_cast<Curve&>(_curves[index]) : nullptr;
+  return KeyInfo(current, previous, next, c1, c2);
 }
 
 } // namepsace choreograph

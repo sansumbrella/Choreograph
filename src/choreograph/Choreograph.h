@@ -29,6 +29,7 @@
 
 // Timeline.h includes most of Choreograph.
 #include "Timeline.h"
+#include "Channel.hpp"
 
 #include "phrase/Ramp.hpp"
 #include "phrase/Hold.hpp"
