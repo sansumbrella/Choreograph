@@ -84,7 +84,7 @@ If you cannot wrap your animation target in an Output template, consider creatin
 // Recommended approach to animating non-Output types
 vec3 target;
 // Create a Sequence with initial value from target.
-auto sequence = Sequence<vec3>( target.value() );
+auto sequence = Sequence<vec3>( target.value() )
   .then<Hold>( 1.0, 1.0 )
   .then<RampTo>( vec3( 100 ), 3.0 );
 target = sequence.getValue( animationTime );
