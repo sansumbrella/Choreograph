@@ -75,6 +75,8 @@ public:
   /// Add a cue to the timeline. It will be called after \a delay time elapses on this Timeline.
   TimelineOptions cue( const std::function<void ()> &fn, Time delay );
 
+  TimelineOptions cue( const std::function<void ()> &fn, Seconds delay ) { return cue( fn, delay.count() ); }
+
   //=================================================
   // Adding TimelineItems.
   //=================================================

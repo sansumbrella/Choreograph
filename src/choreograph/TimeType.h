@@ -44,6 +44,7 @@ namespace choreograph
 ///
 
 using Time = double;
+using Seconds = std::chrono::duration<double, std::chrono::seconds::period>;
 
 /// Wrap \a time past \a duration around \a inflectionPoint.
 inline Time wrapTime( Time time, Time duration, Time inflectionPoint=0.0f )

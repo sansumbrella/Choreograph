@@ -178,6 +178,10 @@ public:
   Channel(T value, Time at_time, Curve::Type curve_type, Keys&&... keys) {
     insertKey(value, at_time, curve_type, std::forward<Keys>(keys)...);
   }
+  template <typename ... Keys>
+  Channel(T value, Seconds at_time, Curve::Type curve_type, Keys&&... keys) {
+    insertKey(value, at_time, curve_type, std::forward<Keys>(keys)...);
+  }
 
   /// Return the value of the channel at a given time.
   T value(Time at_time) const;
@@ -201,6 +205,12 @@ public:
   /// Insert multiple keys.
   template <typename ... Keys>
   Channel& insertKey(T value, Time at_time, Curve::Type curve_type, Keys&&... keys);
+
+  /// Insert a key at the given time using chrono::seconds.
+  Channel& insertKey(T value, Seconds at_time, Curve::Type curve_type = Curve::Linear) { return insertKey(value, at_time.count(), curve_type); }
+  /// Insert multiple keys using chrono::seconds.
+  template <typename ... Keys>
+  Channel& insertKey(T value, Seconds at_time, Curve::Type curve_type, Keys&&... keys);
 
   bool     empty() const { return _keys.empty(); }
   Time     duration() const { return empty() ? 0 : _keys.back().time; }
@@ -290,6 +300,15 @@ Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type)
 template <typename T>
 template <typename ... Keys>
 Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type, Keys&&... keys)
+{
+    insertKey(value, at_time, curve_type);
+    insertKey(std::forward<Keys>(keys)...);
+    return *this;
+}
+
+template <typename T>
+template <typename ... Keys>
+Channel<T>& Channel<T>::insertKey(T value, Seconds at_time, Curve::Type curve_type, Keys&&... keys)
 {
     insertKey(value, at_time, curve_type);
     insertKey(std::forward<Keys>(keys)...);
