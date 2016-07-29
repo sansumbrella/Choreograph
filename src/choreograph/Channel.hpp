@@ -56,6 +56,7 @@ public:
   void               setType(Type type) { _type = type; }
   void               hold() { _type = Hold; }
   BezierInterpolant& bezier() { _type = Bezier; return _bezier; }
+  const BezierInterpolant& bezier() const { assert(_type == Bezier); return _bezier; }
   Type               type() const { return _type; }
 private:
   Type              _type = Linear;
