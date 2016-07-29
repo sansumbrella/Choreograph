@@ -34,6 +34,12 @@
 namespace choreograph
 {
 
+enum class Interpolate {
+    BEZIER,
+    HOLD,
+    LINEAR
+};
+
 class Curve
 {
 public:
@@ -44,10 +50,10 @@ public:
   };
 
   Curve() = default;
-  explicit Curve(Type t):
+  Curve(Type t):
     _type(t)
   {}
-  explicit Curve(const BezierInterpolant &bezier):
+  Curve(const BezierInterpolant &bezier):
     _type(Bezier),
     _bezier(bezier)
   {}
@@ -202,16 +208,16 @@ public:
     return *this;
   }
   /// Insert a key at the given time.
-  Channel& insertKey(T value, Time at_time, Curve::Type curve_type = Curve::Linear);
+  Channel& insertKey(T value, Time at_time, Curve curve = Curve(Curve::Linear));
   /// Insert multiple keys.
   template <typename ... Keys>
-  Channel& insertKey(T value, Time at_time, Curve::Type curve_type, Keys&&... keys);
+  Channel& insertKey(T value, Time at_time, Curve curve, Keys&&... keys);
 
   /// Insert a key at the given time using chrono::seconds.
-  Channel& insertKey(T value, Seconds at_time, Curve::Type curve_type = Curve::Linear) { return insertKey(value, at_time.count(), curve_type); }
+  Channel& insertKey(T value, Seconds at_time, Curve curve = Curve(Curve::Linear)) { return insertKey(value, at_time.count(), curve); }
   /// Insert multiple keys using chrono::seconds.
   template <typename ... Keys>
-  Channel& insertKey(T value, Seconds at_time, Curve::Type curve_type, Keys&&... keys);
+  Channel& insertKey(T value, Seconds at_time, Curve curve, Keys&&... keys);
 
   bool     empty() const { return _keys.empty(); }
   Time     duration() const { return empty() ? 0 : _keys.back().time; }
@@ -279,7 +285,7 @@ T Channel<T>::interpolatedValue(size_t curve_index, Time at_time) const {
 }
 
 template <typename T>
-Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type) {
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve curve) {
   auto i = index(at_time);
   if (_keys.empty()) {
     _keys.emplace_back(value, at_time);
@@ -289,10 +295,10 @@ Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type)
   }
 
   if (_curves.empty()) {
-    _curves.emplace_back(curve_type);
+    _curves.emplace_back(curve);
   }
   else {
-    _curves.insert(_curves.begin() + i + 1, Curve(curve_type));
+    _curves.insert(_curves.begin() + i + 1, curve);
   }
 
   return *this;
@@ -300,18 +306,18 @@ Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type)
 
 template <typename T>
 template <typename ... Keys>
-Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve::Type curve_type, Keys&&... keys)
+Channel<T>& Channel<T>::insertKey(T value, Time at_time, Curve curve, Keys&&... keys)
 {
-    insertKey(value, at_time, curve_type);
+    insertKey(value, at_time, curve);
     insertKey(std::forward<Keys>(keys)...);
     return *this;
 }
 
 template <typename T>
 template <typename ... Keys>
-Channel<T>& Channel<T>::insertKey(T value, Seconds at_time, Curve::Type curve_type, Keys&&... keys)
+Channel<T>& Channel<T>::insertKey(T value, Seconds at_time, Curve curve, Keys&&... keys)
 {
-    insertKey(value, at_time, curve_type);
+    insertKey(value, at_time, curve);
     insertKey(std::forward<Keys>(keys)...);
     return *this;
 }
