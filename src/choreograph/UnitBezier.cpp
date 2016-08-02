@@ -33,11 +33,11 @@
 
 using namespace choreograph;
 
-double BezierInterpolant::timeAtX(double x, double epsilon) const
+float BezierInterpolant::timeAtX(float x, float epsilon) const
 {
-  double t0, t1, t2;
-  double x2;
-  double d2;
+  float t0, t1, t2;
+  float x2;
+  float d2;
   int i;
 
   // First try a few iterations of Newton's method -- normally very fast.

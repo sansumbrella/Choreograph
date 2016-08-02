@@ -42,27 +42,27 @@ public:
   #else
   struct vec2 {
     vec2() = default;
-    explicit vec2(double fill):
+    explicit vec2(float fill):
       x(fill),
       y(fill)
     {}
-    explicit vec2(double x, double y):
+    explicit vec2(float x, float y):
       x(x),
       y(y)
     {}
-    double x = 0.0;
-    double y = 0.0;
+    float x = 0.0f;
+    float y = 0.0f;
   };
   #endif // ! CINDER_CINDER
 
   BezierInterpolant():
-    _control_1(0.3333333),
-    _control_2(0.6666666)
+    _control_1(0.5, 0.0),
+    _control_2(0.5, 1.0)
   {
     calculateCoefficients();
   }
 
-  BezierInterpolant(double x1, double y1, double x2, double y2):
+  BezierInterpolant(float x1, float y1, float x2, float y2):
     _control_1(x1, y1),
     _control_2(x2, y2)
   {
@@ -88,27 +88,27 @@ public:
   void setControlPoint1(const vec2 &control) { setControlPoints(control, control2()); }
   void setControlPoint2(const vec2 &control) { setControlPoints(control1(), control); }
 
-  double curveX(double t) const {
+  float curveX(double t) const {
     // at^3 + bt^2 + ct expanded using Horner's rule.
     return ((ax * t + bx) * t + cx) * t;
   }
 
-  double curveY(double t) const {
+  float curveY(double t) const {
     return ((ay * t + by) * t + cy) * t;
   }
 
-  double derivativeX(double t) const {
+  float derivativeX(double t) const {
     // 3at^2 + 2bt + c
     return (3 * ax * t + 2 * bx) * t + cx;
   }
 
   /// Given an x value, find a parameter t that generates it.
-  double timeAtX(double x, double epsilon) const;
+  float timeAtX(float x, float epsilon) const;
 
 private:
   vec2 _control_1, _control_2;
-  double ax, bx, cx;
-  double ay, by, cy;
+  float ax, bx, cx;
+  float ay, by, cy;
 
   void calculateCoefficients() {
     cx = 3 * _control_1.x;
