@@ -32,6 +32,7 @@
 #include <functional>
 #include <vector>
 #include <array>
+#include <chrono>
 
 namespace choreograph
 {
