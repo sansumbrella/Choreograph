@@ -56,6 +56,11 @@ public:
 
   Motion() = delete;
 
+  Motion( T *target ):
+    _source( *target ),
+    _target( target )
+  {}
+
   Motion( T *target, const SequenceT &sequence ):
     _target( target ),
     _source( sequence )
