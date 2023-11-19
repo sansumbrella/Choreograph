@@ -131,7 +131,7 @@ private:
   Callback        _finish_fn;
   Callback        _start_fn;
   Callback        _update_fn;
-  std::vector<std::pair<int, Callback>>  _inflection_callbacks;
+  std::vector<std::pair<size_t, Callback>>  _inflection_callbacks;
 
   /// Sets the output to a different output.
   /// Used by Output<T>'s move assignment and move constructor.
@@ -173,7 +173,7 @@ void Motion<T>::update()
       auto bottom = std::min( points.first, points.second );
       for( const auto &fn : _inflection_callbacks )
       {
-        auto inflection = fn.first;
+        unsigned int inflection = fn.first;
         if( inflection > bottom && inflection <= top ) {
           fn.second();
         }
@@ -200,7 +200,7 @@ void Motion<T>::update()
 template<typename T>
 void Motion<T>::addInflectionCallback( size_t inflection_point, const Callback &callback )
 {
-  _inflection_callbacks.emplace_back( std::make_pair( (int)inflection_point, callback ) );
+  _inflection_callbacks.emplace_back( std::make_pair( inflection_point, callback ) );
 }
 
 template<typename T>
@@ -212,7 +212,7 @@ void Motion<T>::sliceSequence( Time from, Time to )
     fn.first -= inflection;
   }
 
-  detail::erase_if( &_inflection_callbacks, [] (const std::pair<int, Callback> &p) {
+  detail::erase_if( &_inflection_callbacks, [] (const std::pair<size_t, Callback> &p) {
     return p.first < 0;
   } );
 

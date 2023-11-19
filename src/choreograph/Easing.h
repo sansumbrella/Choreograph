@@ -665,7 +665,7 @@ inline float easeInAtan( float t, float a = 15 )
 
 //! Easing equation for an atan ease-in, accelerating from zero velocity. Functor edition. Used by permssion from Chris McKenzie.
 struct EaseInAtan {
-  EaseInAtan( float a = 15 ) : mInvM( 1.0f / std::atan( a ) ), mA( a ) {}
+  EaseInAtan( float a = 15 ) : mA( a ), mInvM( 1.0f / std::atan( a ) ) {}
   float operator()( float t ) const { return ( std::atan( (t - 1) * mA ) * mInvM ) + 1; }
   float mA, mInvM;
 };
@@ -679,7 +679,7 @@ inline float easeOutAtan( float t, float a = 15 )
 
 //! Easing equation for an atan ease-out, decelerating from zero velocity. Functor edition. Used by permssion from Chris McKenzie.
 struct EaseOutAtan {
-  EaseOutAtan( float a = 15 ) : mInvM( 1.0f / std::atan( a ) ), mA( a ) {}
+  EaseOutAtan( float a = 15 ) : mA( a ), mInvM( 1.0f / std::atan( a ) ) {}
   float operator()( float t ) const { return std::atan( t * mA ) * mInvM; }
   float mA, mInvM;
 };
@@ -693,7 +693,7 @@ inline float easeInOutAtan( float t, float a = 15 )
 
 //! Easing equation for an atan ease-in/out, accelerating until halfway, then decelerating. Functor edition. Used by permssion from Chris McKenzie.
 struct EaseInOutAtan {
-  EaseInOutAtan( float a = 15 ) : mInv2M( 1.0f / ( 2 * std::atan( 0.5f * a ) ) ), mA( a ) {}
+  EaseInOutAtan( float a = 15 ) : mA( a ), mInv2M( 1.0f / ( 2 * std::atan( 0.5f * a ) ) ) {}
   float operator()( float t ) const { return ( std::atan((t - 0.5f)*mA) * mInv2M ) + 0.5f; }
   float mA, mInv2M;
 };
